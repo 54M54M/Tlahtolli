@@ -32,8 +32,6 @@
 
 ## [26/04/2025] - Sistema de Progreso y Perfil
 
-### Componentes
-
 - **ProgressBar**
   - Barra de progreso dinámica
   - Cálculo automático de porcentaje
@@ -61,8 +59,6 @@
 - Refactorización de componentes
 
 ## [28/04/2025] - Sistema de Navegación Completo
-
-### Componentes
 
 - **DesktopAside**
   - Barra lateral izquierda para desktop
