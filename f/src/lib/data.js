@@ -317,6 +317,7 @@ export const userData = {
     minutesStudied: 320,
     joinDate: "15 de marzo de 2023",
     profileImage: "/placeholder.svg?height=100&width=100",
+    defaultVariant: 'all' // Add this line
 };
 
 export const achievementsData = [

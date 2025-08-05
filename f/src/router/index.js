@@ -1,11 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Inicio from '../views/HomeView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const routes = [
     {
         path: '/',
         name: 'Inicio',
-        component: Inicio
+        component: Inicio,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import("../views/LoginView.vue"),
+    },
+    {
+        path: '/select-variant',
+        name: 'VariantSelection',
+        component: () => import("../views/VariantSelection.vue"),
+        meta: { requiresAuth: true }
     },
     {
         path: '/diccionario',
@@ -40,6 +53,23 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes
-});
+})
 
-export default router;
+router.beforeEach(async (to, from, next) => {
+    const authStore = useAuthStore()
+
+    // Esperar a que el store esté hidratado si usa persistencia
+    await authStore.$hydrate()
+
+    if (to.meta.requiresAuth && !authStore.user) {
+        return next('/login')
+    }
+
+    if (to.meta.requiresVariant && (!authStore.selectedVariant || authStore.isNewUser)) {
+        return next('/select-variant')
+    }
+
+    next()
+})
+
+export default router

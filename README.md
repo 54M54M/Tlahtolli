@@ -11,21 +11,6 @@ Plataforma de aprendizaje de dialectos online que utiliza un enfoque gamificado 
 
 > ⚠️ Las recompensas para usuarios aún no están implementadas, pero se encuentran en desarrollo.
 
-## 🚀 Instalación y ejecución local
-
-```bash
-# Clona el repositorio
-git clone https://github.com/Bimori404/Tlahtolli
-
-cd tlahtolli
-
-# Instala dependencias (según el stack)
-npm install 
-
-# Ejecuta el proyecto
-npm run dev 
-```
-
 ## 🧩 Próximas funcionalidades
 
 - Sistema de recompensas y niveles

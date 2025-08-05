@@ -46,11 +46,47 @@
                 <span>Perfil</span>
             </router-link>
         </div>
+        
+        <div class="mt-auto mb-4">
+            <div class="flex items-center space-x-3 p-3 rounded-lg bg-gray-800 mb-4">
+                <img :src="authStore.user?.profileImage" class="w-10 h-10 rounded-full" />
+                <div>
+                    <p class="font-medium">{{ authStore.user?.name }}</p>
+                    <p class="text-xs text-gray-400">@{{ authStore.user?.username }}</p>
+                </div>
+            </div>
+            <button @click="logout"
+                class="w-full flex items-center space-x-2 p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Cerrar sesión</span>
+            </button>
+        </div>
     </aside>
 </template>
 
 <script>
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from 'vue-router'
+
 export default {
-    name: 'DesktopAside'
+    name: 'DesktopAside',
+    setup() {
+        const authStore = useAuthStore()
+        const router = useRouter()
+
+        const logout = () => {
+            authStore.logout()
+            router.push('/login')
+        }
+
+        return {
+            authStore,
+            logout
+        }
+    }
 }
 </script>
