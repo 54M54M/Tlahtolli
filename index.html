@@ -4,7 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Náhuatl Clásico - Aprende el idioma de nuestros ancestros</title>
+    <title>Tlahtolli - Aprende el idioma de nuestros ancestros</title>
+
+    <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+    <link rel="shortcut icon" href="favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="favicon/site.webmanifest" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -50,10 +57,14 @@
     <header class="sticky top-0 z-50 bg-[#0a2136]/90 backdrop-blur-sm border-b border-[#1a3a5a]">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-[#58CC02] flex items-center justify-center">
-                    <span class="text-white font-bold">N</span>
+                <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold">
+
+                        <img src="/favicon/favicon.svg" alt="náhuatl icon">
+
+                    </span>
                 </div>
-                <span class="text-xl font-bold">NÁHUATL CLÁSICO</span>
+                <span class="text-xl font-bold">Tlahtolli</span>
             </div>
             <nav class="hidden md:flex space-x-8">
                 <a href="#features" class="nav-item">Características</a>
@@ -82,8 +93,8 @@
                         class="bg-[#58CC02] hover:bg-[#4bb802] text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300">
                         Descargar App
                     </a>
-                    <a href="#features"
-                        class="bg-transparent hover:bg-white/10 text-white font-bold py-3 px-6 border-2 border-white rounded-lg text-center transition duration-300">
+                    <a href="https://tlahtolli.netlify.app/" target="_blank"
+                        class="bg-transparent hover:bg-[#cc348d] text-white font-bold py-3 px-6 border-2 border-[#cc348d] rounded-lg text-center transition duration-300">
                         Probar Demo
                     </a>
                 </div>
@@ -96,8 +107,8 @@
                     <div
                         class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#1CB0F6] rounded-full mix-blend-multiply filter blur-xl opacity-70">
                     </div>
-                    <img src="https://via.placeholder.com/500x800/0a2136/FFFFFF?text=App+Preview"
-                        alt="Náhuatl Clásico App" class="relative z-10 rounded-xl shadow-2xl w-full max-w-md">
+                    <img src="https://via.placeholder.com/500x800/0a2136/FFFFFF?text=App+Preview" alt="Tlahtolli App"
+                        class="relative z-10 rounded-xl shadow-2xl w-full max-w-md">
                 </div>
             </div>
         </div>
@@ -456,10 +467,10 @@
 
                 <!-- Testimonial 3 -->
                 <div class="feature-card p-8 rounded-xl relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#58CC02]" style="
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#cc348d]" style="
                         border-radius: 0 8px 8px 0;
-                        background: linear-gradient(-180deg, #58CC02 0%, #4bb802 100%);
-                        box-shadow: 0 0 10px rgba(88, 204, 2, 0.3);
+                        background: linear-gradient(-180deg, #cc348d 0%, #9b1f5a 100%);
+                        box-shadow: 0 0 10px rgba(204, 52, 141, 0.3);
                     "></div>
                     <div class="flex items-center mb-6">
                         <div
@@ -496,7 +507,7 @@
     <!-- Download Section -->
     <section id="download" class="py-20 px-4 bg-[#0f2b47]">
         <div class="container mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-6">Descarga Náhuatl Clásico ahora</h2>
+            <h2 class="text-3xl font-bold mb-6">Descarga Tlahtolli ahora</h2>
             <p class="text-xl mb-12 max-w-2xl mx-auto text-gray-400">Comienza tu viaje de reconexión con la sabiduría
                 ancestral</p>
 
@@ -504,7 +515,7 @@
 
                 <!-- App Store Button -->
                 <a href="#"
-                    class="bg-black hover:bg-gray-900 text-white py-4 px-8 rounded-lg flex items-center justify-center max-w-xs transition duration-300 md:mx-1 mx-auto md:mr-1">
+                    class="bg-black hover:bg-gray-900 text-white py-4 px-8 rounded-lg flex items-center justify-center max-w-xs transition duration-300 md:mx-1 mx-auto md:mr-1 cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path
@@ -517,7 +528,7 @@
                 </a>
                 <!-- Google Play Button -->
                 <a href="#"
-                    class="bg-black hover:bg-gray-900 text-white py-4 px-8 rounded-lg flex items-center justify-center max-w-xs transition duration-300 md:mx-1 mx-auto">
+                    class="bg-black hover:bg-gray-900 text-white py-4 px-8 rounded-lg flex items-center justify-center max-w-xs transition duration-300 md:mx-1 mx-auto cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path
@@ -532,15 +543,15 @@
             </div>
 
             <div class="max-w-lg mx-auto feature-card p-8 rounded-xl relative overflow-hidden">
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#58CC02]" style="
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#cc348d]" style="
                     border-radius: 0 8px 8px 0;
-                    background: linear-gradient(-180deg, #58CC02 0%, #4bb802 100%);
-                    box-shadow: 0 0 10px rgba(88, 204, 2, 0.3);
+                    background: linear-gradient(-180deg, #cc348d 0%, #9b1f5a 100%);
+                    box-shadow: 0 0 10px rgba(204, 52, 141, 0.3);
                 "></div>
                 <h3 class="text-xl font-bold mb-4">¿Prefieres la versión web?</h3>
                 <p class="mb-6">Prueba nuestra demo directamente en tu navegador sin necesidad de descargar nada.</p>
-                <a href="#"
-                    class="bg-[#58CC02] hover:bg-[#4bb802] text-white font-bold py-3 px-6 rounded-lg inline-block transition duration-300">
+                <a href="https://tlahtolli.netlify.app/" target="_blank"
+                    class="bg-[#cc348d] hover:bg-[#9b1f5a] text-white font-bold py-3 px-6 rounded-lg inline-block transition duration-300">
                     Probar Demo Web
                 </a>
             </div>
@@ -552,15 +563,18 @@
     <footer class="bg-[#0a2136] border-t border-[#1a3a5a] py-12 px-4">
         <div class="container mx-auto">
             <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 rounded-full bg-[#58CC02] flex items-center justify-center">
-                            <span class="text-white font-bold">N</span>
-                        </div>
-                        <span class="text-xl font-bold">NÁHUATL CLÁSICO</span>
+
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">
+
+                            <img src="/favicon/favicon.svg" alt="náhuatl icon">
+
+                        </span>
                     </div>
-                    <p class="text-gray-400">Preservando la sabiduría milenaria a través de la tecnología moderna.</p>
+                    <span class="text-xl font-bold">Tlahtolli</span>
                 </div>
+
                 <div>
                     <h4 class="font-bold text-lg mb-4">Enlaces</h4>
                     <ul class="space-y-2">
@@ -624,7 +638,7 @@
                 </div>
             </div>
             <div class="border-t border-[#1a3a5a] mt-12 pt-8 text-center text-gray-500">
-                <p>© 2023 Náhuatl Clásico. Todos los derechos reservados.</p>
+                <p>© 2023 Tlahtolli. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
