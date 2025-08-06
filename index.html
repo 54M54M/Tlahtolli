@@ -64,6 +64,18 @@
         .nav-item:hover::after {
             width: 100%;
         }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .md\:hidden {
+            width: 100vw;
+            left: 0;
+            right: 0;
+        }
     </style>
 </head>
 
@@ -88,20 +100,13 @@
                 <a href="#testimonials" class="nav-item testimonials">Testimonios</a>
                 <a href="#download" class="nav-item download">Descargar</a>
             </nav>
-
-            <button class="md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-gradient py-20 px-4">
+    <section class="hero-gradient py-5 md:py-20 px-4">
         <div class="container mx-auto flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-10 md:mb-0">
+            <div class="md:w-1/2 md:mb-0">
                 <h1 class="text-4xl md:text-5xl font-bold mb-6">Aprende el idioma de nuestros ancestros</h1>
                 <p class="text-xl mb-8 text-gray-300">"Preservando la sabiduría milenaria a través de la tecnología
                     moderna"</p>
@@ -116,16 +121,16 @@
                     </a>
                 </div>
             </div>
-            <div class="md:w-1/2 flex justify-center">
+            <div class="md:w-1/2 flex justify-center pb-0">
                 <div class="relative">
                     <div
-                        class="absolute -top-6 -left-6 w-32 h-32 bg-[#A560E8] rounded-full mix-blend-multiply filter blur-xl opacity-70">
+                        class="absolute -top-6 -left-6 w-32 h-32 bg-[#A560E8] rounded-full mix-blend-multiply filter blur-xl opacity-70 transition-all duration-700 hover:bg-[#FF4B4B] hover:rotate-180 hover:scale-125 md:hover:scale-150">
                     </div>
                     <div
-                        class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#1CB0F6] rounded-full mix-blend-multiply filter blur-xl opacity-70">
+                        class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#1CB0F6] rounded-full mix-blend-multiply filter blur-xl opacity-70 transition-all duration-700 hover:bg-[#58CC02] hover:-rotate-180 hover:scale-125 md:hover:scale-150">
                     </div>
-                    <img src="https://via.placeholder.com/500x800/0a2136/FFFFFF?text=App+Preview" alt="Tlahtolli App"
-                        class="relative z-10 rounded-xl shadow-2xl w-full max-w-md">
+                    <img src="/favicon/cellphone_template.webp" alt="Tlahtolli Template App"
+                        class="relative z-10 w-full max-w-md drop-shadow-[0_0_25px_rgba(0,0,0,5)] md:transition-all md:duration-500 md:hover:scale-110 md:hover:rotate-2">
                 </div>
             </div>
         </div>
@@ -567,7 +572,7 @@
                 "></div>
                 <h3 class="text-xl font-bold mb-4">¿Prefieres la versión web?</h3>
                 <p class="mb-6">Prueba nuestra demo directamente en tu navegador sin necesidad de descargar nada.</p>
-                <a href="https://tlahtolli.netlify.app/" target="_blank"
+                <a href="/building.html" target="_blank"
                     class="bg-[#cc348d] hover:bg-[#9b1f5a] text-white font-bold py-3 px-6 rounded-lg inline-block transition duration-300">
                     Probar Demo Web
                 </a>
@@ -661,31 +666,33 @@
     </footer>
 
     <!-- Bottom Navigation (Mobile) -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0a2136] border-t border-[#1a3a5a]">
-        <div class="flex justify-around py-3">
-            <a href="#features" class="flex flex-col items-center text-white">
+    <div
+        class="md:hidden fixed bottom-0 z-20 left-0 right-0 bg-[#0a2136] border-t border-[#1a3a5a] w-screen overflow-hidden">
+        <div class="flex justify-between py-3 px-2 w-full">
+            <a href="#features" class="flex flex-col items-center text-gray-400 hover:text-white flex-1 min-w-0 px-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
-                <span class="text-xs mt-1">Características</span>
+                <span class="text-xs mt-1 truncate">Características</span>
             </a>
-            <a href="#methodology" class="flex flex-col items-center text-gray-400 hover:text-white">
+            <a href="#methodology"
+                class="flex flex-col items-center text-gray-400 hover:text-white flex-1 min-w-0 px-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-                <span class="text-xs mt-1">Método</span>
+                <span class="text-xs mt-1 truncate">Método</span>
             </a>
-            <a href="#download" class="flex flex-col items-center text-gray-400 hover:text-white">
+            <a href="#download" class="flex flex-col items-center text-gray-400 hover:text-white flex-1 min-w-0 px-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                <span class="text-xs mt-1">Descargar</span>
+                <span class="text-xs mt-1 truncate">Descargar</span>
             </a>
         </div>
     </div>
