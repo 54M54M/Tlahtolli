@@ -42,8 +42,23 @@
             left: 0;
             width: 0;
             height: 2px;
-            background-color: #58CC02;
             transition: width 0.3s;
+        }
+
+        .nav-item.features::after {
+            background-color: #FF9600;
+        }
+
+        .nav-item.methodology::after {
+            background-color: #1CB0F6;
+        }
+
+        .nav-item.testimonials::after {
+            background-color: #A560E8;
+        }
+
+        .nav-item.download::after {
+            background-color: #00cd9c;
         }
 
         .nav-item:hover::after {
@@ -66,12 +81,14 @@
                 </div>
                 <span class="text-xl font-bold">Tlahtolli</span>
             </div>
+
             <nav class="hidden md:flex space-x-8">
-                <a href="#features" class="nav-item">Características</a>
-                <a href="#methodology" class="nav-item">Metodología</a>
-                <a href="#testimonials" class="nav-item">Testimonios</a>
-                <a href="#download" class="nav-item">Descargar</a>
+                <a href="#features" class="nav-item features">Características</a>
+                <a href="#methodology" class="nav-item methodology">Metodología</a>
+                <a href="#testimonials" class="nav-item testimonials">Testimonios</a>
+                <a href="#download" class="nav-item download">Descargar</a>
             </nav>
+
             <button class="md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
