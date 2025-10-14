@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [25/04/2025] - Componentes Base y Estructura Inicial
+## [25/ABR/2025] - Componentes Base y Estructura Inicial
 
 ### Creación del Proyecto
 
@@ -30,7 +30,7 @@
   - Props personalizables (color, rutas, progreso)
   - Diseño fijo para scroll
 
-## [26/04/2025] - Sistema de Progreso y Perfil
+## [26/ABR/2025] - Sistema de Progreso y Perfil
 
 - **ProgressBar**
   - Barra de progreso dinámica
@@ -48,7 +48,7 @@
   - Grid de 4 métricas clave
   - Diseño con cards
 
-## [27/04/2025] - Correcciones y Mejoras
+## [27/ABR/2025] - Correcciones y Mejoras
 
 ### Mejoras Generales
 
@@ -58,7 +58,7 @@
 - Validación adicional de props
 - Refactorización de componentes
 
-## [28/04/2025] - Sistema de Navegación Completo
+## [28/ABR/2025] - Sistema de Navegación Completo
 
 - **DesktopAside**
   - Barra lateral izquierda para desktop
@@ -75,7 +75,7 @@
   - Integración de LearningStats y DialectProgress
   - Diseño fijo
 
-## [29/04/2025] - Refactorización y Componentes de Perfil
+## [29/ABR/2025] - Refactorización y Componentes de Perfil
 
 ### Nuevos Componentes
 
@@ -108,3 +108,65 @@
 - Mejoras en Tab component
   - Mejor manejo de responsive
   - Estilos optimizados
+
+## [14/OCT/2025] - Refactorización y Mejoras de Sistema
+
+### Actualizacion de Componentes
+
+- **VariantSelection**
+  - Nueva interfaz para selección de variante
+  - Visualización de variante actual
+  - Mejor UX para cambio de variantes
+  - Integración con sistema de autenticación
+
+- **LessonView**
+  - Rediseño completo de la interfaz
+  - Mejor organización vertical del contenido
+  - Soporte para imágenes placeholder
+  - Mejoras en presentación de ejercicios
+
+- **LevelView**
+  - Sistema de bloqueo de niveles y unidades
+  - Visualización de requisitos de desbloqueo
+  - Mejoras visuales en la presentación
+  - Integración con sistema de progreso
+
+### Mejoras
+
+- **Navegación y Layout**
+  - Rediseño completo de DesktopAside
+  - Nuevo diseño de información de usuario
+  - Mejora en elementos de navegación
+  - Optimización de botón de cerrar sesión
+
+- **Sistema de Autenticación**
+  - Implementación de guardias de ruta
+  - Mejora en manejo de estados
+  - Control de acceso por variante
+  - Redirecciones inteligentes
+
+- **ProgressAside**
+  - Badge de variante activa
+  - Integración con sistema dialectal
+  - Mejoras visuales en estadísticas
+  - Nuevo diseño de variante seleccionada
+
+- **vHeader**
+  - Tres variantes optimizadas
+  - Mejor integración con variantes
+  - Manejo mejorado de estados
+  - Diseño más consistente
+
+### Datos y Configuración
+
+- **Data.js**
+  - Expansión de variantes dialectales
+  - Nuevos campos para niveles
+  - Reorganización de ejercicios
+  - Mejora en estructura de progreso
+
+- **Estilos**
+  - Actualización de paleta de colores
+  - Mejoras en responsive design
+  - Nuevos estados visuales
+  - Optimización de transiciones
