@@ -1,55 +1,63 @@
 <template>
-    <div class="text-white">
+    <div class="text-white pt-[15%] flex flex-col ">
         <!-- Header con información dinámica -->
         <Header variant="progress" :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`"
             :progressCurrent="currentQuestion - 1" :progressTotal="currentExercises.length"
             :backRoute="`/nivel/${currentLevel.id}`" />
 
-        <div class="mt-12 px-4 pb-20">
-            <!-- Mostrar ejercicio actual -->
-            <Card v-if="currentQuestion <= currentExercises.length">
-                <h2 class="text-xl font-semibold mb-4">{{ currentExercise.question }}</h2>
+        <!-- Contenido centrado verticalmente SIN scroll -->
+        <div class="flex-1 flex items-center justify-center px-4 overflow-hidden">
+            <div class="w-full max-w-2xl">
+                <!-- Mostrar ejercicio actual -->
+                <Card v-if="currentQuestion <= currentExercises.length">
+                    <!-- Imagen placeholder para todos los ejercicios -->
+                    <div class="flex justify-center mb-6">
+                        <img :src="placeholder" alt="Ejercicio" class="w-48 h-48 object-cover rounded-lg bg-gray-700">
+                    </div>
 
-                <!-- Tipo: Selección múltiple -->
-                <div v-if="currentExercise.type === 'multiple-choice'" class="space-y-2">
-                    <button v-for="(option, index) in currentExercise.options" :key="index" @click="selectAnswer(index)"
-                        :class="{
-                            'bg-blue-600': selectedAnswer === index,
-                            'bg-gray-700': selectedAnswer !== index,
-                            'bg-green-600': showResult && index === currentExercise.correctAnswer,
-                            'bg-red-600': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
-                        }" class="w-full text-left p-3 rounded-lg hover:bg-gray-600 transition-colors">
-                        {{ option }}
+                    <h2 class="text-xl font-semibold mb-4">{{ currentExercise.question }}</h2>
+
+                    <!-- Tipo: Selección múltiple -->
+                    <div v-if="currentExercise.type === 'multiple-choice'" class="space-y-2">
+                        <button v-for="(option, index) in currentExercise.options" :key="index"
+                            @click="selectAnswer(index)" :class="{
+                                'bg-blue-600': selectedAnswer === index,
+                                'bg-gray-700': selectedAnswer !== index,
+                                'bg-green-600': showResult && index === currentExercise.correctAnswer,
+                                'bg-red-600': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
+                            }" class="w-full text-left p-3 rounded-lg hover:bg-gray-600 transition-colors">
+                            {{ option }}
+                        </button>
+                    </div>
+
+                    <!-- Tipo: Completar espacio -->
+                    <div v-else-if="currentExercise.type === 'fill-blank'">
+                        <input v-model="textAnswer" type="text" :placeholder="currentExercise.placeholder"
+                            class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 mb-2">
+                        <p v-if="showResult" class="text-sm mb-2">
+                            Respuesta correcta: <span class="font-bold">{{ currentExercise.correctAnswer }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Botón de verificación -->
+                    <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
+                        (currentExercise.type === 'fill-blank' && !textAnswer)"
+                        class="mt-4 bg-[#31771c] hover:bg-[#58cc02] text-white py-2 px-6 rounded-lg disabled:opacity-50">
+                        {{ showResult ? 'Continuar' : 'Verificar' }}
                     </button>
-                </div>
+                </Card>
 
-                <!-- Tipo: Completar espacio -->
-                <div v-else-if="currentExercise.type === 'fill-blank'">
-                    <input v-model="textAnswer" type="text" :placeholder="currentExercise.placeholder"
-                        class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 mb-2">
-                    <p v-if="showResult" class="text-sm mb-2">
-                        Respuesta correcta: <span class="font-bold">{{ currentExercise.correctAnswer }}</span>
-                    </p>
-                </div>
-
-                <!-- Botón de verificación -->
-                <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
-                    (currentExercise.type === 'fill-blank' && !textAnswer)"
-                    class="mt-4 bg-[#31771c] hover:bg-[#58cc02] text-white py-2 px-6 rounded-lg disabled:opacity-50">
-                    {{ showResult ? 'Continuar' : 'Verificar' }}
-                </button>
-            </Card>
-
-            <!-- Mensaje de finalización -->
-            <Card v-if="currentQuestion > currentExercises.length" class="text-center">
-                <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
-                <p class="mb-4">Has terminado todas las preguntas de esta lección.</p>
-                <router-link :to="`/nivel/${currentLevel.id}`">
-                    <button class="mt-4 bg-[#31771c] hover:bg-[#58cc02] text-white py-2 px-6 rounded-lg">
-                        Volver al nivel
-                    </button>
-                </router-link>
-            </Card>
+                <!-- Mensaje de finalización -->
+                <Card v-if="currentQuestion > currentExercises.length" class="text-center">
+                    <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
+                    <p class="mb-4">Has terminado todas las preguntas de esta lección.</p>
+                    <router-link :to="`/nivel/${currentLevel.id}`">
+                        <button class="mt-4 bg-[#31771c] hover:bg-[#58cc02] text-white py-2 px-6 rounded-lg">
+                            Volver al nivel
+                        </button>
+                    </router-link>
+                </Card>
+            </div>
         </div>
     </div>
 </template>
@@ -58,6 +66,7 @@
 import Card from '../../components/Card.vue';
 import Header from '../../components/vHeader.vue';
 import { levels, levelUnits } from '../../lib/data.js';
+import placeholder from '../../assets/300x300.png';
 
 export default {
     name: "Lesson",
@@ -79,7 +88,8 @@ export default {
             showResult: false,
             currentExercises: [],
             currentLevel: {},
-            currentUnit: {}
+            currentUnit: {},
+            placeholder: placeholder
         };
     },
     computed: {
@@ -119,15 +129,60 @@ export default {
                 correctAnswer: 0
             })) || [];
 
-            // Ejercicios de gramática
+            // Ejercicios de gramática - CORREGIDOS
             const grammarExercises = unit.grammar ? [{
                 type: 'fill-blank',
-                question: `Completa: ${unit.grammar.split('.')[0]}...`,
+                question: this.generateGrammarQuestion(unit.grammar),
                 placeholder: "Escribe tu respuesta",
-                correctAnswer: unit.grammar.split(' ').slice(0, 3).join(' ')
+                correctAnswer: this.generateGrammarAnswer(unit.grammar)
             }] : [];
 
             this.currentExercises = [...vocabExercises, ...grammarExercises];
+        },
+        generateGrammarQuestion(grammarText) {
+            // Crear una pregunta más específica basada en la gramática
+            const sentences = grammarText.split('.');
+            const firstSentence = sentences[0].trim();
+
+            // Extraer palabras clave para crear una pregunta
+            if (firstSentence.includes("saludos")) {
+                return "¿Con qué palabra suelen comenzar los saludos en náhuatl?";
+            } else if (firstSentence.includes("presentarte")) {
+                return "¿Qué palabra usas para presentarte en náhuatl?";
+            } else if (firstSentence.includes("preguntas")) {
+                return "¿Dónde suelen ir las palabras interrogativas en náhuatl?";
+            } else if (firstSentence.includes("pronombres")) {
+                return "¿Cómo se forman los pronombres posesivos en náhuatl?";
+            } else if (firstSentence.includes("verbos")) {
+                return "¿Qué se añade a los verbos en náhuatl para conjugarlos?";
+            } else {
+                // Pregunta genérica si no reconoce el patrón
+                const words = firstSentence.split(' ');
+                const keyWord = words.find(word => word.length > 5) || words[0];
+                return `Completa: En náhuatl, ${keyWord}...`; // ARREGLAR ESTO NO ES CONGRUENTE
+            }
+        },
+        generateGrammarAnswer(grammarText) {
+            // Extraer la respuesta específica de la gramática
+            const sentences = grammarText.split('.');
+            const firstSentence = sentences[0].trim();
+
+            // Respuestas específicas basadas en el contenido
+            if (firstSentence.includes("'cualli'")) {
+                return "cualli";
+            } else if (firstSentence.includes("'Notoca'")) {
+                return "Notoca";
+            } else if (firstSentence.includes("al principio")) {
+                return "al principio de la pregunta";
+            } else if (firstSentence.includes("prefijos")) {
+                return "prefijos (no-, mo-, i-)";
+            } else if (firstSentence.includes("prefijos") && firstSentence.includes("verbos")) {
+                return "prefijos (ni-, ti-, etc.)";
+            } else {
+                // Respuesta genérica
+                const words = firstSentence.split(' ').slice(-3).join(' ');
+                return words;
+            }
         },
         generateOptions(correct, incorrect) {
             const options = [correct, ...incorrect.slice(0, 3)];

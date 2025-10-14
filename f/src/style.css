@@ -14,15 +14,14 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-@layer base {
+/* @layer base {
   :root {
     --color-central: #58cc02;
     --color-oriental: #ffa500;
     --color-occidental: #ff4b4b;
     --color-allvariants: 250 250 250;
-    /* ... */
   }
-}
+} */
 
 /*
 a {

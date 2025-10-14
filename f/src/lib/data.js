@@ -15,7 +15,7 @@ export const dialectVariants = [
     {
         id: "central",
         name: "Central",
-        color: "#58CC02",
+        color: "#F0983E", // Royal Orange
         documentation: "Alta",
         regions: "Valle de México, Tlaxcala, Puebla",
         speakers: "~1,500,000",
@@ -24,7 +24,7 @@ export const dialectVariants = [
     {
         id: "oriental",
         name: "Oriental",
-        color: "#FFA500",
+        color: "#CF3E81", // Pantone Magenta
         documentation: "Media",
         regions: "Veracruz, Guerrero Oriental",
         speakers: "~500,000",
@@ -33,7 +33,7 @@ export const dialectVariants = [
     {
         id: "occidental",
         name: "Occidental",
-        color: "#FF4B4B",
+        color: "#5DC7A4", //  Aguamarina mediana
         documentation: "Baja",
         regions: "Michoacán, Jalisco, Durango, Colima",
         speakers: "~300,000",
@@ -66,6 +66,8 @@ export const levels = [
         color: "#58CC02",
         units: 6,
         completedUnits: 2,
+        locked: false, // Nivel desbloqueado
+        unlockRequirement: "Ninguno - Nivel inicial"
     },
     {
         id: 2,
@@ -76,6 +78,8 @@ export const levels = [
         color: "#1CB0F6",
         units: 6,
         completedUnits: 0,
+        locked: true, // Nivel bloqueado
+        unlockRequirement: "Completar 4 unidades del Nivel 1"
     },
     {
         id: 3,
@@ -86,6 +90,8 @@ export const levels = [
         color: "#FF9600",
         units: 6,
         completedUnits: 0,
+        locked: true, // Nivel bloqueado
+        unlockRequirement: "Completar Nivel 2"
     },
     {
         id: 4,
@@ -96,6 +102,8 @@ export const levels = [
         color: "#A560E8",
         units: 6,
         completedUnits: 0,
+        locked: true, // Nivel bloqueado
+        unlockRequirement: "Completar Nivel 3"
     },
     {
         id: 5,
@@ -106,6 +114,8 @@ export const levels = [
         color: "#FF4B4B",
         units: 6,
         completedUnits: 0,
+        locked: true, // Nivel bloqueado
+        unlockRequirement: "Completar Nivel 4"
     }
 ];
 
@@ -116,14 +126,10 @@ export const levelUnits = {
             title: "Saludos Básicos",
             color: "#58CC02",
             completed: true,
+            locked: false,
             objective: "Aprender a saludar en náhuatl en diferentes momentos del día",
-            vocabulary: [
-                { nahuatl: "Niltze", spanish: "Hola", pronunciation: "nil-tse" },
-                { nahuatl: "Cualli tonalli", spanish: "Buenos días", pronunciation: "kua-li to-na-li" },
-                { nahuatl: "Cualli tiotlac", spanish: "Buenas tardes", pronunciation: "kua-li tio-tlak" },
-                { nahuatl: "Cualli yohualli", spanish: "Buenas noches", pronunciation: "kua-li yo-ua-li" },
-            ],
             grammar: "En náhuatl, los saludos suelen comenzar con 'cualli' (bueno/a) seguido del momento del día.",
+            // ======================================================================= //
             exercises: [
                 { type: "match", prompt: "Une cada saludo con su significado" },
                 { type: "listen", prompt: "Escucha y repite los saludos" },
@@ -135,14 +141,10 @@ export const levelUnits = {
             title: "Presentaciones",
             color: "#1CB0F6",
             completed: true,
+            locked: false,
             objective: "Aprender a presentarte y decir tu nombre en náhuatl",
-            vocabulary: [
-                { nahuatl: "Notoca", spanish: "Me llamo/Mi nombre es", pronunciation: "no-to-ka" },
-                { nahuatl: "Tlen motoca?", spanish: "¿Cómo te llamas?", pronunciation: "tlen mo-to-ka" },
-                { nahuatl: "Nehuatl ni", spanish: "Yo soy", pronunciation: "ne-uatl ni" },
-                { nahuatl: "Tehhuatl ti", spanish: "Tú eres", pronunciation: "te-uatl ti" },
-            ],
             grammar: "Para presentarte, usa 'Notoca' seguido de tu nombre. Para preguntar el nombre de alguien, usa 'Tlen motoca?'",
+            // ======================================================================= //
             exercises: [
                 { type: "fill", prompt: "Completa las frases con las palabras correctas" },
                 { type: "dialogue", prompt: "Practica un diálogo de presentación" },
@@ -155,14 +157,10 @@ export const levelUnits = {
             color: "#FF9600",
             completed: false,
             current: true,
+            locked: false,
             objective: "Aprender a hacer preguntas básicas en náhuatl",
-            vocabulary: [
-                { nahuatl: "Quenin?", spanish: "¿Cómo?", pronunciation: "ke-nin" },
-                { nahuatl: "Tlen?", spanish: "¿Qué?", pronunciation: "tlen" },
-                { nahuatl: "Canin?", spanish: "¿Dónde?", pronunciation: "ka-nin" },
-                { nahuatl: "Quemman?", spanish: "¿Cuándo?", pronunciation: "kem-man" },
-            ],
             grammar: "Las palabras interrogativas en náhuatl suelen ir al principio de la pregunta, similar al español.",
+            // ======================================================================= //
             exercises: [
                 { type: "match", prompt: "Une cada palabra interrogativa con su significado" },
                 { type: "create", prompt: "Crea preguntas usando las palabras aprendidas" },
@@ -174,93 +172,249 @@ export const levelUnits = {
             title: "Pronombres Personales",
             color: "#A560E8",
             completed: false,
+            locked: true,
             objective: "Aprender los pronombres personales en náhuatl",
-            vocabulary: [
-                { nahuatl: "Nehuatl", spanish: "Yo", pronunciation: "ne-uatl" },
-                { nahuatl: "Tehhuatl", spanish: "Tú", pronunciation: "te-uatl" },
-                { nahuatl: "Yehuatl", spanish: "Él/Ella", pronunciation: "ye-uatl" },
-                { nahuatl: "Tehhuan", spanish: "Nosotros", pronunciation: "te-uan" },
-                { nahuatl: "Amehhuantin", spanish: "Ustedes", pronunciation: "a-me-uan-tin" },
-                { nahuatl: "Yehhuantin", spanish: "Ellos/Ellas", pronunciation: "ye-uan-tin" },
-            ],
+            unlockRequirement: "Completar 'Preguntas Básicas'",
+            // vocabulary: [
+            //     { nahuatl: "Nehuatl", spanish: "Yo", pronunciation: "ne-uatl" },
+            //     { nahuatl: "Tehhuatl", spanish: "Tú", pronunciation: "te-uatl" },
+            //     { nahuatl: "Yehuatl", spanish: "Él/Ella", pronunciation: "ye-uatl" },
+            //     { nahuatl: "Tehhuan", spanish: "Nosotros", pronunciation: "te-uan" },
+            //     { nahuatl: "Amehhuantin", spanish: "Ustedes", pronunciation: "a-me-uan-tin" },
+            //     { nahuatl: "Yehhuantin", spanish: "Ellos/Ellas", pronunciation: "ye-uan-tin" },
+            // ],
             grammar: "Los pronombres personales en náhuatl tienen formas independientes y también prefijos que se usan con verbos.",
-            exercises: [
-                { type: "match", prompt: "Une cada pronombre con su significado" },
-                { type: "fill", prompt: "Completa las oraciones con el pronombre correcto" },
-                { type: "practice", prompt: "Practica usando los pronombres en frases simples" },
-            ],
+            // exercises: [
+            //     { type: "match", prompt: "Une cada pronombre con su significado" },
+            //     { type: "fill", prompt: "Completa las oraciones con el pronombre correcto" },
+            //     { type: "practice", prompt: "Practica usando los pronombres en frases simples" },
+            // ],
         },
         {
             id: 5,
             title: "Verbos Básicos",
             color: "#FF4B4B",
             completed: false,
+            locked: true,
             objective: "Aprender verbos básicos en náhuatl y su conjugación en presente",
-            vocabulary: [
-                { nahuatl: "Tlacua", spanish: "Comer", pronunciation: "tla-kua" },
-                { nahuatl: "Cochi", spanish: "Dormir", pronunciation: "ko-chi" },
-                { nahuatl: "Nemi", spanish: "Vivir/Caminar", pronunciation: "ne-mi" },
-                { nahuatl: "Tlahtoa", spanish: "Hablar", pronunciation: "tla-toa" },
-            ],
+            unlockRequirement: "Completar 'Pronombres Personales'",
+            // vocabulary: [
+            //     { nahuatl: "Tlacua", spanish: "Comer", pronunciation: "tla-kua" },
+            //     { nahuatl: "Cochi", spanish: "Dormir", pronunciation: "ko-chi" },
+            //     { nahuatl: "Nemi", spanish: "Vivir/Caminar", pronunciation: "ne-mi" },
+            //     { nahuatl: "Tlahtoa", spanish: "Hablar", pronunciation: "tla-toa" },
+            // ],
             grammar: "Los verbos en náhuatl se conjugan añadiendo prefijos que indican quién realiza la acción: ni- (yo), ti- (tú), etc.",
-            exercises: [
-                { type: "conjugate", prompt: "Conjuga los verbos en presente" },
-                { type: "match", prompt: "Une cada verbo con su significado" },
-                { type: "create", prompt: "Crea oraciones simples con los verbos aprendidos" },
-            ],
+            // exercises: [
+            //     { type: "conjugate", prompt: "Conjuga los verbos en presente" },
+            //     { type: "match", prompt: "Une cada verbo con su significado" },
+            //     { type: "create", prompt: "Crea oraciones simples con los verbos aprendidos" },
+            // ],
         },
         {
             id: 6,
             title: "Familia",
             color: "#26CCC0",
             completed: false,
+            locked: true,
             objective: "Aprender vocabulario relacionado con la familia en náhuatl",
-            vocabulary: [
-                { nahuatl: "Tahtli", spanish: "Padre", pronunciation: "ta-tli" },
-                { nahuatl: "Nantli", spanish: "Madre", pronunciation: "nan-tli" },
-                { nahuatl: "Icniutl", spanish: "Hermano/a", pronunciation: "ik-ni-utl" },
-                { nahuatl: "Piltzintli", spanish: "Niño/a", pronunciation: "pil-tsin-tli" },
-                { nahuatl: "Coltzin", spanish: "Abuelo/a", pronunciation: "kol-tsin" },
-            ],
+            unlockRequirement: "Completar 'Verbos Básicos'",
+            // vocabulary: [
+            //     { nahuatl: "Tahtli", spanish: "Padre", pronunciation: "ta-tli" },
+            //     { nahuatl: "Nantli", spanish: "Madre", pronunciation: "nan-tli" },
+            //     { nahuatl: "Icniutl", spanish: "Hermano/a", pronunciation: "ik-ni-utl" },
+            //     { nahuatl: "Piltzintli", spanish: "Niño/a", pronunciation: "pil-tsin-tli" },
+            //     { nahuatl: "Coltzin", spanish: "Abuelo/a", pronunciation: "kol-tsin" },
+            // ],
             grammar: "Para indicar posesión, se usan prefijos: no- (mi), mo- (tu), i- (su), etc. Por ejemplo: 'notah' (mi padre).",
-            exercises: [
-                { type: "match", prompt: "Une cada término familiar con su significado" },
-                { type: "fill", prompt: "Completa las oraciones con el término familiar correcto" },
-                { type: "create", prompt: "Describe a tu familia usando el vocabulario aprendido" },
-            ],
+            // exercises: [
+            //     { type: "match", prompt: "Une cada término familiar con su significado" },
+            //     { type: "fill", prompt: "Completa las oraciones con el término familiar correcto" },
+            //     { type: "create", prompt: "Describe a tu familia usando el vocabulario aprendido" },
+            // ],
         },
     ],
     2: [
-        { id: 1, title: "Preguntas Simples", locked: true, dialectVariants: true },
-        { id: 2, title: "En el Mercado", locked: true, dialectVariants: true },
-        { id: 3, title: "Comida", locked: true, dialectVariants: true, cultural: true },
-        { id: 4, title: "Tiempo y Clima", locked: true, dialectVariants: true },
-        { id: 5, title: "Direcciones", locked: true, dialectVariants: true },
-        { id: 6, title: "Tradiciones", locked: true, cultural: true },
+        {
+            id: 1,
+            title: "Preguntas Simples",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar Nivel 1"
+        },
+        {
+            id: 2,
+            title: "En el Mercado",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Preguntas Simples'"
+        },
+        {
+            id: 3,
+            title: "Comida",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'En el Mercado'"
+        },
+        {
+            id: 4,
+            title: "Tiempo y Clima",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Comida'"
+        },
+        {
+            id: 5,
+            title: "Direcciones",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Tiempo y Clima'"
+        },
+        {
+            id: 6,
+            title: "Tradiciones",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Direcciones'"
+        },
     ],
     3: [
-        { id: 1, title: "Verbos Presentes", locked: true, dialectVariants: true },
-        { id: 2, title: "Posesivos", locked: true, dialectVariants: true },
-        { id: 3, title: "Adjetivos", locked: true, dialectVariants: true },
-        { id: 4, title: "Plurales", locked: true, dialectVariants: true },
-        { id: 5, title: "Reverenciales", locked: true, dialectVariants: true, cultural: true },
-        { id: 6, title: "Poesía Náhuatl", locked: true, cultural: true },
+        {
+            id: 1,
+            title: "Verbos Presentes",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar Nivel 2"
+        },
+        {
+            id: 2,
+            title: "Posesivos",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Verbos Presentes'"
+        },
+        {
+            id: 3,
+            title: "Adjetivos",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Posesivos'"
+        },
+        {
+            id: 4,
+            title: "Plurales",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Adjetivos'"
+        },
+        {
+            id: 5,
+            title: "Reverenciales",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Plurales'"
+        },
+        {
+            id: 6,
+            title: "Poesía Náhuatl",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Reverenciales'"
+        },
     ],
     4: [
-        { id: 1, title: "Narraciones", locked: true, dialectVariants: true },
-        { id: 2, title: "Expresiones", locked: true, dialectVariants: true, cultural: true },
-        { id: 3, title: "Verbos Complejos", locked: true, dialectVariants: true },
-        { id: 4, title: "Medicina Tradicional", locked: true, cultural: true },
-        { id: 5, title: "Agricultura", locked: true, dialectVariants: true, cultural: true },
-        { id: 6, title: "Cosmovisión", locked: true, cultural: true },
+        {
+            id: 1,
+            title: "Narraciones",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar Nivel 3"
+        },
+        {
+            id: 2,
+            title: "Expresiones",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Narraciones'"
+        },
+        {
+            id: 3,
+            title: "Verbos Complejos",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Expresiones'"
+        },
+        {
+            id: 4,
+            title: "Medicina Tradicional",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Verbos Complejos'"
+        },
+        {
+            id: 5,
+            title: "Agricultura",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Medicina Tradicional'"
+        },
+        {
+            id: 6,
+            title: "Cosmovisión",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Agricultura'"
+        },
     ],
     5: [
-        { id: 1, title: "Códices", locked: true, cultural: true },
-        { id: 2, title: "Mitos y Leyendas", locked: true, cultural: true },
-        { id: 3, title: "Ceremonias", locked: true, dialectVariants: true, cultural: true },
-        { id: 4, title: "Filosofía Náhuatl", locked: true, cultural: true },
-        { id: 5, title: "Variaciones Regionales", locked: true, dialectVariants: true },
-        { id: 6, title: "Náhuatl Contemporáneo", locked: true, dialectVariants: true, cultural: true },
+        {
+            id: 1,
+            title: "Códices",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar Nivel 4"
+        },
+        {
+            id: 2,
+            title: "Mitos y Leyendas",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Códices'"
+        },
+        {
+            id: 3,
+            title: "Ceremonias",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Mitos y Leyendas'"
+        },
+        {
+            id: 4,
+            title: "Filosofía Náhuatl",
+            locked: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Ceremonias'"
+        },
+        {
+            id: 5,
+            title: "Variaciones Regionales",
+            locked: true,
+            dialectVariants: true,
+            unlockRequirement: "Completar 'Filosofía Náhuatl'"
+        },
+        {
+            id: 6,
+            title: "Náhuatl Contemporáneo",
+            locked: true,
+            dialectVariants: true,
+            cultural: true,
+            unlockRequirement: "Completar 'Variaciones Regionales'"
+        },
     ]
 };
 
@@ -397,3 +551,27 @@ export const statsData = {
         occidental: 25,
     }
 };
+
+
+/* 
+            vocabulary: [
+                { nahuatl: "Niltze", spanish: "Hola", pronunciation: "nil-tse" },
+                { nahuatl: "Cualli tonalli", spanish: "Buenos días", pronunciation: "kua-li to-na-li" },
+                { nahuatl: "Cualli tiotlac", spanish: "Buenas tardes", pronunciation: "kua-li tio-tlak" },
+                { nahuatl: "Cualli yohualli", spanish: "Buenas noches", pronunciation: "kua-li yo-ua-li" },
+            ],
+
+            vocabulary: [
+                { nahuatl: "Notoca", spanish: "Me llamo/Mi nombre es", pronunciation: "no-to-ka" },
+                { nahuatl: "Tlen motoca?", spanish: "¿Cómo te llamas?", pronunciation: "tlen mo-to-ka" },
+                { nahuatl: "Nehuatl ni", spanish: "Yo soy", pronunciation: "ne-uatl ni" },
+                { nahuatl: "Tehhuatl ti", spanish: "Tú eres", pronunciation: "te-uatl ti" },
+            ],
+
+            vocabulary: [
+                { nahuatl: "Quenin?", spanish: "¿Cómo?", pronunciation: "ke-nin" },
+                { nahuatl: "Tlen?", spanish: "¿Qué?", pronunciation: "tlen" },
+                { nahuatl: "Canin?", spanish: "¿Dónde?", pronunciation: "ka-nin" },
+                { nahuatl: "Quemman?", spanish: "¿Cuándo?", pronunciation: "kem-man" },
+            ],
+*/

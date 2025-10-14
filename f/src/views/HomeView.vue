@@ -1,19 +1,5 @@
 <template>
     <div class="flex flex-col items-center text-white min-h-screen py-8 md:pt-1">
-        <!-- Mostrar variante seleccionada -->
-        <div class="flex items-center gap-4 mb-6">
-            <div class="flex items-center gap-2 px-4 py-2 rounded-lg"
-                :style="{ backgroundColor: selectedVariantData.color }">
-                <p class="text-center font-semibold text-white">
-                    Variante: {{ selectedVariantData.name }}
-                </p>
-            </div>
-            <button @click="goToVariantSelection"
-                class="px-4 py-2 rounded-lg border border-gray-400 hover:bg-gray-700 transition-colors">
-                Cambiar variante
-            </button>
-        </div>
-
         <h1 class="text-3xl font-bold mb-6">Elige un nivel</h1>
 
         <div class="w-full mb-12">

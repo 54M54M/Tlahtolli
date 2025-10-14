@@ -16,7 +16,7 @@
 
             <button @click="login"
                 class="w-full bg-[#58CC02] hover:bg-[#4BB302] text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                Continuar como {userData.name}
+                Continuar como {{ userData.name }}
             </button>
         </div>
     </div>
@@ -26,12 +26,14 @@
 import { userData } from '../lib/data.js'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
 
 const login = () => {
     authStore.login()
+
     // Redirigir según si es nuevo usuario o no
     if (authStore.isNewUser) {
         router.push('/select-variant')
@@ -39,4 +41,16 @@ const login = () => {
         router.push('/')
     }
 }
+
+// Redirigir si ya está autenticado
+onMounted(() => {
+    // Usar authStore.user en lugar de authStore.isAuthenticated
+    if (authStore.user) {
+        if (authStore.isNewUser) {
+            router.push('/select-variant')
+        } else {
+            router.push('/')
+        }
+    }
+})
 </script>

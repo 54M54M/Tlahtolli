@@ -1,7 +1,35 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-[#0A2136] text-white p-4">
-        <div class="w-full max-w-md bg-[#123456] rounded-lg p-8 shadow-lg">
-            <h1 class="text-3xl font-bold mb-8 text-center">Selecciona tu variante</h1>
+    <div class="fixed inset-0 flex items-center justify-center bg-[#0A2136] text-white p-4 z-50">
+        <div class="w-full max-w-md bg-[#123456] rounded-lg p-8 shadow-lg mx-auto">
+            <!-- El resto del código permanece igual -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-center flex-1 mr-8">Selecciona tu variante</h1>
+                <button @click="goBack"
+                    class="text-white hover:text-[#58CC02] transition-colors flex items-center text-xl font-bold">
+                    ×
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Tu variante actual</h2>
+                <div class="flex items-center space-x-4 p-4 rounded-lg transition-all duration-300"
+                    :style="{ backgroundColor: currentDisplayVariantColor }">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center border-2" :style="{
+                        borderColor: currentDisplayVariant.color,
+                        backgroundColor: currentDisplayVariant.color
+                    }">
+                        <span class="font-bold text-white">{{ currentDisplayVariantInitial }}</span>
+                    </div>
+                    <div>
+                        <p class="font-bold" :style="{ color: currentDisplayVariantTextColor }">
+                            {{ currentDisplayVariantName }}
+                        </p>
+                        <p class="text-sm opacity-80" :style="{ color: currentDisplayVariantTextColor }">
+                            {{ selectionStatus }}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <p class="text-center mb-6">Elige la variante de náhuatl que prefieres aprender</p>
 
@@ -27,14 +55,66 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { dialectVariants } from '../lib/data.js'
+import { dialectVariants, userData } from '../lib/data.js'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const selectedVariant = ref(null)
+
+// Computed para obtener información de la variante que se está mostrando actualmente
+const currentDisplayVariant = computed(() => {
+    if (selectedVariant.value) {
+        return dialectVariants.find(v => v.id === selectedVariant.value)
+    }
+    if (authStore.selectedVariant) {
+        return dialectVariants.find(v => v.id === authStore.selectedVariant)
+    }
+    return dialectVariants.find(v => v.id === userData.defaultVariant) || dialectVariants[0]
+})
+
+const currentDisplayVariantName = computed(() => currentDisplayVariant.value?.name || 'No seleccionada')
+const currentDisplayVariantColor = computed(() => {
+    const color = currentDisplayVariant.value?.color || '#666'
+    return `${color}33`
+})
+const currentDisplayVariantTextColor = computed(() => currentDisplayVariant.value?.color || '#666')
+const currentDisplayVariantInitial = computed(() => currentDisplayVariantName.value.charAt(0))
+
+const selectionStatus = computed(() => {
+    if (selectedVariant.value) {
+        return 'Variante seleccionada'
+    }
+    if (authStore.selectedVariant) {
+        return 'Variante actual'
+    }
+    return 'Variante por defecto'
+})
+
+const goBack = () => {
+    authStore.logout()
+    router.push('/login')
+}
+
+onMounted(() => {
+    if (!authStore.user) {
+        router.push('/login')
+        return
+    }
+
+    if (authStore.selectedVariant && !authStore.isNewUser) {
+        router.push('/')
+        return
+    }
+
+    if (authStore.selectedVariant) {
+        selectedVariant.value = authStore.selectedVariant
+    } else {
+        selectedVariant.value = userData.defaultVariant
+    }
+})
 
 const selectVariant = (variantId) => {
     selectedVariant.value = variantId
@@ -43,12 +123,18 @@ const selectVariant = (variantId) => {
 const confirmSelection = async () => {
     try {
         if (selectedVariant.value) {
-            await authStore.setVariant(selectedVariant.value)
+            authStore.setVariant(selectedVariant.value)
             router.push('/')
         }
     } catch (error) {
         console.error('Error al confirmar selección:', error)
-        // Puedes mostrar un mensaje al usuario aquí
     }
 }
 </script>
+
+<style scoped>
+/* Prevenir scroll en el body cuando este componente está activo */
+body {
+    overflow: hidden;
+}
+</style>
