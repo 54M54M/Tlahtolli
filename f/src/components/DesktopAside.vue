@@ -25,7 +25,7 @@
                     <span>Inicio</span>
                 </router-link>
 
-                <router-link to="/diccionario" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
+                <router-link to="/glosario" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
                     active-class="text-blue-400" exact-active-class="text-blue-500">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,10 +33,10 @@
                                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                         </svg>
                     </div>
-                    <span>Diccionario</span>
+                    <span>Glosario</span> <!-- actulalizar demas rutas que contengan la palabra diccionario -->
                 </router-link>
 
-                <router-link to="/mapa" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
+                <!-- <router-link to="/mapa" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
                     active-class="text-blue-400" exact-active-class="text-blue-500">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,9 +45,9 @@
                         </svg>
                     </div>
                     <span>Mapa</span>
-                </router-link>
+                </router-link> -->
 
-                <router-link to="/perfil" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
+                <!-- <router-link to="/perfil" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
                     active-class="text-blue-400" exact-active-class="text-blue-500">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +56,7 @@
                         </svg>
                     </div>
                     <span>Perfil</span>
-                </router-link>
+                </router-link> -->
             </div>
 
             <div class="mt-auto mb-4">

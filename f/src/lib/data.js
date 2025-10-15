@@ -1,54 +1,8 @@
-export const dictionaryEntries = [
-    { spanish: "perro", central: "itzcuintli", oriental: "chichi", occidental: "chichton", example: "Ne itzcuintli istac. (Mi perro es blanco)", category: "animales" },
-    { spanish: "gato", central: "miztli", oriental: "mizton", occidental: "miztontli", example: "In miztli cochi. (El gato duerme)", category: "animales" },
-    { spanish: "casa", central: "calli", oriental: "calli", occidental: "calli", example: "Nocal yehyectzin. (Mi casa es bonita)", category: "lugares" },
-    { spanish: "agua", central: "atl", oriental: "atl", occidental: "atl", example: "Niqui atl. (Bebo agua)", category: "naturaleza" },
-    { spanish: "maíz", central: "cintli", oriental: "cintli", occidental: "cintli", example: "Nicua cintli. (Como maíz)", category: "comida" },
-    { spanish: "hablar", central: "tlahtoa", oriental: "tajtoa", occidental: "tahtoa", example: "Nitlahtoa náhuatl. (Hablo náhuatl)", category: "verbos" },
-    { spanish: "flor", central: "xochitl", oriental: "xochit", occidental: "xochitl", example: "Cualli xochitl. (Bonita flor)", category: "naturaleza" },
-    { spanish: "niño", central: "piltontli", oriental: "konet", occidental: "piltzintli", example: "In piltontli choca. (El niño llora)", category: "personas" },
-    { spanish: "mujer", central: "cihuatl", oriental: "siwat", occidental: "zihuatl", example: "In cihuatl cuica. (La mujer canta)", category: "personas" },
-    { spanish: "hombre", central: "tlacatl", oriental: "takat", occidental: "tlacatl", example: "In tlacatl tequiti. (El hombre trabaja)", category: "personas" }
-];
+import { dictionaryEntries, silabaryEntries } from './dictionary.js';
+export { dictionaryEntries };
+export { silabaryEntries };
 
-export const dialectVariants = [
-    {
-        id: "central",
-        name: "Central",
-        color: "#F0983E", // Royal Orange
-        documentation: "Alta",
-        regions: "Valle de México, Tlaxcala, Puebla",
-        speakers: "~1,500,000",
-        features: "Conserva muchas características del náhuatl clásico. Pronunciación clara de /tl/ y /tz/.",
-    },
-    {
-        id: "oriental",
-        name: "Oriental",
-        color: "#CF3E81", // Pantone Magenta
-        documentation: "Media",
-        regions: "Veracruz, Guerrero Oriental",
-        speakers: "~500,000",
-        features: "Sustitución de /tl/ por /t/ y cambios vocálicos. Influencia de lenguas totonacas.",
-    },
-    {
-        id: "occidental",
-        name: "Occidental",
-        color: "#5DC7A4", //  Aguamarina mediana
-        documentation: "Baja",
-        regions: "Michoacán, Jalisco, Durango, Colima",
-        speakers: "~300,000",
-        features: "Mayor divergencia del náhuatl clásico. Cambios consonánticos distintivos.",
-    },
-    {
-        id: "all",
-        name: "Todas las variantes",
-        color: "#A560E8",
-        documentation: "Variada",
-        regions: "Todo México",
-        speakers: "~2,300,000",
-        features: "Estudio comparativo de las tres principales variantes dialectales.",
-    }
-];
+// ======================================================================= //
 
 export const exerciseData = {
     central: { word: "Itzcuintli", translation: "perro", sentence: "In ___ istac motlaloa.", fullSentence: "In itzcuintli istac motlaloa.", translation_sentence: "El perro blanco corre." },
@@ -129,11 +83,30 @@ export const levelUnits = {
             locked: false,
             objective: "Aprender a saludar en náhuatl en diferentes momentos del día",
             grammar: "En náhuatl, los saludos suelen comenzar con 'cualli' (bueno/a) seguido del momento del día.",
-            // ======================================================================= //
+            vocabulary: [
+                { nahuatl: "Cualli", spanish: "Bueno", pronunciation: "kwal-li" },
+                { nahuatl: "Tlazocamati", spanish: "Gracias", pronunciation: "tla-so-ka-ma-ti" },
+                { nahuatl: "Tlazohcamati huel miac", spanish: "Muchas gracias", pronunciation: "tla-so-kama-ti wel miak" }
+            ],
             exercises: [
-                { type: "match", prompt: "Une cada saludo con su significado" },
-                { type: "listen", prompt: "Escucha y repite los saludos" },
-                { type: "practice", prompt: "Practica los saludos con un diálogo simple" },
+                {
+                    type: "multiple-choice",
+                    question: "¿Qué significa 'Cualli'?",
+                    options: ["Bueno", "Mal", "Día", "Noche"],
+                    correctAnswer: 0
+                },
+                {
+                    type: "fill-blank",
+                    question: "¿Con qué palabra suelen comenzar los saludos en náhuatl?",
+                    correctAnswer: "cualli",
+                    placeholder: "Escribe la palabra"
+                },
+                {
+                    type: "multiple-choice",
+                    question: "¿Cómo se dice 'Gracias' en náhuatl?",
+                    options: ["Tlazocamati", "Cualli", "Tlazohcamati huel miac", "Cualtzin"],
+                    correctAnswer: 0
+                }
             ],
         },
         {
@@ -144,11 +117,30 @@ export const levelUnits = {
             locked: false,
             objective: "Aprender a presentarte y decir tu nombre en náhuatl",
             grammar: "Para presentarte, usa 'Notoca' seguido de tu nombre. Para preguntar el nombre de alguien, usa 'Tlen motoca?'",
-            // ======================================================================= //
+            vocabulary: [
+                { nahuatl: "Notoca", spanish: "Mi nombre es", pronunciation: "no-to-ka" },
+                { nahuatl: "Tlen motoca", spanish: "¿Cuál es tu nombre?", pronunciation: "tlen mo-to-ka" },
+                { nahuatl: "Nimitstlasojtla", spanish: "Te amo", pronunciation: "ni-mits-tla-so-tla" }
+            ],
             exercises: [
-                { type: "fill", prompt: "Completa las frases con las palabras correctas" },
-                { type: "dialogue", prompt: "Practica un diálogo de presentación" },
-                { type: "record", prompt: "Graba tu presentación en náhuatl" },
+                {
+                    type: "fill-blank",
+                    question: "¿Qué palabra usas para presentarte en náhuatl?",
+                    correctAnswer: "Notoca",
+                    placeholder: "Escribe la palabra"
+                },
+                {
+                    type: "multiple-choice",
+                    question: "¿Qué significa 'Tlen motoca?'",
+                    options: ["¿Cuál es tu nombre?", "¿Cómo estás?", "¿De dónde eres?", "¿Qué hora es?"],
+                    correctAnswer: 0
+                },
+                {
+                    type: "multiple-choice",
+                    question: "¿Cómo se dice 'Te amo' en náhuatl?",
+                    options: ["Nimitstlasojtla", "Notoca", "Tlazocamati", "Cualli"],
+                    correctAnswer: 0
+                }
             ],
         },
         {
@@ -160,11 +152,30 @@ export const levelUnits = {
             locked: false,
             objective: "Aprender a hacer preguntas básicas en náhuatl",
             grammar: "Las palabras interrogativas en náhuatl suelen ir al principio de la pregunta, similar al español.",
-            // ======================================================================= //
+            vocabulary: [
+                { nahuatl: "Tlen", spanish: "Qué", pronunciation: "tlen" },
+                { nahuatl: "Acan", spanish: "Dónde", pronunciation: "a-kan" },
+                { nahuatl: "Queh", spanish: "Quién", pronunciation: "keh" }
+            ],
             exercises: [
-                { type: "match", prompt: "Une cada palabra interrogativa con su significado" },
-                { type: "create", prompt: "Crea preguntas usando las palabras aprendidas" },
-                { type: "dialogue", prompt: "Practica un diálogo con preguntas y respuestas" },
+                {
+                    type: "fill-blank",
+                    question: "¿Dónde suelen ir las palabras interrogativas en náhuatl?",
+                    correctAnswer: "al principio de la pregunta",
+                    placeholder: "Escribe tu respuesta"
+                },
+                {
+                    type: "multiple-choice",
+                    question: "¿Qué significa 'Acan'?",
+                    options: ["Dónde", "Qué", "Quién", "Cuándo"],
+                    correctAnswer: 0
+                },
+                {
+                    type: "multiple-choice",
+                    question: "¿Cómo se dice 'Qué' en náhuatl?",
+                    options: ["Tlen", "Acan", "Queh", "Cualli"],
+                    correctAnswer: 0
+                }
             ],
         },
         {
@@ -418,6 +429,8 @@ export const levelUnits = {
     ]
 };
 
+// ======================================================================= //
+
 export const regions = [
     {
         id: "central",
@@ -460,9 +473,50 @@ export const regions = [
     }
 ];
 
+export const dialectVariants = [
+    {
+        id: "central",
+        name: "Central",
+        color: "#F0983E", // Royal Orange
+        documentation: "Alta",
+        regions: "Valle de México, Tlaxcala, Puebla",
+        speakers: "~1,500,000",
+        features: "Conserva muchas características del náhuatl clásico. Pronunciación clara de /tl/ y /tz/.",
+    },
+    {
+        id: "oriental",
+        name: "Oriental",
+        color: "#CF3E81", // Pantone Magenta
+        documentation: "Media",
+        regions: "Veracruz, Guerrero Oriental",
+        speakers: "~500,000",
+        features: "Sustitución de /tl/ por /t/ y cambios vocálicos. Influencia de lenguas totonacas.",
+    },
+    {
+        id: "occidental",
+        name: "Occidental",
+        color: "#5DC7A4", //  Aguamarina mediana
+        documentation: "Baja",
+        regions: "Michoacán, Jalisco, Durango, Colima",
+        speakers: "~300,000",
+        features: "Mayor divergencia del náhuatl clásico. Cambios consonánticos distintivos.",
+    },
+    {
+        id: "all",
+        name: "Todas las variantes",
+        color: "#A560E8",
+        documentation: "Variada",
+        regions: "Todo México",
+        speakers: "~2,300,000",
+        features: "Estudio comparativo de las tres principales variantes dialectales.",
+    }
+];
+
+// ======================================================================= //
+
 export const userData = {
-    name: "Miguel Hernández",
-    username: "miguel_h",
+    name: "Samuel Gonzalez",
+    username: "tetecuhtli",
     level: 12,
     xp: 4850,
     xpToNextLevel: 5000,
@@ -471,7 +525,7 @@ export const userData = {
     minutesStudied: 320,
     joinDate: "15 de marzo de 2023",
     profileImage: "/placeholder.svg?height=100&width=100",
-    defaultVariant: 'all' // Add this line
+    defaultVariant: 'all'
 };
 
 export const achievementsData = [

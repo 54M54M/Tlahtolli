@@ -111,14 +111,23 @@ export default {
                     this.currentUnit = unit;
                     this.currentLevel = levels.find(l => l.id === Number(levelId)) || {};
 
-                    // Generar ejercicios basados en el contenido de la unidad
-                    this.generateExercises(unit);
+                    // Cargar ejercicios desde la unidad
+                    this.loadExercisesFromUnit(unit);
                     break;
                 }
             }
         },
-        generateExercises(unit) {
-            // Ejercicios de vocabulario
+        loadExercisesFromUnit(unit) {
+            // Si la unidad ya tiene ejercicios definidos, úsalos directamente
+            if (unit.exercises && unit.exercises.length > 0) {
+                this.currentExercises = unit.exercises;
+            } else {
+                // Si no hay ejercicios definidos, genera ejercicios básicos de vocabulario
+                this.generateVocabularyExercises(unit);
+            }
+        },
+        generateVocabularyExercises(unit) {
+            // Ejercicios de vocabulario como fallback
             const vocabExercises = unit.vocabulary?.slice(0, 3).map((word, index) => ({
                 type: 'multiple-choice',
                 question: `¿Qué significa '${word.nahuatl}'?`,
@@ -129,60 +138,20 @@ export default {
                 correctAnswer: 0
             })) || [];
 
-            // Ejercicios de gramática - CORREGIDOS
-            const grammarExercises = unit.grammar ? [{
+            // Ejercicio básico de gramática si existe
+            const grammarExercise = unit.grammar ? [{
                 type: 'fill-blank',
-                question: this.generateGrammarQuestion(unit.grammar),
-                placeholder: "Escribe tu respuesta",
-                correctAnswer: this.generateGrammarAnswer(unit.grammar)
+                question: "Completa la regla gramatical:",
+                placeholder: "Escribe lo que recuerdes",
+                correctAnswer: this.extractKeyWords(unit.grammar)
             }] : [];
 
-            this.currentExercises = [...vocabExercises, ...grammarExercises];
+            this.currentExercises = [...vocabExercises, ...grammarExercise];
         },
-        generateGrammarQuestion(grammarText) {
-            // Crear una pregunta más específica basada en la gramática
+        extractKeyWords(grammarText) {
+            // Extrae las primeras palabras clave de la gramática como respuesta genérica
             const sentences = grammarText.split('.');
-            const firstSentence = sentences[0].trim();
-
-            // Extraer palabras clave para crear una pregunta
-            if (firstSentence.includes("saludos")) {
-                return "¿Con qué palabra suelen comenzar los saludos en náhuatl?";
-            } else if (firstSentence.includes("presentarte")) {
-                return "¿Qué palabra usas para presentarte en náhuatl?";
-            } else if (firstSentence.includes("preguntas")) {
-                return "¿Dónde suelen ir las palabras interrogativas en náhuatl?";
-            } else if (firstSentence.includes("pronombres")) {
-                return "¿Cómo se forman los pronombres posesivos en náhuatl?";
-            } else if (firstSentence.includes("verbos")) {
-                return "¿Qué se añade a los verbos en náhuatl para conjugarlos?";
-            } else {
-                // Pregunta genérica si no reconoce el patrón
-                const words = firstSentence.split(' ');
-                const keyWord = words.find(word => word.length > 5) || words[0];
-                return `Completa: En náhuatl, ${keyWord}...`; // ARREGLAR ESTO NO ES CONGRUENTE
-            }
-        },
-        generateGrammarAnswer(grammarText) {
-            // Extraer la respuesta específica de la gramática
-            const sentences = grammarText.split('.');
-            const firstSentence = sentences[0].trim();
-
-            // Respuestas específicas basadas en el contenido
-            if (firstSentence.includes("'cualli'")) {
-                return "cualli";
-            } else if (firstSentence.includes("'Notoca'")) {
-                return "Notoca";
-            } else if (firstSentence.includes("al principio")) {
-                return "al principio de la pregunta";
-            } else if (firstSentence.includes("prefijos")) {
-                return "prefijos (no-, mo-, i-)";
-            } else if (firstSentence.includes("prefijos") && firstSentence.includes("verbos")) {
-                return "prefijos (ni-, ti-, etc.)";
-            } else {
-                // Respuesta genérica
-                const words = firstSentence.split(' ').slice(-3).join(' ');
-                return words;
-            }
+            return sentences[0].trim().split(' ').slice(0, 5).join(' ') + '...';
         },
         generateOptions(correct, incorrect) {
             const options = [correct, ...incorrect.slice(0, 3)];

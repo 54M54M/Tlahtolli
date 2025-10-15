@@ -22,9 +22,9 @@ const routes = [
         meta: { requiresAuth: true, requiresVariant: false }
     },
     {
-        path: '/diccionario',
-        name: 'Diccionario',
-        component: () => import("../views/DictionaryView.vue"),
+        path: '/glosario',
+        name: 'Glosario',
+        component: () => import("../views/GlossaryView.vue"),
         meta: { requiresAuth: true }
     },
     {

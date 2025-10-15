@@ -74,9 +74,9 @@ export default {
         ]);
 
         const dialectProgress = computed(() => [
-            { id: 'central', name: 'Central', progress: statsData.dialectProgress.central, color: '#58CC02' },
-            { id: 'oriental', name: 'Oriental', progress: statsData.dialectProgress.oriental, color: '#FFA500' },
-            { id: 'occidental', name: 'Occidental', progress: statsData.dialectProgress.occidental, color: '#FF4B4B' }
+            { id: 'central', name: 'Central', progress: statsData.dialectProgress.central, color: '#F0983E' },
+            { id: 'oriental', name: 'Oriental', progress: statsData.dialectProgress.oriental, color: '#CF3E81' },
+            { id: 'occidental', name: 'Occidental', progress: statsData.dialectProgress.occidental, color: '#5DC7A4' }
         ]);
 
         return {

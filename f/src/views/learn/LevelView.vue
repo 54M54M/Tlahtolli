@@ -50,7 +50,7 @@
                     </div>
 
                     <!-- Vocabulario Clave -->
-                    <div class="bg-white/20 rounded-lg p-4" v-if="unit.vocabulary">
+                    <!-- <div class="bg-white/20 rounded-lg p-4" v-if="unit.vocabulary">
                         <h4 class="font-bold mb-3">Vocabulario clave</h4>
                         <ul class="space-y-2">
                             <li v-for="(word, index) in unit.vocabulary" :key="index"
@@ -62,7 +62,7 @@
                                 <button class="text-white/70 hover:text-white">🔊</button>
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
 
                     <!-- Gramática básica -->
                     <div class="bg-white/20 rounded-lg p-4" v-if="unit.grammar">

@@ -5,11 +5,17 @@
 
             <div class="mb-6">
                 <h2 class="text-xl font-semibold mb-2">Usuario de demostración</h2>
-                <div class="flex items-center space-x-4 p-4 bg-[#234567] rounded-lg">
-                    <img :src="userData.profileImage" class="w-12 h-12 rounded-full" />
-                    <div>
-                        <p class="font-bold">{{ userData.name }}</p>
-                        <p class="text-sm opacity-80">@{{ userData.username }}</p>
+                <div class="flex py-4 bg-[#234567] rounded-lg">
+                    <div class="flex space-x-4">
+                        <!-- Imagen placeholder -->
+                        <div class="flex justify-center">
+                            <img :src="placeholder" alt="Avatar" class="w-16 h-16 bg-gray-700 rounded-lg ml-4">
+                        </div>
+
+                        <div class="flex flex-col justify-center">
+                            <p class="font-bold">{{ userData.name }}</p>
+                            <p class="text-sm opacity-80">@{{ userData.username }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -27,6 +33,7 @@ import { userData } from '../lib/data.js'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
+import placeholder from '../assets/300x300.png'
 
 const authStore = useAuthStore()
 const router = useRouter()
