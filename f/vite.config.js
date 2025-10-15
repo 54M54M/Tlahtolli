@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+  build: {
+    outDir: 'dist'
+  },
   server: {
     host: '0.0.0.0'
   },
