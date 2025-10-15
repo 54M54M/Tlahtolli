@@ -170,3 +170,65 @@
   - Mejoras en responsive design
   - Nuevos estados visuales
   - Optimización de transiciones
+
+## [15/OCT/2025] - Refactorización y Mejoras del Sistema de Glosario
+
+### Nuevos Componentes
+
+- **GlossaryView**
+  - Nueva vista unificada para diccionario y silabario
+  - Sistema de tabs para navegación entre secciones
+  - Integración con variantes dialectales
+  - Diseño responsive mejorado
+
+- **DictionaryContent**
+  - Componente modular para el diccionario
+  - Búsqueda y filtrado mejorados
+  - Soporte para múltiples variantes
+  - Sistema de pronunciación integrado
+
+- **SyllabaryContent**
+  - Nuevo componente para el silabario náhuatl
+  - Diseño de grid interactivo
+  - Notas y explicaciones detalladas
+  - Visualización clara de sílabas
+
+### Mejoras
+
+- **Sistema de Navegación**
+  - Actualización de rutas y nombres
+  - Simplificación de la estructura
+  - Mejor integración con el sistema de variantes
+  - Optimización de la experiencia móvil
+
+- **Datos y Estructura**
+  - Separación de datos en archivos modulares
+  - Nueva estructura para entradas del diccionario
+  - Implementación del silabario completo
+  - Mejora en la organización del código
+
+- **Interfaz de Usuario**
+  - Diseño más limpio y moderno
+  - Mejor uso del espacio en pantalla
+  - Optimización de componentes visuales
+  - Mejora en la accesibilidad
+
+- **Sistema de Ejercicios**
+  - Refactorización de la generación de ejercicios
+  - Mejor manejo de datos de unidades
+  - Optimización de la lógica de preguntas
+  - Sistema más flexible y mantenible
+
+### Datos y Configuración
+
+- **Diccionario**
+  - Nuevo sistema de organización de datos
+  - Mejor estructura para variantes dialectales
+  - Sistema de categorización mejorado
+  - Soporte para ejemplos y pronunciación
+
+- **Silabario**
+  - Nueva estructura de datos completa
+  - Sistema de notas y explicaciones
+  - Mejor organización de sílabas
+  - Documentación de casos especiales
