@@ -1,4 +1,4 @@
-import { dictionaryEntries, silabaryEntries } from './dictionary.js';
+import { dictionaryEntries, silabaryEntries } from './glossary.js';
 export { dictionaryEntries };
 export { silabaryEntries };
 
@@ -477,7 +477,7 @@ export const dialectVariants = [
     {
         id: "central",
         name: "Central",
-        color: "#F0983E", // Royal Orange
+        color: "#5DC7A4", //  Aguamarina mediana
         documentation: "Alta",
         regions: "Valle de México, Tlaxcala, Puebla",
         speakers: "~1,500,000",
@@ -486,7 +486,7 @@ export const dialectVariants = [
     {
         id: "oriental",
         name: "Oriental",
-        color: "#CF3E81", // Pantone Magenta
+        color: "#F0983E", // Royal Orange
         documentation: "Media",
         regions: "Veracruz, Guerrero Oriental",
         speakers: "~500,000",
@@ -495,15 +495,16 @@ export const dialectVariants = [
     {
         id: "occidental",
         name: "Occidental",
-        color: "#5DC7A4", //  Aguamarina mediana
+        color: "#CF3E81", // Pantone Magenta
         documentation: "Baja",
         regions: "Michoacán, Jalisco, Durango, Colima",
         speakers: "~300,000",
         features: "Mayor divergencia del náhuatl clásico. Cambios consonánticos distintivos.",
     },
     {
+        // only test
         id: "all",
-        name: "Todas las variantes",
+        name: "Todas",
         color: "#A560E8",
         documentation: "Variada",
         regions: "Todo México",
