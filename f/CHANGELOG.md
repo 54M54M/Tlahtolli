@@ -294,3 +294,50 @@
   - Sistema de favicon adaptativo
   - Imágenes optimizadas para web
   - Recursos para diferentes plataformas
+
+## [17/OCT/2025] - Vista de Estadísticas y Mejoras de Componentes
+
+### Nuevos Componentes
+
+- **StatsView**
+  - Nueva vista dedicada para estadísticas de aprendizaje
+  - Integración completa con ProgressAside
+  - Diseño responsive con header específico para móviles
+  - Easter egg para usuarios de escritorio
+
+### Mejoras en Componentes Existentes
+
+- **LearningStats**
+  - Sistema de colores dinámico basado en valores
+  - Emojis de recompensa para rachas (🏆 para lecciones perfectas, 🔥 para días estudiados)
+  - Lógica de visualización condicional para rachas >= 3
+  - Mejor presentación de valores numéricos
+
+- **MobileNav**
+  - Nueva opción de navegación "Estadísticas"
+  - Icono de gráficas integrado
+  - Mantenimiento de estructura existente
+
+- **ProgressAside**
+  - Rediseño completo del layout
+  - Sistema de scroll mejorado sin barras visibles
+  - Mejor organización del espacio
+  - Separación clara de secciones
+
+### Mejoras Generales
+
+- **Sistema de Navegación**
+  - Nueva ruta `/estadisticas` añadida al router
+  - Reorganización de rutas existentes
+  - Mejor estructura de navegación móvil
+
+- **Datos y Configuración**
+  - Actualización de estadísticas en data.js
+  - Incremento de lecciones completadas (12 → 15)
+  - Mejor organización de datos estadísticos
+
+- **Ajustes de UI/UX**
+  - Corrección de márgenes y padding en múltiples vistas
+  - Mejoras en el responsive design
+  - Optimización del espacio en pantalla
+  - Ajustes en la vista Home para mejor alineación
