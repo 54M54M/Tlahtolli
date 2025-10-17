@@ -594,9 +594,11 @@ export const achievementsData = [
 
 export const statsData = {
     wordsLearned: 78,
-    lessonsCompleted: 12,
+    lessonsCompleted: 15,
+    // ===================== //
     perfectLessons: 8,
     daysStudied: 12,
+    // ===================== //
     bestStreak: 12,
     totalXP: 4850,
     averageTimePerDay: 26,

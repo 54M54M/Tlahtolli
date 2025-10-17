@@ -27,10 +27,16 @@ const routes = [
         component: () => import("../views/GlossaryView.vue"),
         meta: { requiresAuth: true }
     },
+    // {
+    //     path: '/mapa',
+    //     name: 'Mapa',
+    //     component: () => import("../views/MapView.vue"),
+    //     meta: { requiresAuth: true }
+    // },
     {
-        path: '/mapa',
-        name: 'Mapa',
-        component: () => import("../views/MapView.vue"),
+        path: '/estadisticas',
+        name: 'Estadísticas',
+        component: () => import("../views/StatsView.vue"),
         meta: { requiresAuth: true }
     },
     {

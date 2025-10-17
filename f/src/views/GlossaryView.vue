@@ -1,9 +1,9 @@
 <template>
     <div class="min-h-screen bg-[#0A2136] text-white">
         <!-- Top header -->
-        <Header variant="simple" :title="currentTabTitle" backRoute="/" />
+        <Header variant="simple" :title="currentTabTitle" backRoute="/" class="pt-6 md:pt-5" />
 
-        <main class="container mx-auto px-4 py-6 md:py-10">
+        <main class="container mx-auto px-4 py-2 md:py-10">
             <div class="max-w-4xl mx-auto">
                 <!-- Tabs principales usando el componente Tab -->
                 <Tab :tabs="mainTabs" v-model="activeTab" class="mb-6" />
