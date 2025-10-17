@@ -112,7 +112,7 @@
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center text-slate-400">
                             <span>hi (ji)</span>
-                            <span>ho (jo)</span>
+                            
                             <span>hu (ju)</span>
                             <span>lu</span>
                             <span>nu</span>
