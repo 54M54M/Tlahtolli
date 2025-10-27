@@ -1,5 +1,55 @@
 # CHANGELOG
 
+## [27/OCT/2025] - Mejoras en la Interfaz y Experiencia de Usuario
+
+### Nuevos Componentes
+
+- **LoadingStates**
+  - Nuevo sistema de carga para VariantSelection
+  - Indicadores de estado para inicialización
+  - Animaciones de spinner optimizadas
+  - Mensajes de carga contextuales
+
+### Mejoras
+
+- **Sistema de Autenticación**
+  - Nuevo estado de inicialización
+  - Mejor manejo de variantes dialectales
+  - Sistema de redirección inteligente
+  - Optimización de estados de carga
+
+- **Interfaz de Usuario**
+  - Mejoras en responsividad
+  - Optimización de márgenes y padding
+  - Mejor manejo de altura de pantalla
+  - Ajustes en componentes móviles
+
+- **ProgressAside**
+  - Nuevo diseño de estados de carga
+  - Mejor integración con variantes
+  - Sistema de scroll optimizado
+  - Ajustes dinámicos de altura
+
+- **Layout System**
+  - Mejoras en el sistema de grid
+  - Optimización de espaciado
+  - Mejor manejo de alturas dinámicas
+  - Ajustes en breakpoints responsive
+
+### Datos y Configuración
+
+- **Estados de Aplicación**
+  - Nuevo sistema de manejo de estados
+  - Mejor control de inicialización
+  - Optimización de persistencia
+  - Mejora en transiciones de estado
+
+- **Configuración de Componentes**
+  - Actualización de props y eventos
+  - Mejor manejo de valores por defecto
+  - Optimización de renderizado
+  - Sistema de fallbacks mejorado
+
 ## [17/OCT/2025] - Vista de Estadísticas y Mejoras de Componentes
 
 ### Nuevos Componentes
