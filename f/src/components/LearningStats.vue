@@ -1,5 +1,5 @@
 <template>
-    <Card class="bg-gray-800 rounded-lg p-4">
+    <Card class="bg-gray-800 rounded-lg p-4 shadow-md">
         <h3 class="font-bold mb-3">Estadísticas de aprendizaje</h3>
         <div class="grid grid-cols-2 gap-3">
             <Card v-for="stat in stats" :key="stat.label" class="bg-gray-700 rounded-lg p-3">

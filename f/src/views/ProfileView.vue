@@ -1,22 +1,17 @@
 <template>
     <div class="bg-[#0A2136] text-white">
-        <Header variant="simple" title="Mi Perfil" backRoute="/" />
+        <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
 
-        <main class="container mx-auto px-4 py-6 md:py-10 pb-16 md:pb-20">
+        <main class="container mx-auto px-4 py-1 md:py-2 pb-16 md:pb-20">
             <div class="max-w-md mx-auto">
-                <UserProfile :user="userData" />
+                <div class="bg-gray-800 rounded-lg p-3 pb-[1px] md:p-4 md:pb-[2px] mb-3 md:mb-4">
+                    <UserProfile :user="userData" />
+                </div>
 
                 <Tab :tabs="[
-                    ...(isMobile ? [{ value: 'progress', label: 'Progreso' }] : []),
                     { value: 'achievements', label: 'Logros' },
                     { value: 'settings', label: 'Ajustes' }
                 ]" v-model="currentTab" />
-
-                <!-- Contenido de pestañas -->
-                <div v-if="isMobile && currentTab === 'progress'" class="space-y-3 md:space-y-4 mt-3 md:mt-4">
-                    <LearningStats :stats="stats" />
-                    <DialectProgress :dialects="dialectProgress" />
-                </div>
 
                 <div v-if="currentTab === 'achievements'" class="mt-3 md:mt-4">
                     <Card class="bg-gray-800 rounded-lg p-3 md:p-4 mb-3 md:mb-4">
@@ -62,13 +57,16 @@
                             </div>
                         </div>
                         <div class="mt-4 space-y-2">
-                            <button class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2">
+                            <button
+                                class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2 cursor-no-drop">
                                 Editar perfil
                             </button>
-                            <button class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2">
+                            <button
+                                class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2 cursor-no-drop">
                                 Cambiar contraseña
                             </button>
-                            <button class="w-full bg-red-500 hover:bg-red-600 rounded p-2">
+
+                            <button @click="logout" class="w-full bg-red-500 hover:bg-red-600 rounded p-2 md:hidden">
                                 Cerrar sesión
                             </button>
                         </div>
@@ -80,62 +78,36 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+
 import Header from '../components/vHeader.vue';
 import Card from '../components/Card.vue';
 import Tab from '../components/Tab.vue';
 
 import UserProfile from '../components/UserProfile.vue';
-import LearningStats from '../components/LearningStats.vue';
-import DialectProgress from '../components/DialectProgress.vue';
 import AchievementsList from '../components/AchievementsList.vue';
 import SettingsPanel from '../components/SettingsPanel.vue';
 
-import { userData, achievementsData, statsData } from '../lib/data.js';
+import { userData, achievementsData } from '../lib/data.js';
 
-const currentTab = ref('progress');
+const currentTab = ref('achievements');
 const preferredDialect = ref('all');
 const soundEffects = ref(true);
 const autoPronunciation = ref(true);
 const darkMode = ref(true);
-const isMobile = ref(false);
-
-// Función para verificar el tamaño de la pantalla
-const checkScreenSize = () => {
-    isMobile.value = window.innerWidth < 768; // 768px es el breakpoint típico para md en Tailwind
-};
-
-// Configurar el listener para cambios de tamaño
-onMounted(() => {
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-
-    // Si no es móvil y la pestaña actual es 'progress', cambiar a 'achievements'
-    if (!isMobile.value && currentTab.value === 'progress') {
-        currentTab.value = 'achievements';
-    }
-});
-
-// Limpiar el listener al desmontar
-onBeforeUnmount(() => {
-    window.removeEventListener('resize', checkScreenSize);
-});
-
-// Datos computados
-const stats = computed(() => [
-    { label: 'Palabras aprendidas', value: statsData.wordsLearned },
-    { label: 'Lecciones completadas', value: statsData.lessonsCompleted },
-    { label: 'Lecciones perfectas', value: statsData.perfectLessons },
-    { label: 'Días estudiados', value: statsData.daysStudied }
-]);
-
-const dialectProgress = computed(() => [
-    { id: 'central', name: 'Central', progress: statsData.dialectProgress.central, color: '#58CC02' },
-    { id: 'oriental', name: 'Oriental', progress: statsData.dialectProgress.oriental, color: '#FFA500' },
-    { id: 'occidental', name: 'Occidental', progress: statsData.dialectProgress.occidental, color: '#FF4B4B' }
-]);
 
 const unlockedAchievements = computed(() =>
     achievementsData.filter(a => a.earned)
 );
+
+// Función de logout
+const authStore = useAuthStore()
+const router = useRouter()
+
+const logout = () => {
+    authStore.logout()
+    router.push('/login')
+}
 </script>

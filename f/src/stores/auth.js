@@ -5,12 +5,14 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
         selectedVariant: null,
-        isNewUser: true
+        isNewUser: true,
+        isInitialized: false // Nuevo estado
     }),
 
     getters: {
         isAuthenticated: (state) => !!state.user,
-        hasSelectedVariant: (state) => !!state.selectedVariant
+        hasSelectedVariant: (state) => !!state.selectedVariant,
+        isVariantReady: (state) => state.isInitialized && !!state.selectedVariant // Nuevo getter
     },
 
     actions: {
@@ -26,12 +28,14 @@ export const useAuthStore = defineStore('auth', {
                 this.selectedVariant = null
                 this.isNewUser = true
             }
+            this.isInitialized = true
         },
 
         logout() {
             this.user = null
             this.selectedVariant = null
             this.isNewUser = true
+            this.isInitialized = false
             localStorage.removeItem('selectedVariant')
         },
 
@@ -48,11 +52,12 @@ export const useAuthStore = defineStore('auth', {
                 this.selectedVariant = savedVariant
                 this.isNewUser = false
             }
+            this.isInitialized = true
         }
     },
 
     persist: {
         key: 'auth-storage',
-        paths: ['user', 'selectedVariant', 'isNewUser']
+        paths: ['user', 'selectedVariant', 'isNewUser', 'isInitialized']
     }
 })

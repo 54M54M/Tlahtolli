@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center text-white min-h-screen mt-[-20px] md:py-8 md:pt-1">
+    <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:py-8 md:pt-1">
         <h1 class="text-3xl font-bold mb-6">Elige un nivel</h1>
 
         <div class="w-full mb-12">

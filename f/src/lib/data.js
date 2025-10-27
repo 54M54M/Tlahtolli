@@ -4,12 +4,6 @@ export { silabaryEntries };
 
 // ======================================================================= //
 
-export const exerciseData = {
-    central: { word: "Itzcuintli", translation: "perro", sentence: "In ___ istac motlaloa.", fullSentence: "In itzcuintli istac motlaloa.", translation_sentence: "El perro blanco corre." },
-    oriental: { word: "Chichi", translation: "perro", sentence: "In ___ istac motlaloa.", fullSentence: "In chichi istac motlaloa.", translation_sentence: "El perro blanco corre." },
-    occidental: { word: "Chichton", translation: "perro", sentence: "In ___ istac motlaloa.", fullSentence: "In chichton istac motlaloa.", translation_sentence: "El perro blanco corre." }
-};
-
 export const levels = [
     {
         id: 1,
@@ -73,6 +67,7 @@ export const levels = [
     }
 ];
 
+// export const lessons = {
 export const levelUnits = {
     1: [
         {
@@ -483,34 +478,33 @@ export const dialectVariants = [
         speakers: "~1,500,000",
         features: "Conserva muchas características del náhuatl clásico. Pronunciación clara de /tl/ y /tz/.",
     },
-    {
-        id: "oriental",
-        name: "Oriental",
-        color: "#F0983E", // Royal Orange
-        documentation: "Media",
-        regions: "Veracruz, Guerrero Oriental",
-        speakers: "~500,000",
-        features: "Sustitución de /tl/ por /t/ y cambios vocálicos. Influencia de lenguas totonacas.",
-    },
-    {
-        id: "occidental",
-        name: "Occidental",
-        color: "#CF3E81", // Pantone Magenta
-        documentation: "Baja",
-        regions: "Michoacán, Jalisco, Durango, Colima",
-        speakers: "~300,000",
-        features: "Mayor divergencia del náhuatl clásico. Cambios consonánticos distintivos.",
-    },
-    {
-        // only test
-        id: "all",
-        name: "Todas",
-        color: "#A560E8",
-        documentation: "Variada",
-        regions: "Todo México",
-        speakers: "~2,300,000",
-        features: "Estudio comparativo de las tres principales variantes dialectales.",
-    }
+    // {
+    //     id: "oriental",
+    //     name: "Oriental",
+    //     color: "#F0983E", // Royal Orange
+    //     documentation: "Media",
+    //     regions: "Veracruz, Guerrero Oriental",
+    //     speakers: "~500,000",
+    //     features: "Sustitución de /tl/ por /t/ y cambios vocálicos. Influencia de lenguas totonacas.",
+    // },
+    // {
+    //     id: "occidental",
+    //     name: "Occidental",
+    //     color: "#CF3E81", // Pantone Magenta
+    //     documentation: "Baja",
+    //     regions: "Michoacán, Jalisco, Durango, Colima",
+    //     speakers: "~300,000",
+    //     features: "Mayor divergencia del náhuatl clásico. Cambios consonánticos distintivos.",
+    // },
+    // {
+    //     id: "all",
+    //     name: "Todas",
+    //     color: "#A560E8",
+    //     documentation: "Variada",
+    //     regions: "Todo México",
+    //     speakers: "~2,300,000",
+    //     features: "Estudio comparativo de las tres principales variantes dialectales.",
+    // }
 ];
 
 // ======================================================================= //
@@ -608,27 +602,3 @@ export const statsData = {
         occidental: 25,
     }
 };
-
-
-/* 
-            vocabulary: [
-                { nahuatl: "Niltze", spanish: "Hola", pronunciation: "nil-tse" },
-                { nahuatl: "Cualli tonalli", spanish: "Buenos días", pronunciation: "kua-li to-na-li" },
-                { nahuatl: "Cualli tiotlac", spanish: "Buenas tardes", pronunciation: "kua-li tio-tlak" },
-                { nahuatl: "Cualli yohualli", spanish: "Buenas noches", pronunciation: "kua-li yo-ua-li" },
-            ],
-
-            vocabulary: [
-                { nahuatl: "Notoca", spanish: "Me llamo/Mi nombre es", pronunciation: "no-to-ka" },
-                { nahuatl: "Tlen motoca?", spanish: "¿Cómo te llamas?", pronunciation: "tlen mo-to-ka" },
-                { nahuatl: "Nehuatl ni", spanish: "Yo soy", pronunciation: "ne-uatl ni" },
-                { nahuatl: "Tehhuatl ti", spanish: "Tú eres", pronunciation: "te-uatl ti" },
-            ],
-
-            vocabulary: [
-                { nahuatl: "Quenin?", spanish: "¿Cómo?", pronunciation: "ke-nin" },
-                { nahuatl: "Tlen?", spanish: "¿Qué?", pronunciation: "tlen" },
-                { nahuatl: "Canin?", spanish: "¿Dónde?", pronunciation: "ka-nin" },
-                { nahuatl: "Quemman?", spanish: "¿Cuándo?", pronunciation: "kem-man" },
-            ],
-*/

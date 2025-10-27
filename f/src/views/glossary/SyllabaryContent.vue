@@ -1,21 +1,30 @@
 <template>
     <div class="mx-auto max-w-4xl">
-        <h1 class="mb-6 text-center text-2xl font-bold text-white sm:text-4xl">Silabario Náhuatl</h1>
 
         <!-- Grid del silabario -->
         <div class="mb-6 rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
 
-            <!-- Filas de consonantes y sílabas -->
-            <div v-for="entry in silabaryEntries" :key="entry.letter || 'vowels'"
-                class="grid grid-cols-6 gap-2 sm:gap-4 mb-2">
+            <!-- Vocales -->
+            <div class="grid grid-cols-6 gap-2 sm:gap-4 mb-2">
+                <!-- Columna vacía para alineación -->
+                <div></div>
+                <!-- Sílabas vocales -->
+                <div v-for="vowel in vowels" :key="vowel"
+                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    @click="selectVowel(vowel)">
+                    <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
+                        {{ vowel }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Consonantes básicas -->
+            <div v-for="entry in basicConsonants" :key="entry.letter" class="grid grid-cols-6 gap-2 sm:gap-4 mb-2">
 
                 <!-- Columna de letra -->
-                <div v-if="entry.letter"
-                    class="aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
+                <div class="aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
                     @click="selectLetter(entry)">
                     {{ entry.letter }}
-                </div>
-                <div v-else @click="selectEmpty()">
                 </div>
 
                 <!-- Sílabas para cada vocal -->
@@ -35,6 +44,88 @@
                     </template>
                 </div>
             </div>
+
+            <!-- Separador para combinaciones especiales -->
+            <div class="max-w-md w-full">
+                <div class="col-span-6 my-6">
+                    <div class="relative">
+                        <!-- Línea completa detrás -->
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-slate-600"></div>
+                        </div>
+
+                        <!-- Contenedor del texto centrado -->
+                        <div class="relative flex justify-center">
+                            <div class="flex flex-col items-center bg-[#162639] px-4">
+                                <span class="text-sm text-slate-500 -mb-1">Fonemas Unitarios</span>
+                                <span class="text-xs text-slate-500">Dígrafos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Combinaciones especiales -->
+            <div v-for="entry in specialCombinations" :key="entry.letter" class="grid grid-cols-6 gap-2 sm:gap-4 mb-2">
+
+                <!-- Columna de letra -->
+                <div class="aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
+                    @click="selectLetter(entry)">
+                    {{ entry.letter }}
+                </div>
+
+                <!-- Sílabas para cada vocal -->
+                <div v-for="vowel in vowels" :key="vowel" :class="[
+                    'aspect-square rounded-lg border flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl',
+                    !entry.syllables[vowel]
+                        ? 'bg-slate-700/50 border-slate-600 cursor-default'
+                        : 'bg-slate-800/80 hover:bg-slate-700 border-slate-600'
+                ]" @click="entry.syllables[vowel] ? selectSyllable(entry, vowel) : selectEmpty()">
+                    <template v-if="entry.syllables[vowel]">
+                        <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
+                            {{ getSyllableText(entry.syllables[vowel]) }}
+                        </span>
+                        <span class="text-[9px] text-slate-400 mt-0.5 sm:text-sm">
+                            {{ getPronunciation(entry.syllables[vowel]) }}
+                        </span>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Separador para vocales largas -->
+            <div class="max-w-md w-full">
+                <div class="col-span-6 my-6">
+                    <div class="relative">
+                        <!-- Línea completa detrás -->
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full border-t border-slate-600"></div>
+                        </div>
+
+                        <!-- Contenedor del texto centrado -->
+                        <div class="relative flex justify-center">
+                            <div class="flex flex-col items-center bg-[#162639] px-4">
+                                <span class="text-sm text-slate-500 -mb-1">Vocales Largas</span>
+                                <span class="text-xs text-slate-500">Duración extendida</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vocales largas -->
+            <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
+                <!-- Sílabas vocales largas -->
+                <div v-for="vowel in vowels.filter(v => getLongVowel(v))" :key="'long-' + vowel"
+                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    @click="selectLongVowel(vowel)">
+                    <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
+                        {{ getLongVowel(vowel) }}
+                    </span>
+                    <span class="text-[9px] text-slate-400 mt-0.5 sm:text-sm">
+                        {{ getLongVowelPronunciation(vowel) }}
+                    </span>
+                </div>
+            </div>
         </div>
 
         <!-- Panel de información dinámica -->
@@ -43,7 +134,7 @@
             <div v-if="selectedSyllableInfo" class="text-slate-300">
                 <!-- Título dinámico para silabas / vocales -->
                 <h2 v-if="!selectedSyllableInfo.letter" class="text-xl font-semibold text-cyan-400 mb-4 text-center">
-                    Vocales
+                    {{ selectedSyllableInfo.isLongVowel ? 'Vocales Largas' : 'Vocales' }}
                 </h2>
                 <h2 v-else class="text-xl font-semibold text-cyan-400 mb-4 text-center">
                     Sílabas con "{{ selectedSyllableInfo.letter }}"
@@ -52,8 +143,63 @@
                 <h4 class="text-slate-400 text-xs text-center"> POR AHORA SON SOLO EJEMPLOS DADOS POR LA I.A. </h4>
                 <h4 class="text-slate-400 text-xs mb-3 text-center"> SE CORREGIRAN CONFORME AVANCE EL PROYECTO </h4>
 
-                <!-- Grid corregido - solo muestra vocales con sílabas -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Descripción especial para la vocal U -->
+                <div v-if="!selectedSyllableInfo.letter && selectedSyllableInfo.syllables['u']"
+                    class="bg-slate-700/50 rounded-lg p-6 border border-slate-600 mb-4">
+                    <h3 class="font-bold text-white text-lg mb-4 text-center">Uso de la "u" en Náhuatl</h3>
+
+                    <div class="space-y-4 text-sm">
+                        <p class="text-slate-300">
+                            En el náhuatl, la letra "u" no existe como una vocal independiente. El sonido similar al de
+                            la "u"
+                            del español se representa de manera distinta según el contexto.
+                        </p>
+
+                        <div class="bg-slate-600/30 rounded-lg p-4">
+                            <h4 class="font-semibold text-cyan-400 mb-3">Su uso más común es:</h4>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="font-medium text-white">"hu":</p>
+                                    <p class="text-slate-300 ml-2">
+                                        Para representar el sonido de la "w" del inglés (como en <em>we</em>), o el
+                                        sonido de la
+                                        "u" en la palabra "huevo".
+                                        Por ejemplo, en el nombre <span class="text-cyan-300">Huitzilopochtli</span>, la
+                                        pronunciación es "Witsilopochtli".
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="font-medium text-white">"cu":</p>
+                                    <p class="text-slate-300 ml-2">
+                                        Esta combinación de letras representa un sonido especial que se parece a la "cu"
+                                        de la
+                                        palabra inglesa <em>queen</em>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-600/30 rounded-lg p-4">
+                            <h4 class="font-semibold text-cyan-400 mb-2">Ejemplos:</h4>
+                            <ul class="list-disc list-inside space-y-2 text-slate-300">
+                                <li><span class="text-cyan-300">Huei</span> (grande) - se pronuncia "wei"</li>
+                                <li><span class="text-cyan-300">Cua</span> (comer) - se pronuncia "kwa"</li>
+                                <li><span class="text-cyan-300">Huehue</span> (anciano) - se pronuncia "wehwe"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid adaptable según la cantidad de elementos -->
+                <div v-if="!(!selectedSyllableInfo.letter && selectedSyllableInfo.syllables['u'])" :class="[
+                    'grid gap-4 mb-4',
+                    getAvailableVowels(selectedSyllableInfo).length === 1 ? 'grid-cols-1 max-w-md mx-auto' : // 1 elemento
+                        getAvailableVowels(selectedSyllableInfo).length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' : // mobil
+                            getAvailableVowels(selectedSyllableInfo).length >= 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2' : // desktop
+                                'grid-cols-1 sm:grid-cols-2'
+                ]">
                     <div v-for="vowel in getAvailableVowels(selectedSyllableInfo)" :key="vowel"
                         class="bg-slate-700/50 rounded-lg p-3 border border-slate-600">
                         <h3 class="font-bold text-white text-lg mb-2">
@@ -112,7 +258,7 @@
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center text-slate-400">
                             <span>hi (ji)</span>
-                            
+
                             <span>hu (ju)</span>
                             <span>lu</span>
                             <span>nu</span>
@@ -143,17 +289,41 @@ const vowels = ['a', 'e', 'i', 'o', 'u'];
 const selectedSyllableInfo = ref(null);
 const showNotes = ref(false);
 
+// Separar las entradas en consonantes básicas y combinaciones especiales (usando minúsculas)
+const basicConsonants = computed(() => {
+    const basicLetters = ['c', 'h', 'l', 'm', 'n', 'p', 't', 'x', 'y', 'z'];
+    return silabaryEntries.filter(entry => basicLetters.includes(entry.letter));
+});
+
+const specialCombinations = computed(() => {
+    const specialLetters = ['tl', 'tz', 'ch', 'qu', 'hu'];
+    return silabaryEntries.filter(entry => specialLetters.includes(entry.letter));
+});
+
 // Función para obtener solo las vocales que tienen sílabas disponibles
 const getAvailableVowels = (syllableInfo) => {
     if (!syllableInfo || !syllableInfo.syllables) return [];
     return vowels.filter(vowel => syllableInfo.syllables[vowel]);
 };
 
+const selectVowel = (vowel) => {
+    selectedSyllableInfo.value = {
+        letter: null,
+        pronunciation: getVowelPronunciation(vowel),
+        syllables: {
+            [vowel]: `${vowel} (${getVowelPronunciation(vowel)})`
+        },
+        isLongVowel: false
+    };
+    showNotes.value = false;
+};
+
 const selectSyllable = (entry, vowel) => {
     selectedSyllableInfo.value = {
         letter: entry.letter,
         pronunciation: entry.pronunciation,
-        syllables: entry.syllables
+        syllables: entry.syllables,
+        isLongVowel: false
     };
     showNotes.value = false;
 };
@@ -162,7 +332,8 @@ const selectLetter = (entry) => {
     selectedSyllableInfo.value = {
         letter: entry.letter,
         pronunciation: entry.pronunciation,
-        syllables: entry.syllables
+        syllables: entry.syllables,
+        isLongVowel: false
     };
     showNotes.value = false;
 };
@@ -170,6 +341,18 @@ const selectLetter = (entry) => {
 const selectEmpty = () => {
     selectedSyllableInfo.value = null;
     showNotes.value = true;
+};
+
+const selectLongVowel = (vowel) => {
+    selectedSyllableInfo.value = {
+        letter: null,
+        pronunciation: getLongVowelPronunciation(vowel),
+        syllables: {
+            [vowel]: `${getLongVowel(vowel)} (${getLongVowelPronunciation(vowel)})`
+        },
+        isLongVowel: true
+    };
+    showNotes.value = false;
 };
 
 const getSyllableText = (syllable) => {
@@ -181,7 +364,55 @@ const getPronunciation = (syllable) => {
     return match ? match[1] : '';
 };
 
+const getVowelPronunciation = (vowel) => {
+    const pronunciations = {
+        'a': null,
+        'e': null,
+        'i': null,
+        'o': null,
+        'u': null
+    };
+    return pronunciations[vowel] || '';
+};
+
+// Obtener vocal larga
+const getLongVowel = (vowel) => {
+    const longVowelEntry = silabaryEntries.find(entry => entry.longVowel);
+    return longVowelEntry ? longVowelEntry.longVowel[vowel] : null;
+};
+
+// Pronunciación de vocales largas
+const getLongVowelPronunciation = (vowel) => {
+    const pronunciations = {
+        'a': 'aa',
+        'e': 'ee',
+        'i': 'ii',
+        'o': 'oo'
+    };
+    return pronunciations[vowel] || '';
+};
+
 const getSyllableExamples = (letter, vowel) => {
+    // Si es vocal larga (letter es undefined o vacío y vowel tiene macrón)
+    if (!letter && vowel && (vowel.includes('ā') || vowel.includes('ē') || vowel.includes('ī') || vowel.includes('ō'))) {
+        const targetSyllable = vowel;
+        console.log(`Buscando vocal larga: ${targetSyllable}`);
+
+        // Buscar palabras que contengan la vocal larga
+        const examples = dictionaryEntries.filter(entry => {
+            const central = entry.central;
+            const oriental = entry.oriental;
+            const occidental = entry.occidental;
+
+            return central.includes(targetSyllable) ||
+                oriental.includes(targetSyllable) ||
+                occidental.includes(targetSyllable);
+        });
+
+        console.log(`Encontrados ${examples.length} ejemplos para vocal larga ${targetSyllable}`);
+        return examples.slice(0, 5);
+    }
+
     // Si es vocal (letter es undefined o vacío)
     if (!letter) {
         const targetSyllable = vowel; // Para vocales, la sílaba es solo la vocal

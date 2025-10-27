@@ -1,7 +1,13 @@
 <template>
     <div class="fixed inset-0 flex items-center justify-center bg-[#0A2136] text-white p-4 z-50">
-        <div class="w-full max-w-md bg-[#123456] rounded-lg p-8 shadow-lg mx-auto">
-            <!-- El resto del código permanece igual -->
+        <!-- Loading state durante el auto-redirect -->
+        <div v-if="isAutoRedirecting" class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p>Configurando tu variante...</p>
+        </div>
+
+        <div v-else-if="!hasSingleVariant" class="w-full max-w-md bg-[#123456] rounded-lg p-8 shadow-lg mx-auto">
+            <!-- Contenido normal para múltiples variantes -->
             <div class="flex justify-between items-center mb-8">
                 <h1 class="text-3xl font-bold text-center flex-1 mr-8">Selecciona tu variante</h1>
                 <button @click="goBack"
@@ -15,8 +21,8 @@
                 <div class="flex items-center space-x-4 p-4 rounded-lg transition-all duration-300"
                     :style="{ backgroundColor: currentDisplayVariantColor }">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center border-2" :style="{
-                        borderColor: currentDisplayVariant.color,
-                        backgroundColor: currentDisplayVariant.color
+                        borderColor: currentDisplayVariant?.color || '#666',
+                        backgroundColor: currentDisplayVariant?.color || '#666'
                     }">
                         <span class="font-bold text-white">{{ currentDisplayVariantInitial }}</span>
                     </div>
@@ -63,6 +69,12 @@ import { dialectVariants, userData } from '../lib/data.js'
 const router = useRouter()
 const authStore = useAuthStore()
 const selectedVariant = ref(null)
+const isAutoRedirecting = ref(false)
+
+// Computed para verificar si hay solo 1 variante
+const hasSingleVariant = computed(() => {
+    return dialectVariants && dialectVariants.length === 1
+})
 
 // Computed para obtener información de la variante que se está mostrando actualmente
 const currentDisplayVariant = computed(() => {
@@ -98,21 +110,51 @@ const goBack = () => {
     router.push('/login')
 }
 
-onMounted(() => {
+// Función para manejar la selección automática cuando hay solo 1 variante
+const handleSingleVariant = async () => {
+    if (hasSingleVariant.value && dialectVariants[0]) {
+        isAutoRedirecting.value = true
+
+        // Delay más largo para asegurar que todo esté cargado
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        const singleVariant = dialectVariants[0]
+        selectedVariant.value = singleVariant.id
+
+        // Asegurarnos de que la variante se guarde completamente
+        await authStore.setVariant(singleVariant.id)
+
+        // Delay adicional antes del redirect
+        await new Promise(resolve => setTimeout(resolve, 200))
+
+        router.push('/')
+    }
+}
+
+onMounted(async () => {
     if (!authStore.user) {
         router.push('/login')
         return
     }
 
+    // Si ya tiene variante seleccionada y no es nuevo usuario, redirigir
     if (authStore.selectedVariant && !authStore.isNewUser) {
-        router.push('/')
         return
     }
 
+    // Verificar si hay solo 1 variante y manejar automáticamente
+    if (hasSingleVariant.value) {
+        await handleSingleVariant()
+        return
+    }
+
+    // Para múltiples variantes, establecer la selección inicial
     if (authStore.selectedVariant) {
         selectedVariant.value = authStore.selectedVariant
-    } else {
+    } else if (userData.defaultVariant) {
         selectedVariant.value = userData.defaultVariant
+    } else if (dialectVariants.length > 0) {
+        selectedVariant.value = dialectVariants[0].id
     }
 })
 
@@ -123,7 +165,7 @@ const selectVariant = (variantId) => {
 const confirmSelection = async () => {
     try {
         if (selectedVariant.value) {
-            authStore.setVariant(selectedVariant.value)
+            await authStore.setVariant(selectedVariant.value)
             router.push('/')
         }
     } catch (error) {

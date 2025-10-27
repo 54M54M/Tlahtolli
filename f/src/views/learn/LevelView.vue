@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-[70px] mb-[73px]">
+    <div class="md:mt-[70px] mt-[35px] mb-[73px]">
         <Header :title="currentLevel.titleNahuatl" :subtitle="currentLevel.titleSpanish" @show-all="handleShowAll"
             :color="currentLevel.color" />
 

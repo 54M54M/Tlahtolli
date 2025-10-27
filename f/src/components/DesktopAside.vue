@@ -47,7 +47,7 @@
                     <span>Mapa</span>
                 </router-link> -->
 
-                <!-- <router-link to="/perfil" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
+                <router-link to="/perfil" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-700"
                     active-class="text-blue-400" exact-active-class="text-blue-500">
                     <div class="w-8 h-8 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +56,7 @@
                         </svg>
                     </div>
                     <span>Perfil</span>
-                </router-link> -->
+                </router-link>
             </div>
 
             <div class="mt-auto mb-4">

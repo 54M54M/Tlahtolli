@@ -542,7 +542,7 @@ export const dictionaryEntries = [
 
 export const silabaryEntries = [
     {
-        syllables: {
+        vowel: {
             a: 'a',
             e: 'e',
             i: 'i',
@@ -714,13 +714,14 @@ export const silabaryEntries = [
             o: null, // o: 'huo (wo)',
             u: null // u: 'huu (wu)'
         }
+    },
+    {
+        longVowel: {
+            a: 'ā',
+            e: 'ē',
+            i: 'ī',
+            o: 'ō',
+            u: null // u: 'ū'
+        }
     }
 ];
-
-// "notes": {
-//     "color_legend": {
-//         "red": "Sílaba modificada o especial",
-//         "orange": "Alternancia fonética (e.g. ze/zi)",
-//         "black": "Combinación no usada o no existente"
-//     }
-// }

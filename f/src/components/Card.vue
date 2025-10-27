@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-md rounded-lg p-4">
+    <div class="rounded-lg p-4">
         <slot></slot> <!-- Permite pasar contenido dinámico, como título y texto -->
     </div>
 </template>

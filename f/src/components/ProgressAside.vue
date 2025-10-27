@@ -5,8 +5,22 @@
             <!-- Espacio para el header fijo -->
             <div class="h-12"></div>
 
+            <!-- Loading state -->
+            <div v-if="!isVariantReady" class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-700 rounded w-1/2 mb-3"></div>
+                    <div class="flex items-center gap-3 p-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-700 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Badge de variante y botón cambiar -->
-            <div class="mb-4 p-4 bg-gray-800 rounded-lg">
+            <div v-else class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: selectedVariantData.color }"></div>
@@ -33,10 +47,10 @@
             </div>
 
             <!-- Estadísticas de aprendizaje -->
-            <div class="p-4 md:pt-[1px] bg-gray-800 rounded-lg">
+            <div class="md:pt-[1px] rounded-lg">
                 <LearningStats :stats="stats" />
                 <br class="md:hidden">
-                <DialectProgress :dialects="dialectProgress" />
+                <DialectProgress class="mt-5" :dialects="dialectProgress" />
             </div>
 
             <!-- Espacio extra al final para mejor scroll -->
@@ -63,8 +77,15 @@ export default {
         const router = useRouter();
         const authStore = useAuthStore();
 
+        const isVariantReady = computed(() => {
+            return authStore.isVariantReady && authStore.selectedVariant
+        });
+
         const selectedVariantData = computed(() => {
-            return dialectVariants.find(v => v.id === authStore.selectedVariant) || dialectVariants[3]; // 'all' por defecto
+            if (!isVariantReady.value) {
+                return { color: '#666', name: 'Cargando...', regions: '' }
+            }
+            return dialectVariants.find(v => v.id === authStore.selectedVariant) || dialectVariants[0]; // Primera variante por defecto
         });
 
         const selectedVariantInitial = computed(() => {
@@ -82,18 +103,27 @@ export default {
             { label: 'Días estudiados', value: statsData.daysStudied }
         ]);
 
-        const dialectProgress = computed(() => [
-            { id: 'central', name: 'Central', progress: statsData.dialectProgress.central, color: '#F0983E' },
-            { id: 'oriental', name: 'Oriental', progress: statsData.dialectProgress.oriental, color: '#CF3E81' },
-            { id: 'occidental', name: 'Occidental', progress: statsData.dialectProgress.occidental, color: '#5DC7A4' }
-        ]);
+        const dialectProgress = computed(() => {
+            const selectedVariant = authStore.selectedVariant;
+            const variantInfo = dialectVariants.find(v => v.id === selectedVariant) || dialectVariants[0];
+
+            return [
+                {
+                    id: selectedVariant,
+                    name: variantInfo.name,
+                    progress: statsData.dialectProgress[selectedVariant] || 0,
+                    color: variantInfo.color
+                }
+            ];
+        });
 
         return {
             stats,
             dialectProgress,
             selectedVariantData,
             selectedVariantInitial,
-            goToVariantSelection
+            goToVariantSelection,
+            isVariantReady
         };
     }
 }

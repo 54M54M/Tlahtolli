@@ -108,14 +108,3 @@ defineProps({
 
 defineEmits(['update:searchTerm', 'update:selectedCategory', 'speak']);
 </script>
-
-<!-- 
-
-
-
-
-
-
-
-
--->

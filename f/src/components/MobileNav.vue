@@ -51,7 +51,7 @@
                         class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Estadísticas</span>
                 </router-link>
 
-                <!-- <router-link to="/perfil" class="flex flex-col items-center group" active-class="text-blue-400"
+                <router-link to="/perfil" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">
@@ -61,9 +61,9 @@
                         </svg>
                     </div>
                     <span class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Perfil</span>
-                </router-link> -->
+                </router-link>
 
-                <button @click="logout" class="flex flex-col items-center group" exact-active-class="text-blue-500">
+                <!-- <button @click="logout" class="flex flex-col items-center group" exact-active-class="text-blue-500">
 
                     <div class="w-8 h-8 flex items-center justify-center text-red-500 group-hover:text-red-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
@@ -74,7 +74,7 @@
                     </div>
                     <span class="text-xs mt-1 text-red-500 group-hover:text-red-400">Salir</span>
 
-                </button>
+                </button> -->
 
             </div>
         </div>

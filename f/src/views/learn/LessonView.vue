@@ -1,5 +1,5 @@
 <template>
-    <div class="text-white pt-[15%] flex flex-col ">
+    <div class="text-white md:pt-[15%] pt-[10%] flex flex-col ">
         <!-- Header con información dinámica -->
         <Header variant="progress" :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`"
             :progressCurrent="currentQuestion - 1" :progressTotal="currentExercises.length"
