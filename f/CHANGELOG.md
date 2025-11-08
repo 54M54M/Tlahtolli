@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## [3.1.0] - 2025-11-08 - Implementación de RepositoryFactory con Patrón Singleton
+
+### Added
+
+- **RepositoryFactory**
+  - Sistema centralizado de gestión de repositorios
+  - Patrón Singleton para instancias únicas
+  - Métodos convenientes para acceso directo a repositorios
+  - Función reset() para testing y cleanup
+
+### Changed
+
+- **Optimización de Memoria**
+  - Reducción de instancias duplicadas en componentes
+  - Mejor gestión del estado de repositorios
+- **Arquitectura de Datos**
+  - Centralización de creación de repositorios
+  - Mejor mantenibilidad y escalabilidad
+
+### Fixed
+
+- Mejor performance al reutilizar instancias de repositorios
+- Consistencia en el estado de datos entre componentes
+
 ## [3.0.0] - 2025-11-08 - Restructuración Mayor y Sistema de Componentes
 
 ### Added
