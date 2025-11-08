@@ -38,8 +38,8 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 // Datos del usuario desde el repositorio
-import { UserRepository } from '../data/repositories/UserRepository.js'
-const userRepo = new UserRepository()
+import { getUserRepository } from '../data/repositories/RepositoryFactory.js'
+const userRepo = getUserRepository()
 const userData = userRepo.getUser(1)
 
 const login = () => {

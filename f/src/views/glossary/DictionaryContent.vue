@@ -129,6 +129,9 @@ import { computed, ref } from 'vue';
 import Card from '../../components/Card.vue';
 import Badge from '../../components/Badge.vue';
 
+// import { getDictionaryRepository } from '../../data/repositories/RepositoryFactory.js';
+// const dictionaryRepo = getDictionaryRepository();
+
 const props = defineProps({
     searchTerm: String,
     selectedCategory: String,

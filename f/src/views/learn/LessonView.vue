@@ -128,7 +128,7 @@ import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
 
 import { useAuthStore } from '../../stores/auth';
-import { LearningRepository } from '../../data/repositories/LearningRepository.js';
+import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 import { ProgressService } from '../../data/services/ProgressService.js';
 import { SpeechService } from '../../data/services/SpeechService.js';
 import placeholder from '../../assets/300x300.png';
@@ -160,7 +160,7 @@ export default {
             currentUnit: {},
             placeholder: placeholder,
             authStore: useAuthStore(),
-            learningRepo: new LearningRepository(),
+            learningRepo: getLearningRepository(),
             progressService: new ProgressService(),
             lessonInProgress: true,
             showFeedbackModal: false,

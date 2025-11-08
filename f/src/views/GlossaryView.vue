@@ -38,16 +38,15 @@ import { Lock, Unlock, Volume2 } from 'lucide-vue-next';
 import DictionaryContent from './glossary/DictionaryContent.vue';
 import WritingContent from './glossary/SyllabaryContent.vue';
 import WordBankContent from './glossary/WordBankContent.vue';
-import { DictionaryRepository } from '../data/repositories/DictionaryRepository.js';
 import { LanguageService } from '../data/services/LanguageService.js';
 import { ProgressService } from '../data/services/ProgressService.js';
-import { LearningRepository } from '../data/repositories/LearningRepository.js';
+import { getDictionaryRepository, getLearningRepository } from '../data/repositories/RepositoryFactory.js';
 
 const authStore = useAuthStore();
-const dictionaryRepo = new DictionaryRepository();
 const languageService = new LanguageService();
 const progressService = new ProgressService();
-const learningRepo = new LearningRepository();
+const dictionaryRepo = getDictionaryRepository();
+const learningRepo = getLearningRepository();
 
 const searchTerm = ref('');
 const selectedCategory = ref('all');

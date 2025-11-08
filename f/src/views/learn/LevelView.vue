@@ -118,7 +118,7 @@
 import Header from '../../components/vHeader.vue';
 import Badge from '../../components/Badge.vue';
 import { useAuthStore } from '../../stores/auth';
-import { LearningRepository } from '../../data/repositories/LearningRepository.js';
+import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 
 export default {
     name: 'Level',
@@ -134,7 +134,7 @@ export default {
     },
     data() {
         return {
-            learningRepo: new LearningRepository(),
+            learningRepo: getLearningRepository(),
             authStore: useAuthStore()
         };
     },

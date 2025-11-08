@@ -131,7 +131,7 @@ import UserProfile from '../components/UserProfile.vue';
 import AchievementsList from '../components/AchievementsList.vue';
 import SettingsPanel from '../components/SettingsPanel.vue';
 
-import { UserRepository } from '../data/repositories/UserRepository.js';
+import { getUserRepository } from '../data/repositories/RepositoryFactory.js';
 import { LanguageService } from '../data/services/LanguageService.js';
 import { ProgressService } from '../data/services/ProgressService.js';
 import { LocalStorageService } from '../data/storage/LocalStorageService.js';
@@ -145,9 +145,9 @@ const selectedAchievement = ref(null);
 const loading = ref(true);
 const error = ref(null);
 
-// ✅ CORRECCIÓN: Inicializar userData como ref y cargar datos
+// Inicializar userData como ref y cargar datos
 const userData = ref(null);
-const userRepo = new UserRepository();
+const userRepo = getUserRepository();
 
 // Servicios
 let progressService = null;
@@ -158,13 +158,13 @@ const unlockedAchievements = computed(() => {
     return allAchievements.value.filter(a => a.earned);
 });
 
-// ✅ CORRECCIÓN: Cargar datos del usuario y logros al montar
+// Cargar datos del usuario y logros al montar
 onMounted(() => {
     loadUserData();
     loadAchievements();
 });
 
-// ✅ CORRECCIÓN: Función para cargar datos del usuario
+// Función para cargar datos del usuario
 const loadUserData = () => {
     try {
         // console.log('👤 Cargando datos del usuario...');
