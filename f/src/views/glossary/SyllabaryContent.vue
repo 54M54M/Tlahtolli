@@ -42,12 +42,12 @@
 import { computed, ref } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { LanguageService } from '../../data/services/LanguageService.js';
-import { SyllabaryRepository } from '../../data/repositories/SyllabaryRepository.js';
+import { getSyllabaryRepository } from '../../data/repositories/RepositoryFactory.js';
 import WritingSystem from '../../components/WritingSystem.vue';
 
 const authStore = useAuthStore();
 const languageService = new LanguageService();
-const syllabaryRepo = new SyllabaryRepository();
+const syllabaryRepo = getSyllabaryRepository();
 
 const selectedSyllableInfo = ref(null);
 const selectedAlphabetLetter = ref(null);

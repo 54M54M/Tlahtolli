@@ -82,9 +82,9 @@
 import { useAuthStore } from '../stores/auth'
 import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { LearningRepository } from '../data/repositories/LearningRepository.js'
 import { LanguageService } from '../data/services/LanguageService.js'
-import { LocalStorageService } from '../data/storage/LocalStorageService.js' // CORREGIR IMPORT
+import { LocalStorageService } from '../data/storage/LocalStorageService.js'
+import { getLearningRepository } from '../data/repositories/RepositoryFactory.js';
 
 import Badge from '../components/Badge.vue'
 import Card from '../components/Card.vue'
@@ -98,7 +98,7 @@ export default {
     setup() {
         const authStore = useAuthStore()
         const router = useRouter()
-        const learningRepo = new LearningRepository()
+        const learningRepo = getLearningRepository();
         const languageService = new LanguageService()
 
         const currentLanguageLevels = ref([])
@@ -109,7 +109,7 @@ export default {
                 return
             }
 
-            const freshRepo = new LearningRepository()
+            const freshRepo = getLearningRepository();
             const levels = freshRepo.getLevelsWithUnlockCheck(authStore.selectedLanguage)
 
             // USAR LocalStorageService DIRECTAMENTE

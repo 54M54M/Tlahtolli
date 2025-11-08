@@ -63,7 +63,7 @@ import { useAuthStore } from '../stores/auth';
 import LearningStats from './LearningStats.vue';
 import DialectProgress from './DialectProgress.vue';
 import { LanguageService } from '../data/services/LanguageService.js';
-import { StatsRepository } from '../data/repositories/StatsRepository.js';
+import { getStatsRepository } from '../data/repositories/RepositoryFactory.js';
 import { LocalStorageService } from '../data/storage/LocalStorageService.js'; // CORREGIR IMPORT
 
 export default {
@@ -76,7 +76,7 @@ export default {
         const router = useRouter();
         const authStore = useAuthStore();
         const languageService = new LanguageService();
-        const statsRepo = new StatsRepository();
+        const statsRepo = getStatsRepository();
 
         const isLanguageReady = computed(() => {
             return authStore.isLanguageReady && authStore.selectedLanguage

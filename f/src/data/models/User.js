@@ -10,43 +10,43 @@ export class User {
         this.streak = data.streak || 0;
         this.totalXP = data.totalXP || 0;
         this.minutesStudied = data.minutesStudied || 0;
-
-        // Formatear joinDate al formato aaaa/mm/dd
+        
+        // ✅ CORRECCIÓN: Formatear joinDate al formato aaaa/mm/dd
         this.joinDate = this.formatJoinDate(data.joinDate);
-
+        
         this.profileImage = data.profileImage || "/placeholder.svg";
         this.currentLanguage = data.currentLanguage || "nhce";
         this.learningGoals = data.learningGoals || {};
         this.unlockedLanguages = data.unlockedLanguages || [];
     }
 
-    // Método para formatear la fecha
+    // ✅ NUEVO: Método para formatear la fecha
     formatJoinDate(dateInput) {
         if (!dateInput) {
             // Si no hay fecha, usar fecha actual formateada
             return this.getCurrentFormattedDate();
         }
-
+        
         // Si ya está en formato aaaa/mm/dd, devolver tal cual
         if (typeof dateInput === 'string' && /^\d{4}\/\d{2}\/\d{2}$/.test(dateInput)) {
             return dateInput;
         }
-
+        
         // Convertir cualquier formato de fecha al formato deseado
         const date = new Date(dateInput);
         if (isNaN(date.getTime())) {
             // Si la fecha es inválida, usar fecha actual
             return this.getCurrentFormattedDate();
         }
-
+        
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-
+        
         return `${year}/${month}/${day}`;
     }
 
-    // Método auxiliar para obtener fecha actual formateada
+    // ✅ NUEVO: Método auxiliar para obtener fecha actual formateada
     getCurrentFormattedDate() {
         const now = new Date();
         const year = now.getFullYear();

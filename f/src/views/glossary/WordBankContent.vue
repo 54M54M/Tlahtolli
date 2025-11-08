@@ -42,7 +42,7 @@ import { computed } from 'vue';
 
 import { BookOpen, Volume2 } from 'lucide-vue-next';
 
-import { LearningRepository } from '../../data/repositories/LearningRepository.js';
+import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 import { ProgressService } from '../../data/services/ProgressService.js';
 import Badge from '../../components/Badge.vue';
 
@@ -52,7 +52,7 @@ const props = defineProps({
     currentLanguageColor: String
 });
 
-const learningRepo = new LearningRepository();
+const learningRepo = getLearningRepository();
 const progressService = new ProgressService();
 
 // Obtener todas las unidades completadas
