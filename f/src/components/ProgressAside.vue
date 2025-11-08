@@ -6,7 +6,7 @@
             <div class="h-12"></div>
 
             <!-- Loading state -->
-            <div v-if="!isVariantReady" class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
+            <div v-if="!isLanguageReady" class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
                 <div class="animate-pulse">
                     <div class="h-4 bg-gray-700 rounded w-1/2 mb-3"></div>
                     <div class="flex items-center gap-3 p-2">
@@ -19,29 +19,26 @@
                 </div>
             </div>
 
-            <!-- Badge de variante y botón cambiar -->
+            <!-- Badge de idioma -->
             <div v-else class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: selectedVariantData.color }"></div>
-                        <span class="text-sm font-semibold">Variante activa</span>
+                        <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: selectedLanguageData.color }">
+                        </div>
+                        <span class="text-sm font-semibold">Idioma activo</span>
                     </div>
-                    <!-- <button @click="goToVariantSelection"
-                        class="text-xs px-2 py-1 rounded border border-gray-400 hover:bg-gray-700 transition-colors">
-                        Cambiar
-                    </button> -->
                 </div>
                 <div class="flex items-center gap-3 p-2 rounded"
-                    :style="{ backgroundColor: selectedVariantData.color + '20' }">
+                    :style="{ backgroundColor: selectedLanguageData.color + '20' }">
                     <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                        :style="{ backgroundColor: selectedVariantData.color }">
-                        {{ selectedVariantInitial }}
+                        :style="{ backgroundColor: selectedLanguageData.color }">
+                        {{ selectedLanguageData.flag }}
                     </div>
                     <div>
-                        <p class="font-semibold text-sm" :style="{ color: selectedVariantData.color }">
-                            {{ selectedVariantData.name }}
+                        <p class="font-semibold text-sm" :style="{ color: selectedLanguageData.color }">
+                            {{ selectedLanguageData.name }}
                         </p>
-                        <p class="text-xs text-gray-300">{{ selectedVariantData.regions }}</p>
+                        <p class="text-xs text-gray-300">{{ selectedLanguageData.nativeName }}</p>
                     </div>
                 </div>
             </div>
@@ -50,7 +47,7 @@
             <div class="md:pt-[1px] rounded-lg">
                 <LearningStats :stats="stats" />
                 <br class="md:hidden">
-                <DialectProgress class="mt-5" :dialects="dialectProgress" />
+                <DialectProgress class="md:mt-4 -mt-1" :dialects="languageProgress" />
             </div>
 
             <!-- Espacio extra al final para mejor scroll -->
@@ -65,7 +62,9 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import LearningStats from './LearningStats.vue';
 import DialectProgress from './DialectProgress.vue';
-import { statsData, dialectVariants } from '../lib/data.js';
+import { LanguageService } from '../data/services/LanguageService.js';
+import { StatsRepository } from '../data/repositories/StatsRepository.js';
+import { LocalStorageService } from '../data/storage/LocalStorageService.js'; // CORREGIR IMPORT
 
 export default {
     name: 'ProgressAside',
@@ -76,54 +75,95 @@ export default {
     setup() {
         const router = useRouter();
         const authStore = useAuthStore();
+        const languageService = new LanguageService();
+        const statsRepo = new StatsRepository();
 
-        const isVariantReady = computed(() => {
-            return authStore.isVariantReady && authStore.selectedVariant
+        const isLanguageReady = computed(() => {
+            return authStore.isLanguageReady && authStore.selectedLanguage
         });
 
-        const selectedVariantData = computed(() => {
-            if (!isVariantReady.value) {
-                return { color: '#666', name: 'Cargando...', regions: '' }
+        const selectedLanguageData = computed(() => {
+            if (!isLanguageReady.value || !authStore.selectedLanguage) {
+                return {
+                    color: '#666',
+                    name: 'Selecciona un idioma',
+                    nativeName: '',
+                    flag: '🌐'
+                }
             }
-            return dialectVariants.find(v => v.id === authStore.selectedVariant) || dialectVariants[0]; // Primera variante por defecto
+
+            const langInfo = languageService.getLanguageInfo(authStore.selectedLanguage);
+
+            return langInfo || {
+                color: '#666',
+                name: 'Idioma no encontrado',
+                nativeName: '',
+                flag: '❓'
+            };
         });
 
-        const selectedVariantInitial = computed(() => {
-            return selectedVariantData.value.name.charAt(0);
-        });
-
-        const goToVariantSelection = () => {
-            router.push('/select-variant');
+        const goToLanguageSelection = () => {
+            router.push('/select-language');
         };
 
-        const stats = computed(() => [
-            { label: 'Palabras aprendidas', value: statsData.wordsLearned },
-            { label: 'Lecciones completadas', value: statsData.lessonsCompleted },
-            { label: 'Lecciones perfectas', value: statsData.perfectLessons },
-            { label: 'Días estudiados', value: statsData.daysStudied }
-        ]);
-
-        const dialectProgress = computed(() => {
-            const selectedVariant = authStore.selectedVariant;
-            const variantInfo = dialectVariants.find(v => v.id === selectedVariant) || dialectVariants[0];
+        const stats = computed(() => {
+            const userStats = statsRepo.getUserStats(1);
 
             return [
                 {
-                    id: selectedVariant,
-                    name: variantInfo.name,
-                    progress: statsData.dialectProgress[selectedVariant] || 0,
-                    color: variantInfo.color
+                    label: 'Palabras aprendidas',
+                    value: userStats.wordsLearned || 0
+                },
+                {
+                    label: 'Lecciones completadas',
+                    value: userStats.lessonsCompleted || 0
+                },
+                {
+                    label: 'Lecciones perfectas',
+                    value: userStats.perfectLessons || 0
+                },
+                {
+                    label: 'Días estudiados',
+                    value: userStats.daysStudied || 0
+                }
+            ];
+        });
+
+        const languageProgress = computed(() => {
+            const selectedLanguage = authStore.selectedLanguage;
+
+            if (!selectedLanguage) {
+                return [{
+                    id: 'none',
+                    name: 'Sin idioma seleccionado',
+                    progress: 0,
+                    color: '#666'
+                }];
+            }
+
+            const languageInfo = languageService.getLanguageInfo(selectedLanguage);
+
+            // USAR LocalStorageService DIRECTAMENTE
+            const progress = LocalStorageService.getProgress(selectedLanguage);
+            const progressPercentage = progress.totalUnits > 0 ?
+                (progress.completedUnits / progress.totalUnits) * 100 : 0;
+
+            return [
+                {
+                    id: selectedLanguage,
+                    name: languageInfo?.name || 'Idioma actual',
+                    progress: progressPercentage,
+                    color: languageInfo?.color || '#666'
                 }
             ];
         });
 
         return {
             stats,
-            dialectProgress,
-            selectedVariantData,
-            selectedVariantInitial,
-            goToVariantSelection,
-            isVariantReady
+            languageProgress,
+            selectedLanguageData,
+            goToLanguageSelection,
+            isLanguageReady
         };
     }
 }

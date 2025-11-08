@@ -1,13 +1,13 @@
 <template>
     <Card class="bg-gray-800 rounded-lg p-4 shadow-md">
-        <h3 class="font-bold mb-3">Progreso por variante dialectal</h3>
+        <h3 class="font-bold mb-3">Progreso del idioma</h3>
         <div class="mb-3">
             <div class="flex justify-between text-sm mb-1">
-                <span :style="`color: ${selectedDialectData.color}`">{{ selectedDialectData.name }}</span>
-                <span class="text-gray-400">{{ selectedDialectData.progress }}%</span>
+                <span :style="`color: ${selectedLanguageData.color}`">{{ selectedLanguageData.name }}</span>
+                <span class="text-gray-400">{{ selectedLanguageData.progress }}%</span>
             </div>
-            <ProgressBar :current="selectedDialectData.progress" :total="100" class="h-2 bg-gray-700"
-                :color="selectedDialectData.color" />
+            <ProgressBar :current="selectedLanguageData.progress" :total="100" class="h-2 bg-gray-700"
+                :color="selectedLanguageData.color" />
         </div>
     </Card>
 </template>
@@ -17,9 +17,12 @@ import { computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import Card from './Card.vue';
 import ProgressBar from './ProgressBar.vue';
-import { dialectVariants } from '../lib/data.js';
+import { LanguageService } from '../data/services/LanguageService.js';
+import { StatsRepository } from '../data/repositories/StatsRepository.js';
 
 const authStore = useAuthStore();
+const languageService = new LanguageService();
+const statsRepo = new StatsRepository();
 
 const props = defineProps({
     dialects: {
@@ -28,21 +31,30 @@ const props = defineProps({
     }
 });
 
-// Combinar los datos de progreso con la información de la variante (incluyendo color)
-const selectedDialectData = computed(() => {
-    const selectedVariant = authStore.selectedVariant;
+// Combinar los datos de progreso con la información del idioma
+const selectedLanguageData = computed(() => {
+    const selectedLanguage = authStore.selectedLanguage;
 
-    // Encontrar la variante en dialectVariants para obtener el color
-    const variantInfo = dialectVariants.find(v => v.id === selectedVariant) || dialectVariants[0];
+    if (!selectedLanguage) {
+        return {
+            id: 'none',
+            name: 'Selecciona un idioma',
+            color: '#666',
+            progress: 0
+        };
+    }
+
+    // Encontrar el idioma en LanguageService para obtener la información
+    const languageInfo = languageService.getLanguageInfo(selectedLanguage);
 
     // Encontrar el progreso en los props.dialects
-    const progressInfo = props.dialects.find(dialect => dialect.id === selectedVariant) || props.dialects[0];
+    const progressInfo = props.dialects.find(dialect => dialect.id === selectedLanguage) || props.dialects[0];
 
     return {
-        id: variantInfo.id,
-        name: variantInfo.name,
-        color: variantInfo.color,
-        progress: progressInfo.progress
+        id: languageInfo?.id || selectedLanguage,
+        name: languageInfo?.name || 'Idioma actual',
+        color: languageInfo?.color || '#666',
+        progress: progressInfo?.progress || 0
     };
 });
 </script>

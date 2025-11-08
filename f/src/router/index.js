@@ -4,23 +4,39 @@ import { useAuthStore } from '../stores/auth'
 
 const routes = [
     {
-        path: '/',
-        name: 'Inicio',
-        component: Inicio,
-        meta: { requiresAuth: true }
-    },
-    {
         path: '/login',
         name: 'Login',
         component: () => import("../views/LoginView.vue"),
         meta: { requiresGuest: true }
     },
     {
-        path: '/select-variant',
-        name: 'VariantSelection',
+        path: '/select-language',
+        name: 'LanguageSelection',
         component: () => import("../views/VariantSelection.vue"),
-        meta: { requiresAuth: true, requiresVariant: false }
+        meta: { requiresAuth: true, requiresLanguage: false }
     },
+    // ---------------------------------------------------------------
+    {
+        path: '/',
+        name: 'Inicio',
+        component: Inicio,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/nivel/:id',
+        name: 'Nivel',
+        component: () => import("../views/learn/LevelView.vue"),
+        props: true,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/leccion/:unitId',
+        name: 'Leccion',
+        component: () => import("../views/learn/LessonView.vue"),
+        props: true,
+        meta: { hideNav: true, requiresAuth: true },
+    },
+    // ---------------------------------------------------------------
     {
         path: '/glosario',
         name: 'Glosario',
@@ -44,20 +60,6 @@ const routes = [
         name: 'Perfil',
         component: () => import("../views/ProfileView.vue"),
         meta: { requiresAuth: true }
-    },
-    {
-        path: '/nivel/:id',
-        name: 'Nivel',
-        component: () => import("../views/learn/LevelView.vue"),
-        props: true,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/leccion/:unitId',
-        name: 'Leccion',
-        component: () => import("../views/learn/LessonView.vue"),
-        props: true,
-        meta: { hideNav: true, requiresAuth: true },
     },
 ]
 
@@ -83,19 +85,19 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresGuest && authStore.user) {
         // Redirigir según si es nuevo usuario o no
         if (authStore.isNewUser) {
-            return next('/select-variant')
+            return next('/select-language') // Cambiado
         } else {
             return next('/')
         }
     }
 
-    // Si está autenticado pero es nuevo usuario y no está en select-variant
-    if (authStore.user && authStore.isNewUser && to.name !== 'VariantSelection') {
-        return next('/select-variant')
+    // Si está autenticado pero es nuevo usuario y no está en select-language
+    if (authStore.user && authStore.isNewUser && to.name !== 'LanguageSelection') { // Cambiado
+        return next('/select-language') // Cambiado
     }
 
-    // Si tiene variante seleccionada y trata de acceder a select-variant
-    if (to.name === 'VariantSelection' && authStore.user && !authStore.isNewUser) {
+    // Si tiene idioma seleccionado y trata de acceder a select-language
+    if (to.name === 'LanguageSelection' && authStore.user && !authStore.isNewUser) { // Cambiado
         return next('/')
     }
 

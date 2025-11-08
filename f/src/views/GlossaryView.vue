@@ -5,148 +5,196 @@
 
         <main class="container mx-auto px-4 py-2 md:py-10">
             <div class="max-w-4xl mx-auto">
-                <!-- Tabs principales usando el componente Tab -->
-                <Tab :tabs="mainTabs" v-model="activeTab" class="mb-6" />
+                <!-- Mostrar tabs solo si hay más de uno disponible -->
+                <Tab v-if="availableTabs.length > 1" :tabs="availableTabs" v-model="activeTab" class="mb-6" />
 
-                <!-- Contenido del Diccionario -->
-                <DictionaryContent v-if="activeTab === 'dictionary'" :searchTerm="searchTerm"
-                    :selectedCategory="selectedCategory" :selectedVariant="selectedVariant"
-                    :currentVariantName="currentVariantName" :currentVariantColor="currentVariantColor"
+                <!-- Contenido del 'Sistema de Escritura' -->
+                <WritingContent v-if="activeTab === 'writingSystem'" :syllabaryData="syllabaryEntries" />
+
+                <!-- Contenido del Banco de Palabras -->
+                <WordBankContent v-if="activeTab === 'wordBank'" :language="selectedLanguage"
+                    :currentLanguageName="currentLanguageName" :currentLanguageColor="currentLanguageColor" />
+
+                <!-- Contenido del Diccionario - BUG: ARREGLAR -->
+                <!-- <DictionaryContent v-if="activeTab === 'dictionary'" :searchTerm="searchTerm"
+                    :selectedCategory="selectedCategory" :selectedLanguage="selectedLanguage"
+                    :currentLanguageName="currentLanguageName" :currentLanguageColor="currentLanguageColor"
                     :categories="categories" :filteredEntries="filteredEntries" @update:searchTerm="searchTerm = $event"
-                    @update:selectedCategory="selectedCategory = $event" @speak="speak" />
+                    @update:selectedCategory="selectedCategory = $event" @speak="speak" /> -->
 
-                <!-- Contenido del Silabario -->
-                <SyllabaryContent v-if="activeTab === 'syllabary'" :syllabaryData="silabaryEntries" />
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth.js';
 import Header from '../components/vHeader.vue';
 import Tab from '../components/Tab.vue';
 
+import { Lock, Unlock, Volume2 } from 'lucide-vue-next';
+
 import DictionaryContent from './glossary/DictionaryContent.vue';
-import SyllabaryContent from './glossary/SyllabaryContent.vue';
-import { dictionaryEntries, silabaryEntries, dialectVariants } from '../lib/data.js';
+import WritingContent from './glossary/SyllabaryContent.vue';
+import WordBankContent from './glossary/WordBankContent.vue';
+import { DictionaryRepository } from '../data/repositories/DictionaryRepository.js';
+import { LanguageService } from '../data/services/LanguageService.js';
+import { ProgressService } from '../data/services/ProgressService.js';
+import { LearningRepository } from '../data/repositories/LearningRepository.js';
 
 const authStore = useAuthStore();
+const dictionaryRepo = new DictionaryRepository();
+const languageService = new LanguageService();
+const progressService = new ProgressService();
+const learningRepo = new LearningRepository();
+
 const searchTerm = ref('');
 const selectedCategory = ref('all');
-const activeTab = ref('dictionary');
+const activeTab = ref('writingSystem');
 
-// Tabs principales usando el componente Tab
-const mainTabs = [
-    { value: 'dictionary', label: 'Diccionario' },
-    { value: 'syllabary', label: 'Silabario' }
-];
+// Obtener el progreso del usuario
+const userProgress = computed(() => {
+    return progressService.getLanguageProgress(1, selectedLanguage.value);
+});
 
-// Título dinámico para el header
+// Verificar progreso específico
+const hasCompletedUnit1 = computed(() => {
+    const units = learningRepo.getUnits(selectedLanguage.value, 1);
+    const unit1 = units.find(unit => unit.id === 1);
+    return unit1?.completed || false;
+});
+
+const hasCompletedLevel1 = computed(() => {
+    const level1 = learningRepo.getLevel(selectedLanguage.value, 1);
+    return level1?.isCompleted() || false;
+});
+
+// Determinar qué tabs están disponibles basado en el progreso
+const availableTabs = computed(() => {
+    const tabs = [];
+
+    // Sistema de escritura siempre disponible
+    tabs.push({ value: 'writingSystem', label: writingSystemInfo.value.name });
+
+    // Banco de palabras disponible después de completar unidad 1
+    if (hasCompletedUnit1.value || hasCompletedLevel1.value) {
+        tabs.push({ value: 'wordBank', label: 'Banco de Palabras' });
+    }
+
+    // Diccionario disponible después de completar nivel 1
+    // if (hasCompletedLevel1.value) {
+    //     tabs.push({ value: 'dictionary', label: 'Diccionario' });
+    // }
+
+    return tabs;
+});
+
+// Ajustar activeTab si el tab actual no está disponible
+const adjustActiveTab = () => {
+    const availableTabValues = availableTabs.value.map(tab => tab.value);
+    if (!availableTabValues.includes(activeTab.value)) {
+        activeTab.value = availableTabValues[0] || 'writingSystem';
+    }
+};
+
+// Mensajes de progreso
+const showProgressMessage = computed(() => {
+    return !hasCompletedLevel1.value;
+});
+
+const progressMessage = computed(() => {
+    if (!hasCompletedUnit1.value) {
+        return {
+            title: 'Completa la Unidad 1',
+            description: 'Termina la primera unidad para desbloquear el Banco de Palabras con el vocabulario que aprendas.'
+        };
+    } else if (!hasCompletedLevel1.value) {
+        return {
+            title: 'Completa el Nivel 1',
+            description: 'Termina todas las unidades del Nivel 1 para desbloquear el Diccionario completo.'
+        };
+    }
+    return {
+        title: '¡Diccionario Desbloqueado!',
+        description: 'Ahora tienes acceso completo al diccionario con todas las palabras disponibles.'
+    };
+});
+
+const hasAccessToDictionary = computed(() => {
+    return hasCompletedLevel1.value;
+});
+
+// Resto del código...
+const writingSystemInfo = computed(() => {
+    const languageInfo = languageService.getLanguageInfo(selectedLanguage.value);
+    const writingSystemNames = {
+        'nhce': 'Silabario',
+        'tkoc': 'Alfabeto',
+    };
+    return {
+        name: writingSystemNames[selectedLanguage.value] || 'Sistema de Escritura',
+        type: languageInfo?.writingSystem || 'syllabary'
+    };
+});
+
 const currentTabTitle = computed(() => {
-    const currentTab = mainTabs.find(tab => tab.value === activeTab.value);
+    const currentTab = availableTabs.value.find(tab => tab.value === activeTab.value);
     return currentTab?.label || 'Glosario';
 });
 
-// Obtener la variante seleccionada del store
-const selectedVariant = computed(() => {
-    return authStore.selectedVariant || 'all';
+const selectedLanguage = computed(() => {
+    return authStore.selectedLanguage || 'nhce';
 });
 
-// Información de la variante actual
-const currentVariant = computed(() => {
-    return dialectVariants.find(v => v.id === selectedVariant.value) || dialectVariants.find(v => v.id === 'all');
+const currentLanguageInfo = computed(() => {
+    return languageService.getLanguageInfo(selectedLanguage.value) || { name: 'Náhuatl Central', color: '#58CC02' };
 });
 
-const currentVariantName = computed(() => currentVariant.value?.name || 'Todas');
-const currentVariantColor = computed(() => currentVariant.value?.color || '#A560E8');
+const currentLanguageName = computed(() => currentLanguageInfo.value?.name || 'Náhuatl Central');
+const currentLanguageColor = computed(() => currentLanguageInfo.value?.color || '#58CC02');
 
-// Obtener categorías únicas
 const categories = computed(() => {
-    const cats = new Set();
-    dictionaryEntries.forEach(entry => cats.add(entry.category));
-    return Array.from(cats).sort();
+    return dictionaryRepo.getCategories(selectedLanguage.value);
 });
 
-// Filtrar entradas basadas en búsqueda, categoría y variante seleccionada
 const filteredEntries = computed(() => {
     const term = searchTerm.value.toLowerCase();
+    let entries = dictionaryRepo.getAllEntries(selectedLanguage.value);
 
-    return dictionaryEntries
-        .filter(entry => {
-            // Filtro por término de búsqueda
-            const matchesSearch =
-                entry.spanish.toLowerCase().includes(term) ||
-                entry.central.toLowerCase().includes(term) ||
-                entry.oriental.toLowerCase().includes(term) ||
-                entry.occidental.toLowerCase().includes(term) ||
-                entry.example.toLowerCase().includes(term);
+    if (term) {
+        entries = dictionaryRepo.searchEntries(term, selectedLanguage.value);
+    }
 
-            // Filtro por categoría
-            const matchesCategory =
-                selectedCategory.value === 'all' ||
-                entry.category === selectedCategory.value;
+    if (selectedCategory.value !== 'all') {
+        entries = entries.filter(entry => entry.category === selectedCategory.value);
+    }
 
-            return matchesSearch && matchesCategory;
-        })
-        .map(entry => {
-            if (selectedVariant.value === 'all') {
-                // Si es "all", devolver la entrada completa para mostrar todas las variantes
-                return entry;
-            } else {
-                // Para variantes específicas, mostrar solo esa variante
-                let nahuatlWord = '';
-
-                switch (selectedVariant.value) {
-                    case 'central':
-                        nahuatlWord = entry.central;
-                        break;
-                    case 'oriental':
-                        nahuatlWord = entry.oriental;
-                        break;
-                    case 'occidental':
-                        nahuatlWord = entry.occidental;
-                        break;
-                    default:
-                        nahuatlWord = entry.central;
-                }
-
-                return {
-                    ...entry,
-                    nahuatl: nahuatlWord
-                };
-            }
-        });
+    return entries;
 });
 
-// Función para leer el texto (usando Web Speech API)
-const speak = (text, dialect) => {
-    if ('speechSynthesis' in window) {
-        // Cancelar cualquier speech anterior
-        speechSynthesis.cancel();
+const syllabaryEntries = computed(() => {
+    return [];
+});
 
+const speak = (text, language) => {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
 
-        // Configurar voz según dialecto
-        utterance.lang = 'es-MX'; // Usamos español mexicano como base
-
-        // Ajustar parámetros según dialecto
-        switch (dialect) {
-            case 'central':
+        switch (language) {
+            case 'nhce':
+                utterance.lang = 'es-MX';
                 utterance.rate = 0.9;
                 utterance.pitch = 1.0;
                 break;
-            case 'oriental':
+            case 'tkoc':
+                utterance.lang = 'es-MX';
                 utterance.rate = 1.0;
                 utterance.pitch = 1.1;
                 break;
-            case 'occidental':
-                utterance.rate = 1.1;
-                utterance.pitch = 0.9;
-                break;
-            case 'all':
             default:
+                utterance.lang = 'es-MX';
                 utterance.rate = 1.0;
                 utterance.pitch = 1.0;
                 break;
@@ -158,10 +206,16 @@ const speak = (text, dialect) => {
     }
 };
 
-// Verificar si hay una variante seleccionada al cargar el componente
+// Watchers
+watch(availableTabs, adjustActiveTab);
+watch(selectedLanguage, () => {
+    adjustActiveTab();
+});
+
 onMounted(() => {
-    if (!authStore.selectedVariant) {
-        console.warn('No hay variante seleccionada, usando variante por defecto "all"');
+    if (!authStore.selectedLanguage) {
+        console.warn('No hay idioma seleccionado, usando idioma por defecto "nhce"');
     }
+    adjustActiveTab();
 });
 </script>

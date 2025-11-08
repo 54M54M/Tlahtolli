@@ -1,8 +1,61 @@
 # CHANGELOG
 
-## [27/OCT/2025] - Mejoras en la Interfaz y Experiencia de Usuario
+## [3.0.0] - 2025-11-08 - Restructuración Mayor y Sistema de Componentes
 
-### Nuevos Componentes
+### Added
+
+- **Sistema de Modales**
+  - ExitConfirmModal para confirmación de salida
+  - FeedbackModal para retroalimentación
+  - WarningModal para avisos importantes
+- **Sistema de Progreso**
+  - ProgressBar con animaciones fluidas
+  - DialectProgress para seguimiento por variante
+  - Badge para indicadores visuales
+  - LearningStats con métricas detalladas
+- **Nueva estructura de modelos de datos**
+  - Achievement para sistema de logros
+  - DictionaryEntry para entradas léxicas
+  - Exercise para sistema de ejercicios
+  - Level y Unit para estructura de contenido
+- **Sistema de Repositorios**
+  - DictionaryRepository para gestión léxica
+  - LearningRepository para contenido educativo
+  - StatsRepository para métricas de usuario
+  - UserRepository para gestión de perfiles
+  - SyllabaryRepository para sistemas de escritura
+- **Servicios Core**
+  - AchievementService para sistema de logros
+  - LanguageService para gestión lingüística
+  - ProgressService para seguimiento
+  - StudyService para lógica de aprendizaje
+  - UnlockService para progresión de contenido
+  - SpeechService/TTS para pronunciación
+
+### Changed
+
+- **Arquitectura de datos**
+  - Mejor organización de datos por módulos
+  - Sistema de almacenamiento optimizado
+- **Sistema de Layout**
+  - DesktopAside mejorado
+  - Layout.vue más flexible
+  - MobileNav optimizado
+  - vHeader con mejor adaptabilidad
+- **Configuración**
+  - Sistema de rutas optimizado
+  - Store de autenticación mejorado
+  - Configuración de Vite actualizada
+
+### Fixed
+
+- Mejor persistencia de datos
+- Sistema de caché mejorado
+- Manejo eficiente del estado
+
+## [2.1.0] - 2025-10-27 - Mejoras en Interfaz y Experiencia de Usuario
+
+### Added
 
 - **LoadingStates**
   - Nuevo sistema de carga para VariantSelection
@@ -10,384 +63,245 @@
   - Animaciones de spinner optimizadas
   - Mensajes de carga contextuales
 
-### Mejoras
+### Changed
 
 - **Sistema de Autenticación**
   - Nuevo estado de inicialización
   - Mejor manejo de variantes dialectales
   - Sistema de redirección inteligente
-  - Optimización de estados de carga
-
 - **Interfaz de Usuario**
   - Mejoras en responsividad
   - Optimización de márgenes y padding
   - Mejor manejo de altura de pantalla
-  - Ajustes en componentes móviles
-
 - **ProgressAside**
   - Nuevo diseño de estados de carga
   - Mejor integración con variantes
   - Sistema de scroll optimizado
-  - Ajustes dinámicos de altura
 
-- **Layout System**
-  - Mejoras en el sistema de grid
-  - Optimización de espaciado
-  - Mejor manejo de alturas dinámicas
-  - Ajustes en breakpoints responsive
+### Fixed
 
-### Datos y Configuración
+- Ajustes en componentes móviles
+- Mejor control de inicialización
+- Optimización de transiciones de estado
 
-- **Estados de Aplicación**
-  - Nuevo sistema de manejo de estados
-  - Mejor control de inicialización
-  - Optimización de persistencia
-  - Mejora en transiciones de estado
+## [2.0.0] - 2025-10-17 - Vista de Estadísticas y Mejoras de Componentes
 
-- **Configuración de Componentes**
-  - Actualización de props y eventos
-  - Mejor manejo de valores por defecto
-  - Optimización de renderizado
-  - Sistema de fallbacks mejorado
-
-## [17/OCT/2025] - Vista de Estadísticas y Mejoras de Componentes
-
-### Nuevos Componentes
+### Added
 
 - **StatsView**
   - Nueva vista dedicada para estadísticas de aprendizaje
   - Integración completa con ProgressAside
   - Diseño responsive con header específico para móviles
   - Easter egg para usuarios de escritorio
-
-### Mejoras en Componentes Existentes
-
-- **LearningStats**
-  - Sistema de colores dinámico basado en valores
-  - Emojis de recompensa para rachas (🏆 para lecciones perfectas, 🔥 para días estudiados)
-  - Lógica de visualización condicional para rachas >= 3
-  - Mejor presentación de valores numéricos
-
 - **MobileNav**
   - Nueva opción de navegación "Estadísticas"
   - Icono de gráficas integrado
-  - Mantenimiento de estructura existente
 
+### Changed
+
+- **LearningStats**
+  - Sistema de colores dinámico basado en valores
+  - Emojis de recompensa para rachas
+  - Lógica de visualización condicional para rachas >= 3
 - **ProgressAside**
   - Rediseño completo del layout
   - Sistema de scroll mejorado sin barras visibles
   - Mejor organización del espacio
-  - Separación clara de secciones
-
-### Mejoras Generales
-
 - **Sistema de Navegación**
   - Nueva ruta `/estadisticas` añadida al router
   - Reorganización de rutas existentes
-  - Mejor estructura de navegación móvil
 
-- **Datos y Configuración**
-  - Actualización de estadísticas en data.js
-  - Incremento de lecciones completadas (12 → 15)
-  - Mejor organización de datos estadísticos
+### Fixed
 
-- **Ajustes de UI/UX**
-  - Corrección de márgenes y padding en múltiples vistas
-  - Mejoras en el responsive design
-  - Optimización del espacio en pantalla
-  - Ajustes en la vista Home para mejor alineación
+- Corrección de márgenes y padding en múltiples vistas
+- Mejoras en el responsive design
+- Optimización del espacio en pantalla
 
-## [16/OCT/2025] - Sistema de Identidad Visual y Expansión del Glosario
+## [1.3.0] - 2025-10-16 - Sistema de Identidad Visual y Expansión del Glosario
 
-### Nuevos Componentes
+### Added
 
 - **IdentitySystem**
   - Nuevo sistema de favicon y íconos
   - Soporte para PWA con manifest
   - Iconografía adaptativa para diferentes plataformas
-  - Mejora en la identidad visual
-
 - **GlossaryData**
   - Estructura completa de datos del glosario
   - Sistema de categorización detallado
   - Ejemplos y traducciones contextuales
-  - Soporte para múltiples variantes dialectales
-
 - **SyllabarySystem**
   - Implementación completa del silabario náhuatl
   - Sistema interactivo de visualización
   - Documentación detallada de pronunciación
-  - Integración con ejemplos del diccionario
 
-### Mejoras
+### Changed
 
 - **Sistema de Navegación**
   - Simplificación de la estructura de rutas
   - Actualización de nombres y enlaces
-  - Ocultamiento temporal de secciones en desarrollo
-  - Mejora en la experiencia de usuario
-
-- **Datos y Estructura**
-  - Reorganización del sistema de archivos
-  - Separación de datos en módulos específicos
-  - Mejora en la estructura de datos dialectales
-  - Sistema más mantenible y escalable
-
-- **Interfaz de Usuario**
-  - Nuevo diseño del silabario interactivo
-  - Sistema de ejemplos contextual
-  - Mejoras en la visualización de datos
-  - Optimización de componentes visuales
-
-- **Sistema de Colores**
+, **Sistema de Colores**
   - Actualización de la paleta de colores dialectal
   - Mejora en el contraste y accesibilidad
-  - Sistema de colores más consistente
-  - Optimización de identificadores visuales
 
-### Datos y Configuración
+### Fixed
 
-- **Manifest**
-  - Configuración completa de PWA
-  - Soporte para múltiples tamaños de íconos
-  - Mejora en la experiencia de instalación
-  - Sistema de caché optimizado
+- Ocultamiento temporal de secciones en desarrollo
+- Mejora en la experiencia de instalación PWA
 
-- **Assets**
-  - Nuevos recursos gráficos e íconos
-  - Sistema de favicon adaptativo
-  - Imágenes optimizadas para web
-  - Recursos para diferentes plataformas
+## [1.2.0] - 2025-10-15 - Refactorización y Mejoras del Sistema de Glosario
 
-## [15/OCT/2025] - Refactorización y Mejoras del Sistema de Glosario
-
-### Nuevos Componentes
+### Added
 
 - **GlossaryView**
   - Nueva vista unificada para diccionario y silabario
   - Sistema de tabs para navegación entre secciones
-  - Integración con variantes dialectales
-  - Diseño responsive mejorado
-
 - **DictionaryContent**
   - Componente modular para el diccionario
   - Búsqueda y filtrado mejorados
-  - Soporte para múltiples variantes
-  - Sistema de pronunciación integrado
-
 - **SyllabaryContent**
   - Nuevo componente para el silabario náhuatl
   - Diseño de grid interactivo
-  - Notas y explicaciones detalladas
-  - Visualización clara de sílabas
 
-### Mejoras
+### Changed
 
 - **Sistema de Navegación**
   - Actualización de rutas y nombres
   - Simplificación de la estructura
-  - Mejor integración con el sistema de variantes
-  - Optimización de la experiencia móvil
-
 - **Datos y Estructura**
   - Separación de datos en archivos modulares
   - Nueva estructura para entradas del diccionario
-  - Implementación del silabario completo
-  - Mejora en la organización del código
-
 - **Interfaz de Usuario**
   - Diseño más limpio y moderno
   - Mejor uso del espacio en pantalla
-  - Optimización de componentes visuales
-  - Mejora en la accesibilidad
 
-- **Sistema de Ejercicios**
-  - Refactorización de la generación de ejercicios
-  - Mejor manejo de datos de unidades
-  - Optimización de la lógica de preguntas
-  - Sistema más flexible y mantenible
+### Fixed
 
-### Datos y Configuración
+- Refactorización de la generación de ejercicios
+- Mejor manejo de datos de unidades
 
-- **Diccionario**
-  - Nuevo sistema de organización de datos
-  - Mejor estructura para variantes dialectales
-  - Sistema de categorización mejorado
-  - Soporte para ejemplos y pronunciación
+## [1.1.0] - 2025-10-14 - Refactorización y Mejoras de Sistema
 
-- **Silabario**
-  - Nueva estructura de datos completa
-  - Sistema de notas y explicaciones
-  - Mejor organización de sílabas
-  - Documentación de casos especiales
-
-## [14/OCT/2025] - Refactorización y Mejoras de Sistema
-
-### Actualizacion de Componentes
+### Added
 
 - **VariantSelection**
   - Nueva interfaz para selección de variante
   - Visualización de variante actual
-  - Mejor UX para cambio de variantes
-  - Integración con sistema de autenticación
-
 - **LessonView**
-  - Rediseño completo de la interfaz
-  - Mejor organización vertical del contenido
   - Soporte para imágenes placeholder
-  - Mejoras en presentación de ejercicios
-
 - **LevelView**
   - Sistema de bloqueo de niveles y unidades
   - Visualización de requisitos de desbloqueo
-  - Mejoras visuales en la presentación
-  - Integración con sistema de progreso
 
-### Mejoras
+### Changed
 
 - **Navegación y Layout**
   - Rediseño completo de DesktopAside
   - Nuevo diseño de información de usuario
-  - Mejora en elementos de navegación
-  - Optimización de botón de cerrar sesión
-
 - **Sistema de Autenticación**
   - Implementación de guardias de ruta
   - Mejora en manejo de estados
-  - Control de acceso por variante
-  - Redirecciones inteligentes
-
 - **ProgressAside**
   - Badge de variante activa
   - Integración con sistema dialectal
-  - Mejoras visuales en estadísticas
-  - Nuevo diseño de variante seleccionada
 
-- **vHeader**
-  - Tres variantes optimizadas
-  - Mejor integración con variantes
-  - Manejo mejorado de estados
-  - Diseño más consistente
+### Fixed
 
-### Datos y Configuración
+- Control de acceso por variante
+- Redirecciones inteligentes
+- Mejor manejo de estados en vHeader
 
-- **Data.js**
-  - Expansión de variantes dialectales
-  - Nuevos campos para niveles
-  - Reorganización de ejercicios
-  - Mejora en estructura de progreso
+## [1.0.1] - 2025-04-29 - Refactorización y Componentes de Perfil
 
-- **Estilos**
-  - Actualización de paleta de colores
-  - Mejoras en responsive design
-  - Nuevos estados visuales
-  - Optimización de transiciones
-
-## [29/ABR/2025] - Refactorización y Componentes de Perfil
-
-### Nuevos Componentes
+### Added
 
 - **SettingsPanel**
   - Panel de preferencias de usuario
   - Configuración de dialecto, sonido, etc.
-  - Emisión de eventos para actualización
-
 - **AchievementsList**
   - Listado de logros desbloqueados
   - Diseño con cards
-  - Manejo de estado vacío
-
 - **DialectProgress**
   - Progreso por variante dialectal
   - Barras de progreso coloreadas
-  - Integración con datos globales
 
-### Mejoras
+### Changed
 
 - Refactorización completa de ProfileView
   - Mejor organización por componentes
   - Lógica de pestañas optimizada
-  - Detección responsive mejorada
-
 - Actualización de ProgressAside
   - Integración con nuevos componentes
-  - Mejor estructura de datos
 
-- Mejoras en Tab component
-  - Mejor manejo de responsive
-  - Estilos optimizados
+### Fixed
 
-## [28/ABR/2025] - Sistema de Navegación Completo
+- Detección responsive mejorada
+- Mejor manejo de estados vacíos
+
+## [1.0.0] - 2025-04-28 - Sistema de Navegación Completo
+
+### Added
 
 - **DesktopAside**
   - Barra lateral izquierda para desktop
   - Navegación con iconos SVG
   - Resaltado de ruta activa
-
 - **MobileNav**
   - Barra inferior para móviles
   - Ocultamiento condicional
-  - Efectos hover y estados activos
-
 - **ProgressAside**
   - Barra lateral derecha para progreso
   - Integración de LearningStats y DialectProgress
-  - Diseño fijo
 
-## [27/ABR/2025] - Correcciones y Mejoras
+## [0.2.0] - 2025-04-27 - Correcciones y Mejoras
 
-### Mejoras Generales
+### Changed
 
 - Optimización del rendimiento
-- Corrección de bugs de interfaz
 - Mejoras en el responsive design
+
+### Fixed
+
+- Corrección de bugs de interfaz
 - Validación adicional de props
 - Refactorización de componentes
 
-## [26/ABR/2025] - Sistema de Progreso y Perfil
+## [0.1.0] - 2025-04-26 - Sistema de Progreso y Perfil
+
+### Added
 
 - **ProgressBar**
   - Barra de progreso dinámica
   - Cálculo automático de porcentaje
-  - Color personalizable
-
 - **UserProfile**
   - Tarjeta de perfil de usuario
   - Muestra nivel y progreso (XP)
-  - Badge de nivel
-  - Diseño responsive
-
 - **LearningStats**
   - Estadísticas de aprendizaje
   - Grid de 4 métricas clave
-  - Diseño con cards
 
-## [25/ABR/2025] - Componentes Base y Estructura Inicial
+## [0.0.1] - 2025-04-25 - Componentes Base y Estructura Inicial
 
-### Creación del Proyecto
+### Added
 
-- Inicializado con Vite + Vue.js (JavaScript)
-- Configuración de Tailwind CSS v3.4.17
-- Estructura base de archivos:
-  - App.vue
-  - Router/index.js
-  - Layout.vue
-  - Vistas principales: Home, Dictionary, Map
+- **Inicialización del Proyecto**
+  - Vite + Vue.js (JavaScript)
+  - Tailwind CSS v3.4.17
+  - Estructura base de archivos
+- **Componentes Base**
+  - Badge para etiquetas
+  - Tab para sistema de pestañas
+  - vHeader multipropósito
 
-### Componentes Base
+### Changed
 
-- **Badge**
-  - Componente reutilizable para etiquetas
-  - Estilo con Tailwind CSS
-  - Soporta contenido dinámico via slots
+- Configuración inicial de rutas
+- Establecimiento de estructura de vistas
 
-- **Tab**
-  - Sistema de pestañas navegables
-  - Implementación con Composition API
-  - Validación de props
-  - Diseño responsive
+---
 
-- **vHeader**
-  - Cabecera multipropósito con 3 variantes
-  - Props personalizables (color, rutas, progreso)
-  - Diseño fijo para scroll
+**Nota de versionado**:  
+Se sigue el formato `MAYOR.MENOR.PARCHE` donde:
+
+- **MAYOR**: Cambios incompatibles con versiones anteriores
+- **MENOR**: Nuevas funcionalidades compatibles
+- **PARCHE**: Correcciones de errores

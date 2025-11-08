@@ -16,9 +16,11 @@
                 <div class="flex justify-between text-xs text-gray-400 mb-1">
                     <span>Nivel {{ user.level }}</span>
                     <span>
+                        <!-- MOSTRAR XP REAL DEL USUARIO -->
                         {{ user.xp }}/{{ user.xpToNextLevel }} XP
                     </span>
                 </div>
+                <!-- BARRA DE PROGRESO CON XP REAL -->
                 <ProgressBar :current="user.xp" :total="user.xpToNextLevel" class="h-1.5 bg-gray-700" />
             </div>
         </div>

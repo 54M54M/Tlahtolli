@@ -11,16 +11,15 @@
     <div v-else-if="variant === 'progress'"
         :class="['py-3 px-4 text-white w-full fixed top-0 left-0 right-0 z-10 pt-2 pb-0']">
         <div class="bg-[#1f2937] rounded-xl px-4 pt-[5px] pb-5">
-
-            <div class="max-w-xl mx-auto">
+            <div class="max-w-xl mx-auto md:max-w-5xl">
                 <div class="flex justify-between items-center mb-3 mt-2">
 
-                    <router-link :to="backRoute"
+                    <!-- CAMBIO: Reemplazar router-link por button -->
+                    <button @click="$emit('exit-lesson')"
                         class="text-white text-sm flex items-center gap-2 px-3 pt-2 rounded-full transition-all duration-300 hover:scale-105">
                         <span class="font-bold">
                             <span v-if="!isMobile">← Volver</span>
                             <span v-else>
-
                                 <svg fill="#d1d5db" height="20px" width="20px" version="1.1" id="Capa_1"
                                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                     viewBox="0 0 460.775 460.775" xml:space="preserve">
@@ -32,10 +31,9 @@
                                         </path>
                                     </g>
                                 </svg>
-
                             </span>
                         </span>
-                    </router-link>
+                    </button>
 
                     <div class="text-center -mt-3">
                         <h2 class="text-sm font-semibold mb-[-5px]">
@@ -46,18 +44,18 @@
                     <!-- Badge dinámico para versión progress -->
                     <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105 mt-[9px]"
                         :style="{
-                            backgroundColor: currentVariantData.color + '40',
-                            border: `2px solid ${currentVariantData.color}`
+                            backgroundColor: currentLanguageData.color + '40',
+                            border: `2px solid ${currentLanguageData.color}`
                         }" @click="$emit('show-all')">
 
-                        <div class="w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                            :style="{ backgroundColor: currentVariantData.color }">
-                            {{ currentVariantInitial }}
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                            :style="{ backgroundColor: currentLanguageData.color }">
+                            {{ currentLanguageData.flag }}
                         </div>
 
                         <span v-if="!isMobile" class="text-xs font-semibold"
-                            :style="{ color: currentVariantData.color }">
-                            {{ currentVariantData.name }}
+                            :style="{ color: currentLanguageData.color }">
+                            {{ currentLanguageData.name }}
                         </span>
 
                     </div>
@@ -86,7 +84,6 @@
                     <span class="font-bold">
                         <span v-if="!isMobile">← Volver</span>
                         <span v-else>
-
                             <svg fill="#d1d5db" height="20px" width="20px" version="1.1" id="Capa_1"
                                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                 viewBox="0 0 460.775 460.775" xml:space="preserve">
@@ -98,7 +95,6 @@
                                     </path>
                                 </g>
                             </svg>
-
                         </span>
                     </span>
                 </router-link>
@@ -111,30 +107,28 @@
                 <!-- Badge dinámico para versión default -->
                 <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105"
                     :style="{
-                        backgroundColor: currentVariantData.color + '40',
-                        border: `2px solid ${currentVariantData.color}`
+                        backgroundColor: currentLanguageData.color + '40',
+                        border: `2px solid ${currentLanguageData.color}`
                     }" @click="$emit('show-all')">
-                    <div class="w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        :style="{ backgroundColor: currentVariantData.color }">
-                        {{ currentVariantInitial }}
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        :style="{ backgroundColor: currentLanguageData.color }">
+                        {{ currentLanguageData.flag }}
                     </div>
-                    <span v-if="!isMobile" class="text-xs font-semibold" :style="{ color: currentVariantData.color }">
-                        {{ currentVariantData.name }}
+                    <span v-if="!isMobile" class="text-xs font-semibold" :style="{ color: currentLanguageData.color }">
+                        {{ currentLanguageData.name }}
                     </span>
                 </div>
             </div>
 
         </div>
     </div>
-
-
 </template>
 
 <script>
 import Badge from './Badge.vue';
 import ProgressBar from './ProgressBar.vue';
 import { useAuthStore } from '../stores/auth';
-import { dialectVariants } from '../lib/data.js';
+import { LanguageService } from '../data/services/LanguageService.js';
 
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
@@ -172,22 +166,24 @@ export default {
         },
         color: {
             type: String,
-            default: '#58cc02' // Color por defecto (verde)
+            default: '#58cc02'
         }
     },
-    emits: ['show-all'],
+    emits: ['show-all', 'exit-lesson'],
     data() {
         return {
             authStore: useAuthStore(),
+            languageService: new LanguageService(),
             isMobile: false
         };
     },
     computed: {
-        currentVariantData() {
-            return dialectVariants.find(v => v.id === this.authStore.selectedVariant) || dialectVariants[3]; // 'all' por defecto
-        },
-        currentVariantInitial() {
-            return this.currentVariantData.name.charAt(0);
+        currentLanguageData() {
+            if (!this.authStore.selectedLanguage) {
+                return { color: '#666', name: 'Selecciona idioma', flag: '🌐' };
+            }
+            return this.languageService.getLanguageInfo(this.authStore.selectedLanguage) ||
+                { color: '#666', name: 'Idioma no encontrado', flag: '❓' };
         }
     },
     methods: {
