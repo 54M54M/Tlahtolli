@@ -1,19 +1,19 @@
-<template>
+<!-- <template>
     <div class="min-h-screen bg-[#0A2136] text-white">
         <Header variant="simple" title="Mapa Dialectal" />
 
         <main class="container mx-auto px-4 py-6 md:py-10">
-            <div class="max-w-md mx-auto">
+            <div class="max-w-md mx-auto"> -->
                 <!-- Map Container -->
-                <div
+                <!-- <div
                     class="relative w-full h-[250px] md:h-[300px] border border-gray-700 rounded-lg bg-gray-900 mb-4 md:mb-6">
                     <div class="absolute inset-0 flex items-center justify-center">
                         <img src="../assets/mx.svg" alt="Mapa de México"
                             class="w-full h-full object-contain opacity-30" />
-                    </div>
+                    </div> -->
 
                     <!-- Region Buttons -->
-                    <button v-for="region in regions" :key="region.id"
+                    <!-- <button v-for="region in regions" :key="region.id"
                         class="absolute w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white"
                         :class="{ 'transform scale-125 z-20': selectedRegion === region.id }" :style="{
                             top: region.position.top,
@@ -39,17 +39,17 @@
                             </svg>
                         </span>
                     </button>
-                </div>
+                </div> -->
 
                 <!-- Region Details -->
-                <div v-if="selectedRegion" class="mb-6 md:mb-8">
+                <!-- <div v-if="selectedRegion" class="mb-6 md:mb-8">
                     <Card class="border border-gray-700 p-3 md:p-4">
                         <div v-for="region in filteredRegions" :key="region.id">
                             <h3 class="text-base md:text-lg font-bold text-white mb-1 md:mb-2">{{ region.name }}</h3>
-                            <p class="text-xs md:text-sm text-gray-300 mb-2 md:mb-3">{{ region.description }}</p>
+                            <p class="text-xs md:text-sm text-gray-300 mb-2 md:mb-3">{{ region.description }}</p> -->
 
                             <!-- Common Words -->
-                            <div class="mb-2 md:mb-3">
+                            <!-- <div class="mb-2 md:mb-3">
                                 <h4 class="font-medium text-[#58CC02] text-xs md:text-sm mb-1">Palabras comunes:</h4>
                                 <div class="space-y-1">
                                     <div v-for="word in region.words" :key="word.spanish"
@@ -65,10 +65,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Main Communities -->
-                            <div>
+                            <!-- <div>
                                 <h4 class="font-medium text-[#58CC02] text-xs md:text-sm mb-1">Comunidades principales:
                                 </h4>
                                 <ul class="list-disc pl-4 md:pl-5 text-gray-300 text-xs md:text-sm space-y-0.5">
@@ -76,67 +76,67 @@
                                         {{ community }}
                                     </li>
                                 </ul>
-                            </div>
+                            </div> -->
 
                             <!-- Close Button -->
-                            <button
+                            <!-- <button
                                 class="mt-3 md:mt-4 bg-gray-700 hover:bg-gray-600 text-xs md:text-sm w-full rounded p-1.5 md:p-2 transition-colors focus:outline-none focus:ring-1 focus:ring-gray-500"
                                 @click="selectedRegion = null" aria-label="Cerrar detalles de región">
                                 Cerrar
                             </button>
                         </div>
                     </Card>
-                </div>
+                </div> -->
 
                 <!-- Empty State -->
-                <div v-else class="text-center text-gray-400 py-3 md:py-4">
+                <!-- <div v-else class="text-center text-gray-400 py-3 md:py-4">
                     <p class="text-xs md:text-sm">Selecciona una región en el mapa para ver más información</p>
                 </div>
             </div>
         </main>
     </div>
-</template>
+</template> -->
 
 <script setup>
-import { ref, computed } from 'vue';
-import Card from '../components/Card.vue';
-import Header from '../components/vHeader.vue';
-import { regions } from '../lib/data.js';
+// import { ref, computed } from 'vue';
+// import Card from '../components/Card.vue';
+// import Header from '../components/vHeader.vue';
+// // import { regions } from '../lib/data.js';
 
-const selectedRegion = ref(null);
+// const selectedRegion = ref(null);
 
-const filteredRegions = computed(() =>
-    regions.filter(r => r.id === selectedRegion.value)
-);
+// const filteredRegions = computed(() =>
+//     regions.filter(r => r.id === selectedRegion.value)
+// );
 
-const selectRegion = (regionId) => {
-    selectedRegion.value = regionId;
-};
+// const selectRegion = (regionId) => {
+//     selectedRegion.value = regionId;
+// };
 
-const speak = (text, dialect) => {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-MX';
+// const speak = (text, dialect) => {
+//     if ('speechSynthesis' in window) {
+//         const utterance = new SpeechSynthesisUtterance(text);
+//         utterance.lang = 'es-MX';
 
-        // Ajustar parámetros según dialecto
-        switch (dialect) {
-            case 'central':
-                utterance.rate = 0.9;
-                utterance.pitch = 1.0;
-                break;
-            case 'oriental':
-                utterance.rate = 1.0;
-                utterance.pitch = 1.1;
-                break;
-            case 'occidental':
-                utterance.rate = 1.1;
-                utterance.pitch = 0.9;
-                break;
-        }
+//         // Ajustar parámetros según dialecto
+//         switch (dialect) {
+//             case 'central':
+//                 utterance.rate = 0.9;
+//                 utterance.pitch = 1.0;
+//                 break;
+//             case 'oriental':
+//                 utterance.rate = 1.0;
+//                 utterance.pitch = 1.1;
+//                 break;
+//             case 'occidental':
+//                 utterance.rate = 1.1;
+//                 utterance.pitch = 0.9;
+//                 break;
+//         }
 
-        speechSynthesis.speak(utterance);
-    } else {
-        alert('Tu navegador no soporta la funcionalidad de texto a voz');
-    }
-};
+//         speechSynthesis.speak(utterance);
+//     } else {
+//         alert('Tu navegador no soporta la funcionalidad de texto a voz');
+//     }
+// };
 </script>

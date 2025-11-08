@@ -1,5 +1,101 @@
 # CHANGELOG
 
+## [3/NOV/2025] - Restructuración Mayor y Sistema de Componentes
+
+### Nuevos Componentes
+
+- **Sistema de Modales**
+  - ExitConfirmModal para confirmación de salida
+  - FeedbackModal para retroalimentación
+  - WarningModal para avisos importantes
+  - Mejor manejo de estados modales
+
+- **Sistema de Progreso**
+  - ProgressBar con animaciones fluidas
+  - DialectProgress para seguimiento por variante
+  - Badge para indicadores visuales
+  - LearningStats con métricas detalladas
+
+  ### Mejoras en Arquitectura
+
+  - **Sistema de Datos**
+    - Nueva estructura de modelos
+      - Achievement para sistema de logros
+      - DictionaryEntry para entradas léxicas
+      - Exercise para sistema de ejercicios
+      - Level y Unit para estructura de contenido
+    - Mejor organización de datos por módulos
+
+  - **Sistema de Repositorios**
+    - DictionaryRepository para gestión léxica
+    - LearningRepository para contenido educativo
+    - StatsRepository para métricas de usuario
+    - UserRepository para gestión de perfiles
+    - SyllabaryRepository para los sistemas de escritura
+
+### Servicios y Lógica
+
+- **Servicios Core**
+  - AchievementService para sistema de logros
+    - Gestión de logros y recompensas
+    - Seguimiento de hitos y desbloqueos
+    - Notificaciones de nuevos logros
+    - Integración con StatsRepository
+  - LanguageService para gestión lingüística
+    - Procesamiento de texto y variantes
+    - Validación gramatical y ortográfica
+    - Análisis de pronunciación
+    - Integración con diccionario
+  - ProgressService para seguimiento
+    - Control de avance por niveles
+    - Métricas de aprendizaje
+    - Sincronización con UnlockService
+    - Persistencia de progreso
+  - StudyService para lógica de aprendizaje
+    - Generación de ejercicios
+    - Evaluación de respuestas
+    - Adaptación de dificultad
+    - Retroalimentación personalizada
+  - UnlockService para progresión de contenido
+    - Gestión de requisitos y desbloqueo de niveles/unidades
+    - Validación de progreso y sincronización con ProgressService
+    - Soporte para reglas de desbloqueo por variante y logros
+  - SpeechService/TTS para ejemplos de pronunciación y retroalimentación auditiva; integración con LanguageService
+
+- **Sistema de Almacenamiento**
+  - LocalStorageService optimizado
+  - Mejor persistencia de datos
+  - Sistema de caché mejorado
+  - Manejo eficiente del estado
+
+### Vistas y Navegación
+
+- **Vistas Principales**
+  - GlossaryView con tres subsecciones (silabario, banco de palabras, diccionario)
+  - HomeView rediseñada
+  - ProfileView con estadísticas detalladas
+  - StatsView para métricas globales
+
+- **Sistema de Layout**
+  - DesktopAside mejorado
+  - Layout.vue más flexible
+  - MobileNav optimizado
+  - vHeader con mejor adaptabilidad
+
+### Configuración y Utilidades
+
+- **Configuración**
+  - Sistema de rutas optimizado
+  - Store de autenticación mejorado
+  - Configuración de Vite actualizada
+  - Sistema de tipos TypeScript
+
+- **Estilos**
+  - Implementación completa de Tailwind
+  - Sistema de colores para dialectos
+  - Mejoras en responsividad
+  - Optimización de interfaces
+
 ## [27/OCT/2025] - Mejoras en la Interfaz y Experiencia de Usuario
 
 ### Nuevos Componentes

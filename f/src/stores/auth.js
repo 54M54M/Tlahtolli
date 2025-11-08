@@ -1,63 +1,81 @@
 import { defineStore } from 'pinia'
-import { userData } from '../lib/data.js'
+import { UserRepository } from '../data/repositories/UserRepository.js'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
-        selectedVariant: null,
+        selectedLanguage: null,
         isNewUser: true,
-        isInitialized: false // Nuevo estado
+        isInitialized: false
     }),
 
     getters: {
         isAuthenticated: (state) => !!state.user,
-        hasSelectedVariant: (state) => !!state.selectedVariant,
-        isVariantReady: (state) => state.isInitialized && !!state.selectedVariant // Nuevo getter
+        hasSelectedLanguage: (state) => !!state.selectedLanguage,
+        isLanguageReady: (state) => state.isInitialized // Solo verificar inicialización
     },
 
     actions: {
         login() {
-            this.user = userData
+            const userRepo = new UserRepository()
+            this.user = userRepo.getUser(1)
 
-            // Verificar si hay variante guardada en localStorage
-            const savedVariant = localStorage.getItem('selectedVariant')
-            if (savedVariant) {
-                this.selectedVariant = savedVariant
+            // Verificar si hay idioma guardado en localStorage
+            const savedLanguage = localStorage.getItem('selectedLanguage')
+            if (savedLanguage) {
+                this.selectedLanguage = savedLanguage
                 this.isNewUser = false
             } else {
-                this.selectedVariant = null
+                this.selectedLanguage = null
                 this.isNewUser = true
             }
             this.isInitialized = true
+            console.log('Login completed - Language:', this.selectedLanguage, 'isNewUser:', this.isNewUser)
         },
 
         logout() {
             this.user = null
-            this.selectedVariant = null
+            this.selectedLanguage = null
             this.isNewUser = true
             this.isInitialized = false
-            localStorage.removeItem('selectedVariant')
+            localStorage.removeItem('selectedLanguage')
         },
 
-        setVariant(variantId) {
-            this.selectedVariant = variantId
+        setLanguage(languageCode) {
+            this.selectedLanguage = languageCode
             this.isNewUser = false
-            localStorage.setItem('selectedVariant', variantId)
+            localStorage.setItem('selectedLanguage', languageCode)
+
+            // Actualizar el idioma actual del usuario
+            if (this.user) {
+                const userRepo = new UserRepository()
+                userRepo.switchLanguage(1, languageCode)
+            }
+            console.log('Language set to:', languageCode)
         },
 
         // Método para inicializar el estado desde localStorage
         initialize() {
-            const savedVariant = localStorage.getItem('selectedVariant')
-            if (savedVariant) {
-                this.selectedVariant = savedVariant
-                this.isNewUser = false
+            try {
+                const savedLanguage = localStorage.getItem('selectedLanguage')
+                console.log('Initializing auth store. Saved language:', savedLanguage)
+
+                if (savedLanguage) {
+                    this.selectedLanguage = savedLanguage
+                    this.isNewUser = false
+                    console.log('Restored language from localStorage:', savedLanguage)
+                }
+                this.isInitialized = true
+                console.log('Auth store initialized successfully')
+            } catch (error) {
+                console.error('Error initializing auth store:', error)
+                this.isInitialized = true // Marcar como inicializado incluso con error
             }
-            this.isInitialized = true
         }
     },
 
     persist: {
         key: 'auth-storage',
-        paths: ['user', 'selectedVariant', 'isNewUser', 'isInitialized']
+        paths: ['user', 'selectedLanguage', 'isNewUser', 'isInitialized']
     }
 })

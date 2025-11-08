@@ -29,7 +29,6 @@
 </template>
 
 <script setup>
-import { userData } from '../lib/data.js'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
@@ -38,12 +37,17 @@ import placeholder from '../assets/300x300.png'
 const authStore = useAuthStore()
 const router = useRouter()
 
+// Datos del usuario desde el repositorio
+import { UserRepository } from '../data/repositories/UserRepository.js'
+const userRepo = new UserRepository()
+const userData = userRepo.getUser(1)
+
 const login = () => {
     authStore.login()
 
     // Redirigir según si es nuevo usuario o no
     if (authStore.isNewUser) {
-        router.push('/select-variant')
+        router.push('/select-language') // Cambiado
     } else {
         router.push('/')
     }
@@ -54,7 +58,7 @@ onMounted(() => {
     // Usar authStore.user en lugar de authStore.isAuthenticated
     if (authStore.user) {
         if (authStore.isNewUser) {
-            router.push('/select-variant')
+            router.push('/select-language') // Cambiado
         } else {
             router.push('/')
         }
