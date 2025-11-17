@@ -48,8 +48,13 @@ import { useAuthStore } from '../stores/auth'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { preventReload } from '../utils/preventReload.js'
+
 export default {
     name: 'Layout',
+
+    mixins: [preventReload],
+
     components: {
         DesktopAside,
         MobileNav,
@@ -65,9 +70,12 @@ export default {
             return route.name === 'LanguageSelection'
         })
 
-        // Computed property para verificar si estamos en una lección
+        // Computed property para verificar si estamos en una lección o nivel rápido
         const isLessonRoute = computed(() => {
-            return route.name === 'Leccion' || route.path.includes('/leccion/')
+            return route.name === 'Leccion' ||
+                route.name === 'NivelRapido' ||
+                route.path.includes('/leccion/') ||
+                route.path.includes('/nivel-rapido/')
         })
 
         // ============================================================================

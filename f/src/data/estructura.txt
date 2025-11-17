@@ -10,8 +10,11 @@
         ├── FeedbackModal.vue
         ├── LearningStats.vue
         ├── MobileNav.vue
+        ├── NextStage.vue
+        ├── ProcessedText.vue
         ├── ProgressAside.vue
         ├── ProgressBar.vue
+        ├── PronunciationTooltip.vue
         ├── SettingsPanel.vue
         ├── Tab.vue
         ├── UserProfile.vue
@@ -31,16 +34,19 @@
             ├── Unit.js
             ├── User.js
         └── 📁repositories
-            └── 📁contentLearnRepo
+            └── 📁contentRepositories
                 ├── learningContent.js
             ├── DictionaryRepository.js
             ├── LearningRepository.js
+            ├── RepositoryFactory.js
             ├── StatsRepository.js
             ├── SyllabaryRepository.js
             ├── UserRepository.js
         └── 📁services
+            ├── AchievementService.js
             ├── LanguageService.js
             ├── ProgressService.js
+            ├── SpeechService.js
             ├── StudyService.js
             ├── UnlockService.js
         └── 📁storage
@@ -53,8 +59,8 @@
         ├── index.js
     └── 📁stores
         ├── auth.js
-    └── 📁types
-        ├── index.js
+    └── 📁utils
+        ├── preventReload.js
     └── 📁views
         └── 📁glossary
             ├── DictionaryContent.vue
@@ -63,6 +69,7 @@
         └── 📁learn
             ├── LessonView.vue
             ├── LevelView.vue
+            ├── QuickLevelView.vue
         ├── GlossaryView.vue
         ├── HomeView.vue
         ├── LoginView.vue

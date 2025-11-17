@@ -36,8 +36,8 @@
                     </button>
 
                     <div class="text-center -mt-3">
-                        <h2 class="text-sm font-semibold mb-[-5px]">
-                            {{ subtitle }}
+                        <h2 class="text-xs tracking-wider font-semibold mb-[-5px] uppercase">
+                            {{ title }}
                         </h2>
                     </div>
 
@@ -99,9 +99,11 @@
                     </span>
                 </router-link>
 
-                <div class="text-center">
-                    <h2 class="text-sm font-semibold">{{ subtitle }}</h2>
-                    <h1 class="text-lg font-bold">{{ title }}</h1>
+                <div class="text-center flex-1 max-w-[200px] md:max-w-[315px] mx-4">
+                    <h2 class="text-sm font-semibold truncate">{{ subtitle }}</h2>
+                    <h1 class="text-lg font-bold truncate md:">
+                        {{ title }}
+                    </h1>
                 </div>
 
                 <!-- Badge dinámico para versión default -->

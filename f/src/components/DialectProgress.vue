@@ -50,11 +50,15 @@ const selectedLanguageData = computed(() => {
     // Encontrar el progreso en los props.dialects
     const progressInfo = props.dialects.find(dialect => dialect.id === selectedLanguage) || props.dialects[0];
 
+    // Limitar el progreso a máximo 2 decimales
+    const progress = progressInfo?.progress || 0;
+    const formattedProgress = typeof progress === 'number' ? Number(progress.toFixed(2)) : 0;
+
     return {
         id: languageInfo?.id || selectedLanguage,
         name: languageInfo?.name || 'Idioma actual',
         color: languageInfo?.color || '#666',
-        progress: progressInfo?.progress || 0
+        progress: formattedProgress
     };
 });
 </script>

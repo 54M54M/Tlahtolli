@@ -22,11 +22,20 @@ export class Exercise {
             case "multiple-choice":
                 return userAnswer === this.correctAnswer;
             case "fill-blank":
-                return userAnswer.toLowerCase().trim() === this.correctAnswer.toLowerCase().trim();
+                // SOPORTE PARA MÚLTIPLES RESPUESTAS CORRECTAS
+                const userAnswerClean = userAnswer.toLowerCase().trim();
+
+                // Si correctAnswer es un array, aceptar cualquiera de las respuestas
+                if (Array.isArray(this.correctAnswer)) {
+                    return this.correctAnswer.some(correct =>
+                        userAnswerClean === correct.toLowerCase().trim()
+                    );
+                }
+                // Si es string, comportamiento normal
+                return userAnswerClean === this.correctAnswer.toLowerCase().trim();
             case "match":
                 return JSON.stringify(userAnswer) === JSON.stringify(this.correctAnswer);
             case "multiple-correct":
-                // Para preguntas con múltiples respuestas correctas
                 const userAnswers = Array.isArray(userAnswer) ? userAnswer : [userAnswer];
                 const correctAnswers = Array.isArray(this.correct) ? this.correct : [this.correctAnswer];
                 return userAnswers.length === correctAnswers.length &&

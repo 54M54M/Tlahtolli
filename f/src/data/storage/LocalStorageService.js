@@ -98,4 +98,19 @@ export class LocalStorageService {
             });
         });
     }
+    
+    static setLastVisited(language, levelId, unitId = null) {
+        const progress = this.getProgress(language);
+        progress.lastVisited = {
+            levelId: levelId,
+            unitId: unitId,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(`progress_${language}`, JSON.stringify(progress));
+    }
+
+    static getLastVisited(language) {
+        const progress = this.getProgress(language);
+        return progress.lastVisited || null;
+    }
 }

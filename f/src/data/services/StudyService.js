@@ -234,7 +234,8 @@ export class StudyService {
                     isCorrect = userAnswer === exercise.correctAnswer;
                     break;
                 case "fill-blank":
-                    isCorrect = userAnswer.toLowerCase().trim() === exercise.correctAnswer.toLowerCase().trim();
+                    // DELEGAR LA VALIDACIÓN AL MÉTODO validateAnswer DEL EJERCICIO
+                    isCorrect = exercise.validateAnswer(userAnswer);
                     break;
                 default:
                     isCorrect = false;
