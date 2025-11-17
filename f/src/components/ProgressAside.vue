@@ -64,7 +64,7 @@ import LearningStats from './LearningStats.vue';
 import DialectProgress from './DialectProgress.vue';
 import { LanguageService } from '../data/services/LanguageService.js';
 import { getStatsRepository } from '../data/repositories/RepositoryFactory.js';
-import { LocalStorageService } from '../data/storage/LocalStorageService.js'; // CORREGIR IMPORT
+import { LocalStorageService } from '../data/storage/LocalStorageService.js';
 
 export default {
     name: 'ProgressAside',

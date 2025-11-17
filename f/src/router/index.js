@@ -36,6 +36,13 @@ const routes = [
         props: true,
         meta: { hideNav: true, requiresAuth: true },
     },
+    {
+        path: '/nivel-rapido/:levelId',
+        name: 'NivelRapido',
+        component: () => import("../views/learn/QuickLevelView.vue"),
+        props: true,
+        meta: { hideNav: true, requiresAuth: true },
+    },
     // ---------------------------------------------------------------
     {
         path: '/glosario',

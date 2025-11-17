@@ -121,13 +121,45 @@ export class LearningRepository {
     }
 
     getExercisesForUnit(language, levelId, unitId) {
-        const exercises = Array.from(this.exercises.values())
+        console.log(`🎯 GET EXERCISES FOR UNIT: ${language}_${levelId}_${unitId}`);
+
+        // MAPEO DE UNIDADES - Convertir unidad UI a unidad de ejercicios
+        const unitMapping = this.getUnitMapping(levelId, unitId);
+        console.log(`🔄 Mapeo de unidad: UI ${unitId} → Ejercicios ${unitMapping.exerciseUnitId}`);
+
+        // Obtener TODOS los ejercicios del nivel
+        const allExercises = Array.from(this.exercises.values())
             .filter(exercise =>
                 exercise.language === language &&
-                exercise.levelId === levelId &&
-                exercise.unitId === unitId
-            )
+                exercise.levelId === levelId
+            );
+
+        console.log(`📊 Total ejercicios nivel ${levelId}: ${allExercises.length}`);
+
+        // Filtrar por unidadId MAPEADA
+        const exercises = allExercises
+            .filter(exercise => exercise.unitId === unitMapping.exerciseUnitId)
             .sort((a, b) => a.id - b.id);
+
+        console.log(`📊 Ejercicios encontrados para unidad ${unitId} (mapeada a ${unitMapping.exerciseUnitId}): ${exercises.length}`);
+
+        // Si no hay ejercicios, loggear más detalles
+        if (exercises.length === 0) {
+            console.log(`❌ NO SE ENCONTRARON EJERCICIOS para ${language}_${levelId}_${unitId} (mapeada a ${unitMapping.exerciseUnitId})`);
+            console.log(`🔍 Ejercicios disponibles en nivel ${levelId}:`,
+                allExercises.map(e => ({ id: e.id, unitId: e.unitId, levelId: e.levelId }))
+            );
+        }
+
+        // const exercises = Array.from(this.exercises.values())
+        //     .filter(exercise =>
+        //         exercise.language === language &&
+        //         exercise.levelId === levelId &&
+        //         exercise.unitId === unitId
+        //     )
+        //     .sort((a, b) => a.id - b.id);
+
+        console.log(`📊 Ejercicios encontrados: ${exercises.length} para ${language}_${levelId}_${unitId}`);
 
         // Obtener vocabulario de unidades relacionadas para enriquecer las opciones
         const relatedVocabulary = this.getRelatedVocabulary(language, levelId, unitId);
@@ -176,6 +208,29 @@ export class LearningRepository {
         });
     }
 
+    //Mapea unidades de la UI a unidades de ejercicios
+    getUnitMapping(levelId, uiUnitId) {
+        // Para nivel 1: UI 1-6 → Ejercicios 1-6
+        // Para nivel 2: UI 7-12 → Ejercicios 1-6  
+        // Para nivel 3: UI 13-18 → Ejercicios 1-6
+        // .....
+
+        if (levelId === 1) {
+            return {
+                uiUnitId: uiUnitId,
+                exerciseUnitId: uiUnitId,
+                description: `Nivel 1: UI ${uiUnitId} → Ejercicios ${uiUnitId}`
+            };
+        } else {
+            const exerciseUnitId = ((uiUnitId - 1) % 6) + 1;
+            return {
+                uiUnitId: uiUnitId,
+                exerciseUnitId: exerciseUnitId,
+                description: `Nivel ${levelId}: UI ${uiUnitId} → Ejercicios ${exerciseUnitId}`
+            };
+        }
+    }
+
     // Nuevo método para obtener vocabulario de unidades relacionadas
     getRelatedVocabulary(language, levelId, unitId) {
         const vocabulary = new Set();
@@ -183,7 +238,8 @@ export class LearningRepository {
         // Obtener la unidad actual
         const currentUnit = this.getUnit(language, levelId, unitId);
         if (currentUnit && currentUnit.vocabulary) {
-            currentUnit.vocabulary.forEach(item => vocabulary.add(item.word));
+            // currentUnit.vocabulary es un objeto, usar Object.keys() para iterar
+            Object.keys(currentUnit.vocabulary).forEach(word => vocabulary.add(word));
         }
 
         // Obtener unidades del mismo nivel
@@ -193,14 +249,14 @@ export class LearningRepository {
         const currentUnitIndex = sameLevelUnits.findIndex(unit => unit.id === unitId);
         for (let i = Math.max(0, currentUnitIndex - 2); i < currentUnitIndex; i++) {
             if (sameLevelUnits[i] && sameLevelUnits[i].vocabulary) {
-                sameLevelUnits[i].vocabulary.forEach(item => vocabulary.add(item.word));
+                Object.keys(sameLevelUnits[i].vocabulary).forEach(word => vocabulary.add(word));
             }
         }
 
         // Agregar vocabulario de unidades posteriores (hasta 2 unidades después)
         for (let i = currentUnitIndex + 1; i <= Math.min(sameLevelUnits.length - 1, currentUnitIndex + 2); i++) {
             if (sameLevelUnits[i] && sameLevelUnits[i].vocabulary) {
-                sameLevelUnits[i].vocabulary.forEach(item => vocabulary.add(item.word));
+                Object.keys(sameLevelUnits[i].vocabulary).forEach(word => vocabulary.add(word));
             }
         }
 
@@ -210,7 +266,7 @@ export class LearningRepository {
             // Tomar hasta 5 palabras del nivel anterior
             previousLevelUnits.slice(-3).forEach(unit => {
                 if (unit && unit.vocabulary) {
-                    unit.vocabulary.forEach(item => vocabulary.add(item.word));
+                    Object.keys(unit.vocabulary).forEach(word => vocabulary.add(word));
                 }
             });
         }
@@ -243,7 +299,7 @@ export class LearningRepository {
                     case 2: // Nivel 2: Completar 4 unidades del Nivel 1
                         const level1Units = this.getUnits(language, 1);
                         const completedLevel1Units = level1Units.filter(unit => unit.completed).length;
-                        shouldUnlock = completedLevel1Units >= 4;
+                        shouldUnlock = completedLevel1Units >= 6;
                         break;
 
                     case 3: // Nivel 3: Completar Nivel 2
@@ -322,13 +378,46 @@ export class LearningRepository {
         return false;
     }
 
+    // En LearningRepository.js
     unlockUnit(language, levelId, unitId) {
-        const unit = this.getUnit(language, levelId, unitId);
-        if (unit) {
-            unit.unlock();
+        const unitKey = `${language}_${levelId}_${unitId}`;
+        const unit = this.units.get(unitKey);
+
+        console.log(`🔓 LEARNING REPO - Intentando desbloquear: ${unitKey}`, {
+            unitExists: !!unit,
+            currentlyLocked: unit?.locked,
+            currentlyCurrent: unit?.current
+        });
+
+        if (unit && unit.locked) {
+            unit.locked = false;
+            unit.current = true;
+
+            console.log(`✅ UNIDAD DESBLOQUEADA EN REPOSITORIO: ${unitKey}`, {
+                locked: unit.locked,
+                current: unit.current,
+                completed: unit.completed
+            });
+
             return true;
         }
+
+        console.log(`❌ No se pudo desbloquear unidad: ${unitKey}`);
         return false;
+    }
+
+    // Método para obtener unidades con ejercicios
+    getUnitWithExercises(language, levelId, unitId) {
+        const unit = this.getUnit(language, levelId, unitId);
+        if (unit && !unit.locked) {
+            // Asegurar que los ejercicios estén cargados
+            if (!unit.exercises || unit.exercises.length === 0) {
+                // Cargar ejercicios si no existen
+                unit.exercises = this.generateUnitExercises(unit);
+            }
+            return unit;
+        }
+        return null;
     }
 
     getNextUnit(language, levelId, unitId) {

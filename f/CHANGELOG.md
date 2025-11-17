@@ -1,5 +1,156 @@
 # CHANGELOG
 
+## [3.2.0] - 2025-11-15 - Sistema Completo de Lecciones Mejoradas
+
+### Added
+
+- **Componentes de Procesamiento de Texto y Tooltips**
+  - `ProcessedText.vue`: Componente para procesar texto con vocabulario contextual
+    - Segmentación inteligente de texto con detección de palabras
+    - Manejo de coincidencias exactas, parciales y por palabras individuales
+    - Comparación de palabras individuales para frases compuestas
+    - Búsqueda en traducción con normalización avanzada
+
+  - `PronunciationTooltip.vue`: Tooltips interactivos con información de vocabulario
+    - Posicionamiento dinámico (top/bottom) según espacio disponible
+    - Muestra pronunciación con formato especial
+    - Estilos adaptativos según estado del ejercicio (correcto/incorrecto)
+    - Sistema de highlight con bordes punteados para palabras con tooltip
+    - Animaciones suaves con transiciones CSS
+    - Backdrop blur para efecto glassmorphism
+    - Flecha dinámica del tooltip según posición
+    - Prevención de desbordamiento de pantalla
+    - Detección automática de espacio vertical disponible
+
+- **Componente de Navegación entre Niveles**
+  - `NextStage.vue`: Componente para mostrar siguiente nivel
+    - Información del próximo nivel con estado de bloqueo
+    - Integración con LearningRepository para validación
+
+- **Sistema de Prevención de Recarga**
+  - `preventReload.js`: Mixin global para prevenir pérdida de progreso
+    - Prevención de teclas F5, Ctrl+R, Cmd+R
+    - Prevención de pull-to-refresh en móviles
+    - Prevención de gestos de navegación (swipe)
+
+- **Componentes de Progreso Mejorados**
+  - `ProgressAside.vue`: Sidebar de progreso optimizado
+    - Loading state mientras carga idioma
+    - Progreso de idioma con porcentaje calculado
+
+  - `DialectProgress.vue`: Componente de progreso de idioma
+    - Formateo de porcentaje a 2 decimales
+
+- **Validación de Respuestas Mejorada**
+  - `Exercise.js`: Modelo con validación avanzada
+    - Campo answer agregado para respuestas
+    - validateAnswer con soporte para arrays en correctAnswer
+    - Comparación case-insensitive para fill-blank
+    - Soporte para múltiples respuestas correctas
+    - Manejo de respuestas parciales
+
+  - `StudyService.js`: Servicio mejorado de estudio
+    - evaluateSession delegando a validateAnswer del Exercise
+    - Soporte para arrays de respuestas correctas
+    - Validación mejorada de ejercicios fill-blank
+    - Manejo de diferentes tipos de ejercicios
+
+### Changed
+
+- **Layout y Navegación**
+  - `Layout.vue`: Layout principal con preventReload
+    - Mixin preventReload aplicado
+    - Loading state mientras inicializa idioma
+
+  - `router/index.js`: Rutas con meta hideNav
+    - Meta hideNav para Leccion y NivelRapido
+    - Guards de autenticación mejorados
+
+- **Estilos y UX**
+  - `style.css`: Estilos mejorados para lecciones
+    - Prevención de overscroll behavior en móviles
+    - Scrollbars ocultos en toda la aplicación
+    - Tap highlight desactivado para mejor UX móvil
+    - Height 100vh para evitar problemas de scroll
+
+- **Características de ProcessedText**
+  - Procesamiento inteligente de vocabulario
+    - Segmentación por espacios y puntuación
+    - Mantiene estructura original del texto
+    - Detecta palabras vs espacios/puntuación
+    - Asigna información de vocabulario a cada palabra
+    - Maneja arrays y objetos de vocabulario
+  - Búsqueda avanzada en vocabulario
+    - Búsqueda parcial para palabras similares
+    - Comparación case-insensitive
+    - Normalización de acentos y caracteres especiales
+    - División de frases para buscar palabras individuales
+    - Filtro de palabras cortas (> 2 caracteres)
+
+- **Características de PronunciationTooltip**
+  - Sistema de tooltip avanzado
+    - Cálculo dinámico de posición según viewport
+    - Ancho mínimo y máximo configurables
+  - Estados visuales
+    - Transiciones suaves entre estados
+  - Animaciones
+    - Fade in/out con opacity
+    - Scale 95-100% para efecto de zoom
+    - Translate-y para movimiento suave
+    - Duración 300ms con cubic-bezier
+  - Contenido del tooltip
+    - Pronunciación en formato destacado
+
+- **Características de NextStage**
+  - Integración con repositorios
+    - Obtiene datos del siguiente nivel
+    - Valida estados de bloqueo
+
+- **Características del Sistema de Prevención**
+  - Prevención en múltiples niveles
+    - Eventos de teclado (keydown)
+    - Eventos de navegador (beforeunload)
+    - Eventos táctiles en móviles
+    - Gestos de navegación
+  - Estado de lección activa
+    - Flag lessonInProgress
+    - Control de flujo de navegación
+    - Cleanup al desmontar componente
+
+### Fixed
+
+- **Mejoras de Accesibilidad**
+  - Tooltips con información contextual
+  - Overscroll behavior controlado
+  - Scrollbars consistentes en toda la app
+  - Responsive design en todos los componentes
+  - Border dotted visible para palabras con información
+  - Contraste adecuado en todos los estados
+
+- **Integración con Servicios**
+  - LocalStorageService para progreso real
+  - LanguageService para información de idiomas
+  - StatsRepository para estadísticas
+  - LearningRepository para datos de niveles y unidades
+  - Cálculo dinámico de porcentajes
+
+- **Flujos de Usuario Mejorados**
+  - Flujo de procesamiento de texto
+  - Flujo de tooltip interactivo
+  - Flujo de navegación entre niveles
+  - Flujo de prevención de recarga
+
+### Future Improvements Suggested
+
+- Agregar audio al hacer clic en palabras con tooltip
+- Web Speech API para futura implementación de audio
+- Sistema de favoritos para vocabulario
+- Historial de palabras consultadas
+- Quiz de vocabulario basado en palabras con tooltip
+- Exportar vocabulario consultado
+- Modo de práctica de pronunciación
+- Sistema de guardado automático periódico
+
 ## [3.1.0] - 2025-11-08 - Implementación de RepositoryFactory con Patrón Singleton
 
 ### Added

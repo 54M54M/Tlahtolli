@@ -14,6 +14,43 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* style.css - agregar al final */
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Permitir selección en inputs y textareas */
+input,
+textarea {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Prevenir overscroll behavior en móviles */
+html,
+body {
+  overscroll-behavior: none;
+  height: 100%;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  overflow: auto;
+  /* desactiva scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 /* @layer base {
   :root {
     --color-central: #58cc02;

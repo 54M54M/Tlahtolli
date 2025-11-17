@@ -1,27 +1,23 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2 md:pt-[15%] md:mx-[-50%] md:py-[20%]">
         <!-- Header con título dinámico -->
-        <Header variant="progress" :title="currentUnit.title"
-            :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`" :progressCurrent="currentQuestion - 1"
-            :progressTotal="currentExercises.length" :backRoute="`/nivel/${currentLevel.id}`"
-            @exit-lesson="showExitConfirmModal" />
+        <Header variant="progress" :title="`Nivel Rápido ${currentLevel.id}`"
+            :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
+            :progressCurrent="completedExercises" :progressTotal="totalExercises"
+            :backRoute="`/nivel/${currentLevel.id}`" @exit-lesson="showExitConfirmModal" />
 
         <!-- Contenido -->
         <div class="flex-1 flex items-center justify-center md:mt-[9%] overflow-hidden">
-
             <!-- contenedor flex columna -->
             <div class="flex flex-col w-full items-center">
                 <div class="w-full">
                     <!-- QUESTION DESKTOP -->
-                    <h1 class="hidden md:block text-3xl ml-20 font-bold mb-4">{{
-                        currentExercise.question }}
-                    </h1>
+                    <h1 class="hidden md:block text-3xl ml-20 font-bold mb-4">{{ currentExercise.question }}</h1>
                 </div>
 
                 <div class="w-full max-w-2xl md:max-w-4xl">
                     <!-- Mostrar ejercicio actual -->
-                    <Card v-if="currentQuestion <= currentExercises.length">
-
+                    <Card v-if="currentQuestion <= quickExercises.length">
                         <!-- QUESTION MOBILE -->
                         <h2 class="md:hidden block text-xl font-semibold mb-4">{{ currentExercise.question }}</h2>
 
@@ -47,19 +43,17 @@
 
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"
-                                                    :vocabulary="currentUnitVocabulary"
+                                                    :vocabulary="currentLevelVocabulary"
                                                     :exercise-type="currentExercise.type" />
 
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                             <!-- Contenido derecho en desktop -->
                             <div class="md:w-2/3 md:pr-2">
-
                                 <!-- ANSWER DESKTOP -->
                                 <div v-if="currentExercise.answer" class="hidden md:block w-full mb-2">
                                     <div class="relative md:-ml-7">
@@ -76,7 +70,7 @@
 
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"
-                                                    :vocabulary="currentUnitVocabulary"
+                                                    :vocabulary="currentLevelVocabulary"
                                                     :exercise-type="currentExercise.type" />
 
                                             </p>
@@ -98,9 +92,7 @@
                                             'border-2 border-red-500 text-red-500': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
                                         }"
                                             class="md:h-[58px] h-[65px] p-3 rounded-lg hover:bg-gray-600 font-semibold tracking-wider transition-colors flex items-center justify-center text-center break-words w-full">
-                                            <span class="text-sm md:text-base">
-                                                {{ option }}
-                                            </span>
+                                            <span class="text-sm md:text-base">{{ option }}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -135,19 +127,30 @@
                             :is-correct="isAnswerCorrect" @continue="continueFromModal" />
                     </Card>
 
-                    <!-- En LessonView.vue, reemplazar el Card de finalización -->
-                    <!-- Mensaje de finalización - USANDO DISEÑO DE QUICKLEVEL -->
-                    <Card v-if="currentQuestion > this.currentExercises.length"
+                    <!-- Mensaje de finalización -->
+                    <Card v-if="currentQuestion > quickExercises.length"
                         class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
-                        <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
-                        <!-- <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ currentExercises.length }}
-                            ejercicios correctamente.</p> -->
+                        <h2 class="text-xl font-semibold mb-4">¡Nivel Rápido Completado!</h2>
+                        <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ totalExercises }} ejercicios
+                            correctamente.</p>
 
-                        <!-- Mostrar progreso de desbloqueo si aplica -->
-                        <!-- <div v-if="hasUnlockedNextUnit" class="mb-4 p-4 bg-green-900/20 rounded-lg">
-                            <h3 class="font-semibold text-green-400 mb-2">¡Nueva Unidad Desbloqueada!</h3>
-                            <p class="text-sm">¡Felicidades! Has desbloqueado la siguiente unidad.</p>
-                        </div> -->
+                        <!-- Mostrar progreso de desbloqueo -->
+                        <div v-if="unlockedNextLevelUnit" class="mb-4 p-4 bg-green-900/20 rounded-lg">
+                            <h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
+                            <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}
+                            </p>
+                            <div class="mt-2 flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
+                            </div>
+                        </div>
+
+                        <div v-else-if="performance < 0.8" class="mb-4 p-4 bg-yellow-900/20 rounded-lg">
+                            <h3 class="font-semibold text-yellow-400 mb-2">Sigue practicando</h3>
+                            <p class="text-sm">Necesitas al menos 80% de aciertos para desbloquear el siguiente nivel.
+                            </p>
+                            <p class="text-sm mt-1">Obtuviste: {{ Math.round(performance * 100) }}%</p>
+                        </div>
 
                         <div class="flex flex-col">
                             <router-link :to="`/nivel/${currentLevel.id}`">
@@ -158,6 +161,7 @@
                             </router-link>
                         </div>
                     </Card>
+
                 </div>
             </div>
         </div>
@@ -175,18 +179,17 @@ import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
-
 import ProcessedText from '../../components/ProcessedText.vue';
-import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
+import NextStage from '../../components/NextStage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 import { ProgressService } from '../../data/services/ProgressService.js';
-import { SpeechService } from '../../data/services/SpeechService.js';
+import { QuickLevelService } from '../../data/services/QuickLevelService.js';
 import placeholder from '../../assets/300x300.png';
 
 export default {
-    name: "Lesson",
+    name: "QuickLevel",
     components: {
         Card,
         Header,
@@ -194,10 +197,10 @@ export default {
         WarningModal,
         ExitConfirmModal,
         ProcessedText,
-        PronunciationTooltip
+        NextStage
     },
     props: {
-        unitId: {
+        levelId: {
             type: [String, Number],
             required: true
         }
@@ -209,107 +212,74 @@ export default {
             textAnswer: '',
             showResult: false,
             isAnswerCorrect: false,
-            currentExercises: [],
+            quickExercises: [],
             currentLevel: {},
-            currentUnit: {},
             placeholder: placeholder,
             authStore: useAuthStore(),
             learningRepo: getLearningRepository(),
             progressService: new ProgressService(),
+            quickLevelService: new QuickLevelService(),
             lessonInProgress: true,
             showFeedbackModal: false,
             showWarningModal: false,
             showExitConfirmModalFlag: false,
             feedbackTitle: '',
             feedbackMessage: '',
-            correctAnswersCount: 0
+            correctAnswersCount: 0,
+            completedExercises: 0,
+            unlockedNextLevelUnit: false,
+            nextLevelId: null,
+            performance: 0
         };
     },
     computed: {
         currentExercise() {
-            return this.currentExercises[this.currentQuestion - 1] || {};
+            return this.quickExercises[this.currentQuestion - 1] || {};
         },
-        // Obtener vocabulario de la unidad actual - CONVERTIDO A ARRAY
-        // En LessonView.vue - computed property
-        currentUnitVocabulary() {
-            if (!this.currentUnit.vocabulary) return [];
-
-            console.log('📚 Vocabulario de unidad:', this.currentUnit.vocabulary);
-
-            // Si es un array, devolverlo tal cual
-            if (Array.isArray(this.currentUnit.vocabulary)) {
-                return this.currentUnit.vocabulary;
-            }
-
-            // Si es un objeto, convertirlo a array
-            if (typeof this.currentUnit.vocabulary === 'object') {
-                const vocabularyArray = Object.keys(this.currentUnit.vocabulary).map(key => {
-                    const item = this.currentUnit.vocabulary[key];
-                    return {
-                        word: key,
-                        pronunciation: item.pronunciation || '',
-                        translation: item.translation || '',
-                        example: item.example || ''
-                    };
-                });
-                console.log('🔄 Vocabulario convertido a array:', vocabularyArray);
-                return vocabularyArray;
-            }
-
-            return [];
+        totalExercises() {
+            return this.quickExercises.length;
         },
-        // Verificar si se desbloqueó siguiente unidad
-        hasUnlockedNextUnit() {
-            const language = this.authStore.selectedLanguage;
-            const nextUnit = this.learningRepo.getNextUnit(language, this.currentLevel.id, this.currentUnit.id);
-            return nextUnit && !nextUnit.locked;
+        // Obtener vocabulario combinado de todas las unidades del nivel
+        currentLevelVocabulary() {
+            const units = this.learningRepo.getUnits(this.authStore.selectedLanguage, Number(this.levelId));
+            const vocabulary = [];
+
+            units.forEach(unit => {
+                if (unit.vocabulary) {
+                    if (Array.isArray(unit.vocabulary)) {
+                        vocabulary.push(...unit.vocabulary);
+                    } else {
+                        Object.keys(unit.vocabulary).forEach(key => {
+                            vocabulary.push({
+                                word: key,
+                                ...unit.vocabulary[key]
+                            });
+                        });
+                    }
+                }
+            });
+
+            console.log('📚 VOCABULARIO COMBINADO DEL NIVEL:', vocabulary);
+            return vocabulary;
         }
     },
     created() {
-        this.loadLessonData();
+        this.loadQuickLevelData();
         this.setupPageReloadPrevention();
     },
     beforeUnmount() {
         this.cleanupPageReloadPrevention();
     },
-
     methods: {
-        // En el método loadLessonData()
-        async loadLessonData() {
+        async loadQuickLevelData() {
             const language = this.authStore.selectedLanguage;
-            const levels = this.learningRepo.getLevels(language);
+            const levelId = Number(this.levelId);
 
-            console.log('🔍 BUSCANDO UNIDAD:', this.unitId);
-            console.log('📊 NIVELES DISPONIBLES:', levels);
+            // Obtener nivel actual
+            this.currentLevel = this.learningRepo.getLevel(language, levelId);
 
-            for (const level of levels) {
-                const units = this.learningRepo.getUnits(language, level.id);
-                console.log(`📋 UNIDADES DEL NIVEL ${level.id}:`, units);
-
-                const unit = units.find(u => u.id === Number(this.unitId));
-
-                if (unit) {
-                    console.log('✅ UNIDAD ENCONTRADA:', unit);
-                    console.log('📚 VOCABULARIO DE LA UNIDAD:', unit.vocabulary);
-
-                    this.currentUnit = unit;
-                    this.currentLevel = level;
-                    this.currentExercises = this.learningRepo.getExercisesForUnit(language, level.id, unit.id);
-                    break;
-                }
-            }
-
-            console.log('🏁 FINAL - currentUnit:', this.currentUnit);
-            console.log('🏁 FINAL - currentUnitVocabulary:', this.currentUnitVocabulary);
-        },
-
-        // Usar pronunciación específica cuando esté disponible
-        selectAnswerWithSound(index, option) {
-            // 1. Primero selecciona la respuesta
-            this.selectAnswer(index);
-
-            // 2. Luego reproduce el sonido con pronunciación específica si está disponible
-            // this.speakOption(option); // DESHABILITADO POR BUGS
+            // Usar el servicio para obtener ejercicios aleatorios
+            this.quickExercises = this.quickLevelService.getRandomExercisesForLevel(language, levelId, 6);
         },
 
         selectAnswer(index) {
@@ -318,47 +288,43 @@ export default {
             }
         },
 
-        // Buscar pronunciación específica en el vocabulario
-        speakOption(optionText) {
-            // Buscar si la opción coincide con alguna palabra del vocabulario de la unidad
-            const matchingVocabulary = this.currentUnitVocabulary.find(item =>
-                item.word === optionText || item.translation === optionText
-            );
+        selectAnswerWithSound(index, option) {
+            this.selectAnswer(index);
+        },
 
-            if (matchingVocabulary) {
-                // Si encontramos vocabulario coincidente, usar SpeechService mejorado
-                SpeechService.speakVocabularyItem(matchingVocabulary);
+        validateFillBlankAnswer(userAnswer, correctAnswer) {
+            if (!userAnswer || !correctAnswer) return false;
+
+            // Normalizar la respuesta del usuario
+            const normalizedUser = userAnswer.trim().toLowerCase();
+
+            // Manejar diferentes tipos de correctAnswer
+            let normalizedCorrect;
+
+            if (typeof correctAnswer === 'string') {
+                // Si es string, usar directamente
+                normalizedCorrect = correctAnswer.trim().toLowerCase();
+            } else if (Array.isArray(correctAnswer)) {
+                // Si es array, usar el primer elemento o convertir a string
+                normalizedCorrect = correctAnswer[0] ? correctAnswer[0].toString().trim().toLowerCase() : '';
+            } else if (typeof correctAnswer === 'object' && correctAnswer !== null) {
+                // Si es objeto, intentar extraer la respuesta
+                normalizedCorrect = correctAnswer.answer ? correctAnswer.answer.toString().trim().toLowerCase() : '';
             } else {
-                // Si no, usar la opción tal cual
-                SpeechService.speakWord(optionText);
+                // Para cualquier otro tipo, convertir a string
+                normalizedCorrect = correctAnswer.toString().trim().toLowerCase();
             }
+
+            console.log('🔍 Validando fill-blank:', {
+                userAnswer: normalizedUser,
+                correctAnswer: normalizedCorrect,
+                originalCorrect: correctAnswer
+            });
+
+            // Comparación directa
+            return normalizedUser === normalizedCorrect;
         },
 
-        // Método para hablar la pregunta principal [DEMO]
-        speakQuestion() {
-            const question = this.currentExercise.question;
-
-            // Buscar si la pregunta contiene palabras del vocabulario
-            const wordsInQuestion = question.split(' ');
-            let foundPronunciation = false;
-
-            for (const word of wordsInQuestion) {
-                const matchingVocabulary = this.currentUnitVocabulary.find(item =>
-                    item.word === word || item.translation.includes(word)
-                );
-
-                if (matchingVocabulary && matchingVocabulary.pronunciation) {
-                    SpeechService.speakVocabularyItem(matchingVocabulary);
-                    foundPronunciation = true;
-                    break;
-                }
-            }
-
-            // Si no se encontró pronunciación específica, hablar la pregunta completa
-            if (!foundPronunciation) {
-                SpeechService.speakWord(question);
-            }
-        },
 
         verifyAnswer() {
             if (this.showResult) {
@@ -366,207 +332,206 @@ export default {
             } else {
                 this.showResult = true;
 
+                // DEBUG: Verificar la estructura del ejercicio actual
+                console.log('🔍 Ejercicio actual:', this.currentExercise);
+                console.log('🔍 Tipo:', this.currentExercise.type);
+                console.log('🔍 Respuesta correcta:', this.currentExercise.correctAnswer);
+                console.log('🔍 Tipo de correctAnswer:', typeof this.currentExercise.correctAnswer);
+
                 if (this.currentExercise.type === 'multiple-choice') {
                     this.isAnswerCorrect = this.selectedAnswer === this.currentExercise.correctAnswer;
                 } else if (this.currentExercise.type === 'fill-blank') {
-                    this.isAnswerCorrect = this.currentExercise.validateAnswer(this.textAnswer);
+                    this.isAnswerCorrect = this.validateFillBlankAnswer(
+                        this.textAnswer,
+                        this.currentExercise.correctAnswer
+                    );
                 }
 
-                // CONTAR RESPUESTAS CORRECTAS
                 if (this.isAnswerCorrect) {
                     this.correctAnswersCount++;
                 }
 
                 if (this.isAnswerCorrect) {
-                    this.showFeedback('¡Buen trabajo!', this.currentExercise.explanation || 'Respuesta correcta.');
+                    this.showFeedback('¡Correcto!', this.currentExercise.explanation || 'Buen trabajo.');
                 } else {
-                    this.showFeedback('Inténtalo de nuevo', this.currentExercise.explanation || 'La respuesta no es correcta.');
+                    this.showFeedback('Incorrecto', this.currentExercise.explanation || 'Sigue practicando.');
                 }
             }
         },
+
         continueFromModal() {
             this.closeFeedbackModal();
+            this.completedExercises++;
             this.currentQuestion++;
             this.selectedAnswer = null;
             this.textAnswer = '';
             this.showResult = false;
             this.isAnswerCorrect = false;
 
-            if (this.currentQuestion > this.currentExercises.length) {
-                this.completeCurrentUnit();
+            if (this.currentQuestion > this.quickExercises.length) {
+                this.completeQuickLevel();
                 this.lessonInProgress = false;
             }
         },
-        // manejar el caso de repetición
-        completeCurrentUnit() {
+
+        async completeQuickLevel() {
             const language = this.authStore.selectedLanguage;
+            const levelId = Number(this.levelId);
+
+            console.log(`🚀 INICIANDO COMPLETADO DE QUICKLEVEL - Nivel ${levelId}`);
+
+            // Verificar estado ANTES
+            this.quickLevelService.checkSystemState(language, levelId);
 
             // CALCULAR PERFORMANCE
-            const performance = this.currentExercises.length > 0 ?
-                this.correctAnswersCount / this.currentExercises.length : 1.0;
+            this.performance = this.correctAnswersCount / this.totalExercises;
+            console.log(`📊 Performance: ${this.performance} (${this.correctAnswersCount}/${this.totalExercises})`);
 
-            // OBTENER PALABRAS APRENDIDAS DEL VOCABULARIO DE LA UNIDAD (corregido)
-            const wordsLearned = this.currentUnit.vocabulary && typeof this.currentUnit.vocabulary === 'object' ?
-                Object.keys(this.currentUnit.vocabulary).map(wordKey => ({
-                    word: wordKey,
-                    translation: this.currentUnit.vocabulary[wordKey].translation,
-                    dialect: language
-                })) : [];
-
-            console.log('📝 Palabras aprendidas:', wordsLearned);
-
-            // COMPLETAR LECCIÓN CON PROGRESSSERVICE
-            const result = this.progressService.completeLesson(
-                1, // userId
+            // USAR EL NUEVO SERVICIO
+            const result = await this.quickLevelService.completeQuickLevel(
                 language,
-                this.currentLevel.id,
-                this.currentUnit.id,
-                performance,
-                wordsLearned
+                levelId,
+                this.performance,
+                this.correctAnswersCount,
+                this.totalExercises
             );
 
-            // MOSTRAR MENSAJE DIFERENTE SI ES REPETICIÓN
-            if (result.wasAlreadyCompleted) {
+            this.unlockedNextLevelUnit = result.nextLevelUnlocked;
+            this.nextLevelId = result.nextLevelId;
+
+            // VERIFICACIÓN EXTRA - Forzar actualización del repositorio
+            console.log(`🔄 FORZANDO ACTUALIZACIÓN DEL REPOSITORIO...`);
+            this.learningRepo.checkAndUpdateLevelLockStatus(language);
+
+            // Verificar estado DESPUÉS con más detalle
+            console.log(`🔍 VERIFICACIÓN FINAL DEL SISTEMA:`);
+            this.quickLevelService.checkSystemState(language, levelId);
+
+            if (result.nextLevelUnlocked && result.nextLevelId) {
+                console.log(`🎉 NIVEL ${result.nextLevelId} DESBLOQUEADO - Verificando estado:`);
+                this.quickLevelService.checkSystemState(language, result.nextLevelId);
+            }
+
+            if (result.progressRecorded.wasAlreadyCompleted) {
                 this.showFeedback(
-                    '¡Lección repasada!',
-                    'Fresco como una lechuga!'
+                    '¡Nivel Repasado!',
+                    `Completaste ${this.correctAnswersCount} de ${this.totalExercises} ejercicios correctamente.`
                 );
             } else {
-                // COMPLETAR UNIDAD EN LEARNINGREPOSITORY (solo si no estaba completada)
-                this.learningRepo.completeUnit(language, this.currentLevel.id, this.currentUnit.id);
-
-                // DESBLOQUEAR SIGUIENTE UNIDAD
-                this.unlockNextUnit(language, this.currentLevel.id, this.currentUnit.id);
-
                 this.showFeedback(
-                    '¡Lección completada!',
-                    'Has desbloqueado nuevas unidades.'
+                    '¡Nivel Rápido Completado!',
+                    `Completaste ${this.correctAnswersCount} de ${this.totalExercises} ejercicios correctamente.${result.nextLevelUnlocked ? ' ¡Nuevo nivel desbloqueado!' : ''}`
                 );
             }
         },
 
-        // NUEVO MÉTODO PARA DESBLOQUEAR SIGUIENTE UNIDAD
-        unlockNextUnit(language, levelId, unitId) {
-            const units = this.learningRepo.getUnits(language, levelId);
-            const currentUnitIndex = units.findIndex(unit => unit.id === unitId);
+        // método para debugging
+        checkCurrentState() {
+            const language = this.authStore.selectedLanguage;
+            const levelId = Number(this.levelId);
 
-            // Desbloquear siguiente unidad si existe
-            if (currentUnitIndex !== -1 && currentUnitIndex < units.length - 1) {
-                const nextUnit = units[currentUnitIndex + 1];
-                if (nextUnit && nextUnit.locked) {
-                    this.learningRepo.unlockUnit(language, levelId, nextUnit.id);
-                    // console.log(`🔓 Unidad ${nextUnit.id} desbloqueada`);
-                }
-            }
+            console.log(`🔍 ESTADO ACTUAL DEL SISTEMA:`);
 
-            // Verificar si se debe desbloquear el siguiente nivel
-            this.checkLevelUnlock(language, levelId);
-        },
-
-        // VERIFICAR DESBLOQUEO DE NIVEL
-        checkLevelUnlock(language, levelId) {
+            // Verificar nivel actual
             const currentLevel = this.learningRepo.getLevel(language, levelId);
-            const units = this.learningRepo.getUnits(language, levelId);
+            console.log(`📊 Nivel actual ${levelId}:`, {
+                locked: currentLevel.locked,
+                completedUnits: currentLevel.completedUnits,
+                totalUnits: currentLevel.units,
+                progress: `${((currentLevel.completedUnits / currentLevel.units) * 100).toFixed(1)}%`
+            });
 
-            // Contar unidades completadas
-            const completedUnits = units.filter(unit => unit.completed).length;
+            // Verificar unidades del nivel actual
+            const currentUnits = this.learningRepo.getUnits(language, levelId);
+            console.log(`📋 Unidades del nivel ${levelId}:`,
+                currentUnits.map(u => ({
+                    id: u.id,
+                    completed: u.completed,
+                    locked: u.locked,
+                    current: u.current
+                }))
+            );
 
-            // Verificar requisitos para desbloquear siguiente nivel
+            // Verificar siguiente nivel si existe
             const levels = this.learningRepo.getLevels(language);
             const currentLevelIndex = levels.findIndex(level => level.id === levelId);
-
-            if (currentLevelIndex !== -1 && currentLevelIndex < levels.length - 1) {
+            if (currentLevelIndex < levels.length - 1) {
                 const nextLevel = levels[currentLevelIndex + 1];
-
-                if (nextLevel && nextLevel.locked) {
-                    // Verificar requisitos específicos del nivel
-                    const unlockRequirement = nextLevel.unlockRequirement;
-
-                    if (unlockRequirement.includes('Completar Nivel')) {
-                        // Requiere completar el nivel actual
-                        const allUnitsCompleted = units.every(unit => unit.completed);
-                        if (allUnitsCompleted) {
-                            this.learningRepo.unlockLevel(language, nextLevel.id);
-                            // console.log(`🎉 Nivel ${nextLevel.id} desbloqueado!`);
-                        }
-                    } else if (unlockRequirement.includes('unidades')) {
-                        // Requiere completar X unidades
-                        const match = unlockRequirement.match(/(\d+)\s*unidades/);
-                        if (match && completedUnits >= parseInt(match[1])) {
-                            this.learningRepo.unlockLevel(language, nextLevel.id);
-                            // console.log(`🎉 Nivel ${nextLevel.id} desbloqueado!`);
-                        }
-                    }
-                }
+                const nextLevelUnits = this.learningRepo.getUnits(language, nextLevel.id);
+                console.log(`🔮 Siguiente nivel ${nextLevel.id}:`, {
+                    locked: nextLevel.locked,
+                    units: nextLevel.units
+                });
+                console.log(`🔮 Unidades del siguiente nivel:`,
+                    nextLevelUnits.map(u => ({
+                        id: u.id,
+                        completed: u.completed,
+                        locked: u.locked,
+                        current: u.current
+                    }))
+                );
             }
         },
+
         showFeedback(title, message) {
             this.feedbackTitle = title;
             this.feedbackMessage = message;
             this.showFeedbackModal = true;
         },
+
         closeFeedbackModal() {
             this.showFeedbackModal = false;
         },
+
         showWarning() {
             this.showWarningModal = true;
         },
+
         closeWarningModal() {
             this.showWarningModal = false;
         },
+
         showExitConfirmModal() {
             this.showExitConfirmModalFlag = true;
         },
+
         closeExitConfirmModal() {
             this.showExitConfirmModalFlag = false;
         },
+
         confirmExitLesson() {
             this.closeExitConfirmModal();
             this.$router.push(`/nivel/${this.currentLevel.id}`);
         },
+
         endSession() {
             this.closeWarningModal();
             this.$router.push(`/nivel/${this.currentLevel.id}`);
         },
+
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);
             window.addEventListener('beforeunload', this.preventUnload);
         },
+
         cleanupPageReloadPrevention() {
             window.removeEventListener('keydown', this.preventReloadKeys);
             window.removeEventListener('beforeunload', this.preventUnload);
         },
+
         preventReloadKeys(e) {
             if ((e.key === 'F5' || (e.ctrlKey && e.key === 'r')) && this.lessonInProgress) {
                 e.preventDefault();
                 this.showWarning();
             }
         },
+
         preventUnload(e) {
             if (this.lessonInProgress) {
                 e.preventDefault();
                 e.returnValue = '¿Estás seguro de que quieres recargar? Perderás tu progreso en esta lección.';
                 return e.returnValue;
             }
-        }
-    },
-    watch: {
-        currentUnitVocabulary: {
-            handler(newVocab) {
-                // console.log('🔍 VOCABULARIO ACTUAL DE LA UNIDAD:', newVocab);
-                // console.log('📝 Ejercicio actual:', this.currentExercise);
-            },
-            immediate: true,
-            deep: true
-        },
-        currentExercise: {
-            handler(newExercise) {
-                // console.log('🔄 Ejercicio cambiado:', newExercise);
-                if (newExercise && newExercise.answer) {
-                    // console.log('📋 Texto a procesar:', newExercise.answer);
-                }
-            },
-            immediate: true
         }
     }
 };

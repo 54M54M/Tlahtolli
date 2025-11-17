@@ -1,5 +1,5 @@
 <template>
-    <div class="md:mt-[70px] mt-[35px] mb-[73px]">
+    <div class="md:mt-[70px] mt-[35px] mb-[-15px]">
         <Header :title="currentLevel.titleNative" :subtitle="currentLevel.titleSpanish" @show-all="handleShowAll"
             :color="currentLevel.color" />
 
@@ -57,15 +57,23 @@
                     </div>
 
                     <!-- Objetivo -->
-                    <div class="bg-white/20 rounded-lg p-4">
+                    <div class="bg-white/20 rounded-lg p-4 shadow-md">
                         <h4 class="font-bold mb-1">Objetivo</h4>
                         <p class="text-sm">{{ unit.objective }}</p>
                     </div>
 
                     <!-- Gramática básica -->
-                    <div class="bg-white/20 rounded-lg p-4" v-if="unit.grammar">
-                        <h4 class="font-bold mb-1">Gramática básica</h4>
-                        <p class="text-sm">{{ unit.grammar }}</p>
+                    <div class="bg-white/20 rounded-lg p-4 shadow-md" v-if="unit.grammar">
+                        <h4 class="font-bold mb-2 text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Gramática básica
+                        </h4>
+                        <p class="text-sm bg-black/25 text-white p-3 rounded-lg font-medium backdrop-blur-sm">{{
+                            unit.grammar }}</p>
                     </div>
 
                     <!-- Botón para unidades desbloqueadas -->
@@ -111,12 +119,16 @@
                 </div>
             </div>
         </div>
+
     </div>
+    <!-- Componente "¿QUÉ SIGUE DESPUÉS?" -->
+    <NextStage :current-level-id="id" :language="authStore.selectedLanguage" />
 </template>
 
 <script>
 import Header from '../../components/vHeader.vue';
 import Badge from '../../components/Badge.vue';
+import NextStage from '../../components/NextStage.vue';
 import { useAuthStore } from '../../stores/auth';
 import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 
@@ -124,7 +136,8 @@ export default {
     name: 'Level',
     components: {
         Header,
-        Badge
+        Badge,
+        NextStage
     },
     props: {
         id: {
@@ -135,7 +148,8 @@ export default {
     data() {
         return {
             learningRepo: getLearningRepository(),
-            authStore: useAuthStore()
+            authStore: useAuthStore(),
+            refreshKey: 0 // Para forzar re-renderizado
         };
     },
     computed: {
@@ -155,7 +169,14 @@ export default {
         // Separar unidades desbloqueadas y bloqueadas
         unlockedUnits() {
             if (this.isLevelLocked) return [];
-            return this.currentUnits.filter(unit => !this.isUnitLocked(unit));
+            const units = this.currentUnits.filter(unit => !this.isUnitLocked(unit));
+            console.log(`📊 Unidades desbloqueadas nivel ${this.id}:`, units.map(u => ({
+                id: u.id,
+                locked: u.locked,
+                current: u.current,
+                completed: u.completed
+            })));
+            return units;
         },
         lockedUnits() {
             if (this.isLevelLocked) {
@@ -165,10 +186,59 @@ export default {
                     unlockRequirement: this.currentLevel.unlockRequirement
                 }));
             }
-            return this.currentUnits.filter(unit => this.isUnitLocked(unit));
+            const units = this.currentUnits.filter(unit => this.isUnitLocked(unit));
+            console.log(`📊 Unidades bloqueadas nivel ${this.id}:`, units.map(u => ({
+                id: u.id,
+                locked: u.locked,
+                current: u.current,
+                completed: u.completed
+            })));
+            return units;
         }
     },
+    watch: {
+        '$route.params.id': {
+            immediate: true,
+            handler(newLevelId) {
+                console.log(`🔄 LevelView - Nivel cambiado a: ${newLevelId}`);
+                this.$nextTick(() => {
+                    this.refreshLevelData();
+                });
+            }
+        }
+    },
+    mounted() {
+        console.log(`🏁 LevelView montado - Nivel ${this.id}`);
+        this.logCurrentState();
+    },
     methods: {
+        refreshLevelData() {
+            // Usar una key reactiva para forzar re-renderizado
+            this.refreshKey++;
+            console.log(`🔄 LevelView - Datos refrescados (key: ${this.refreshKey})`);
+            this.logCurrentState();
+        },
+
+        logCurrentState() {
+            console.log(`📊 ESTADO ACTUAL LevelView - Nivel ${this.id}:`, {
+                nivel: {
+                    id: this.currentLevel.id,
+                    locked: this.currentLevel.locked,
+                    title: this.currentLevel.title
+                },
+                unidadesTotales: this.currentUnits.length,
+                unidadesDesbloqueadas: this.unlockedUnits.length,
+                unidadesBloqueadas: this.lockedUnits.length,
+                detallesUnidades: this.currentUnits.map(u => ({
+                    id: u.id,
+                    locked: u.locked,
+                    current: u.current,
+                    completed: u.completed,
+                    title: u.title
+                }))
+            });
+        },
+
         handleShowAll() {
             // Lógica para mostrar todas las variantes (si aplica)
         },

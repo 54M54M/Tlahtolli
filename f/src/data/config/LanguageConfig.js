@@ -11,18 +11,18 @@ export const SUPPORTED_LANGUAGES = {
         speakers: "~1,500,000",
         family: "Uto-azteca"
     },
-    TKOC: {
-        id: "tkoc",
-        code: "tkoc",
-        name: "Teenek",
-        nativeName: "Teenek Occidental",
-        color: "#9C27B0",
-        description: "Variante occidental del idioma huasteco (teenek)",
-        flag: "🌵",
-        difficulty: "advanced",
-        speakers: "~120,000",
-        family: "Maya"
-    }
+    // TKOC: {
+    //     id: "tkoc",
+    //     code: "tkoc",
+    //     name: "Teenek",
+    //     nativeName: "Teenek Occidental",
+    //     color: "#9C27B0",
+    //     description: "Variante occidental del idioma huasteco (teenek)",
+    //     flag: "🌵",
+    //     difficulty: "advanced",
+    //     speakers: "~120,000",
+    //     family: "Maya"
+    // }
 };
 
 export const DEFAULT_LANGUAGE = "nhce";

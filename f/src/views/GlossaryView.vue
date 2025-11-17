@@ -11,9 +11,9 @@
                 <!-- Contenido del 'Sistema de Escritura' -->
                 <WritingContent v-if="activeTab === 'writingSystem'" :syllabaryData="syllabaryEntries" />
 
-                <!-- Contenido del Banco de Palabras -->
-                <WordBankContent v-if="activeTab === 'wordBank'" :language="selectedLanguage"
-                    :currentLanguageName="currentLanguageName" :currentLanguageColor="currentLanguageColor" />
+                <!-- Contenido del Banco de Palabras - BUG: ARREGLAR -->
+                <!-- <WordBankContent v-if="activeTab === 'wordBank'" :language="selectedLanguage"
+                    :currentLanguageName="currentLanguageName" :currentLanguageColor="currentLanguageColor" /> -->
 
                 <!-- Contenido del Diccionario - BUG: ARREGLAR -->
                 <!-- <DictionaryContent v-if="activeTab === 'dictionary'" :searchTerm="searchTerm"
@@ -77,9 +77,9 @@ const availableTabs = computed(() => {
     tabs.push({ value: 'writingSystem', label: writingSystemInfo.value.name });
 
     // Banco de palabras disponible después de completar unidad 1
-    if (hasCompletedUnit1.value || hasCompletedLevel1.value) {
-        tabs.push({ value: 'wordBank', label: 'Banco de Palabras' });
-    }
+    // if (hasCompletedUnit1.value || hasCompletedLevel1.value) {
+    //     tabs.push({ value: 'wordBank', label: 'Banco de Palabras' });
+    // }
 
     // Diccionario disponible después de completar nivel 1
     // if (hasCompletedLevel1.value) {
