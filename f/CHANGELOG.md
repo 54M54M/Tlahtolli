@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## [3.2.1] - 2025-11-20 - Actualización de Vocabulario y Corrección de Ejercicios
+
+### Added
+
+- **Vocabulario Expandido**
+  - Agregadas palabras faltantes: "Cencalli", "Notahtli", "Motahtli", "Nonantli", "Monantli"
+  - Nuevas formas verbales: "Nicochiz", "Xicochih", "Mitz"
+  - Mejora en la cobertura léxica del náhuatl
+
+### Changed
+
+- **Ejercicios de Nivel 6**
+  - Actualizados ejercicios de peticiones y órdenes para mayor consistencia
+  - Mejoradas explicaciones y placeholders en ejercicios
+  - Mantenida funcionalidad de herencia de vocabulario entre niveles
+
+### Fixed
+
+- **Corrección de Bugs**
+  - Solucionado bug en ejercicios fill-blanks que causaba errores en la UI (EN PROCESO)
+  - Corregidos errores en ejercicios problemáticos
+  - Mejorada consistencia en traducciones y pronunciaciones
+  - Optimizado el procesamiento de vocabulario contextual
+
+- **Mejoras de Calidad**
+  - Validación mejorada de respuestas en ejercicios
+  - Consistencia en el formato de vocabulario entre niveles
+  - Corrección de discrepancias en datos de ejercicios
+
 ## [3.2.0] - 2025-11-15 - Sistema Completo de Lecciones Mejoradas
 
 ### Added

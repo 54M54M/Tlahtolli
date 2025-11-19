@@ -1,3 +1,9 @@
+/*
+
+Hay un bug en quicklevel, fill-blanks
+
+*/
+
 import { Level } from '../../models/Level.js';
 import { Unit } from '../../models/Unit.js';
 import { Exercise } from '../../models/Exercise.js';
@@ -29,6 +35,7 @@ function getVocabularyByWords(language, words) {
 }
 
 // ================= /LEVELS/{ID} =================
+/* HAY QUE ARREGLAR LOS EJERCICIOS, YA QUE MUCHAS PALABRAS SE CORRIJIERON */
 export const LEVELS_DATA = {
     // NAHUATL CENTRAL
     nhce: [
@@ -81,132 +88,192 @@ export const LEVELS_DATA = {
 export const VOCABULARY_DATA = {
     // NAHUATL
     nhce: {
-        // sujeto verbal
-        "Ni": { translation: "yo", pronunciation: "ni-" },
-        "Ti": { translation: "tu", pronunciation: "ti-" },
-        "Ti .. h": { translation: "nosotros", pronunciation: "ti-...-h" },
-        "Ye": { translation: "ya / es / ahora", pronunciation: "ye" },
-        "Tzin": { translation: " diminutivo / matiz de respeto", pronunciation: "-tsin" },
-        "I / In": { translation: "su / de el / de ella", pronunciation: "i- / in-" },
-        "No": { translation: "mio / mi", pronunciation: "no-" },
-        "Ni": { translation: "yo soy / yo hago", pronunciation: "ni-" },
-        "Ca": { translation: "por medio de / la razon de", pronunciation: "-ka" },
-        "Man": { translation: "momento / instante", pronunciation: "-man" },
-        "Ca": { translation: "lugar / preguntas de ubicacion", pronunciation: "ka-" },
-        "Nin": { translation: "en el lugar de / hacia donde / ubicacion", pronunciation: "-nin" },
-        "Qu": { translation: "lo / la / le / ello / eso / antes de vocal", pronunciation: "qu- / c-" },
-        "C": { translation: "lo / la / le / ello / eso / antes de consonante", pronunciation: "qu- / c-" },
-        "Ic": { translation: "asi / por eso / tan / de tal modo", pronunciation: "ik" },
-        "O": { translation: "pasado", pronunciation: "o-" },
-        "Z": { translation: "fururo", pronunciation: "-z" },
-        "Ceh": { translation: "-ar -> -amos / -er -ir -> -imos", pronunciation: "-se" },
-        "Xi": { translation: "tu / ustedes / orden-peticion", pronunciation: "shi-" },
-        "Xic": { translation: "tu / ustedes / orden-accion", pronunciation: "shi-" },
-
-        "An / Anqui": { translation: "ustedes", pronunciation: "an- / an-ki-" },
-        "Nan": { translation: "ustedes", pronunciation: "nan-" },
-
-        "N": { translation: "a mi / me", pronunciation: "n-" },
-        "Mitz / Me": { translation: "a ti / te", pronunciation: "mits- / me-" },
-        "Tla": { translation: "algo / cosas / abundancia", pronunciation: "tla-" },
-        "Mo": { translation: "tuyo", pronunciation: "mo-" },
-        "To": { translation: "nuestro", pronunciation: "to-" },
-        "C": { translation: "pasado", pronunciation: "-c" },
-
-        // Nivel 1
-        "Tonalli": { translation: "dia / día / dias / días", pronunciation: "to-nal-li" },
+        // SALUDOS Y CORTESÍAS
         "Cualli": { translation: "buen / bueno / buenos / buena / buenas / bien", pronunciation: "kwal-li" },
+        "Tonalli": { translation: "dia / día / dias / días", pronunciation: "to-nal-li" },
         "Yohual": { translation: "noche / noches", pronunciation: "yo-wal" },
         "Teotlac": { translation: "tarde / tardes", pronunciation: "te-o-tlak" },
         "Niltze": { translation: "hola", pronunciation: "nil-tse" },
         "Timoittazceh": { translation: "adiós / hasta luego / nos vemos", pronunciation: "ti-mo-i-ta-se" },
-        "Notoca": { translation: "me llamo...", pronunciation: "no-to-ka" },
-
-        "Motoca": { translation: " te llamas", pronunciation: "mo-to-ka" },
-        "Quen": { translation: "¿cómo?", pronunciation: "ken" },
-        "Quen motoca": { translation: "¿cómo te llamas?", pronunciation: "ken-mo-to-ka" },
-
-        "Quēmah": { translation: "si", pronunciation: "ke-mah" },
-        "Ahmo": { translation: "no", pronunciation: "ah-mo" },
 
         "Tlazohcamati": { translation: "gracias", pronunciation: "tla-so-ka-ma-ti" },
+        "Titlazohcamatiz": { translation: "agradecer / agradecerás / darás gracias", pronunciation: "ni-tla-zóh-ka-ma-tis" },
+        "Nitlazohcamatiz": { translation: "agradeceré / daré gracias", pronunciation: "ni-tla-zóh-ka-ma-tis" },
+        "Onitlazohcamati": { translation: "agradecí", pronunciation: "o-ni-tla-so-ka-ma-ti" },
 
-        "Miac": { translation: "mucho / mucha / muchas / muchos", pronunciation: "mi-ak" },
-        "Huel": { translation: "muy / verdaderamente", pronunciation: "wel" },
-        "Huel miac": { translation: "muchísimas", pronunciation: "wel-mi-ak" },
+        "Nimitztlatlauhtia": { translation: "por favor", pronunciation: "Ni-mits-tlatla-utia" },
 
-        "Tica": { translation: "estás", pronunciation: "ti-ka" },
-        "Nicac": { translation: "estoy", pronunciation: "ni-kak" },
-        "Tlen": { translation: "nada / que / cosa", pronunciation: "tlen" },
+        "Quēmah": { translation: "sí", pronunciation: "kee-maj" },
+
+        "Ahmo": { translation: "no", pronunciation: "aj-mo" },
         "Ahmotlen": { translation: "nada / ninguna cosa", pronunciation: "ah-mo-tlen" },
         "Ahmo cualli": { translation: "mal / no bien", pronunciation: "ah-mo-kwal-li" },
 
-        // Palabras usadas como nombres personales
-        "Citlalli": { translation: "estrella", pronunciation: "si-tla-li" },
-        "Xóchitl": { translation: "flor", pronunciation: "sho-chi-tl" },
-
-        // Nivel 2
-        "Nehuatl": { translation: "yo", pronunciation: "ne-watl" },
-        "Yehuatl": { translation: "él / ella", pronunciation: "ye-watl" },
+        // PRONOMBRES PERSONALES
+        "Nehuatl": { translation: "yo", pronunciation: "nej-watl" },
         "Tehuatl": { translation: "tú", pronunciation: "te-watl" },
+        "Yehuatl": { translation: "él / ella", pronunciation: "ye-watl" },
         "Yehuan": { translation: "ellos / ellas", pronunciation: "ye-wan" },
         "Anmehuan": { translation: "ustedes", pronunciation: "an-me-wan" },
         "Tehuan": { translation: "nosotros", pronunciation: "te-wan" },
 
-        "Cencal": { translation: "familia", pronunciation: "sen-kal" },
+        // FAMILIA Y PERSONAS
+        "Cencalli": { translation: " familia", pronunciation: "sen-kal" },
         "Nocencal": { translation: "mi familia", pronunciation: "no-sen-kal" },
         "Mocencal": { translation: "tu familia", pronunciation: "mo-sen-kal" },
 
-        "Huey": { translation: "grande", pronunciation: "wey" },
-        "Tepiton": { translation: "pequeño", pronunciation: "te-pi-ton" },
         "Tahtli": { translation: "padre / papá", pronunciation: "taj-tli" },
+        "Notahtli": { translation: "mi padre / mi papá", pronunciation: "no-taj-tli" },
+        "Motahtli": { translation: "tu padre / tu papá", pronunciation: "mo-taj-tli" },
+
         "Nantli": { translation: "madre / mamá", pronunciation: "nan-tli" },
-        "Chicahuac": { translation: "fuerte  / robusto", pronunciation: "chi-ka-wak" },
-        "Cuacualtzin": { translation: "hermosa / hermoso / bella / bello / bonita / bonito", pronunciation: "kwa-kwal-tzin" },
+        "Nonantli": { translation: "mi madre / mi mamá", pronunciation: "no-nan-tli" },
+        "Monantli": { translation: "tu madre / tu mamá", pronunciation: "mo-nan-tli" },
+
+        "Icniuh": { translation: "hermano / hermana / primo / prima / amigo / amiga", pronunciation: "ik-niw-tli" },
         "Icniuhtli": { translation: "hermano / hermana / primo / prima / amigo / amiga", pronunciation: "ik-niw-tli" },
+        "Noicniuh": { translation: "mi hermano / mi hermana / mi primo / mi prima / mi amigo / mi amiga", pronunciation: "no-ik-ni-uj" },
+        "Moicniuh": { translation: "tu hermano / tu hermana / tu primo / tu prima / tu amigo / tu amiga", pronunciation: "mo-ik-ni-uj" },
+        "Ioicniuh": { translation: "su hermano / su hermana / su primo / su prima / su amigo / su amiga", pronunciation: "yo-ik-ni-uj" },
+
         "Telpochtli": { translation: "joven / muchacho / adolescente", pronunciation: "tel-potch-tli" },
         "Ichpochtli": { translation: "joven / muchacha / doncella", pronunciation: "ich-potch-tli" },
-        "Huehue": { translation: "anciano / viejo / persona mayor", pronunciation: "we-we" },
-        "Ilamatl": { translation: "anciana / vieja / persona mayor", pronunciation: "i-la-mat" },
+
+        "Huehue": { translation: "anciano / viejo / hombre mayor", pronunciation: "we-we" },
+        "Ilamatl": { translation: "anciana / vieja / mujer mayor", pronunciation: "i-la-mat" },
+
         "Coltzin": { translation: "abuelo", pronunciation: "kol-tzin" },
         "Cihtzin": { translation: "abuela", pronunciation: "si-tzin" },
-        "Melahuac": { translation: "verdadero / cierto / muy", pronunciation: "me-la-wak" },
+
+        "Tocaitl": { translation: "nombre", pronunciation: "to-ka-itl" },
+        "Notoca": { translation: "me llamo...", pronunciation: "no-to-ka" },
+        "Motoca": { translation: " te llamas", pronunciation: "mo-to-ka" },
+        "Quen motoca": { translation: "cómo te llamas", pronunciation: "ken-mo-to-ka" },
+
+        "Tlacatl": { translation: "persona", pronunciation: "tla-katl" },
+
         "Tlamatini": { translation: "sabio / conocedor", pronunciation: "tla-ma-ti-ni" },
 
-        // Nivel 3
-        "Tleca": { translation: "porque", pronunciation: "tle-ka" },
-        "Queman": { translation: "cuando?", pronunciation: "ke-man" },
-        "Aquin": { translation: "quien?", pronunciation: "a-kin" },
-        "Canin": { translation: "donde?", pronunciation: "ka-nin" },
-        "Queh": { translation: "como / de que manera", pronunciation: "keh" },
-        "Quenin": { translation: "como / de que manera", pronunciation: "ke-nin" },
-        "Chihua": { translation: "hacer", pronunciation: "chi-wa" },
-        "Ompa": { translation: "allá / allí", pronunciation: "om-pa" },
-        "Monequi": { translation: "es necesario / hace falta", pronunciation: "mo-ne-ki" },
-        "Ipan": { translation: "en / sobre", pronunciation: "i-pan" },
+        // ADJETIVOS Y DESCRIPCIONES
+        "Huey": { translation: "grande", pronunciation: "wey" },
+        "Tepiton": { translation: "pequeño", pronunciation: "te-pi-ton" },
 
-        // Nivel 4
+        "Chicahuac": { translation: "fuerte  / robusto", pronunciation: "chi-ka-wak" },
+
+        "Cuacualtzin": { translation: "hermosa / hermoso / bella / bello / bonita / bonito", pronunciation: "kwa-kwal-tzin" },
+
+        "Melahuac": { translation: "verdadero / cierto / correcto", pronunciation: "me-la-wak" },
+
+        "Miac": { translation: "mucho / muchos", pronunciation: "mi-ak" },
+        "Huel": { translation: "muy / verdaderamente", pronunciation: "wel" },
+        "Huel miac": { translation: "muchísimo / muchísimos / muchísimas", pronunciation: "wel-mi-ak" },
+
+        // PALABRAS INTERROGATIVAS
+        "Tlen": { translation: "qué / cosa", pronunciation: "tlen" },
+        "Tleca": { translation: "porque / por qué", pronunciation: "tle-ka" },
+
+        "Quen": { translation: "cómo", pronunciation: "ken" },          // comparativa
+        "Quenin": { translation: "cómo", pronunciation: "ke-nin" },     // interrogativo - explicativo
+
+        "Queman": { translation: "cuando / cuándo", pronunciation: "ke-man" },
+
+        "Aquin": { translation: "quien / quién", pronunciation: "a-kin" },
+
+        "Canin": { translation: "donde / dónde", pronunciation: "ka-nin" },
+
+        // VERBOS
+        "Chihua": { translation: "hacer", pronunciation: "chi-wa" },
+        "Quichihua": { translation: "él hace / ella hace", pronunciation: "ki-chi-wa" },
+        "Chihuaz": { translation: "hará / haré", pronunciation: "chi-was" },
+        "Quichihuaz": { translation: "él lo hará / ella lo hará", pronunciation: "ki-chi-waz" }, // sin objeto, más general
+        "Nicchihua": { translation: "yo lo hago", pronunciation: "nik-chi-wa" },
+        "Nichihuaz": { translation: "yo haré", pronunciation: "ni-chi-waz" },
+        "Tichihua": { translation: "tú haces", pronunciation: "ti-chi-wa" }, // sin objeto, más general
+        "Ticchihua": { translation: "tú lo haces", pronunciation: "tik-chi-wa" }, // con objeto
+        "Tichihuaz": { translation: "tu harás", pronunciation: "ti-chi-waz" }, // sin objeto, más general
+        "Ticchihuaz": { translation: "lo harás", pronunciation: "tik-chi-waz" }, // con objeto
+        "Onicchihua": { translation: "yo lo hice", pronunciation: "o-nik-chi-wa" },
+        "Otichihua": { translation: "hiciste / tú hiciste", pronunciation: "o-ti-chi-wa" },
+        "Ochihua": { translation: "él hizo / ella hizo", pronunciation: "o-chi-wa" },
+        "Oquichihua": { translation: "él lo hizo / ella lo hizo", pronunciation: "o-ki-chi-wa" }, // con objeto
+
+        "Tlacua": { translation: "comer", pronunciation: "tla-kwa" },
+        "Nitlacua": { translation: "yo como", pronunciation: "ni-tla-kwa" },
+        "Motlacua": { translation: "tú comes", pronunciation: "mo-tla-kwa" },
+        "Quitlacua": { translation: "él come / ella come", pronunciation: "ki-tla-kwa" },
+        "Titlacuaceh": { translation: "nosotros comemos", pronunciation: "ti-tla-kwas" },
+        "Nitlacuaz": { translation: "comeré", pronunciation: "ni-tla-kwas" },
+        "Quitlacuaz": { translation: "comerá", pronunciation: "ki-tla-kwas" },
+        "Titlacuaz": { translation: "comerás", pronunciation: "ti-tla-kwas" },
+        "Xictlacua": { translation: "cómelo", pronunciation: "shik-tla-kwa" },
+
+        "Cochi": { translation: "dormir", pronunciation: "ko-chi" },
+        "Ticochi": { translation: "duermes", pronunciation: "ti-ko-chi" },
+        "Nicochi": { translation: "duermo", pronunciation: "ni-ko-chi" },
+        "Nicochiz": { translation: "yo dormiré / yo duermo", pronunciation: "ni-ko-chi" },
+        "Ticochih": { translation: "dormimos", pronunciation: "ti-ko-chij" },
+        "Xicochi": { translation: "tu duerme", pronunciation: "shi-ko-chi" },
+        "Xicochih": { translation: "ustedes duerman", pronunciation: "shi-ko-chij" },
+
+        "Itta": { translation: "ver", pronunciation: "it-ta" },
+        "Niquitta": { translation: "yo lo veo", pronunciation: "ni-kit-ta" },
+        "Oniquittac": { translation: "yo lo vi", pronunciation: "o-ni-kit-tak" },
+        "Onechittac": { translation: "me vio", pronunciation: "o-ne-chit-tak" },
+        "Nimitzittaz": { translation: "te veré", pronunciation: "ni-mit-sit-tas" },
+        "Oquittac": { translation: "él lo vio / ella lo vio", pronunciation: "o-kit-tak" },
+        "Quittaz": { translation: "él lo vera / ella lo verá", pronunciation: "kit-tas" },
+
+        "Ica": { translation: "está / existe", pronunciation: "i-ka" },
+        "Cac": { translation: "están / existen", pronunciation: "kak" },
+        "Tica": { translation: "estás", pronunciation: "ti-ka" },
+        "Ticaz": { translation: "estarás", pronunciation: "ti-kas" },
+        "Nicac": { translation: "estoy", pronunciation: "ni-kak" },
+        "icacāh": { translation: "están", pronunciation: "i-ka-kaa" },
+        "Onica": { translation: "yo estuve", pronunciation: "o-ni-ka" },
+        "Ticah": { translation: "estamos", pronunciation: "ti-kaj" },
+        "Nicaz": { translation: "estaré", pronunciation: "ni-kas" },
+        "Icaz": { translation: "estará", pronunciation: "i-kas" },
+        "Otica": { translation: "tú estuviste", pronunciation: "o-ti-ka" },
+        "Oca": { translation: "él estuvo / ella estuvo", pronunciation: "o-ka" },
+
+        // TIEMPOS Y UBICACIONES
         "Yalhua": { translation: "ayer", pronunciation: "yal-wa" },
         "Axan": { translation: "hoy", pronunciation: "a-shan" },
         "Moztla": { translation: "mañana", pronunciation: "mos-tla" },
-        "Onechittac": { translation: "me vio", pronunciation: "o-ne-chit-tak" },
-        "Nimitzittaz": { translation: "te veré", pronunciation: "ni-mit-sit-tas" },
-        "Oquittac": { translation: "él vio / ella vio", pronunciation: "o-kit-tak" },
-        "Quittaz": { translation: "él vera / ella verá", pronunciation: "kit-tas" },
-        "Iuan": { translation: "con", pronunciation: "i-wan" },
-        "Tlacua": { translation: "comer", pronunciation: "tla-kwa" },
-        "Onica": { translation: "yo estuve", pronunciation: "o-ni-ka" },
+        "Ye": { translation: "ahora", pronunciation: "ye" },
 
-        // Nivel 5
-        "Tlacatl": { translation: "persona", pronunciation: "tla-katl" },
-        "Cohua": { translation: "dormir", pronunciation: "ko-wa" },
+        "Ompa": { translation: "allá / allí", pronunciation: "om-pa" },
+        "Ipan": { translation: "en / sobre", pronunciation: "i-pan" },
+
+        // PARTÍCULAS Y CONECTORES
+        "Oc": { translation: "más / todavía / aún", pronunciation: "ok" },
+        "Ahmo oc": { translation: "menos / ya no", pronunciation: "aj-mo-ok" },
+
+        "Monequi": { translation: "es necesario / hace falta", pronunciation: "mo-ne-ki" },
+        "Oc monequi": { translation: "Todavía tengo que.. / Aún tengo que..", pronunciation: "ok-mo-ne-ki" },
+
+        "Iuan": { translation: "con / y", pronunciation: "i-wan" },
         "Nechpa": { translation: "conmigo", pronunciation: "nech-pa" },
-        "Motlacua": { translation: "comes", pronunciation: "mo-tla-kwa" },
+        "Ic": { translation: "asi / con eso", pronunciation: "ik" },
+        "inīn": { translation: "este / esta / esto", pronunciation: "in-iín" },
+        "inīn quen": { translation: "de esta manera", pronunciation: "in-iin-ken" },
 
-        // Nivel 6
-        "Oc": { translation: "más", pronunciation: "ok" },
-        "Ahmo": { translation: "no", pronunciation: "aj-mo" },
-        "Quēmah": { translation: "sí", pronunciation: "kee-maj" },
+        "Ahzo": { translation: "tal vez / quizás / probablemente", pronunciation: "a-so" },
+
+        "Mitz": { translation: " te / a ti", pronunciation: "mits" },
+
+        // SUFIJOS Y PREFIJOS
+        "No": { translation: "mi / mio", pronunciation: "no-" },
+        "Mo": { translation: "tu / tuyo", pronunciation: "mo-" },
+        "O": { translation: "pasado", pronunciation: "o-" },
+        "Z": { translation: "fururo", pronunciation: "-z" },
+        "Xi": { translation: "imperativo", pronunciation: "shi-" },
+        "Ceh": { translation: "sufijo plural", pronunciation: "-se" }, // -ar -> -amos || -er -ir -> -imos
+
+        // NOMBRES PERSONALES
+        "Citlalli": { translation: "estrella", pronunciation: "si-tla-li" },
+        "Xóchitl": { translation: "flor", pronunciation: "sho-chi-tl" },
+
     },
 };
 
@@ -344,7 +411,7 @@ export const UNITS_DATA = {
             title: "Ubicación y necesidad", color: COLOR_PALETTE.ORANGE,
             completed: false, locked: true, current: false,
             objective: "Aprender a preguntar sobre ubicación y necesidades",
-            grammar: "Ompa, Monequi, Canin mocniuh?, Tlen monequi?",
+            grammar: "Ompa, Monequi, Canin noicniuh?, Tlen monequi?",
             vocabulary: {}
         }),
         new Unit({
@@ -428,7 +495,7 @@ export const UNITS_DATA = {
             title: "Dormir y comer", color: COLOR_PALETTE.TEAL,
             completed: false, locked: true, current: false,
             objective: "Aprender a hablar sobre dormir y comer",
-            grammar: "Cohua, Quitlacua, Chihua, Ipan",
+            grammar: "Cochi, Quitlacua, Chihua, Ipan",
             vocabulary: {}
         }),
         new Unit({
@@ -444,7 +511,7 @@ export const UNITS_DATA = {
             title: "Integración de rutinas", color: COLOR_PALETTE.TEAL,
             completed: false, locked: true, current: false,
             objective: "Integrar diferentes actividades rutinarias",
-            grammar: "Nictlacua, Ticchihua, Nicohua, Quitlacua, Nicchihua",
+            grammar: "Nictlacua, Ticchihua, Nicochi, Quitlacua, Nicchihua",
             vocabulary: {}
         }),
         new Unit({
@@ -470,7 +537,7 @@ export const UNITS_DATA = {
             title: "Comparaciones básicas", color: COLOR_PALETTE.PURPLE,
             completed: false, locked: true, current: false,
             objective: "Aprender a hacer comparaciones",
-            grammar: "Quema, Monequi, Ahmo quema, Quema monequi",
+            grammar: "Quēmah, Monequi, Ahmo quēmah, Quēmah monequi",
             vocabulary: {}
         }),
         new Unit({
@@ -486,7 +553,7 @@ export const UNITS_DATA = {
             title: "Peticiones y órdenes", color: COLOR_PALETTE.PURPLE,
             completed: false, locked: true, current: false,
             objective: "Aprender a hacer peticiones y dar órdenes",
-            grammar: "Tla, xi-, xic-, Tla xictlacua, Tla ximocohua",
+            grammar: "Nimitztlatlauhtia, xi-, xic-, Nimitztlatlauhtia xictlacua, Nimitztlatlauhtia ximocochi",
             vocabulary: {}
         }),
         new Unit({
@@ -494,7 +561,7 @@ export const UNITS_DATA = {
             title: "Integración de preferencias", color: COLOR_PALETTE.PURPLE,
             completed: false, locked: true, current: false,
             objective: "Integrar preferencias en oraciones completas",
-            grammar: "Quema monequi nictlacua, Ahmo monequi nimocohuaz",
+            grammar: "Quema monequi nictlacua, Ahmo monequi nimocochiz",
             vocabulary: {}
         }),
         new Unit({
@@ -966,7 +1033,7 @@ export const EXERCISES_DATA = {
             correctAnswer: "Nocencal", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "No-cencal significa 'mi-familia'"
+            explanation: "No-Cencalli significa 'mi-familia'"
         }),
         new Exercise({
             id: 44, unitId: 2, levelId: 2, language: "nhce",
@@ -986,7 +1053,7 @@ export const EXERCISES_DATA = {
             correctAnswer: "Mocencal", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Mo-cencal significa 'tu-familia'"
+            explanation: "Mo-Cencalli significa 'tu-familia'"
         }),
         new Exercise({
             id: 46, unitId: 2, levelId: 2, language: "nhce",
@@ -1013,12 +1080,12 @@ export const EXERCISES_DATA = {
             id: 48, unitId: 2, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "______ hueyi", // nahuatl
-            correctAnswer: ["Nocencal hueyi", "Nocencal"], // nahuatl
+            answer: "______ huey", // nahuatl
+            correctAnswer: ["Nocencal huey", "Nocencal"], // nahuatl
             placeholder: "Mi familia es grande",
             points: 20,
             difficulty: "medium",
-            explanation: "Nocencal hueyi significa 'Mi familia es grande'"
+            explanation: "Nocencal huey significa 'Mi familia es grande'"
         }),
 
         // 2 : 3
@@ -1077,12 +1144,12 @@ export const EXERCISES_DATA = {
             id: 54, unitId: 3, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "______ nonahtli", // nahuatl
-            correctAnswer: ["Cuacualtzin nonahtli", "Cuacualtzin"], // nahuatl
+            answer: "______ nonantli", // nahuatl
+            correctAnswer: ["Cuacualtzin nonantli", "Cuacualtzin"], // nahuatl
             placeholder: "Mi madre es hermosa",
             points: 20,
             difficulty: "medium",
-            explanation: "Cuacualtzin nonahtli significa 'Mi madre es hermosa'"
+            explanation: "Cuacualtzin nonantli significa 'Mi madre es hermosa'"
         }),
 
         // 2 : 4
@@ -1101,10 +1168,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Mi hermano", // español
-            correctAnswer: "Nocniuh", // nahuatl
+            correctAnswer: "Noicniuh", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Nocniuh significa 'mi hermano', 'mi hermana' o 'mi amigo/a'"
+            explanation: "Noicniuh significa 'mi hermano', 'mi hermana' o 'mi amigo/a'"
         }),
         new Exercise({
             id: 57, unitId: 4, levelId: 2, language: "nhce",
@@ -1130,12 +1197,13 @@ export const EXERCISES_DATA = {
             id: 59, unitId: 4, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Nocniuh ______", // nahuatl
-            correctAnswer: ["Nocniuh telpochtli", "telpochtli"], // nahuatl
+            // da errores
+            answer: "Noicniuh ______", // nahuatl
+            correctAnswer: ["Noicniuh telpochtli", "telpochtli"], // nahuatl
             placeholder: "Mi hermano es joven",
             points: 20,
             difficulty: "medium",
-            explanation: "Nocniuh telpochtli significa 'Mi hermano es joven'"
+            explanation: "Noicniuh telpochtli significa 'Mi hermano es joven'"
         }),
         new Exercise({
             id: 60, unitId: 4, levelId: 2, language: "nhce",
@@ -1194,23 +1262,23 @@ export const EXERCISES_DATA = {
             id: 65, unitId: 5, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Nocniuh ye ______", // nahuatl
-            correctAnswer: ["Nocniuh ye huehue", "huehue"], // nahuatl
+            answer: "Noicniuh ye ______", // nahuatl
+            correctAnswer: ["Noicniuh ye huehue", "huehue"], // nahuatl
             placeholder: "Mi hermano ya es anciano",
             points: 20,
             difficulty: "medium",
-            explanation: "Nocniuh ye huehue significa 'Mi hermano ya es anciano'"
+            explanation: "Noicniuh ye huehue significa 'Mi hermano ya es anciano'"
         }),
         new Exercise({
             id: 66, unitId: 5, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Nocniuh ye ______", // nahuatl
-            correctAnswer: ["Nocniuh ye ilamatl", "ilamatl"], // nahuatl
+            answer: "Noicniuh ye ______", // nahuatl
+            correctAnswer: ["Noicniuh ye ilamatl", "ilamatl"], // nahuatl
             placeholder: "Mi hermana ya es anciana",
             points: 20,
             difficulty: "medium",
-            explanation: "Nocniuh ye ilamatl significa 'Mi hermana ya es anciana'"
+            explanation: "Noicniuh ye ilamatl significa 'Mi hermana ya es anciana'"
         }),
 
         // 2 : 6
@@ -1229,10 +1297,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Mi familia es grande", // español
-            correctAnswer: "Nocencal ye hueyi", // nahuatl
+            correctAnswer: "Nocencal ye huey", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Nocencal ye hueyi describe una familia numerosa"
+            explanation: "Nocencal ye huey describe una familia numerosa"
         }),
         new Exercise({
             id: 69, unitId: 6, levelId: 2, language: "nhce",
@@ -1249,10 +1317,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Mi hermana es joven", // español
-            correctAnswer: "Ichpochtli nocniuh", // nahuatl
+            correctAnswer: "Ichpochtli Noicniuh", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Ichpochtli nocniuh describe a una hermana joven"
+            explanation: "Ichpochtli Noicniuh describe a una hermana joven"
         }),
         new Exercise({
             id: 71, unitId: 6, levelId: 2, language: "nhce",
@@ -1395,7 +1463,7 @@ export const EXERCISES_DATA = {
         new Exercise({
             id: 84, unitId: 2, levelId: 3, language: "nhce",
             type: "fill-blank",
-            question: "Completa la pregunta: ______ timoittazceh?",
+            question: "Completa la pregunta:",
             answer: "______ timoittazceh", // nahuatl
             correctAnswer: ["Queman timoittazceh", "Queman"], // nahuatl
             placeholder: "¿Cuándo nos vemos?",
@@ -1504,10 +1572,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "¿Dónde está mi hermano?", // español
-            correctAnswer: "Canin mocniuh?", // nahuatl
+            correctAnswer: "Canin noicniuh?", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Canin mocniuh? pregunta por la ubicación del hermano o hermana"
+            explanation: "Canin noicniuh? pregunta por la ubicación del hermano o hermana"
         }),
         new Exercise({
             id: 95, unitId: 4, levelId: 3, language: "nhce",
@@ -1558,7 +1626,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "El es mi hermano", // español
-            correctAnswer: "Yehuatl nocniuh", // nahuatl
+            correctAnswer: "Yehuatl Noicniuh", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Reconocimiento de relación fraternal"
@@ -1622,7 +1690,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "¿Dónde están ellos?", // español
-            correctAnswer: "Canin yehuan?", // nahuatl
+            correctAnswer: "Canin yehuan", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Canin yehuan? pregunta por ubicación de grupo"
@@ -1632,12 +1700,13 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "¿Qué haces?", // español
-            correctAnswer: "Tlen tichihua?", // nahuatl
+            correctAnswer: "Tlen tichihua", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Pregunta sobre acción actual"
         }),
         new Exercise({
+            // este da error en la IU
             id: 107, unitId: 6, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
@@ -1731,20 +1800,20 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "¿Qué haces?", // español
-            correctAnswer: "Tlen tichihua?", // nahuatl
+            correctAnswer: "Tlen tichihua", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Tlen tichihua? significa Que haces? (hoy, ahora mismo)"
+            explanation: "Tlen tichihua significa Que haces? (hoy, ahora mismo)"
         }),
         new Exercise({
             id: 116, unitId: 2, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "¿Qué hiciste? (pasado)", // español
-            correctAnswer: "Tlen otichihua?", // nahuatl
+            answer: "¿Qué hiciste?", // español
+            correctAnswer: "Tlen otichihua", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Tlen otichihua? significa Que hiciste? (ayer, hace un tiempo). El tiempo pasado se muestra con prefijo 'o-'"
+            explanation: "Tlen otichihua significa Que hiciste? (ayer, hace un tiempo). El tiempo pasado se muestra con prefijo 'o-'"
         }),
         new Exercise({
             id: 117, unitId: 2, levelId: 4, language: "nhce",
@@ -1781,7 +1850,7 @@ export const EXERCISES_DATA = {
             id: 120, unitId: 2, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
-            answer: "Tlen ______?", // nahuatl
+            answer: "Tlen ______", // nahuatl
             correctAnswer: ["Tlen tichihuaz", "tichihuaz"], // nahuatl
             placeholder: "¿Qué harás?",
             points: 20,
@@ -1795,7 +1864,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Ayer, se lo agradecí", // español
-            correctAnswer: "Yalhua, ōnitlatlazohcamati", // nahuatl
+            correctAnswer: "Yalhua, onitlazohcamati", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción completada en el pasado"
@@ -1846,11 +1915,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "Yalhua, ______ mitz", // nahuatl
-            correctAnswer: ["Yalhua, ōnitlazohcamati mitz", "ōnitlatlazohcamati"], // nahuatl
+            correctAnswer: ["Yalhua, onitlazohcamati mitz", "onitlazohcamati"], // nahuatl
             placeholder: "ayer te agradecí",
             points: 20,
             difficulty: "medium",
-            explanation: "ōnitlatlazohcamati es la forma pasada de 'dar gracias' en pasado"
+            explanation: "onitlazohcamati es la forma pasada de 'dar gracias' en pasado"
         }),
 
         // 4 : 4
@@ -1988,7 +2057,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Ayer, vi a mi hermano allí", // español
-            correctAnswer: "Yalhua, ompa ōniquittac nocniuh", // nahuatl
+            correctAnswer: "Yalhua, ompa oniquittac noicniuh", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción pasada con ubicación específica"
@@ -2109,10 +2178,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Dormir", // español
-            correctAnswer: "Cohua", // nahuatl
+            correctAnswer: "Cochi", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Cohua es el verbo para dormir"
+            explanation: "Cochi es el verbo para dormir"
         }),
         new Exercise({
             id: 151, unitId: 2, levelId: 5, language: "nhce",
@@ -2129,7 +2198,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Duerme en la noche", // español
-            correctAnswer: "Cohua ipan yohual", // nahuatl
+            correctAnswer: "Cochi ipan yohual", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción de dormir en tiempo nocturno"
@@ -2150,11 +2219,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "Yehuatl ______ ______ teotlac", // nahuatl
-            correctAnswer: ["Yehuatl cohua ipan teotlac", "Cohua ipan"], // nahuatl
+            correctAnswer: ["Yehuatl cochi ipan teotlac", "Cochi ipan"], // nahuatl
             placeholder: "Ella duerme en la tarde",
             points: 20,
             difficulty: "medium",
-            explanation: "Yehuatl cohua ipan teotlac significa 'Ella duerme en la tarde'"
+            explanation: "Yehuatl cochi ipan teotlac significa 'Ella duerme en la tarde'"
         }),
         new Exercise({
             id: 155, unitId: 2, levelId: 5, language: "nhce",
@@ -2215,11 +2284,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "______ ipan yohual", // nahuatl
-            correctAnswer: ["Nicohua ipan yohual", "Nicohua"], // nahuatl
+            correctAnswer: ["Nicochi ipan yohual", "Nicochi"], // nahuatl
             placeholder: "Duermo en la noche",
             points: 20,
             difficulty: "medium",
-            explanation: "Nicohua ipan yohual significa 'Duermo en la noche'"
+            explanation: "Nicochi ipan yohual significa 'Duermo en la noche'"
         }),
         new Exercise({
             id: 161, unitId: 3, levelId: 5, language: "nhce",
@@ -2259,7 +2328,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Duermo en la noche", // español
-            correctAnswer: "Nicohua ipan yohual", // nahuatl
+            correctAnswer: "Nicochi ipan yohual", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción habitual nocturna"
@@ -2290,12 +2359,12 @@ export const EXERCISES_DATA = {
             id: 167, unitId: 4, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Yehuatl cohua ______", // nahuatl
-            correctAnswer: ["Yehuatl cohua ipan yohual", "ipan yohual"], // nahuatl
+            answer: "Yehuatl cochi ______  ______", // nahuatl
+            correctAnswer: ["Yehuatl cochi ipan yohual", "ipan yohual"], // nahuatl
             placeholder: "Él duerme en la noche",
             points: 20,
             difficulty: "medium",
-            explanation: "Yehuatl cohua ipan yohual significa 'El duerme en la noche'"
+            explanation: "Yehuatl cochi ipan yohual significa 'El duerme en la noche'"
         }),
 
         // 5 : 5
@@ -2324,7 +2393,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Nosotros dormimos en la noche", // español
-            correctAnswer: "Tehuan ticohuaceh yohual", // nahuatl
+            correctAnswer: "Tehuan ticochiceh yohual", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción plural con tiempo específico"
@@ -2344,7 +2413,7 @@ export const EXERCISES_DATA = {
             id: 172, unitId: 5, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Yehuatl quitlacua ______", // nahuatl
+            answer: "Yehuatl quitlacua ______ ______", // nahuatl
             correctAnswer: ["Yehuatl quitlacua ipan teotlac", "ipan teotlac"], // nahuatl
             placeholder: "Él come en la tarde",
             points: 20,
@@ -2369,7 +2438,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Hoy, como en la tarde", // español
-            correctAnswer: "Axan, nictlacua pan teotlac", // nahuatl
+            correctAnswer: "Axan, nictlacua ipan teotlac", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción presente con tiempo específico"
@@ -2379,7 +2448,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Mañana, harás muchas cosas", // español
-            correctAnswer: "Moztla, ticchihuaz tlen miac", // nahuatl
+            correctAnswer: "Moztla, tichihuaz tlen miac", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción futura con cantidad"
@@ -2389,7 +2458,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Hoy, duermo en la noche", // español
-            correctAnswer: "Axan, niccohua pan yohual", // nahuatl
+            correctAnswer: "Axan, nicochi ipan yohual", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Acción presente nocturna"
@@ -2399,11 +2468,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "Moztla, ______ iuan mocencal", // nahuatl
-            correctAnswer: ["Moztla, tictlacuaz iuan mocencal", "tictlacuaz"], // nahuatl
+            correctAnswer: ["Moztla, titlacuaz iuan mocencal", "titlacuaz"], // nahuatl
             placeholder: "Mañana, comerás con tu familia",
             points: 20,
             difficulty: "medium",
-            explanation: "Moztla, tictlacuaz iuan mocencal significa 'Mañana, comerás con tu familia'"
+            explanation: "Moztla, titlacuaz iuan mocencal significa 'Mañana, comerás con tu familia'"
         }),
         new Exercise({
             id: 178, unitId: 6, levelId: 5, language: "nhce",
@@ -2421,11 +2490,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "Axan, ______ ipan teotlac", // nahuatl
-            correctAnswer: ["Axan, niccohua ipan teotlac", "niccohua"], // nahuatl
+            correctAnswer: ["Axan, niccochi ipan teotlac", "niccochi"], // nahuatl
             placeholder: "Hoy, duermo por la tarde",
             points: 20,
             difficulty: "medium",
-            explanation: "Axan, niccohua ipan yohual significa 'Hoy, duermo por la tarde'"
+            explanation: "Axan, niccochi ipan yohual significa 'Hoy, duermo por la tarde'"
         }),
 
         // ========== NIVEL 6 ==========
@@ -2469,7 +2538,7 @@ export const EXERCISES_DATA = {
             placeholder: "Prefiero",
             points: 20,
             difficulty: "medium",
-            explanation: "Oc monequi literalmente es 'Prefiero'"
+            explanation: "Oc monequi es 'Prefiero' o 'Es necesario'"
         }),
         new Exercise({
             id: 184, unitId: 1, levelId: 6, language: "nhce",
@@ -2480,7 +2549,7 @@ export const EXERCISES_DATA = {
             placeholder: "No es necesario",
             points: 20,
             difficulty: "medium",
-            explanation: "Ahmo monequi literalmente es 'No es necesario'"
+            explanation: "Ahmo monequi es 'No es necesario', aqui 'ahmo' tiene la funcion de 'no es..'"
         }),
         new Exercise({
             id: 185, unitId: 1, levelId: 6, language: "nhce",
@@ -2520,8 +2589,8 @@ export const EXERCISES_DATA = {
             id: 188, unitId: 2, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Prefiero dormir", // español
-            correctAnswer: "Oc monequi nicohuaz", // nahuatl
+            answer: "Todavía necesito duermar", // español
+            correctAnswer: "Oc monequi nicochi", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Expresión de preferencia futura"
@@ -2543,10 +2612,10 @@ export const EXERCISES_DATA = {
             question: "Completa la frase:",
             answer: "Oc ______ tichihuaz", // nahuatl
             correctAnswer: ["Oc monequi tichihuaz", "monequi"], // nahuatl
-            placeholder: "Prefiero que hagas",
+            placeholder: "Prefiero que hagas eso",
             points: 20,
             difficulty: "medium",
-            explanation: "Oc monequi tichihuaz significa 'Prefiero que hagas'"
+            explanation: "Oc monequi tichihuaz significa 'Todavía necesitas hacer [eso]'"
         }),
         new Exercise({
             id: 191, unitId: 2, levelId: 6, language: "nhce",
@@ -2565,18 +2634,18 @@ export const EXERCISES_DATA = {
             id: 192, unitId: 3, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Si (partícula para ofrecer)", // español
-            correctAnswer: "Tla", // nahuatl
+            answer: "Por favor", // español
+            correctAnswer: "Nimitztlatlauhtia", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Tla se usa para ofrecer, sugerir o como condicional"
+            explanation: "Nimitztlatlauhtia significa 'por favor' en náhuatl"
         }),
         new Exercise({
             id: 193, unitId: 3, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Come por favor", // español
-            correctAnswer: "Tla xictlacua", // nahuatl
+            correctAnswer: "Nimitztlatlauhtia xictlacua", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Petición educada usando 'tla' y 'xi-'"
@@ -2586,7 +2655,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Duerme por favor", // español
-            correctAnswer: "Tla ximocohua", // nahuatl
+            correctAnswer: "Nimitztlatlauhtia ximocochi", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Petición educada para dormir"
@@ -2596,33 +2665,33 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "______ xicchihua", // nahuatl
-            correctAnswer: ["Tla xicchihua", "Tla"], // nahuatl
+            correctAnswer: ["Nimitztlatlauhtia xicchihua", "Nimitztlatlauhtia"], // nahuatl
             placeholder: "Por favor, hazlo",
             points: 20,
             difficulty: "medium",
-            explanation: "Tla xicchihua es una petición educada para hacer algo"
+            explanation: "Nimitztlatlauhtia xicchihua es una petición educada para hacer algo"
         }),
         new Exercise({
             id: 196, unitId: 3, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Tla ______", // nahuatl
-            correctAnswer: ["Tla xictlacua", "xictlacua"], // nahuatl
+            answer: "Nimitztlatlauhtia ______", // nahuatl
+            correctAnswer: ["Nimitztlatlauhtia xictlacua", "xictlacua"], // nahuatl
             placeholder: "Por favor, come",
             points: 20,
             difficulty: "medium",
-            explanation: "Tla xictlacua es la forma correcta de pedir educadamente que coma"
+            explanation: "Nimitztlatlauhtia xictlacua es la forma correcta de pedir educadamente que coma"
         }),
         new Exercise({
             id: 197, unitId: 3, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Tla ______", // nahuatl
-            correctAnswer: ["Tla ximocohua", "ximocohua"], // nahuatl
+            answer: "Nimitztlatlauhtia ______", // nahuatl
+            correctAnswer: ["Nimitztlatlauhtia ximocochi", "ximocochi"], // nahuatl
             placeholder: "Por favor, duerme",
             points: 20,
             difficulty: "medium",
-            explanation: "Tla ximocohua es la forma correcta de pedir educadamente que duerma"
+            explanation: "Nimitztlatlauhtia ximocochi es la forma correcta de pedir educadamente que duerma"
         }),
 
         // 6 : 4
@@ -2641,7 +2710,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "No es necesario que duerma", // español
-            correctAnswer: "Ahmo monequi nimocohuaz", // nahuatl
+            correctAnswer: "Ahmo monequi nicochi", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Negación de necesidad futura"
@@ -2651,7 +2720,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Duerme por favor", // español
-            correctAnswer: "Tla ximocohua", // nahuatl
+            correctAnswer: "Nimitztlatlauhtia ximocochi", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Petición educada reiterada"
@@ -2661,11 +2730,11 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "______ xictlacua", // nahuatl
-            correctAnswer: ["Tla xictlacua", "Tla"], // nahuatl
+            correctAnswer: ["Nimitztlatlauhtia xictlacua", "Tla"], // nahuatl
             placeholder: "Por favor, come",
             points: 20,
             difficulty: "medium",
-            explanation: "Tla xictlacua es la estructura para peticiones educadas"
+            explanation: "Nimitztlatlauhtia xictlacua es la estructura para peticiones educadas"
         }),
         new Exercise({
             id: 202, unitId: 4, levelId: 6, language: "nhce",
@@ -2715,8 +2784,8 @@ export const EXERCISES_DATA = {
             id: 206, unitId: 5, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Él prefiere hacer eso", // español
-            correctAnswer: "Yehuatl quema monequi quichihuaz", // nahuatl
+            answer: "Sí, es necesario que él lo haga", // español
+            correctAnswer: "Yehuatl quēmah monequi quichihuaz", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Expresión de preferencia para tercera persona"
@@ -2760,7 +2829,7 @@ export const EXERCISES_DATA = {
             id: 210, unitId: 6, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Prefiero estar", // español
+            answer: "Sí, es necesario que yo esté aquí", // español
             correctAnswer: "Quēmah monequi nicac", // nahuatl
             points: 15,
             difficulty: "medium",
@@ -2781,7 +2850,7 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Por favor, agradece mucho", // español
-            correctAnswer: "Tla xitlazohcamati miac", // nahuatl
+            correctAnswer: "Nimitztlatlauhtia xitlazohcamati miac", // nahuatl
             points: 15,
             difficulty: "medium",
             explanation: "Petición educada con intensidad"
@@ -2812,12 +2881,12 @@ export const EXERCISES_DATA = {
             id: 215, unitId: 6, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
-            answer: "Tla ximocohua ______ ______", // nahuatl
-            correctAnswer: ["Tla ximocohua ipan yohual", "ipan yohual"], // nahuatl
+            answer: "Nimitztlatlauhtia ximocochi ______ ______", // nahuatl
+            correctAnswer: ["Nimitztlatlauhtia ximocochi ipan yohual", "ipan yohual"], // nahuatl
             placeholder: "Por favor, duerme en la noche",
             points: 20,
             difficulty: "medium",
-            explanation: "Tla ximocohua ipan yohual significa 'Duerme por favor en la noche'"
+            explanation: "Nimitztlatlauhtia ximocochi ipan yohual significa 'Duerme por favor en la noche'"
         })
     ],
 };
@@ -2907,7 +2976,8 @@ function updateUnitsVocabulary() {
 
                     spanishWords.forEach(spanishWord => {
                         let found = false;
-                        for (const nahuatlWord in VOCABULARY_DATA[language] || {}) {
+                        let nahuatlWord = '';
+                        for (nahuatlWord in VOCABULARY_DATA[language] || {}) {
                             const vocabItem = VOCABULARY_DATA[language][nahuatlWord];
                             if (vocabItem.translation &&
                                 vocabItem.translation.toLowerCase().includes(spanishWord)) {
@@ -2918,7 +2988,7 @@ function updateUnitsVocabulary() {
                             }
                         }
                         if (!found) {
-                            console.log(`❌ No se encontró mapeo para: "${spanishWord}"`);
+                            console.log(`❌ No se encontró mapeo para: "${spanishWord}" → "${nahuatlWord}"`);
                         }
                     });
                 }
