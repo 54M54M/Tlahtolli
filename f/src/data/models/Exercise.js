@@ -5,7 +5,8 @@ export class Exercise {
         this.levelId = data.levelId || 1;
         this.type = data.type || "multiple-choice";
         this.question = data.question || "";
-        this.answer = data.answer || ""; // ← AGREGAR ESTA LÍNEA
+        this.answer = data.answer || "";
+        this.character = data.character;
         this.options = data.options || [];
         this.correctAnswer = data.correctAnswer || 0;
         this.correct = data.correct || []; // Para respuestas múltiples

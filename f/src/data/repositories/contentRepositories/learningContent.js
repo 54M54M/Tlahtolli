@@ -89,7 +89,7 @@ export const VOCABULARY_DATA = {
     // NAHUATL
     nhce: {
         // SALUDOS Y CORTESÍAS
-        "Cualli": { translation: "buen / bueno / buenos / buena / buenas / bien", pronunciation: "kwal-li" },
+        "Cualli": { translation: "bien / bueno / buenos / buena / buenas / bien", pronunciation: "kwal-li" },
         "Tonalli": { translation: "dia / día / dias / días", pronunciation: "to-nal-li" },
         "Yohual": { translation: "noche / noches", pronunciation: "yo-wal" },
         "Teotlac": { translation: "tarde / tardes", pronunciation: "te-o-tlak" },
@@ -100,6 +100,8 @@ export const VOCABULARY_DATA = {
         "Titlazohcamatiz": { translation: "agradecer / agradecerás / darás gracias", pronunciation: "ni-tla-zóh-ka-ma-tis" },
         "Nitlazohcamatiz": { translation: "agradeceré / daré gracias", pronunciation: "ni-tla-zóh-ka-ma-tis" },
         "Onitlazohcamati": { translation: "agradecí", pronunciation: "o-ni-tla-so-ka-ma-ti" },
+        "Nitlazohcamati": { translation: "yo agradezco / doy gracias", pronunciation: "ni-tla-so-ka-ma-ti" },
+        "Xitlazohcamati": { translation: "agradece / da gracias", pronunciation: "shi-tla-so-ka-ma-ti" },
 
         "Nimitztlatlauhtia": { translation: "por favor", pronunciation: "Ni-mits-tlatla-utia" },
 
@@ -110,7 +112,7 @@ export const VOCABULARY_DATA = {
         "Ahmo cualli": { translation: "mal / no bien", pronunciation: "ah-mo-kwal-li" },
 
         // PRONOMBRES PERSONALES
-        "Nehuatl": { translation: "yo", pronunciation: "nej-watl" },
+        "Nehuatl": { translation: "yo", pronunciation: "ne-watl" },
         "Tehuatl": { translation: "tú", pronunciation: "te-watl" },
         "Yehuatl": { translation: "él / ella", pronunciation: "ye-watl" },
         "Yehuan": { translation: "ellos / ellas", pronunciation: "ye-wan" },
@@ -118,9 +120,10 @@ export const VOCABULARY_DATA = {
         "Tehuan": { translation: "nosotros", pronunciation: "te-wan" },
 
         // FAMILIA Y PERSONAS
-        "Cencalli": { translation: " familia", pronunciation: "sen-kal" },
+        "Cencalli": { translation: "familia", pronunciation: "sen-kal" },
         "Nocencal": { translation: "mi familia", pronunciation: "no-sen-kal" },
-        "Mocencal": { translation: "tu familia", pronunciation: "mo-sen-kal" },
+        "Ticencal": { translation: "tu familia", pronunciation: "ti-sen-kal" },
+        "Mocencal": { translation: "su familia", pronunciation: "mo-sen-kal" },
 
         "Tahtli": { translation: "padre / papá", pronunciation: "taj-tli" },
         "Notahtli": { translation: "mi padre / mi papá", pronunciation: "no-taj-tli" },
@@ -136,6 +139,8 @@ export const VOCABULARY_DATA = {
         "Moicniuh": { translation: "tu hermano / tu hermana / tu primo / tu prima / tu amigo / tu amiga", pronunciation: "mo-ik-ni-uj" },
         "Ioicniuh": { translation: "su hermano / su hermana / su primo / su prima / su amigo / su amiga", pronunciation: "yo-ik-ni-uj" },
 
+        "Nocihtzin": { translation: "mi hermana menor / mi hermanita", pronunciation: "no-sich-tzin" },
+
         "Telpochtli": { translation: "joven / muchacho / adolescente", pronunciation: "tel-potch-tli" },
         "Ichpochtli": { translation: "joven / muchacha / doncella", pronunciation: "ich-potch-tli" },
 
@@ -147,7 +152,7 @@ export const VOCABULARY_DATA = {
 
         "Tocaitl": { translation: "nombre", pronunciation: "to-ka-itl" },
         "Notoca": { translation: "me llamo...", pronunciation: "no-to-ka" },
-        "Motoca": { translation: " te llamas", pronunciation: "mo-to-ka" },
+        "Motoca": { translation: "te llamas", pronunciation: "mo-to-ka" },
         "Quen motoca": { translation: "cómo te llamas", pronunciation: "ken-mo-to-ka" },
 
         "Tlacatl": { translation: "persona", pronunciation: "tla-katl" },
@@ -164,15 +169,16 @@ export const VOCABULARY_DATA = {
 
         "Melahuac": { translation: "verdadero / cierto / correcto", pronunciation: "me-la-wak" },
 
-        "Miac": { translation: "mucho / muchos", pronunciation: "mi-ak" },
+        "Miac": { translation: "mucho / muchos / muchas", pronunciation: "mi-ak" },
         "Huel": { translation: "muy / verdaderamente", pronunciation: "wel" },
         "Huel miac": { translation: "muchísimo / muchísimos / muchísimas", pronunciation: "wel-mi-ak" },
 
         // PALABRAS INTERROGATIVAS
-        "Tlen": { translation: "qué / cosa", pronunciation: "tlen" },
-        "Tleca": { translation: "porque / por qué", pronunciation: "tle-ka" },
+        "Tlen": { translation: "qué / lo que", pronunciation: "tlen" },
+        "Ica": { translation: "por", pronunciation: "i-ka" },
+        "Tleca": { translation: "porque / porqué / por que / por qué", pronunciation: "tle-ka" },
 
-        "Quen": { translation: "cómo", pronunciation: "ken" },          // comparativa
+        "Quen": { translation: "como", pronunciation: "ken" },          // comparativa
         "Quenin": { translation: "cómo", pronunciation: "ke-nin" },     // interrogativo - explicativo
 
         "Queman": { translation: "cuando / cuándo", pronunciation: "ke-man" },
@@ -182,53 +188,64 @@ export const VOCABULARY_DATA = {
         "Canin": { translation: "donde / dónde", pronunciation: "ka-nin" },
 
         // VERBOS
-        "Chihua": { translation: "hacer", pronunciation: "chi-wa" },
+        "Chihua": { translation: "hace / hacer", pronunciation: "chi-wa" },
         "Quichihua": { translation: "él hace / ella hace", pronunciation: "ki-chi-wa" },
         "Chihuaz": { translation: "hará / haré", pronunciation: "chi-was" },
-        "Quichihuaz": { translation: "él lo hará / ella lo hará", pronunciation: "ki-chi-waz" }, // sin objeto, más general
-        "Nicchihua": { translation: "yo lo hago", pronunciation: "nik-chi-wa" },
+        "Quichihuaz": { translation: "hará / él hará / ella hará", pronunciation: "ki-chi-waz" }, // sin objeto, más general
+        "Nicchihua": { translation: "yo hago", pronunciation: "nik-chi-wa" },
         "Nichihuaz": { translation: "yo haré", pronunciation: "ni-chi-waz" },
         "Tichihua": { translation: "tú haces", pronunciation: "ti-chi-wa" }, // sin objeto, más general
         "Ticchihua": { translation: "tú lo haces", pronunciation: "tik-chi-wa" }, // con objeto
-        "Tichihuaz": { translation: "tu harás", pronunciation: "ti-chi-waz" }, // sin objeto, más general
-        "Ticchihuaz": { translation: "lo harás", pronunciation: "tik-chi-waz" }, // con objeto
+        "Tichihuaz": { translation: "harás / tu harás", pronunciation: "ti-chi-waz" }, // sin objeto, más general
+        "Ticchihuaz": { translation: "tú lo harás", pronunciation: "tik-chi-waz" }, // con objeto
         "Onicchihua": { translation: "yo lo hice", pronunciation: "o-nik-chi-wa" },
         "Otichihua": { translation: "hiciste / tú hiciste", pronunciation: "o-ti-chi-wa" },
-        "Ochihua": { translation: "él hizo / ella hizo", pronunciation: "o-chi-wa" },
+        "Ochihua": { translation: "hizo / él hizo / ella hizo", pronunciation: "o-chi-wa" },
         "Oquichihua": { translation: "él lo hizo / ella lo hizo", pronunciation: "o-ki-chi-wa" }, // con objeto
+        "Mochihua": { translation: "se hace / se hace algo", pronunciation: "mo-chi-wa" },
+        "Nicchihuaz": { translation: "yo haré", pronunciation: "nik-chi-was" },
+        "Xicchihua": { translation: "haz / hazlo", pronunciation: "shik-chi-wa" },
 
         "Tlacua": { translation: "comer", pronunciation: "tla-kwa" },
         "Nitlacua": { translation: "yo como", pronunciation: "ni-tla-kwa" },
         "Motlacua": { translation: "tú comes", pronunciation: "mo-tla-kwa" },
-        "Quitlacua": { translation: "él come / ella come", pronunciation: "ki-tla-kwa" },
+        "Quitlacua": { translation: "come / él come / ella come", pronunciation: "ki-tla-kwa" },
         "Titlacuaceh": { translation: "nosotros comemos", pronunciation: "ti-tla-kwas" },
         "Nitlacuaz": { translation: "comeré", pronunciation: "ni-tla-kwas" },
-        "Quitlacuaz": { translation: "comerá", pronunciation: "ki-tla-kwas" },
+        "Quitlacuaz": { translation: "comerá / él comerá / ella comerá", pronunciation: "ki-tla-kwas" },
         "Titlacuaz": { translation: "comerás", pronunciation: "ti-tla-kwas" },
-        "Xictlacua": { translation: "cómelo", pronunciation: "shik-tla-kwa" },
+        "Xictlacua": { translation: "come / cómelo", pronunciation: "shik-tla-kwa" },
+        "Titlacua": { translation: "comes / tú comes", pronunciation: "ti-tla-kwa" },
+        "Tlacuaz": { translation: "comerá", pronunciation: "tla-kwas" },
+        "Tictlacua": { translation: "comemos", pronunciation: "tik-tla-kwa" },
+        "Nictlacua": { translation: "yo como", pronunciation: "nik-tla-kwa" },
+        "Nictlacuaz": { translation: "yo comeré", pronunciation: "nik-tla-kwas" },
 
         "Cochi": { translation: "dormir", pronunciation: "ko-chi" },
         "Ticochi": { translation: "duermes", pronunciation: "ti-ko-chi" },
-        "Nicochi": { translation: "duermo", pronunciation: "ni-ko-chi" },
-        "Nicochiz": { translation: "yo dormiré / yo duermo", pronunciation: "ni-ko-chi" },
+        "Nicochi": { translation: "duermo / yo duermo", pronunciation: "ni-ko-chi" },
+        "Nicochiz": { translation: "yo dormiré", pronunciation: "ni-ko-chi" },
         "Ticochih": { translation: "dormimos", pronunciation: "ti-ko-chij" },
         "Xicochi": { translation: "tu duerme", pronunciation: "shi-ko-chi" },
         "Xicochih": { translation: "ustedes duerman", pronunciation: "shi-ko-chij" },
+        "Ticochiceh": { translation: "dormimos", pronunciation: "ti-ko-chi-se" },
+        "Niccochi": { translation: "yo duermo", pronunciation: "nik-ko-chi" },
+        "Ximocochi": { translation: "duérmete", pronunciation: "shi-mo-ko-chi" },
 
         "Itta": { translation: "ver", pronunciation: "it-ta" },
         "Niquitta": { translation: "yo lo veo", pronunciation: "ni-kit-ta" },
         "Oniquittac": { translation: "yo lo vi", pronunciation: "o-ni-kit-tak" },
         "Onechittac": { translation: "me vio", pronunciation: "o-ne-chit-tak" },
         "Nimitzittaz": { translation: "te veré", pronunciation: "ni-mit-sit-tas" },
-        "Oquittac": { translation: "él lo vio / ella lo vio", pronunciation: "o-kit-tak" },
+        "Oquittac": { translation: "vio / él lo vio / ella lo vio", pronunciation: "o-kit-tak" },
         "Quittaz": { translation: "él lo vera / ella lo verá", pronunciation: "kit-tas" },
 
-        "Ica": { translation: "está / existe", pronunciation: "i-ka" },
+        "Ca": { translation: "está / existe", pronunciation: "ka" },
         "Cac": { translation: "están / existen", pronunciation: "kak" },
         "Tica": { translation: "estás", pronunciation: "ti-ka" },
         "Ticaz": { translation: "estarás", pronunciation: "ti-kas" },
         "Nicac": { translation: "estoy", pronunciation: "ni-kak" },
-        "icacāh": { translation: "están", pronunciation: "i-ka-kaa" },
+        "Icacāh": { translation: "están", pronunciation: "i-ka-kaa" },
         "Onica": { translation: "yo estuve", pronunciation: "o-ni-ka" },
         "Ticah": { translation: "estamos", pronunciation: "ti-kaj" },
         "Nicaz": { translation: "estaré", pronunciation: "ni-kas" },
@@ -242,14 +259,14 @@ export const VOCABULARY_DATA = {
         "Moztla": { translation: "mañana", pronunciation: "mos-tla" },
         "Ye": { translation: "ahora", pronunciation: "ye" },
 
-        "Ompa": { translation: "allá / allí", pronunciation: "om-pa" },
+        "Ompa": { translation: "allá / alla / allí / alli", pronunciation: "om-pa" },
         "Ipan": { translation: "en / sobre", pronunciation: "i-pan" },
 
         // PARTÍCULAS Y CONECTORES
         "Oc": { translation: "más / todavía / aún", pronunciation: "ok" },
         "Ahmo oc": { translation: "menos / ya no", pronunciation: "aj-mo-ok" },
 
-        "Monequi": { translation: "es necesario / hace falta", pronunciation: "mo-ne-ki" },
+        "Monequi": { translation: "es necesario / se necesita", pronunciation: "mo-ne-ki" },
         "Oc monequi": { translation: "Todavía tengo que.. / Aún tengo que..", pronunciation: "ok-mo-ne-ki" },
 
         "Iuan": { translation: "con / y", pronunciation: "i-wan" },
@@ -262,18 +279,31 @@ export const VOCABULARY_DATA = {
 
         "Mitz": { translation: " te / a ti", pronunciation: "mits" },
 
+        "Tla": { translation: "algo / cosa", pronunciation: "tla" },
+
         // SUFIJOS Y PREFIJOS
-        "No": { translation: "mi / mio", pronunciation: "no-" },
-        "Mo": { translation: "tu / tuyo", pronunciation: "mo-" },
-        "O": { translation: "pasado", pronunciation: "o-" },
-        "Z": { translation: "fururo", pronunciation: "-z" },
-        "Xi": { translation: "imperativo", pronunciation: "shi-" },
+        "No": { translation: "mi / mio (1ª persona singular - posesivo)", pronunciation: "no-" },
+        "Ni": { translation: "yo (1ª persona singular - acción)", pronunciation: "ni-" },
+        "Ne": { translation: "a mí / me (1ª persona singular - objeto)", pronunciation: "ne-" },
+
+        "Mo": { translation: "tú / tuyo (2ª persona singular - posesivo)", pronunciation: "mo-" },
+        "Ti": { translation: "tu (2ª persona singular - acción)", pronunciation: "ti-" },
+        "Mitz": { translation: "a ti / te (2ª persona singular - objeto)", pronunciation: "mits-" },
+        "An": { translation: "ustedes (2ª persona plural)", pronunciation: "an-" },
+
+        "Qui": { translation: "él / ella (3ª persona singular - transitivos)", pronunciation: "ki-" },
+        "I": { translation: "su / suyo (3ª persona singular - posesivo)", pronunciation: "i-" },
+        "In": { translation: "ellos / ellas (3ª persona plural - posesivo)", pronunciation: "in-" },
+
+        "O": { translation: "prefijo pasado", pronunciation: "o-" },
+        "Z": { translation: "sufijo fururo", pronunciation: "-z" },
+        "Xi": { translation: "prefijo imperativo", pronunciation: "shi-" },
         "Ceh": { translation: "sufijo plural", pronunciation: "-se" }, // -ar -> -amos || -er -ir -> -imos
+        "Te": { translation: "a alguien / de alguien (prefijo objeto/posesivo indefinido)", pronunciation: "te-" },
 
         // NOMBRES PERSONALES
         "Citlalli": { translation: "estrella", pronunciation: "si-tla-li" },
         "Xóchitl": { translation: "flor", pronunciation: "sho-chi-tl" },
-
     },
 };
 
@@ -594,6 +624,7 @@ export const EXERCISES_DATA = {
             id: 1, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Bueno", // español
             correctAnswer: "Cualli", // nahuatl
             points: 15,
@@ -604,6 +635,7 @@ export const EXERCISES_DATA = {
             id: 2, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Día", // español
             correctAnswer: "Tonalli", // nahuatl
             points: 15,
@@ -614,6 +646,7 @@ export const EXERCISES_DATA = {
             id: 3, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Buenos días", // español
             correctAnswer: "Cualli tonalli", // nahuatl
             points: 15,
@@ -624,6 +657,7 @@ export const EXERCISES_DATA = {
             id: 4, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Noches", // español
             correctAnswer: "Yohual", // nahuatl
             points: 15,
@@ -634,6 +668,7 @@ export const EXERCISES_DATA = {
             id: 5, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Tardes", // español
             correctAnswer: "Teotlac", // nahuatl
             points: 15,
@@ -644,6 +679,7 @@ export const EXERCISES_DATA = {
             id: 6, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Buenas noches", // español
             correctAnswer: "Cualli yohual", // nahuatl
             points: 15,
@@ -728,11 +764,11 @@ export const EXERCISES_DATA = {
             id: 14, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "¿Cómo?", // español
+            answer: "¿Como?", // español
             correctAnswer: "Quen", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Quen es la forma abreviada de Quenin, significa 'cómo'"
+            explanation: "Quen (como) es la forma abreviada de Quenin, significa 'cómo'"
         }),
         new Exercise({
             id: 15, unitId: 3, levelId: 1, language: "nhce",
@@ -863,10 +899,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "¿Cómo estás?", // español
-            correctAnswer: "Quen tica?", // nahuatl
+            correctAnswer: "Quenin tica?", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Quen tica? es la pregunta sobre el estado o condición"
+            explanation: "Quenin tica? es la pregunta sobre el estado o condición"
         }),
         new Exercise({
             id: 28, unitId: 5, levelId: 1, language: "nhce",
@@ -1211,7 +1247,7 @@ export const EXERCISES_DATA = {
             question: "Completa la frase:",
             answer: "Nehuatl ni ______", // nahuatl
             correctAnswer: ["Nehuatl ni ichpochtli", "ichpochtli"], // nahuatl
-            placeholder: "Escribe la palabra correcta",
+            placeholder: "Yo soy joven",
             points: 20,
             difficulty: "medium",
             explanation: "Nehuatl ni ichpochtli significa 'Yo soy joven' (femenino)"
@@ -1222,7 +1258,7 @@ export const EXERCISES_DATA = {
             id: 61, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Persona mayor masculino", // español
+            answer: "Hombre mayor", // español
             correctAnswer: "Huehue", // nahuatl
             points: 15,
             difficulty: "medium",
@@ -1232,7 +1268,7 @@ export const EXERCISES_DATA = {
             id: 62, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "Persona mayor femenina", // español
+            answer: "Mujer mayor", // español
             correctAnswer: "Ilamatl", // nahuatl
             points: 15,
             difficulty: "medium",
@@ -1263,7 +1299,7 @@ export const EXERCISES_DATA = {
             type: "fill-blank",
             question: "Completa la frase:",
             answer: "Noicniuh ye ______", // nahuatl
-            correctAnswer: ["Noicniuh ye huehue", "huehue"], // nahuatl
+            correctAnswer: ["Noicniuh ye huehue", "huehue", "huehuetzin"], // nahuatl
             placeholder: "Mi hermano ya es anciano",
             points: 20,
             difficulty: "medium",
@@ -1287,10 +1323,10 @@ export const EXERCISES_DATA = {
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
             answer: "Nosotros somos familia", // español
-            correctAnswer: "Tehuan ticencalli", // nahuatl
+            correctAnswer: "Tehuan ticencalimeh", // nahuatl
             points: 15,
             difficulty: "medium",
-            explanation: "Tehuan ticencalli significa 'Nosotros somos familia'"
+            explanation: "Tehuan ticencalimeh significa 'Nosotros somos familia'"
         }),
         new Exercise({
             id: 68, unitId: 6, levelId: 2, language: "nhce",
@@ -2920,22 +2956,25 @@ function updateUnitsVocabulary() {
         const exercises = EXERCISES_DATA[language] || [];
         const words = new Set();
 
-        // console.log(`🔍 BUSCANDO VOCABULARIO - Unidad UI ${uiUnitId}, Nivel ${levelId}, Idioma ${language}`);
-
         // Aplicar el mapeo de unidades
         const unitMapping = getUnitMapping(levelId, uiUnitId);
-        // console.log(`🔄 Mapeo aplicado: ${unitMapping.description}`);
 
         exercises.forEach(exercise => {
             // Buscar ejercicios usando el unitId mapeado
             if (exercise.levelId === levelId && exercise.unitId === unitMapping.exerciseUnitId) {
-                // console.log(`📝 Ejercicio ${exercise.id} (Unidad mapeada: ${unitMapping.exerciseUnitId}):`, {
-                //     correctAnswer: exercise.correctAnswer,
-                //     answer: exercise.answer,
-                //     type: exercise.type
-                // });
 
-                // 1. Buscar en el correctAnswer (náhuatl) - CON SOPORTE PARA ARRAYS
+                // Variables para almacenar información del ejercicio cuando haya errores
+                let hasErrors = false;
+                const errorInfo = {
+                    exerciseId: exercise.id,
+                    levelId: exercise.levelId,
+                    unitId: exercise.unitId,
+                    uiUnitId: uiUnitId,
+                    missingWords: [],
+                    missingMappings: []
+                };
+
+                // 1. Buscar en el correctAnswer
                 if (exercise.correctAnswer) {
                     let correctAnswers = [];
 
@@ -2947,17 +2986,16 @@ function updateUnitsVocabulary() {
                         correctAnswers = [exercise.correctAnswer];
                     }
 
-                    // console.log(`🔤 Procesando correctAnswer(s):`, correctAnswers);
-
                     correctAnswers.forEach(answer => {
                         if (typeof answer === 'string') {
                             answer.split(' ').forEach(word => {
                                 const cleanWord = word.replace(/[.,!?;]/g, '').trim();
                                 if (cleanWord && VOCABULARY_DATA[language]?.[cleanWord]) {
-                                    // console.log(`✅ Añadiendo palabra náhuatl: ${cleanWord}`);
                                     words.add(cleanWord);
                                 } else if (cleanWord) {
-                                    console.log(`❌ Palabra no encontrada en vocabulario: ${cleanWord}`);
+                                    // Palabra no encontrada - registrar error
+                                    hasErrors = true;
+                                    errorInfo.missingWords.push(cleanWord);
                                 }
                             });
                         }
@@ -2966,36 +3004,47 @@ function updateUnitsVocabulary() {
 
                 // 2. Buscar correspondencias en español → náhuatl
                 if (exercise.answer && typeof exercise.answer === 'string') {
-                    // console.log(`🔤 Procesando answer (español): "${exercise.answer}"`);
-
                     const spanishWords = exercise.answer.split(/[\s,]+/).map(word =>
                         word.replace(/[.,!?;]/g, '').trim().toLowerCase()
                     ).filter(word => word.length > 0);
 
-                    // console.log(`📋 Palabras español encontradas:`, spanishWords);
-
                     spanishWords.forEach(spanishWord => {
                         let found = false;
-                        let nahuatlWord = '';
-                        for (nahuatlWord in VOCABULARY_DATA[language] || {}) {
+                        for (const nahuatlWord in VOCABULARY_DATA[language] || {}) {
                             const vocabItem = VOCABULARY_DATA[language][nahuatlWord];
                             if (vocabItem.translation &&
                                 vocabItem.translation.toLowerCase().includes(spanishWord)) {
-                                // console.log(`✅ Mapeo encontrado: "${spanishWord}" → "${nahuatlWord}" (${vocabItem.translation})`);
                                 words.add(nahuatlWord);
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
-                            console.log(`❌ No se encontró mapeo para: "${spanishWord}" → "${nahuatlWord}"`);
+                            // Mapeo no encontrado - registrar error
+                            hasErrors = true;
+                            errorInfo.missingMappings.push(spanishWord);
                         }
                     });
+                }
+
+                // 3. Mostrar información del ejercicio SOLO si hay errores
+                if (hasErrors) {
+                    console.log(`❌ ERRORES en: Nivel ${errorInfo.levelId} | Unidad ${errorInfo.unitId} | Id ${errorInfo.exerciseId} → Ejercicio ${errorInfo.unitId}):`);
+
+                    if (errorInfo.missingWords.length > 0) {
+                        console.log(`❌ Palabra:`, errorInfo.missingWords);
+                    }
+
+                    if (errorInfo.missingMappings.length > 0) {
+                        console.log(`❌ Esp → Nahua:`, errorInfo.missingMappings);
+                    }
+
+                    console.log(`   ❓ Pregunta: "${exercise.question}"`);
+                    console.log(`   📝 Tipo: ${exercise.type}`);
                 }
             }
         });
 
-        // console.log(`📚 PALABRAS BASE para unidad UI ${uiUnitId}:`, Array.from(words));
         return Array.from(words);
     }
 
@@ -3088,8 +3137,8 @@ for (const language in UNITS_DATA) {
 
     // Log de unidades sin vocabulario para debugging
     if (unitsWithoutVocab.length > 0) {
-        console.log(`❌ Unidades sin vocabulario en ${language}:`,
-            unitsWithoutVocab.map(u => `UI${u.id}(N${u.levelId})`));
+        // console.log(`❌ Unidades sin vocabulario en ${language}:`,
+        //     unitsWithoutVocab.map(u => `UI${u.id}(N${u.levelId})`));
     }
 }
 
