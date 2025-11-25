@@ -624,7 +624,7 @@ export const EXERCISES_DATA = {
             id: 1, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            character: "neza",
+            character: "citlali",
             answer: "Bueno", // español
             correctAnswer: "Cualli", // nahuatl
             points: 15,
@@ -679,7 +679,7 @@ export const EXERCISES_DATA = {
             id: 6, unitId: 1, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            character: "neza",
+            character: "coltzin",
             answer: "Buenas noches", // español
             correctAnswer: "Cualli yohual", // nahuatl
             points: 15,
@@ -692,6 +692,7 @@ export const EXERCISES_DATA = {
             id: 7, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Hola", // español
             correctAnswer: "Niltze", // nahuatl
             points: 15,
@@ -702,6 +703,7 @@ export const EXERCISES_DATA = {
             id: 8, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Adiós", // español
             correctAnswer: "Timoittazceh", // nahuatl
             points: 15,
@@ -712,6 +714,7 @@ export const EXERCISES_DATA = {
             id: 9, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Hola, buen día", // español
             correctAnswer: "Niltze, cualli tonalli", // nahuatl
             points: 15,
@@ -722,6 +725,7 @@ export const EXERCISES_DATA = {
             id: 10, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Adiós, buena noche", // español
             correctAnswer: "Timoittazceh, cualli yohual", // nahuatl
             points: 15,
@@ -732,6 +736,7 @@ export const EXERCISES_DATA = {
             id: 11, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Hola, buena noche", // español
             correctAnswer: "Niltze, cualli yohual", // nahuatl
             points: 15,
@@ -742,6 +747,7 @@ export const EXERCISES_DATA = {
             id: 12, unitId: 2, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Adiós, buen día", // español
             correctAnswer: "Timoittazceh, cualli tonalli", // nahuatl
             points: 15,
@@ -754,6 +760,7 @@ export const EXERCISES_DATA = {
             id: 13, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Me llamo...", // español
             correctAnswer: "Notoca", // nahuatl
             points: 15,
@@ -764,6 +771,7 @@ export const EXERCISES_DATA = {
             id: 14, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "¿Como?", // español
             correctAnswer: "Quen", // nahuatl
             points: 15,
@@ -774,6 +782,7 @@ export const EXERCISES_DATA = {
             id: 15, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Cómo te llamas?", // español
             correctAnswer: "Quen motoca?", // nahuatl
             points: 15,
@@ -784,6 +793,7 @@ export const EXERCISES_DATA = {
             id: 16, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Sí", // español
             correctAnswer: "Quēmah", // nahuatl
             points: 15,
@@ -794,6 +804,7 @@ export const EXERCISES_DATA = {
             id: 17, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "No", // español
             correctAnswer: "Ahmo", // nahuatl
             points: 15,
@@ -804,6 +815,7 @@ export const EXERCISES_DATA = {
             id: 18, unitId: 3, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Sí, me llamo Xóchitl", // español
             correctAnswer: "Quēmah, notoca Xóchitl", // nahuatl
             points: 15,
@@ -816,6 +828,7 @@ export const EXERCISES_DATA = {
             id: 19, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Gracias", // español
             correctAnswer: "Tlazohcamati", // nahuatl
             points: 15,
@@ -826,6 +839,7 @@ export const EXERCISES_DATA = {
             id: 20, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Buen día, gracias", // español
             correctAnswer: "Cualli tonalli, tlazohcamati", // nahuatl
             points: 15,
@@ -836,6 +850,7 @@ export const EXERCISES_DATA = {
             id: 21, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Adiós, gracias", // español
             correctAnswer: "Timoittazceh, tlazohcamati", // nahuatl
             points: 15,
@@ -846,6 +861,7 @@ export const EXERCISES_DATA = {
             id: 22, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Mucho", // español
             correctAnswer: "Miac", // nahuatl
             points: 15,
@@ -856,6 +872,7 @@ export const EXERCISES_DATA = {
             id: 23, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Muchas gracias", // español
             correctAnswer: "Tlazohcamati miac", // nahuatl
             points: 15,
@@ -866,6 +883,7 @@ export const EXERCISES_DATA = {
             id: 24, unitId: 4, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Sí, muchas gracias", // español
             correctAnswer: "Quēmah, tlazohcamati miac", // nahuatl
             points: 15,
@@ -878,6 +896,7 @@ export const EXERCISES_DATA = {
             id: 25, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Muy", // español
             correctAnswer: "Huel", // nahuatl
             points: 15,
@@ -888,6 +907,7 @@ export const EXERCISES_DATA = {
             id: 26, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Muchísimas gracias", // español
             correctAnswer: "Tlazohcamati huel miac", // nahuatl
             points: 15,
@@ -898,6 +918,7 @@ export const EXERCISES_DATA = {
             id: 27, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "¿Cómo estás?", // español
             correctAnswer: "Quenin tica?", // nahuatl
             points: 15,
@@ -908,6 +929,7 @@ export const EXERCISES_DATA = {
             id: 28, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Estoy", // español
             correctAnswer: "Nicac", // nahuatl
             points: 15,
@@ -918,6 +940,7 @@ export const EXERCISES_DATA = {
             id: 29, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Yo", // español
             correctAnswer: "Ni", // nahuatl
             points: 15,
@@ -928,6 +951,7 @@ export const EXERCISES_DATA = {
             id: 30, unitId: 5, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Mal", // español
             correctAnswer: "Ahmo cualli", // nahuatl
             points: 15,
@@ -940,6 +964,7 @@ export const EXERCISES_DATA = {
             id: 31, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Buen día", // español
             correctAnswer: "Cualli tonalli", // nahuatl
             points: 15,
@@ -950,6 +975,7 @@ export const EXERCISES_DATA = {
             id: 32, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Hola, me llamo Citlalli", // español
             correctAnswer: "Niltze, notoca Citlalli", // nahuatl
             points: 15,
@@ -960,6 +986,7 @@ export const EXERCISES_DATA = {
             id: 33, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Sí, estoy bien", // español
             correctAnswer: "Quēmah cualli nicac", // nahuatl
             points: 15,
@@ -970,6 +997,7 @@ export const EXERCISES_DATA = {
             id: 34, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Adiós, muchas gracias", // español
             correctAnswer: "Timoittazceh, tlazohcamati miac", // nahuatl
             points: 15,
@@ -980,6 +1008,7 @@ export const EXERCISES_DATA = {
             id: 35, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Nada", // español
             correctAnswer: "Tlen", // nahuatl
             points: 15,
@@ -990,6 +1019,7 @@ export const EXERCISES_DATA = {
             id: 36, unitId: 6, levelId: 1, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Ninguna cosa", // español
             correctAnswer: "Ahmotlen", // nahuatl
             points: 15,
@@ -1003,6 +1033,7 @@ export const EXERCISES_DATA = {
             id: 37, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Yo", // español
             correctAnswer: "Nehuatl", // nahuatl
             points: 15,
@@ -1013,6 +1044,7 @@ export const EXERCISES_DATA = {
             id: 38, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Él", // español
             correctAnswer: "Yehuatl", // nahuatl
             points: 15,
@@ -1023,6 +1055,7 @@ export const EXERCISES_DATA = {
             id: 39, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Tú", // español
             correctAnswer: "Tehuatl", // nahuatl
             points: 15,
@@ -1033,6 +1066,7 @@ export const EXERCISES_DATA = {
             id: 40, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Ellos", // español
             correctAnswer: "Yehuan", // nahuatl
             points: 15,
@@ -1043,6 +1077,7 @@ export const EXERCISES_DATA = {
             id: 41, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Ustedes", // español
             correctAnswer: "Anmehuan", // nahuatl
             points: 15,
@@ -1053,6 +1088,7 @@ export const EXERCISES_DATA = {
             id: 42, unitId: 1, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Nosotros", // español
             correctAnswer: "Tehuan", // nahuatl
             points: 15,
@@ -1065,6 +1101,7 @@ export const EXERCISES_DATA = {
             id: 43, unitId: 2, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Mi familia", // español
             correctAnswer: "Nocencal", // nahuatl
             points: 15,
@@ -1075,6 +1112,7 @@ export const EXERCISES_DATA = {
             id: 44, unitId: 2, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ahora", // español
             correctAnswer: "Ye", // nahuatl
             points: 15,
@@ -1085,6 +1123,7 @@ export const EXERCISES_DATA = {
             id: 45, unitId: 2, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Tu familia", // español
             correctAnswer: "Mocencal", // nahuatl
             points: 15,
@@ -1095,6 +1134,7 @@ export const EXERCISES_DATA = {
             id: 46, unitId: 2, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Grande", // español
             correctAnswer: "Huey", // nahuatl
             points: 15,
@@ -1105,6 +1145,7 @@ export const EXERCISES_DATA = {
             id: 47, unitId: 2, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Pequeño", // español
             correctAnswer: "Tepiton", // nahuatl
             points: 15,
@@ -1116,6 +1157,7 @@ export const EXERCISES_DATA = {
             id: 48, unitId: 2, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ huey", // nahuatl
             correctAnswer: ["Nocencal huey", "Nocencal"], // nahuatl
             placeholder: "Mi familia es grande",
@@ -1129,6 +1171,7 @@ export const EXERCISES_DATA = {
             id: 49, unitId: 3, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Padre", // español
             correctAnswer: "Tahtli", // nahuatl
             points: 15,
@@ -1139,6 +1182,7 @@ export const EXERCISES_DATA = {
             id: 50, unitId: 3, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Madre", // español
             correctAnswer: "Nantli", // nahuatl
             points: 15,
@@ -1149,6 +1193,7 @@ export const EXERCISES_DATA = {
             id: 51, unitId: 3, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Fuerte", // español
             correctAnswer: "Chicahuac", // nahuatl
             points: 15,
@@ -1159,6 +1204,7 @@ export const EXERCISES_DATA = {
             id: 52, unitId: 3, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Hermoso", // español
             correctAnswer: "Cuacualtzin", // nahuatl
             points: 15,
@@ -1169,6 +1215,7 @@ export const EXERCISES_DATA = {
             id: 53, unitId: 3, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "Chicahuac ______", // nahuatl
             correctAnswer: ["Chicahuac notahtli", "notahtli"], // nahuatl
             placeholder: "Mi padre es fuerte",
@@ -1180,6 +1227,7 @@ export const EXERCISES_DATA = {
             id: 54, unitId: 3, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______ nonantli", // nahuatl
             correctAnswer: ["Cuacualtzin nonantli", "Cuacualtzin"], // nahuatl
             placeholder: "Mi madre es hermosa",
@@ -1193,6 +1241,7 @@ export const EXERCISES_DATA = {
             id: 55, unitId: 4, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Hermano", // español
             correctAnswer: "icniuhtli", // nahuatl
             points: 15,
@@ -1203,6 +1252,7 @@ export const EXERCISES_DATA = {
             id: 56, unitId: 4, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Mi hermano", // español
             correctAnswer: "Noicniuh", // nahuatl
             points: 15,
@@ -1213,6 +1263,7 @@ export const EXERCISES_DATA = {
             id: 57, unitId: 4, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Joven", // español
             correctAnswer: "Telpochtli", // nahuatl
             points: 15,
@@ -1223,6 +1274,7 @@ export const EXERCISES_DATA = {
             id: 58, unitId: 4, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Muchacha", // español
             correctAnswer: "Ichpochtli", // nahuatl
             points: 15,
@@ -1233,6 +1285,7 @@ export const EXERCISES_DATA = {
             id: 59, unitId: 4, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             // da errores
             answer: "Noicniuh ______", // nahuatl
             correctAnswer: ["Noicniuh telpochtli", "telpochtli"], // nahuatl
@@ -1245,6 +1298,7 @@ export const EXERCISES_DATA = {
             id: 60, unitId: 4, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Nehuatl ni ______", // nahuatl
             correctAnswer: ["Nehuatl ni ichpochtli", "ichpochtli"], // nahuatl
             placeholder: "Yo soy joven",
@@ -1258,6 +1312,7 @@ export const EXERCISES_DATA = {
             id: 61, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Hombre mayor", // español
             correctAnswer: "Huehue", // nahuatl
             points: 15,
@@ -1268,6 +1323,7 @@ export const EXERCISES_DATA = {
             id: 62, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Mujer mayor", // español
             correctAnswer: "Ilamatl", // nahuatl
             points: 15,
@@ -1278,6 +1334,7 @@ export const EXERCISES_DATA = {
             id: 63, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Abuelo", // español
             correctAnswer: "Coltzin", // nahuatl
             points: 15,
@@ -1288,6 +1345,7 @@ export const EXERCISES_DATA = {
             id: 64, unitId: 5, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Abuela", // español
             correctAnswer: "Cihtzin", // nahuatl
             points: 15,
@@ -1298,6 +1356,7 @@ export const EXERCISES_DATA = {
             id: 65, unitId: 5, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Noicniuh ye ______", // nahuatl
             correctAnswer: ["Noicniuh ye huehue", "huehue", "huehuetzin"], // nahuatl
             placeholder: "Mi hermano ya es anciano",
@@ -1309,6 +1368,7 @@ export const EXERCISES_DATA = {
             id: 66, unitId: 5, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Noicniuh ye ______", // nahuatl
             correctAnswer: ["Noicniuh ye ilamatl", "ilamatl"], // nahuatl
             placeholder: "Mi hermana ya es anciana",
@@ -1322,6 +1382,7 @@ export const EXERCISES_DATA = {
             id: 67, unitId: 6, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Nosotros somos familia", // español
             correctAnswer: "Tehuan ticencalimeh", // nahuatl
             points: 15,
@@ -1332,6 +1393,7 @@ export const EXERCISES_DATA = {
             id: 68, unitId: 6, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Mi familia es grande", // español
             correctAnswer: "Nocencal ye huey", // nahuatl
             points: 15,
@@ -1342,6 +1404,7 @@ export const EXERCISES_DATA = {
             id: 69, unitId: 6, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ella es mi abuela", // español
             correctAnswer: "Yehuatl nocihtzin", // nahuatl
             points: 15,
@@ -1352,6 +1415,7 @@ export const EXERCISES_DATA = {
             id: 70, unitId: 6, levelId: 2, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Mi hermana es joven", // español
             correctAnswer: "Ichpochtli Noicniuh", // nahuatl
             points: 15,
@@ -1362,6 +1426,7 @@ export const EXERCISES_DATA = {
             id: 71, unitId: 6, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Nehuatl ni ______", // nahuatl
             correctAnswer: ["Nehuatl ni ichpochtli", "ichpochtli"], // nahuatl
             placeholder: "Yo soy joven",
@@ -1373,6 +1438,7 @@ export const EXERCISES_DATA = {
             id: 72, unitId: 6, levelId: 2, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Chicahuac ______", // nahuatl
             correctAnswer: ["Chicahuac notahtli", "notahtli"], // nahuatl
             placeholder: "Mi padre es fuerte",
@@ -1387,6 +1453,7 @@ export const EXERCISES_DATA = {
             id: 73, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "¿Qué?", // español
             correctAnswer: "Tlen", // nahuatl
             points: 15,
@@ -1397,6 +1464,7 @@ export const EXERCISES_DATA = {
             id: 74, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "¿Por qué?", // español
             correctAnswer: "Tleca", // nahuatl
             points: 15,
@@ -1407,6 +1475,7 @@ export const EXERCISES_DATA = {
             id: 75, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Cuándo?", // español
             correctAnswer: "Queman", // nahuatl
             points: 15,
@@ -1417,6 +1486,7 @@ export const EXERCISES_DATA = {
             id: 76, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "¿Quién?", // español
             correctAnswer: "Aquin", // nahuatl
             points: 15,
@@ -1427,6 +1497,7 @@ export const EXERCISES_DATA = {
             id: 77, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "¿Dónde?", // español
             correctAnswer: "Canin", // nahuatl
             points: 15,
@@ -1437,6 +1508,7 @@ export const EXERCISES_DATA = {
             id: 78, unitId: 1, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "¿Cómo? (de qué manera)", // español
             correctAnswer: "Quenin", // nahuatl
             points: 15,
@@ -1449,6 +1521,7 @@ export const EXERCISES_DATA = {
             id: 79, unitId: 2, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Hacer", // español
             correctAnswer: "Chihua", // nahuatl
             points: 15,
@@ -1459,6 +1532,7 @@ export const EXERCISES_DATA = {
             id: 80, unitId: 2, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Quién eres tú?", // español
             correctAnswer: "Aquin tehuatl?", // nahuatl
             points: 15,
@@ -1469,6 +1543,7 @@ export const EXERCISES_DATA = {
             id: 81, unitId: 2, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "¿Dónde estás?", // español
             correctAnswer: "Canin tica?", // nahuatl
             points: 15,
@@ -1479,6 +1554,7 @@ export const EXERCISES_DATA = {
             id: 82, unitId: 2, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "¿Qué haces?", // español
             correctAnswer: "Tlen tichihua?", // nahuatl
             points: 15,
@@ -1489,6 +1565,7 @@ export const EXERCISES_DATA = {
             id: 83, unitId: 2, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "citlali",
             answer: "______ mocencal", // nahuatl
             correctAnswer: ["Quenin mocencal", "Quenin"], // nahuatl
             placeholder: "¿Cómo está tu familia?",
@@ -1500,6 +1577,7 @@ export const EXERCISES_DATA = {
             id: 84, unitId: 2, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "tonatiuh",
             answer: "______ timoittazceh", // nahuatl
             correctAnswer: ["Queman timoittazceh", "Queman"], // nahuatl
             placeholder: "¿Cuándo nos vemos?",
@@ -1513,6 +1591,7 @@ export const EXERCISES_DATA = {
             id: 85, unitId: 3, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Quién es tu padre?", // español
             correctAnswer: "Aquin motahtli?", // nahuatl
             points: 15,
@@ -1523,6 +1602,7 @@ export const EXERCISES_DATA = {
             id: 86, unitId: 3, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "¿Dónde está mi abuela?", // español
             correctAnswer: "Canin nocihtzin?", // nahuatl
             points: 15,
@@ -1533,6 +1613,7 @@ export const EXERCISES_DATA = {
             id: 87, unitId: 3, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "¿Qué hace él?", // español
             correctAnswer: "Tlen quichihua yehuatl?", // nahuatl
             points: 15,
@@ -1543,6 +1624,7 @@ export const EXERCISES_DATA = {
             id: 88, unitId: 3, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "¿Cómo está ella?", // español
             correctAnswer: "Quenin yehuatl?", // nahuatl
             points: 15,
@@ -1553,6 +1635,7 @@ export const EXERCISES_DATA = {
             id: 89, unitId: 3, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "tonatiuh",
             answer: "Tleca ______ tica cualli", // nahuatl
             correctAnswer: ["Tleca ahmo tica cualli", "ahmo"], // nahuatl
             placeholder: "¿Por qué no estás bien?",
@@ -1564,6 +1647,7 @@ export const EXERCISES_DATA = {
             id: 90, unitId: 3, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "xochitl",
             answer: "______ titlacua", // nahuatl
             correctAnswer: ["Queman titlacua", "Queman"], // nahuatl
             placeholder: "¿Cuándo comes?",
@@ -1577,6 +1661,7 @@ export const EXERCISES_DATA = {
             id: 91, unitId: 4, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Allá", // español
             correctAnswer: "Ompa", // nahuatl
             points: 15,
@@ -1587,6 +1672,7 @@ export const EXERCISES_DATA = {
             id: 92, unitId: 4, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Es necesario", // español
             correctAnswer: "Monequi", // nahuatl
             points: 15,
@@ -1597,6 +1683,7 @@ export const EXERCISES_DATA = {
             id: 93, unitId: 4, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "¿Quién es mi abuelo?", // español
             correctAnswer: "Aquin nocoltzin?", // nahuatl
             points: 15,
@@ -1607,6 +1694,7 @@ export const EXERCISES_DATA = {
             id: 94, unitId: 4, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "¿Dónde está mi hermano?", // español
             correctAnswer: "Canin noicniuh?", // nahuatl
             points: 15,
@@ -1617,6 +1705,7 @@ export const EXERCISES_DATA = {
             id: 95, unitId: 4, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "xochitl",
             answer: "______ monequi", // nahuatl
             correctAnswer: ["Tlen monequi", "Tlen"], // nahuatl
             placeholder: "¿Qué es necesario?",
@@ -1628,6 +1717,7 @@ export const EXERCISES_DATA = {
             id: 96, unitId: 4, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "coltzin",
             answer: "______ motoca", // nahuatl
             correctAnswer: ["Quenin motoca", "Quenin"], // nahuatl
             placeholder: "¿Cuál es tu nombre?",
@@ -1641,6 +1731,7 @@ export const EXERCISES_DATA = {
             id: 97, unitId: 5, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "De esta manera", // español
             correctAnswer: "ic", // nahuatl
             points: 15,
@@ -1651,6 +1742,7 @@ export const EXERCISES_DATA = {
             id: 98, unitId: 5, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Yo soy Moctezuma", // español
             correctAnswer: "Nehuatl ni Moctezuma", // nahuatl
             points: 15,
@@ -1661,6 +1753,7 @@ export const EXERCISES_DATA = {
             id: 99, unitId: 5, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "El es mi hermano", // español
             correctAnswer: "Yehuatl Noicniuh", // nahuatl
             points: 15,
@@ -1671,6 +1764,7 @@ export const EXERCISES_DATA = {
             id: 100, unitId: 5, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Dónde estás?", // español
             correctAnswer: "Canin tica?", // nahuatl
             points: 15,
@@ -1681,6 +1775,7 @@ export const EXERCISES_DATA = {
             id: 101, unitId: 5, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Nicac ______ nocencal", // nahuatl
             correctAnswer: ["Nicac ipan nocencal", "ipan"], // nahuatl
             placeholder: "Estoy con mi familia",
@@ -1692,6 +1787,7 @@ export const EXERCISES_DATA = {
             id: 102, unitId: 5, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "neza",
             answer: "______ tlacuaz", // nahuatl
             correctAnswer: ["Queman tlacuaz", "Queman"], // nahuatl
             placeholder: "¿Cuándo se come?",
@@ -1705,6 +1801,7 @@ export const EXERCISES_DATA = {
             id: 103, unitId: 6, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "¿Quién es tu padre?", // español
             correctAnswer: "Aquin motahtli?", // nahuatl
             points: 15,
@@ -1715,6 +1812,7 @@ export const EXERCISES_DATA = {
             id: 104, unitId: 6, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ella es mi abuela", // español
             correctAnswer: "Yehuatl nocihtzin", // nahuatl
             points: 15,
@@ -1725,6 +1823,7 @@ export const EXERCISES_DATA = {
             id: 105, unitId: 6, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Dónde están ellos?", // español
             correctAnswer: "Canin yehuan", // nahuatl
             points: 15,
@@ -1735,6 +1834,7 @@ export const EXERCISES_DATA = {
             id: 106, unitId: 6, levelId: 3, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "¿Qué haces?", // español
             correctAnswer: "Tlen tichihua", // nahuatl
             points: 15,
@@ -1746,6 +1846,7 @@ export const EXERCISES_DATA = {
             id: 107, unitId: 6, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "neza",
             answer: "______ yehuan", // nahuatl
             correctAnswer: ["Canin", "Canin yehuan"], // nahuatl
             placeholder: "¿Dónde están ellos?",
@@ -1757,6 +1858,7 @@ export const EXERCISES_DATA = {
             id: 108, unitId: 6, levelId: 3, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "citlali",
             answer: "______ tichihua", // nahuatl
             correctAnswer: ["Tlen tichihua", "Tlen"], // nahuatl
             placeholder: "¿Qué estás haciendo?",
@@ -1771,6 +1873,7 @@ export const EXERCISES_DATA = {
             id: 109, unitId: 1, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ayer", // español
             correctAnswer: "Yalhua", // nahuatl
             points: 15,
@@ -1781,6 +1884,7 @@ export const EXERCISES_DATA = {
             id: 110, unitId: 1, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Hoy", // español
             correctAnswer: "Axan", // nahuatl
             points: 15,
@@ -1791,6 +1895,7 @@ export const EXERCISES_DATA = {
             id: 111, unitId: 1, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Mañana", // español
             correctAnswer: "Moztla", // nahuatl
             points: 15,
@@ -1801,6 +1906,7 @@ export const EXERCISES_DATA = {
             id: 112, unitId: 1, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Sobre", // español
             correctAnswer: "ipan", // nahuatl
             points: 15,
@@ -1811,6 +1917,7 @@ export const EXERCISES_DATA = {
             id: 113, unitId: 1, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ teotlac", // nahuatl
             correctAnswer: ["Yalhua teotlac", "Yalhua"], // nahuatl
             placeholder: "Ayer en la tarde",
@@ -1822,6 +1929,7 @@ export const EXERCISES_DATA = {
             id: 114, unitId: 1, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______ yohual", // nahuatl
             correctAnswer: ["Moztla yohual", "Moztla"], // nahuatl
             placeholder: "Mañana en la noche",
@@ -1835,6 +1943,7 @@ export const EXERCISES_DATA = {
             id: 115, unitId: 2, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "¿Qué haces?", // español
             correctAnswer: "Tlen tichihua", // nahuatl
             points: 15,
@@ -1845,6 +1954,7 @@ export const EXERCISES_DATA = {
             id: 116, unitId: 2, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "¿Qué hiciste?", // español
             correctAnswer: "Tlen otichihua", // nahuatl
             points: 15,
@@ -1855,7 +1965,8 @@ export const EXERCISES_DATA = {
             id: 117, unitId: 2, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
-            answer: "¿Qué harás? (futuro)", // español
+            character: "neza",
+            answer: "¿Qué harás?", // español
             correctAnswer: "Tlen tichihuaz?", // nahuatl
             points: 15,
             difficulty: "medium",
@@ -1875,6 +1986,7 @@ export const EXERCISES_DATA = {
             id: 119, unitId: 2, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "citlali",
             answer: "Tlen ______", // nahuatl
             correctAnswer: ["Tlen otichihua", "otichihua"], // nahuatl
             placeholder: "¿Qué has hecho?",
@@ -1886,6 +1998,7 @@ export const EXERCISES_DATA = {
             id: 120, unitId: 2, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la pregunta:",
+            character: "tonatiuh",
             answer: "Tlen ______", // nahuatl
             correctAnswer: ["Tlen tichihuaz", "tichihuaz"], // nahuatl
             placeholder: "¿Qué harás?",
@@ -1899,6 +2012,7 @@ export const EXERCISES_DATA = {
             id: 121, unitId: 3, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Ayer, se lo agradecí", // español
             correctAnswer: "Yalhua, onitlazohcamati", // nahuatl
             points: 15,
@@ -1909,6 +2023,7 @@ export const EXERCISES_DATA = {
             id: 122, unitId: 3, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Hoy, doy gracias", // español
             correctAnswer: "Axan, nitlazohcamati", // nahuatl
             points: 15,
@@ -1919,6 +2034,7 @@ export const EXERCISES_DATA = {
             id: 123, unitId: 3, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Mañana, daré gracias", // español
             correctAnswer: "Moztla, nitlazohcamatiz", // nahuatl
             points: 15,
@@ -1929,6 +2045,7 @@ export const EXERCISES_DATA = {
             id: 124, unitId: 3, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Me vio", // español
             correctAnswer: "Onechittac", // nahuatl
             points: 15,
@@ -1939,6 +2056,7 @@ export const EXERCISES_DATA = {
             id: 125, unitId: 3, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______, nitlazohcamatiz mitz.", // nahuatl
             correctAnswer: ["Moztla nitlazohcamatiz mitz", "Moztla"], // nahuatl
             placeholder: "Mañana te voy a dar las gracias",
@@ -1950,6 +2068,7 @@ export const EXERCISES_DATA = {
             id: 126, unitId: 3, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Yalhua, ______ mitz", // nahuatl
             correctAnswer: ["Yalhua, onitlazohcamati mitz", "onitlazohcamati"], // nahuatl
             placeholder: "ayer te agradecí",
@@ -1963,6 +2082,7 @@ export const EXERCISES_DATA = {
             id: 127, unitId: 4, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Ayer, mi padre me vio", // español
             correctAnswer: "Yalhua, onechittac notahtli", // nahuatl
             points: 15,
@@ -1973,6 +2093,7 @@ export const EXERCISES_DATA = {
             id: 128, unitId: 4, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Hoy, veo a mi familia", // español
             correctAnswer: "Axan, niquitta nocencal", // nahuatl
             points: 15,
@@ -1983,6 +2104,7 @@ export const EXERCISES_DATA = {
             id: 129, unitId: 4, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Mañana, nos veremos", // español
             correctAnswer: "Moztla, timoittazceh", // nahuatl
             points: 15,
@@ -1993,6 +2115,7 @@ export const EXERCISES_DATA = {
             id: 130, unitId: 4, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ayer, ella los vio", // español
             correctAnswer: "Yalhua, oquittac yehuan", // nahuatl
             points: 15,
@@ -2003,6 +2126,7 @@ export const EXERCISES_DATA = {
             id: 131, unitId: 4, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Axan, nitlacua ______ nocencal", // nahuatl
             correctAnswer: ["Axan, nitlacua iuan nocencal", "iuan"], // nahuatl
             placeholder: "Ahora, como con mi familia",
@@ -2015,6 +2139,7 @@ export const EXERCISES_DATA = {
             id: 132, unitId: 4, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Moztla, ______ tlen miac", // nahuatl
             correctAnswer: ["Moztla, ticchihuaz tlen miac", "ticchihuaz"], // nahuatl
             placeholder: "Mañana harás muchas cosas",
@@ -2028,6 +2153,7 @@ export const EXERCISES_DATA = {
             id: 133, unitId: 5, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Alla", // español
             correctAnswer: "Ompa", // nahuatl
             points: 15,
@@ -2038,6 +2164,7 @@ export const EXERCISES_DATA = {
             id: 134, unitId: 5, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Yo estuve", // español
             correctAnswer: "Onica", // nahuatl
             points: 15,
@@ -2048,6 +2175,7 @@ export const EXERCISES_DATA = {
             id: 135, unitId: 5, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Ayer estuve allí", // español
             correctAnswer: "Yalhua onica ompa", // nahuatl
             points: 15,
@@ -2058,6 +2186,7 @@ export const EXERCISES_DATA = {
             id: 136, unitId: 5, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Hoy estoy allí", // español
             correctAnswer: "Axan ompa nicac", // nahuatl
             points: 15,
@@ -2068,6 +2197,7 @@ export const EXERCISES_DATA = {
             id: 137, unitId: 5, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Moztla ompa ______", // nahuatl
             correctAnswer: ["Moztla ompa ticaz", "ticaz"], // nahuatl
             placeholder: "Mañana irás allá",
@@ -2079,6 +2209,7 @@ export const EXERCISES_DATA = {
             id: 138, unitId: 5, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Axan ompa ______", // nahuatl
             correctAnswer: ["Axan ompa nictlacua", "nictlacua"], // nahuatl
             placeholder: "Ahora estoy comiendo allí",
@@ -2092,6 +2223,7 @@ export const EXERCISES_DATA = {
             id: 139, unitId: 6, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Ayer, vi a mi hermano allí", // español
             correctAnswer: "Yalhua, ompa oniquittac noicniuh", // nahuatl
             points: 15,
@@ -2102,6 +2234,7 @@ export const EXERCISES_DATA = {
             id: 140, unitId: 6, levelId: 4, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Hoy, estoy allí", // español
             correctAnswer: "Axan, ompa nicac", // nahuatl
             points: 15,
@@ -2122,6 +2255,7 @@ export const EXERCISES_DATA = {
             id: 142, unitId: 6, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Yalhua, ompa ______ nocihtzin", // nahuatl
             correctAnswer: ["Yalhua, ompa oquittac nocihtzin", "oquittac"], // nahuatl
             placeholder: "Ayer, allá, él vio a mi hermanito",
@@ -2133,6 +2267,7 @@ export const EXERCISES_DATA = {
             id: 143, unitId: 6, levelId: 4, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Axan, ompa nictlacua ______ teotlac", // nahuatl
             correctAnswer: ["Axan, ompa nictlacua ipan teotlac", "ipan"], // nahuatl
             placeholder: "Hoy, ahi, como en la tarde",
@@ -2141,13 +2276,13 @@ export const EXERCISES_DATA = {
             explanation: "Ipan introduce un complemento temporal o espacial: ipan teotlac = en la tarde."
         }),
 
-
         // ========== NIVEL 5 ==========
         // 5 : 1
         new Exercise({
             id: 144, unitId: 1, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Persona", // español
             correctAnswer: "Tlacatl", // nahuatl
             points: 15,
@@ -2158,6 +2293,7 @@ export const EXERCISES_DATA = {
             id: 145, unitId: 1, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Come en la tarde", // español
             correctAnswer: "Tlacua teotlac", // nahuatl
             points: 15,
@@ -2168,6 +2304,7 @@ export const EXERCISES_DATA = {
             id: 146, unitId: 1, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "El hace lo correcto", // español
             correctAnswer: "Quichihua tlen melahuac", // nahuatl
             points: 15,
@@ -2178,6 +2315,7 @@ export const EXERCISES_DATA = {
             id: 147, unitId: 1, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "______ ______ iuan nocencal", // nahuatl
             correctAnswer: ["Axan, nitlacua iuan nocencal", "Axan, nitlacua"], // nahuatl
             placeholder: "Hoy, como con mi familia",
@@ -2189,6 +2327,7 @@ export const EXERCISES_DATA = {
             id: 148, unitId: 1, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "______ yohual", // nahuatl
             correctAnswer: ["Titlacuaceh yohual", "Titlacuaceh"], // nahuatl
             placeholder: "Comerás en la noche",
@@ -2200,6 +2339,7 @@ export const EXERCISES_DATA = {
             id: 149, unitId: 1, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Quitlacua ______ ______", // nahuatl
             correctAnswer: ["Quitlacua ipan yohual", "ipan yohual"], // nahuatl
             placeholder: "Él come en la noche",
@@ -2213,6 +2353,7 @@ export const EXERCISES_DATA = {
             id: 150, unitId: 2, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Dormir", // español
             correctAnswer: "Cochi", // nahuatl
             points: 15,
@@ -2223,6 +2364,7 @@ export const EXERCISES_DATA = {
             id: 151, unitId: 2, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Come en la noche", // español
             correctAnswer: "Quitlacua ipan yohual", // nahuatl
             points: 15,
@@ -2233,6 +2375,7 @@ export const EXERCISES_DATA = {
             id: 152, unitId: 2, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Duerme en la noche", // español
             correctAnswer: "Cochi ipan yohual", // nahuatl
             points: 15,
@@ -2243,6 +2386,7 @@ export const EXERCISES_DATA = {
             id: 153, unitId: 2, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Yehuatl ______ ipan tonalli", // nahuatl
             correctAnswer: ["Yehuatl chihua ipan tonalli", "chihua"], // nahuatl
             placeholder: "¿Él hace algo durante el día?",
@@ -2254,6 +2398,7 @@ export const EXERCISES_DATA = {
             id: 154, unitId: 2, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Yehuatl ______ ______ teotlac", // nahuatl
             correctAnswer: ["Yehuatl cochi ipan teotlac", "Cochi ipan"], // nahuatl
             placeholder: "Ella duerme en la tarde",
@@ -2265,6 +2410,7 @@ export const EXERCISES_DATA = {
             id: 155, unitId: 2, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ ______ ipan yohual", // nahuatl
             correctAnswer: ["Tehuatl titlacua ipan yohual", "Tehuatl titlacua"], // nahuatl
             placeholder: "¿Tu comes durante la noche?",
@@ -2278,6 +2424,7 @@ export const EXERCISES_DATA = {
             id: 156, unitId: 3, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Conmigo", // español
             correctAnswer: "Nechpa", // nahuatl
             points: 15,
@@ -2288,6 +2435,7 @@ export const EXERCISES_DATA = {
             id: 157, unitId: 3, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Tu comes", // español
             correctAnswer: "Motlacua", // nahuatl
             points: 15,
@@ -2298,6 +2446,7 @@ export const EXERCISES_DATA = {
             id: 158, unitId: 3, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Comes conmigo", // español
             correctAnswer: "Titlacua nechpa", // nahuatl
             points: 15,
@@ -2308,6 +2457,7 @@ export const EXERCISES_DATA = {
             id: 159, unitId: 3, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "______ mochihua", // nahuatl
             correctAnswer: ["Nechpa mochihua", "Nechpa"], // nahuatl
             placeholder: "Se hace conmigo",
@@ -2319,6 +2469,7 @@ export const EXERCISES_DATA = {
             id: 160, unitId: 3, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ ipan yohual", // nahuatl
             correctAnswer: ["Nicochi ipan yohual", "Nicochi"], // nahuatl
             placeholder: "Duermo en la noche",
@@ -2330,6 +2481,7 @@ export const EXERCISES_DATA = {
             id: 161, unitId: 3, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "Titlacua ______", // nahuatl
             correctAnswer: ["Titlacua nechpa", "nechpa"], // nahuatl
             placeholder: "Comes conmigo",
@@ -2343,6 +2495,7 @@ export const EXERCISES_DATA = {
             id: 162, unitId: 4, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Hoy como", // español
             correctAnswer: "Axan nictlacua", // nahuatl
             points: 15,
@@ -2353,6 +2506,7 @@ export const EXERCISES_DATA = {
             id: 163, unitId: 4, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Mañana lo harás", // español
             correctAnswer: "Ticchihua moztla", // nahuatl
             points: 15,
@@ -2363,6 +2517,7 @@ export const EXERCISES_DATA = {
             id: 164, unitId: 4, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Duermo en la noche", // español
             correctAnswer: "Nicochi ipan yohual", // nahuatl
             points: 15,
@@ -2373,6 +2528,7 @@ export const EXERCISES_DATA = {
             id: 165, unitId: 4, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ teotlac", // nahuatl
             correctAnswer: ["Quitlacua teotlac", "Quitlacua"], // nahuatl
             placeholder: "Ella come en la tarde",
@@ -2384,6 +2540,7 @@ export const EXERCISES_DATA = {
             id: 166, unitId: 4, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______ ipan tonalli", // nahuatl
             correctAnswer: ["Nicchihua ipan tonalli", "Nicchihua"], // nahuatl
             placeholder: "Yo hago eso durante el día",
@@ -2395,6 +2552,7 @@ export const EXERCISES_DATA = {
             id: 167, unitId: 4, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Yehuatl cochi ______  ______", // nahuatl
             correctAnswer: ["Yehuatl cochi ipan yohual", "ipan yohual"], // nahuatl
             placeholder: "Él duerme en la noche",
@@ -2408,6 +2566,7 @@ export const EXERCISES_DATA = {
             id: 168, unitId: 5, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Yo como con mi familia", // español
             correctAnswer: "Nehuatl nictlacua iuan nocencal", // nahuatl
             points: 15,
@@ -2418,6 +2577,7 @@ export const EXERCISES_DATA = {
             id: 169, unitId: 5, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Ella hace lo correcto", // español
             correctAnswer: "Yehuatl quichihua tlen melahuac", // nahuatl
             points: 15,
@@ -2428,6 +2588,7 @@ export const EXERCISES_DATA = {
             id: 170, unitId: 5, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Nosotros dormimos en la noche", // español
             correctAnswer: "Tehuan ticochiceh yohual", // nahuatl
             points: 15,
@@ -2438,6 +2599,7 @@ export const EXERCISES_DATA = {
             id: 171, unitId: 5, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "Nehuatl nicchihua ______ ______", // nahuatl
             correctAnswer: ["Nehuatl nicchihua ipan tonalli", "ipan tonalli"], // nahuatl
             placeholder: "Yo hago eso durante el día",
@@ -2449,6 +2611,7 @@ export const EXERCISES_DATA = {
             id: 172, unitId: 5, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Yehuatl quitlacua ______ ______", // nahuatl
             correctAnswer: ["Yehuatl quitlacua ipan teotlac", "ipan teotlac"], // nahuatl
             placeholder: "Él come en la tarde",
@@ -2460,6 +2623,7 @@ export const EXERCISES_DATA = {
             id: 173, unitId: 5, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Tehuan tictlacua ______ ______", // nahuatl
             correctAnswer: ["Tehuan tictlacua iuan mocencal", "iuan mocencal"], // nahuatl
             placeholder: "Nosotros comemos con tu familia",
@@ -2473,6 +2637,7 @@ export const EXERCISES_DATA = {
             id: 174, unitId: 6, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Hoy, como en la tarde", // español
             correctAnswer: "Axan, nictlacua ipan teotlac", // nahuatl
             points: 15,
@@ -2483,6 +2648,7 @@ export const EXERCISES_DATA = {
             id: 175, unitId: 6, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Mañana, harás muchas cosas", // español
             correctAnswer: "Moztla, tichihuaz tlen miac", // nahuatl
             points: 15,
@@ -2493,6 +2659,7 @@ export const EXERCISES_DATA = {
             id: 176, unitId: 6, levelId: 5, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Hoy, duermo en la noche", // español
             correctAnswer: "Axan, nicochi ipan yohual", // nahuatl
             points: 15,
@@ -2503,6 +2670,7 @@ export const EXERCISES_DATA = {
             id: 177, unitId: 6, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Moztla, ______ iuan mocencal", // nahuatl
             correctAnswer: ["Moztla, titlacuaz iuan mocencal", "titlacuaz"], // nahuatl
             placeholder: "Mañana, comerás con tu familia",
@@ -2514,6 +2682,7 @@ export const EXERCISES_DATA = {
             id: 178, unitId: 6, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Yalhua, ______ tlen melahuac", // nahuatl
             correctAnswer: ["Yalhua, ochihua tlen melahuac", "ochihua"], // nahuatl
             placeholder: "Ayer, el hizo lo correcto",
@@ -2525,6 +2694,7 @@ export const EXERCISES_DATA = {
             id: 179, unitId: 6, levelId: 5, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Axan, ______ ipan teotlac", // nahuatl
             correctAnswer: ["Axan, niccochi ipan teotlac", "niccochi"], // nahuatl
             placeholder: "Hoy, duermo por la tarde",
@@ -2539,6 +2709,7 @@ export const EXERCISES_DATA = {
             id: 180, unitId: 1, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Más", // español
             correctAnswer: "Oc", // nahuatl
             points: 15,
@@ -2549,6 +2720,7 @@ export const EXERCISES_DATA = {
             id: 181, unitId: 1, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Es necesario", // español
             correctAnswer: "Monequi", // nahuatl
             points: 15,
@@ -2559,6 +2731,7 @@ export const EXERCISES_DATA = {
             id: 182, unitId: 1, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Menos", // español
             correctAnswer: "Ahmo oc", // nahuatl
             points: 15,
@@ -2569,6 +2742,7 @@ export const EXERCISES_DATA = {
             id: 183, unitId: 1, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "______ monequi", // nahuatl
             correctAnswer: ["Oc monequi", "Oc"], // nahuatl
             placeholder: "Prefiero",
@@ -2580,6 +2754,7 @@ export const EXERCISES_DATA = {
             id: 184, unitId: 1, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "______ monequi", // nahuatl
             correctAnswer: ["Ahmo monequi", "Ahmo"], // nahuatl
             placeholder: "No es necesario",
@@ -2591,6 +2766,7 @@ export const EXERCISES_DATA = {
             id: 185, unitId: 1, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ oc", // nahuatl
             correctAnswer: ["Ahmo oc", "Ahmo"], // nahuatl
             placeholder: "Menos",
@@ -2599,12 +2775,12 @@ export const EXERCISES_DATA = {
             explanation: "Ahmo oc es la forma de decir 'menos'"
         }),
 
-
         // 6 : 2
         new Exercise({
             id: 186, unitId: 2, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Si, tienes que agradecer", // español
             correctAnswer: "Quēmah, monequi titlazohcamatiz", // nahuatl
             points: 15,
@@ -2615,6 +2791,7 @@ export const EXERCISES_DATA = {
             id: 187, unitId: 2, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "No es necesario, mañana", // español
             correctAnswer: "Ahmo monequi, moztla", // nahuatl
             points: 15,
@@ -2625,6 +2802,7 @@ export const EXERCISES_DATA = {
             id: 188, unitId: 2, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Todavía necesito duermar", // español
             correctAnswer: "Oc monequi nicochi", // nahuatl
             points: 15,
@@ -2635,6 +2813,7 @@ export const EXERCISES_DATA = {
             id: 189, unitId: 2, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Ahmo, ______ nictlacuaz", // nahuatl
             correctAnswer: ["Ahmo, monequi nictlacuaz", "monequi"], // nahuatl
             placeholder: "No, es necesario que coma",
@@ -2646,6 +2825,7 @@ export const EXERCISES_DATA = {
             id: 190, unitId: 2, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "Oc ______ tichihuaz", // nahuatl
             correctAnswer: ["Oc monequi tichihuaz", "monequi"], // nahuatl
             placeholder: "Prefiero que hagas eso",
@@ -2657,6 +2837,7 @@ export const EXERCISES_DATA = {
             id: 191, unitId: 2, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______ monequi titlazohcamatiz", // nahuatl
             correctAnswer: ["Oc monequi titlazohcamatiz", "Oc"], // nahuatl
             placeholder: "Prefiero que agradezcas",
@@ -2670,6 +2851,7 @@ export const EXERCISES_DATA = {
             id: 192, unitId: 3, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Por favor", // español
             correctAnswer: "Nimitztlatlauhtia", // nahuatl
             points: 15,
@@ -2680,6 +2862,7 @@ export const EXERCISES_DATA = {
             id: 193, unitId: 3, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Come por favor", // español
             correctAnswer: "Nimitztlatlauhtia xictlacua", // nahuatl
             points: 15,
@@ -2690,6 +2873,7 @@ export const EXERCISES_DATA = {
             id: 194, unitId: 3, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Duerme por favor", // español
             correctAnswer: "Nimitztlatlauhtia ximocochi", // nahuatl
             points: 15,
@@ -2700,6 +2884,7 @@ export const EXERCISES_DATA = {
             id: 195, unitId: 3, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "______ xicchihua", // nahuatl
             correctAnswer: ["Nimitztlatlauhtia xicchihua", "Nimitztlatlauhtia"], // nahuatl
             placeholder: "Por favor, hazlo",
@@ -2711,6 +2896,7 @@ export const EXERCISES_DATA = {
             id: 196, unitId: 3, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "Nimitztlatlauhtia ______", // nahuatl
             correctAnswer: ["Nimitztlatlauhtia xictlacua", "xictlacua"], // nahuatl
             placeholder: "Por favor, come",
@@ -2722,6 +2908,7 @@ export const EXERCISES_DATA = {
             id: 197, unitId: 3, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Nimitztlatlauhtia ______", // nahuatl
             correctAnswer: ["Nimitztlatlauhtia ximocochi", "ximocochi"], // nahuatl
             placeholder: "Por favor, duerme",
@@ -2735,6 +2922,7 @@ export const EXERCISES_DATA = {
             id: 198, unitId: 4, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "coltzin",
             answer: "Prefiero comer", // español
             correctAnswer: "Oc monequi nictlacua", // nahuatl
             points: 15,
@@ -2745,6 +2933,7 @@ export const EXERCISES_DATA = {
             id: 199, unitId: 4, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "No es necesario que duerma", // español
             correctAnswer: "Ahmo monequi nicochi", // nahuatl
             points: 15,
@@ -2755,6 +2944,7 @@ export const EXERCISES_DATA = {
             id: 200, unitId: 4, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Duerme por favor", // español
             correctAnswer: "Nimitztlatlauhtia ximocochi", // nahuatl
             points: 15,
@@ -2765,6 +2955,7 @@ export const EXERCISES_DATA = {
             id: 201, unitId: 4, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "tonatiuh",
             answer: "______ xictlacua", // nahuatl
             correctAnswer: ["Nimitztlatlauhtia xictlacua", "Tla"], // nahuatl
             placeholder: "Por favor, come",
@@ -2776,6 +2967,7 @@ export const EXERCISES_DATA = {
             id: 202, unitId: 4, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Oc monequi ______", // nahuatl
             correctAnswer: ["Oc monequi nicchihuaz", "nicchihuaz"], // nahuatl
             placeholder: "Prefiero hacer eso",
@@ -2787,6 +2979,7 @@ export const EXERCISES_DATA = {
             id: 203, unitId: 4, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Ahmo monequi ______", // nahuatl
             correctAnswer: ["Ahmo monequi titlazohcamatiz", "titlazohcamatiz"], // nahuatl
             placeholder: "No es necesario que agradezcas",
@@ -2800,6 +2993,7 @@ export const EXERCISES_DATA = {
             id: 204, unitId: 5, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "neza",
             answer: "Yo prefiero hacer eso", // español
             correctAnswer: "Nehuatl oc monequi nicchihuaz", // nahuatl
             points: 15,
@@ -2810,6 +3004,7 @@ export const EXERCISES_DATA = {
             id: 205, unitId: 5, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Tú no necesitas hacer eso", // español
             correctAnswer: "Tehuatl ahmo monequi ticchihuaz", // nahuatl
             points: 15,
@@ -2820,6 +3015,7 @@ export const EXERCISES_DATA = {
             id: 206, unitId: 5, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "Sí, es necesario que él lo haga", // español
             correctAnswer: "Yehuatl quēmah monequi quichihuaz", // nahuatl
             points: 15,
@@ -2830,6 +3026,7 @@ export const EXERCISES_DATA = {
             id: 207, unitId: 5, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "xochitl",
             answer: "Nehuatl oc monequi ______", // nahuatl
             correctAnswer: ["Nehuatl oc monequi nictlacuaz", "nictlacuaz"], // nahuatl
             placeholder: "Yo prefiero comer esto",
@@ -2841,6 +3038,7 @@ export const EXERCISES_DATA = {
             id: 208, unitId: 5, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Yehuatl oc monequi ______", // nahuatl
             correctAnswer: ["Yehuatl oc monequi quitlacuaz", "quitlacuaz"], // nahuatl
             placeholder: "Ella prefiere comer eso",
@@ -2852,6 +3050,7 @@ export const EXERCISES_DATA = {
             id: 209, unitId: 5, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Tehuatl ahmo monequi ______", // nahuatl
             correctAnswer: ["Tehuatl ahmo monequi ticchihuaz", "ticchihuaz"], // nahuatl
             placeholder: "Tú no necesitas hacer eso",
@@ -2865,6 +3064,7 @@ export const EXERCISES_DATA = {
             id: 210, unitId: 6, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "citlali",
             answer: "Sí, es necesario que yo esté aquí", // español
             correctAnswer: "Quēmah monequi nicac", // nahuatl
             points: 15,
@@ -2875,6 +3075,7 @@ export const EXERCISES_DATA = {
             id: 211, unitId: 6, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "tonatiuh",
             answer: "No es necesario que estés allí", // español
             correctAnswer: "Ahmo monequi tica ompa", // nahuatl
             points: 15,
@@ -2885,6 +3086,7 @@ export const EXERCISES_DATA = {
             id: 212, unitId: 6, levelId: 6, language: "nhce",
             type: "multiple-choice",
             question: "Selecciona la traducción correcta",
+            character: "xochitl",
             answer: "Por favor, agradece mucho", // español
             correctAnswer: "Nimitztlatlauhtia xitlazohcamati miac", // nahuatl
             points: 15,
@@ -2895,6 +3097,7 @@ export const EXERCISES_DATA = {
             id: 213, unitId: 6, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "coltzin",
             answer: "Quēmah, ______ ______", // nahuatl
             correctAnswer: ["Quēmah, cualli tonalli", "cualli tonalli"], // nahuatl
             placeholder: "Sí, buen día",
@@ -2906,6 +3109,7 @@ export const EXERCISES_DATA = {
             id: 214, unitId: 6, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "neza",
             answer: "Ahmo monequi ______ ______", // nahuatl
             correctAnswer: ["Ahmo monequi nicchihua moztla", "nicchihua moztla"], // nahuatl
             placeholder: "No es necesario, lo hago mañana",
@@ -2917,6 +3121,7 @@ export const EXERCISES_DATA = {
             id: 215, unitId: 6, levelId: 6, language: "nhce",
             type: "fill-blank",
             question: "Completa la frase:",
+            character: "citlali",
             answer: "Nimitztlatlauhtia ximocochi ______ ______", // nahuatl
             correctAnswer: ["Nimitztlatlauhtia ximocochi ipan yohual", "ipan yohual"], // nahuatl
             placeholder: "Por favor, duerme en la noche",
