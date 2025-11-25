@@ -1,5 +1,75 @@
 # CHANGELOG
 
+## [3.3.0] - 2025-11-25 - Sistema de Imágenes de Personajes y Mejoras Visuales
+
+### Added
+
+- **Componente ExerciseImage**
+  - Sistema dinámico de imágenes de personajes basado en estado de respuesta
+  - Dos modos emocionales: correcto/feliz-neutro vs incorrecto/triste-enojado
+  - Mapeo de nombres de personajes para consistencia
+  - Sistema de fallbacks con placeholder para imágenes faltantes
+  - Normalización de nombres de personajes con CHARACTER_MAP
+
+- **Asignación de Personajes a Ejercicios**
+  - Propiedad `character` agregada a ejercicios para asignación específica
+
+- **Expansión de Vocabulario**
+  - Nuevas palabras agregadas al sistema léxico
+  - Correcciones y mejoras en definiciones existentes
+
+### Changed
+
+- **LessonView y QuickLevelView**
+  - Integración del componente ExerciseImage para mostrar personajes
+  - Reemplazo de imágenes placeholder estáticas por sistema dinámico
+  - Mejora en la experiencia visual durante ejercicios
+
+- **Estructura de Ejercicios**
+  - Propiedad `character` añadida para personalización visual
+  - Default value para ejercicios sin asignación específica
+
+### Fixed
+
+- **Correcciones de Bugs Visuales**
+  - Problemas de layout en interfaces de lección
+  - Mejora en la responsividad de componentes
+  - Optimización del espaciado y alineación
+
+- **Manejo de Errores**
+  - Sistema robusto de fallbacks para imágenes faltantes
+  - Logging de errores para debugging de asignación de personajes
+  - Normalización de nombres para prevenir errores de carga
+
+## [3.2.1] - 2025-11-20 - Actualización de Vocabulario y Corrección de Ejercicios
+
+### Added
+
+- **Vocabulario Expandido**
+  - Agregadas palabras faltantes: "Cencalli", "Notahtli", "Motahtli", "Nonantli", "Monantli"
+  - Nuevas formas verbales: "Nicochiz", "Xicochih", "Mitz"
+  - Mejora en la cobertura léxica del náhuatl
+
+### Changed
+
+- **Ejercicios de Nivel 6**
+  - Actualizados ejercicios de peticiones y órdenes para mayor consistencia
+  - Mejoradas explicaciones y placeholders en ejercicios
+  - Mantenida funcionalidad de herencia de vocabulario entre niveles
+
+### Fixed
+
+- **Corrección de Bugs**
+  - Solucionado bug en ejercicios fill-blanks que causaba errores en la UI (EN PROCESO)
+  - Corregidos errores en ejercicios problemáticos
+  - Mejorada consistencia en traducciones y pronunciaciones
+  - Optimizado el procesamiento de vocabulario contextual
+
+- **Mejoras de Calidad**
+  - Validación mejorada de respuestas en ejercicios
+  - Consistencia en el formato de vocabulario entre niveles
+  - Corrección de discrepancias en datos de ejercicios
+
 ## [3.2.0] - 2025-11-15 - Sistema Completo de Lecciones Mejoradas
 
 ### Added

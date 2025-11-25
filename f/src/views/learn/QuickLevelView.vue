@@ -1,5 +1,5 @@
 <template>
-    <div class="text-white pt-[10%] flex flex-col -mx-2 md:pt-[15%] md:mx-[-50%] md:py-[20%]">
+    <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
         <!-- Header con título dinámico -->
         <Header variant="progress" :title="`Nivel Rápido ${currentLevel.id}`"
             :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
@@ -8,6 +8,7 @@
 
         <!-- Contenido -->
         <div class="flex-1 flex items-center justify-center md:mt-[9%] overflow-hidden">
+
             <!-- contenedor flex columna -->
             <div class="flex flex-col w-full items-center">
                 <div class="w-full">
@@ -24,8 +25,12 @@
                         <div class="md:flex md:gap-2 md:px-10 md:py-3 md:scale-125">
                             <!-- Imagen placeholder -->
                             <div class="flex ml-2 md:justify-center mb-3 md:mb-0 md:w-1/3">
-                                <img :src="placeholder" alt="Ejercicio"
-                                    class="w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg bg-gray-700">
+
+                                <!-- <img :src="placeholder" alt="Ejercicio"
+                                    class="w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg bg-gray-700"> -->
+                                <ExerciseImage :characterName="currentExercise.character"
+                                    :imageState="!showResult || isAnswerCorrect" :showAnswer="!!currentExercise.answer"
+                                    :altText="`Personaje ${currentExercise.character}`" />
 
                                 <!-- ANSWER MOBILE -->
                                 <div v-if="currentExercise.answer" class="sm:hidden block mx-3 mt-10">
@@ -188,6 +193,8 @@ import { ProgressService } from '../../data/services/ProgressService.js';
 import { QuickLevelService } from '../../data/services/QuickLevelService.js';
 import placeholder from '../../assets/300x300.png';
 
+import ExerciseImage from '../../components/ExerciseImage.vue';
+
 export default {
     name: "QuickLevel",
     components: {
@@ -197,7 +204,8 @@ export default {
         WarningModal,
         ExitConfirmModal,
         ProcessedText,
-        NextStage
+        NextStage,
+        ExerciseImage
     },
     props: {
         levelId: {
@@ -229,7 +237,8 @@ export default {
             completedExercises: 0,
             unlockedNextLevelUnit: false,
             nextLevelId: null,
-            performance: 0
+            performance: 0,
+            screenHeight: 0
         };
     },
     computed: {
@@ -261,6 +270,13 @@ export default {
 
             console.log('📚 VOCABULARIO COMBINADO DEL NIVEL:', vocabulary);
             return vocabulary;
+        },
+        containerClasses() {
+            if (this.screenHeight <= 658) {
+                return 'md:pt-[-5%] md:py-[-10%]';
+            } else if (this.screenHeight >= 700) {
+                return 'md:pt-[15%] md:pb-[20%]';
+            }
         }
     },
     created() {
@@ -324,7 +340,6 @@ export default {
             // Comparación directa
             return normalizedUser === normalizedCorrect;
         },
-
 
         verifyAnswer() {
             if (this.showResult) {
@@ -532,7 +547,26 @@ export default {
                 e.returnValue = '¿Estás seguro de que quieres recargar? Perderás tu progreso en esta lección.';
                 return e.returnValue;
             }
-        }
+        },
+
+        updateHeight() {
+            this.screenHeight = window.innerHeight;
+        },
+
+        setupPageReloadPrevention() {
+            window.addEventListener('keydown', this.preventReloadKeys);
+            window.addEventListener('beforeunload', this.preventUnload);
+            window.addEventListener('resize', this.updateHeight); // Agregar listener de resize
+        },
+
+        cleanupPageReloadPrevention() {
+            window.removeEventListener('keydown', this.preventReloadKeys);
+            window.removeEventListener('beforeunload', this.preventUnload);
+            window.removeEventListener('resize', this.updateHeight); // Remover listener de resize
+        },
+    },
+    mounted() {
+        this.updateHeight(); // Inicializar la altura al montar
     }
 };
 </script>
