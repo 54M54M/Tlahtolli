@@ -1,5 +1,46 @@
 # CHANGELOG
 
+## [3.3.0] - 2025-11-25 - Sistema de Imágenes de Personajes y Mejoras Visuales
+
+### Added
+
+- **Componente ExerciseImage**
+  - Sistema dinámico de imágenes de personajes basado en estado de respuesta
+  - Dos modos emocionales: correcto/feliz-neutro vs incorrecto/triste-enojado
+  - Mapeo de nombres de personajes para consistencia
+  - Sistema de fallbacks con placeholder para imágenes faltantes
+  - Normalización de nombres de personajes con CHARACTER_MAP
+
+- **Asignación de Personajes a Ejercicios**
+  - Propiedad `character` agregada a ejercicios para asignación específica
+
+- **Expansión de Vocabulario**
+  - Nuevas palabras agregadas al sistema léxico
+  - Correcciones y mejoras en definiciones existentes
+
+### Changed
+
+- **LessonView y QuickLevelView**
+  - Integración del componente ExerciseImage para mostrar personajes
+  - Reemplazo de imágenes placeholder estáticas por sistema dinámico
+  - Mejora en la experiencia visual durante ejercicios
+
+- **Estructura de Ejercicios**
+  - Propiedad `character` añadida para personalización visual
+  - Default value para ejercicios sin asignación específica
+
+### Fixed
+
+- **Correcciones de Bugs Visuales**
+  - Problemas de layout en interfaces de lección
+  - Mejora en la responsividad de componentes
+  - Optimización del espaciado y alineación
+
+- **Manejo de Errores**
+  - Sistema robusto de fallbacks para imágenes faltantes
+  - Logging de errores para debugging de asignación de personajes
+  - Normalización de nombres para prevenir errores de carga
+
 ## [3.2.1] - 2025-11-20 - Actualización de Vocabulario y Corrección de Ejercicios
 
 ### Added
