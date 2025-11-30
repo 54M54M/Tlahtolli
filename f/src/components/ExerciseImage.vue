@@ -12,12 +12,13 @@ const imageContext = import.meta.glob('../assets/exercises/*.webp', { eager: tru
 
 // Mapeo de nombres de personajes para consistencia
 const CHARACTER_MAP = {
+    // las imagenes estaban dando error, asi que cree esto, posiblemente ya no se use pero no quiero quitarlo jaja
     'citlali': 'citlali',
     'coltzin': 'coltzin',
     'neza': 'neza',
     'tonatiuh': 'tonatiuh',
     'xochitl': 'xochitl',
-    'ctllall': 'citlali' // Fallback para typo común
+    'ctllall': 'citlali'
 };
 
 export default {
@@ -41,7 +42,7 @@ export default {
         },
         customClasses: {
             type: String,
-            default: 'w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg bg-gray-700'
+            default: 'w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg'
         }
     },
     computed: {
@@ -50,8 +51,8 @@ export default {
             const stateSuffix = this.imageState ? 'true' : 'false';
             const imageName = `${normalizedCharacter}-${stateSuffix}.webp`;
 
-            console.log(`🖼️ Buscando imagen: ${imageName}`);
-            console.log(`📁 Imágenes disponibles:`, Object.keys(imageContext));
+            // console.log(`Buscando imagen: ${imageName}`);
+            // console.log(`Imágenes disponibles:`, Object.keys(imageContext));
 
             // Buscar imagen exacta
             const imagePath = Object.keys(imageContext).find(path =>
@@ -59,7 +60,7 @@ export default {
             );
 
             if (imagePath && imageContext[imagePath]) {
-                console.log(`✅ Imagen encontrada: ${imageName}`);
+                // console.log(`Imagen encontrada: ${imageName}`);
                 return imageContext[imagePath].default;
             }
 
@@ -71,7 +72,7 @@ export default {
             );
 
             if (fallbackPath && imageContext[fallbackPath]) {
-                console.log(`🔄 Usando fallback: ${fallbackImageName}`);
+                console.log(`Usando fallback: ${fallbackImageName}`);
                 return imageContext[fallbackPath].default;
             }
 
@@ -81,11 +82,11 @@ export default {
             );
 
             if (anyCharacterPath && imageContext[anyCharacterPath]) {
-                console.log(`🔍 Usando imagen alternativa: ${anyCharacterPath}`);
+                // console.log(`Usando imagen alternativa: ${anyCharacterPath}`);
                 return imageContext[anyCharacterPath].default;
             }
 
-            console.warn(`🚨 Usando placeholder para: ${normalizedCharacter}`);
+            console.warn(`Usando placeholder para: ${normalizedCharacter}`);
             return placeholder;
         },
         imageClasses() {

@@ -1,11 +1,25 @@
 ```
 └── 📁src
+    └── 📁assets
+        └── 📁exercises
+            ├── citlali-false.webp
+            ├── citlali-true.webp
+            ├── coltzin-false.webp
+            ├── coltzin-true.webp
+            ├── neza-false.webp
+            ├── neza-true.webp
+            ├── tonatiuh-false.webp
+            ├── tonatiuh-true.webp
+            ├── xochitl-false.webp
+            ├── xochitl-true.webp
+        ├── 300x300.png
     └── 📁components
         ├── AchievementsList.vue
         ├── Badge.vue
         ├── Card.vue
         ├── DesktopAside.vue
         ├── DialectProgress.vue
+        ├── ExerciseImage.vue
         ├── ExitConfirmModal.vue
         ├── FeedbackModal.vue
         ├── LearningStats.vue
@@ -46,6 +60,7 @@
             ├── AchievementService.js
             ├── LanguageService.js
             ├── ProgressService.js
+            ├── QuickLevelService.js
             ├── SpeechService.js
             ├── StudyService.js
             ├── UnlockService.js
