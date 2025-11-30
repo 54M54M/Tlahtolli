@@ -170,12 +170,12 @@ export default {
         unlockedUnits() {
             if (this.isLevelLocked) return [];
             const units = this.currentUnits.filter(unit => !this.isUnitLocked(unit));
-            console.log(`📊 Unidades desbloqueadas nivel ${this.id}:`, units.map(u => ({
-                id: u.id,
-                locked: u.locked,
-                current: u.current,
-                completed: u.completed
-            })));
+            // console.log(`📊 Unidades desbloqueadas nivel ${this.id}:`, units.map(u => ({
+            //     id: u.id,
+            //     locked: u.locked,
+            //     current: u.current,
+            //     completed: u.completed
+            // })));
             return units;
         },
         lockedUnits() {
@@ -187,12 +187,12 @@ export default {
                 }));
             }
             const units = this.currentUnits.filter(unit => this.isUnitLocked(unit));
-            console.log(`📊 Unidades bloqueadas nivel ${this.id}:`, units.map(u => ({
-                id: u.id,
-                locked: u.locked,
-                current: u.current,
-                completed: u.completed
-            })));
+            // console.log(`📊 Unidades bloqueadas nivel ${this.id}:`, units.map(u => ({
+            //     id: u.id,
+            //     locked: u.locked,
+            //     current: u.current,
+            //     completed: u.completed
+            // })));
             return units;
         }
     },
@@ -200,7 +200,7 @@ export default {
         '$route.params.id': {
             immediate: true,
             handler(newLevelId) {
-                console.log(`🔄 LevelView - Nivel cambiado a: ${newLevelId}`);
+                // console.log(`🔄 LevelView - Nivel cambiado a: ${newLevelId}`);
                 this.$nextTick(() => {
                     this.refreshLevelData();
                 });
@@ -208,35 +208,35 @@ export default {
         }
     },
     mounted() {
-        console.log(`🏁 LevelView montado - Nivel ${this.id}`);
+        // console.log(`🏁 LevelView montado - Nivel ${this.id}`);
         this.logCurrentState();
     },
     methods: {
         refreshLevelData() {
             // Usar una key reactiva para forzar re-renderizado
             this.refreshKey++;
-            console.log(`🔄 LevelView - Datos refrescados (key: ${this.refreshKey})`);
+            // console.log(`🔄 LevelView - Datos refrescados (key: ${this.refreshKey})`);
             this.logCurrentState();
         },
 
         logCurrentState() {
-            console.log(`📊 ESTADO ACTUAL LevelView - Nivel ${this.id}:`, {
-                nivel: {
-                    id: this.currentLevel.id,
-                    locked: this.currentLevel.locked,
-                    title: this.currentLevel.title
-                },
-                unidadesTotales: this.currentUnits.length,
-                unidadesDesbloqueadas: this.unlockedUnits.length,
-                unidadesBloqueadas: this.lockedUnits.length,
-                detallesUnidades: this.currentUnits.map(u => ({
-                    id: u.id,
-                    locked: u.locked,
-                    current: u.current,
-                    completed: u.completed,
-                    title: u.title
-                }))
-            });
+            // console.log(`📊 ESTADO ACTUAL LevelView - Nivel ${this.id}:`, {
+            //     nivel: {
+            //         id: this.currentLevel.id,
+            //         locked: this.currentLevel.locked,
+            //         title: this.currentLevel.title
+            //     },
+            //     unidadesTotales: this.currentUnits.length,
+            //     unidadesDesbloqueadas: this.unlockedUnits.length,
+            //     unidadesBloqueadas: this.lockedUnits.length,
+            //     detallesUnidades: this.currentUnits.map(u => ({
+            //         id: u.id,
+            //         locked: u.locked,
+            //         current: u.current,
+            //         completed: u.completed,
+            //         title: u.title
+            //     }))
+            // });
         },
 
         handleShowAll() {

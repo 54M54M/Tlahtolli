@@ -1,7 +1,7 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
-        <!-- Header con título dinámico -->
-        <Header variant="progress" :title="currentUnit.title"
+        <!-- Header con título dinámico - SOLO se muestra durante la lección -->
+        <Header v-if="currentQuestion <= currentExercises.length" variant="progress" :title="currentUnit.title"
             :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`" :progressCurrent="currentQuestion - 1"
             :progressTotal="currentExercises.length" :backRoute="`/nivel/${currentLevel.id}`"
             @exit-lesson="showExitConfirmModal" />
@@ -140,29 +140,10 @@
                             :is-correct="isAnswerCorrect" @continue="continueFromModal" />
                     </Card>
 
-                    <!-- En LessonView.vue, reemplazar el Card de finalización -->
-                    <!-- Mensaje de finalización - USANDO DISEÑO DE QUICKLEVEL -->
-                    <Card v-if="currentQuestion > this.currentExercises.length"
-                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
-                        <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
-                        <!-- <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ currentExercises.length }}
-                            ejercicios correctamente.</p> -->
-
-                        <!-- Mostrar progreso de desbloqueo si aplica -->
-                        <!-- <div v-if="hasUnlockedNextUnit" class="mb-4 p-4 bg-green-900/20 rounded-lg">
-                            <h3 class="font-semibold text-green-400 mb-2">¡Nueva Unidad Desbloqueada!</h3>
-                            <p class="text-sm">¡Felicidades! Has desbloqueado la siguiente unidad.</p>
-                        </div> -->
-
-                        <div class="flex flex-col">
-                            <router-link :to="`/nivel/${currentLevel.id}`">
-                                <button
-                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
-                                    RECIBIR EXP
-                                </button>
-                            </router-link>
-                        </div>
-                    </Card>
+                    <!-- Mensaje de finalización - DISEÑO LESSONVIEW -->
+                    <CompletionMessage v-if="currentQuestion > this.currentExercises.length"
+                        title="¡Lección completada!" :back-route="`/nivel/${currentLevel.id}`"
+                        :performance="correctAnswersCount / currentExercises.length" :lesson-time="lessonTime" />
                 </div>
             </div>
         </div>
@@ -183,6 +164,9 @@ import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
 
 import ProcessedText from '../../components/ProcessedText.vue';
 import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
+import ExerciseImage from '../../components/ExerciseImage.vue';
+
+import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
@@ -190,7 +174,6 @@ import { ProgressService } from '../../data/services/ProgressService.js';
 import { SpeechService } from '../../data/services/SpeechService.js';
 import placeholder from '../../assets/300x300.png';
 
-import ExerciseImage from '../../components/ExerciseImage.vue';
 
 export default {
     name: "Lesson",
@@ -202,7 +185,8 @@ export default {
         ExitConfirmModal,
         ProcessedText,
         PronunciationTooltip,
-        ExerciseImage
+        ExerciseImage,
+        CompletionMessage
     },
     props: {
         unitId: {
@@ -231,7 +215,9 @@ export default {
             feedbackTitle: '',
             feedbackMessage: '',
             correctAnswersCount: 0,
-            screenHeight: 0
+            screenHeight: 0,
+            lessonStartTime: null,
+            lessonTime: 0
         };
     },
     computed: {
@@ -243,7 +229,7 @@ export default {
         currentUnitVocabulary() {
             if (!this.currentUnit.vocabulary) return [];
 
-            console.log('📚 Vocabulario de unidad:', this.currentUnit.vocabulary);
+            // console.log('📚 Vocabulario de unidad:', this.currentUnit.vocabulary);
 
             // Si es un array, devolverlo tal cual
             if (Array.isArray(this.currentUnit.vocabulary)) {
@@ -261,7 +247,7 @@ export default {
                         example: item.example || ''
                     };
                 });
-                console.log('🔄 Vocabulario convertido a array:', vocabularyArray);
+                // console.log('🔄 Vocabulario convertido a array:', vocabularyArray);
                 return vocabularyArray;
             }
 
@@ -284,6 +270,7 @@ export default {
     created() {
         this.loadLessonData();
         this.setupPageReloadPrevention();
+        this.lessonStartTime = Date.now(); // Iniciar timer
     },
     beforeUnmount() {
         this.cleanupPageReloadPrevention();
@@ -295,18 +282,18 @@ export default {
             const language = this.authStore.selectedLanguage;
             const levels = this.learningRepo.getLevels(language);
 
-            console.log('🔍 BUSCANDO UNIDAD:', this.unitId);
-            console.log('📊 NIVELES DISPONIBLES:', levels);
+            // console.log('🔍 BUSCANDO UNIDAD:', this.unitId);
+            // console.log('📊 NIVELES DISPONIBLES:', levels);
 
             for (const level of levels) {
                 const units = this.learningRepo.getUnits(language, level.id);
-                console.log(`📋 UNIDADES DEL NIVEL ${level.id}:`, units);
+                // console.log(`📋 UNIDADES DEL NIVEL ${level.id}:`, units);
 
                 const unit = units.find(u => u.id === Number(this.unitId));
 
                 if (unit) {
-                    console.log('✅ UNIDAD ENCONTRADA:', unit);
-                    console.log('📚 VOCABULARIO DE LA UNIDAD:', unit.vocabulary);
+                    // console.log('✅ UNIDAD ENCONTRADA:', unit);
+                    // console.log('📚 VOCABULARIO DE LA UNIDAD:', unit.vocabulary);
 
                     this.currentUnit = unit;
                     this.currentLevel = level;
@@ -315,8 +302,8 @@ export default {
                 }
             }
 
-            console.log('🏁 FINAL - currentUnit:', this.currentUnit);
-            console.log('🏁 FINAL - currentUnitVocabulary:', this.currentUnitVocabulary);
+            // console.log('🏁 FINAL - currentUnit:', this.currentUnit);
+            // console.log('🏁 FINAL - currentUnitVocabulary:', this.currentUnitVocabulary);
         },
 
         // Usar pronunciación específica cuando esté disponible
@@ -415,6 +402,9 @@ export default {
         },
         // manejar el caso de repetición
         completeCurrentUnit() {
+            // Calcular tiempo de lección
+            this.lessonTime = Math.floor((Date.now() - this.lessonStartTime) / 1000);
+
             const language = this.authStore.selectedLanguage;
 
             // CALCULAR PERFORMANCE
@@ -429,7 +419,7 @@ export default {
                     dialect: language
                 })) : [];
 
-            console.log('📝 Palabras aprendidas:', wordsLearned);
+            // console.log('📝 Palabras aprendidas:', wordsLearned);
 
             // COMPLETAR LECCIÓN CON PROGRESSSERVICE
             const result = this.progressService.completeLesson(
@@ -606,3 +596,17 @@ export default {
     }
 };
 </script>
+
+<!-- <Card v-if="currentQuestion > this.currentExercises.length"
+                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
+                        <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
+
+                        <div class="flex flex-col">
+                            <router-link :to="`/nivel/${currentLevel.id}`">
+                                <button
+                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
+                                    RECIBIR EXP
+                                </button>
+                            </router-link>
+                        </div>
+                    </Card> -->

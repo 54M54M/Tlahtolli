@@ -1,7 +1,8 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
-        <!-- Header con título dinámico -->
-        <Header variant="progress" :title="`Nivel Rápido ${currentLevel.id}`"
+        <!-- Header con título dinámico - SOLO se muestra durante la lección -->
+        <Header v-if="currentQuestion <= quickExercises.length" variant="progress"
+            :title="`Nivel Rápido ${currentLevel.id}`"
             :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
             :progressCurrent="completedExercises" :progressTotal="totalExercises"
             :backRoute="`/nivel/${currentLevel.id}`" @exit-lesson="showExitConfirmModal" />
@@ -132,40 +133,12 @@
                             :is-correct="isAnswerCorrect" @continue="continueFromModal" />
                     </Card>
 
-                    <!-- Mensaje de finalización -->
-                    <Card v-if="currentQuestion > quickExercises.length"
-                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
-                        <h2 class="text-xl font-semibold mb-4">¡Nivel Rápido Completado!</h2>
-                        <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ totalExercises }} ejercicios
-                            correctamente.</p>
-
-                        <!-- Mostrar progreso de desbloqueo -->
-                        <div v-if="unlockedNextLevelUnit" class="mb-4 p-4 bg-green-900/20 rounded-lg">
-                            <h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
-                            <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}
-                            </p>
-                            <div class="mt-2 flex items-center justify-center gap-2">
-                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                                <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
-                            </div>
-                        </div>
-
-                        <div v-else-if="performance < 0.8" class="mb-4 p-4 bg-yellow-900/20 rounded-lg">
-                            <h3 class="font-semibold text-yellow-400 mb-2">Sigue practicando</h3>
-                            <p class="text-sm">Necesitas al menos 80% de aciertos para desbloquear el siguiente nivel.
-                            </p>
-                            <p class="text-sm mt-1">Obtuviste: {{ Math.round(performance * 100) }}%</p>
-                        </div>
-
-                        <div class="flex flex-col">
-                            <router-link :to="`/nivel/${currentLevel.id}`">
-                                <button
-                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
-                                    RECIBIR EXP
-                                </button>
-                            </router-link>
-                        </div>
-                    </Card>
+                    <!-- Mensaje de finalización - DISEÑO QUICKLEVEL -->
+                    <CompletionMessage v-if="currentQuestion > quickExercises.length" title="¡Nivel Rápido Completado!"
+                        :back-route="`/nivel/${currentLevel.id}`" :show-stats="true"
+                        :correct-answers-count="correctAnswersCount" :total-exercises="totalExercises"
+                        :performance="performance" :lesson-time="lessonTime" :show-unlock-section="true"
+                        :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId" />
 
                 </div>
             </div>
@@ -184,8 +157,12 @@ import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
-import ProcessedText from '../../components/ProcessedText.vue';
 import NextStage from '../../components/NextStage.vue';
+
+import ProcessedText from '../../components/ProcessedText.vue';
+import ExerciseImage from '../../components/ExerciseImage.vue';
+
+import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
@@ -193,7 +170,6 @@ import { ProgressService } from '../../data/services/ProgressService.js';
 import { QuickLevelService } from '../../data/services/QuickLevelService.js';
 import placeholder from '../../assets/300x300.png';
 
-import ExerciseImage from '../../components/ExerciseImage.vue';
 
 export default {
     name: "QuickLevel",
@@ -205,7 +181,8 @@ export default {
         ExitConfirmModal,
         ProcessedText,
         NextStage,
-        ExerciseImage
+        ExerciseImage,
+        CompletionMessage
     },
     props: {
         levelId: {
@@ -238,7 +215,9 @@ export default {
             unlockedNextLevelUnit: false,
             nextLevelId: null,
             performance: 0,
-            screenHeight: 0
+            screenHeight: 0,
+            lessonStartTime: null,
+            lessonTime: 0
         };
     },
     computed: {
@@ -268,7 +247,7 @@ export default {
                 }
             });
 
-            console.log('📚 VOCABULARIO COMBINADO DEL NIVEL:', vocabulary);
+            // console.log('📚 VOCABULARIO COMBINADO DEL NIVEL:', vocabulary);
             return vocabulary;
         },
         containerClasses() {
@@ -282,6 +261,7 @@ export default {
     created() {
         this.loadQuickLevelData();
         this.setupPageReloadPrevention();
+        this.lessonStartTime = Date.now(); // Iniciar timer
     },
     beforeUnmount() {
         this.cleanupPageReloadPrevention();
@@ -331,11 +311,11 @@ export default {
                 normalizedCorrect = correctAnswer.toString().trim().toLowerCase();
             }
 
-            console.log('🔍 Validando fill-blank:', {
-                userAnswer: normalizedUser,
-                correctAnswer: normalizedCorrect,
-                originalCorrect: correctAnswer
-            });
+            // console.log('🔍 Validando fill-blank:', {
+            //     userAnswer: normalizedUser,
+            //     correctAnswer: normalizedCorrect,
+            //     originalCorrect: correctAnswer
+            // });
 
             // Comparación directa
             return normalizedUser === normalizedCorrect;
@@ -348,10 +328,10 @@ export default {
                 this.showResult = true;
 
                 // DEBUG: Verificar la estructura del ejercicio actual
-                console.log('🔍 Ejercicio actual:', this.currentExercise);
-                console.log('🔍 Tipo:', this.currentExercise.type);
-                console.log('🔍 Respuesta correcta:', this.currentExercise.correctAnswer);
-                console.log('🔍 Tipo de correctAnswer:', typeof this.currentExercise.correctAnswer);
+                // console.log('🔍 Ejercicio actual:', this.currentExercise);
+                // console.log('🔍 Tipo:', this.currentExercise.type);
+                // console.log('🔍 Respuesta correcta:', this.currentExercise.correctAnswer);
+                // console.log('🔍 Tipo de correctAnswer:', typeof this.currentExercise.correctAnswer);
 
                 if (this.currentExercise.type === 'multiple-choice') {
                     this.isAnswerCorrect = this.selectedAnswer === this.currentExercise.correctAnswer;
@@ -390,17 +370,20 @@ export default {
         },
 
         async completeQuickLevel() {
+            // Calcular tiempo de lección
+            this.lessonTime = Math.floor((Date.now() - this.lessonStartTime) / 1000);
+
             const language = this.authStore.selectedLanguage;
             const levelId = Number(this.levelId);
 
-            console.log(`🚀 INICIANDO COMPLETADO DE QUICKLEVEL - Nivel ${levelId}`);
+            // console.log(`🚀 INICIANDO COMPLETADO DE QUICKLEVEL - Nivel ${levelId}`);
 
             // Verificar estado ANTES
             this.quickLevelService.checkSystemState(language, levelId);
 
             // CALCULAR PERFORMANCE
             this.performance = this.correctAnswersCount / this.totalExercises;
-            console.log(`📊 Performance: ${this.performance} (${this.correctAnswersCount}/${this.totalExercises})`);
+            // console.log(`📊 Performance: ${this.performance} (${this.correctAnswersCount}/${this.totalExercises})`);
 
             // USAR EL NUEVO SERVICIO
             const result = await this.quickLevelService.completeQuickLevel(
@@ -415,15 +398,15 @@ export default {
             this.nextLevelId = result.nextLevelId;
 
             // VERIFICACIÓN EXTRA - Forzar actualización del repositorio
-            console.log(`🔄 FORZANDO ACTUALIZACIÓN DEL REPOSITORIO...`);
+            // console.log(`🔄 FORZANDO ACTUALIZACIÓN DEL REPOSITORIO...`);
             this.learningRepo.checkAndUpdateLevelLockStatus(language);
 
             // Verificar estado DESPUÉS con más detalle
-            console.log(`🔍 VERIFICACIÓN FINAL DEL SISTEMA:`);
+            // console.log(`🔍 VERIFICACIÓN FINAL DEL SISTEMA:`);
             this.quickLevelService.checkSystemState(language, levelId);
 
             if (result.nextLevelUnlocked && result.nextLevelId) {
-                console.log(`🎉 NIVEL ${result.nextLevelId} DESBLOQUEADO - Verificando estado:`);
+                // console.log(`🎉 NIVEL ${result.nextLevelId} DESBLOQUEADO - Verificando estado:`);
                 this.quickLevelService.checkSystemState(language, result.nextLevelId);
             }
 
@@ -445,27 +428,27 @@ export default {
             const language = this.authStore.selectedLanguage;
             const levelId = Number(this.levelId);
 
-            console.log(`🔍 ESTADO ACTUAL DEL SISTEMA:`);
+            // console.log(`🔍 ESTADO ACTUAL DEL SISTEMA:`);
 
             // Verificar nivel actual
             const currentLevel = this.learningRepo.getLevel(language, levelId);
-            console.log(`📊 Nivel actual ${levelId}:`, {
-                locked: currentLevel.locked,
-                completedUnits: currentLevel.completedUnits,
-                totalUnits: currentLevel.units,
-                progress: `${((currentLevel.completedUnits / currentLevel.units) * 100).toFixed(1)}%`
-            });
+            // console.log(`📊 Nivel actual ${levelId}:`, {
+            //     locked: currentLevel.locked,
+            //     completedUnits: currentLevel.completedUnits,
+            //     totalUnits: currentLevel.units,
+            //     progress: `${((currentLevel.completedUnits / currentLevel.units) * 100).toFixed(1)}%`
+            // });
 
             // Verificar unidades del nivel actual
             const currentUnits = this.learningRepo.getUnits(language, levelId);
-            console.log(`📋 Unidades del nivel ${levelId}:`,
-                currentUnits.map(u => ({
-                    id: u.id,
-                    completed: u.completed,
-                    locked: u.locked,
-                    current: u.current
-                }))
-            );
+            // console.log(`📋 Unidades del nivel ${levelId}:`,
+            //     currentUnits.map(u => ({
+            //         id: u.id,
+            //         completed: u.completed,
+            //         locked: u.locked,
+            //         current: u.current
+            //     }))
+            // );
 
             // Verificar siguiente nivel si existe
             const levels = this.learningRepo.getLevels(language);
@@ -473,18 +456,18 @@ export default {
             if (currentLevelIndex < levels.length - 1) {
                 const nextLevel = levels[currentLevelIndex + 1];
                 const nextLevelUnits = this.learningRepo.getUnits(language, nextLevel.id);
-                console.log(`🔮 Siguiente nivel ${nextLevel.id}:`, {
-                    locked: nextLevel.locked,
-                    units: nextLevel.units
-                });
-                console.log(`🔮 Unidades del siguiente nivel:`,
-                    nextLevelUnits.map(u => ({
-                        id: u.id,
-                        completed: u.completed,
-                        locked: u.locked,
-                        current: u.current
-                    }))
-                );
+                // console.log(`🔮 Siguiente nivel ${nextLevel.id}:`, {
+                //     locked: nextLevel.locked,
+                //     units: nextLevel.units
+                // });
+                // console.log(`🔮 Unidades del siguiente nivel:`,
+                //     nextLevelUnits.map(u => ({
+                //         id: u.id,
+                //         completed: u.completed,
+                //         locked: u.locked,
+                //         current: u.current
+                //     }))
+                // );
             }
         },
 
@@ -570,3 +553,39 @@ export default {
     }
 };
 </script>
+
+
+<!-- <Card v-if="currentQuestion > quickExercises.length"
+                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
+                        <h2 class="text-xl font-semibold mb-4">¡Nivel Rápido Completado!</h2>
+                        <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ totalExercises }} ejercicios
+                            correctamente.</p> -->
+
+<!-- Mostrar progreso de desbloqueo SOLO si performance >= 80% -->
+<!-- <div v-if="unlockedNextLevelUnit && performance >= 0.8"
+                            class="mb-4 p-4 bg-green-900/20 rounded-lg">
+                            <h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
+                            <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}
+                            </p>
+                            <div class="mt-2 flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
+                            </div>
+                        </div>
+
+                        <div v-else-if="performance < 0.8" class="mb-4 p-4 bg-yellow-900/20 rounded-lg">
+                            <h3 class="font-semibold text-yellow-400 mb-2">Sigue practicando</h3>
+                            <p class="text-sm">Necesitas al menos 80% de aciertos para desbloquear el siguiente nivel.
+                            </p>
+                            <p class="text-sm mt-1">Obtuviste: {{ Math.round(performance * 100) }}%</p>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <router-link :to="`/nivel/${currentLevel.id}`">
+                                <button
+                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
+                                    RECIBIR EXP
+                                </button>
+                            </router-link>
+                        </div>
+                    </Card> -->

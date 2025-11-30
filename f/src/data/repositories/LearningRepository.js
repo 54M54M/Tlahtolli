@@ -121,11 +121,11 @@ export class LearningRepository {
     }
 
     getExercisesForUnit(language, levelId, unitId) {
-        console.log(`🎯 GET EXERCISES FOR UNIT: ${language}_${levelId}_${unitId}`);
+        // console.log(`🎯 GET EXERCISES FOR UNIT: ${language}_${levelId}_${unitId}`);
 
         // MAPEO DE UNIDADES - Convertir unidad UI a unidad de ejercicios
         const unitMapping = this.getUnitMapping(levelId, unitId);
-        console.log(`🔄 Mapeo de unidad: UI ${unitId} → Ejercicios ${unitMapping.exerciseUnitId}`);
+        // console.log(`🔄 Mapeo de unidad: UI ${unitId} → Ejercicios ${unitMapping.exerciseUnitId}`);
 
         // Obtener TODOS los ejercicios del nivel
         const allExercises = Array.from(this.exercises.values())
@@ -134,21 +134,21 @@ export class LearningRepository {
                 exercise.levelId === levelId
             );
 
-        console.log(`📊 Total ejercicios nivel ${levelId}: ${allExercises.length}`);
+        // console.log(`📊 Total ejercicios nivel ${levelId}: ${allExercises.length}`);
 
         // Filtrar por unidadId MAPEADA
         const exercises = allExercises
             .filter(exercise => exercise.unitId === unitMapping.exerciseUnitId)
             .sort((a, b) => a.id - b.id);
 
-        console.log(`📊 Ejercicios encontrados para unidad ${unitId} (mapeada a ${unitMapping.exerciseUnitId}): ${exercises.length}`);
+        // console.log(`📊 Ejercicios encontrados para unidad ${unitId} (mapeada a ${unitMapping.exerciseUnitId}): ${exercises.length}`);
 
         // Si no hay ejercicios, loggear más detalles
         if (exercises.length === 0) {
-            console.log(`❌ NO SE ENCONTRARON EJERCICIOS para ${language}_${levelId}_${unitId} (mapeada a ${unitMapping.exerciseUnitId})`);
-            console.log(`🔍 Ejercicios disponibles en nivel ${levelId}:`,
-                allExercises.map(e => ({ id: e.id, unitId: e.unitId, levelId: e.levelId }))
-            );
+            // console.log(`❌ NO SE ENCONTRARON EJERCICIOS para ${language}_${levelId}_${unitId} (mapeada a ${unitMapping.exerciseUnitId})`);
+            // console.log(`🔍 Ejercicios disponibles en nivel ${levelId}:`,
+            //     allExercises.map(e => ({ id: e.id, unitId: e.unitId, levelId: e.levelId }))
+            // );
         }
 
         // const exercises = Array.from(this.exercises.values())
@@ -159,7 +159,7 @@ export class LearningRepository {
         //     )
         //     .sort((a, b) => a.id - b.id);
 
-        console.log(`📊 Ejercicios encontrados: ${exercises.length} para ${language}_${levelId}_${unitId}`);
+        // console.log(`📊 Ejercicios encontrados: ${exercises.length} para ${language}_${levelId}_${unitId}`);
 
         // Obtener vocabulario de unidades relacionadas para enriquecer las opciones
         const relatedVocabulary = this.getRelatedVocabulary(language, levelId, unitId);
@@ -324,7 +324,7 @@ export class LearningRepository {
                 // Desbloquear nivel si se cumplen los requisitos
                 if (shouldUnlock) {
                     level.locked = false;
-                    console.log(`Nivel ${level.id} desbloqueado para ${language}`);
+                    // console.log(`Nivel ${level.id} desbloqueado para ${language}`);
                 }
             }
         });
@@ -383,26 +383,26 @@ export class LearningRepository {
         const unitKey = `${language}_${levelId}_${unitId}`;
         const unit = this.units.get(unitKey);
 
-        console.log(`🔓 LEARNING REPO - Intentando desbloquear: ${unitKey}`, {
-            unitExists: !!unit,
-            currentlyLocked: unit?.locked,
-            currentlyCurrent: unit?.current
-        });
+        // console.log(`🔓 LEARNING REPO - Intentando desbloquear: ${unitKey}`, {
+        //     unitExists: !!unit,
+        //     currentlyLocked: unit?.locked,
+        //     currentlyCurrent: unit?.current
+        // });
 
         if (unit && unit.locked) {
             unit.locked = false;
             unit.current = true;
 
-            console.log(`✅ UNIDAD DESBLOQUEADA EN REPOSITORIO: ${unitKey}`, {
-                locked: unit.locked,
-                current: unit.current,
-                completed: unit.completed
-            });
+            // console.log(`✅ UNIDAD DESBLOQUEADA EN REPOSITORIO: ${unitKey}`, {
+            //     locked: unit.locked,
+            //     current: unit.current,
+            //     completed: unit.completed
+            // });
 
             return true;
         }
 
-        console.log(`❌ No se pudo desbloquear unidad: ${unitKey}`);
+        // console.log(`❌ No se pudo desbloquear unidad: ${unitKey}`);
         return false;
     }
 

@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## [3.3.1] - 2025-11-30 - Mejoras en Sistema de Finalización y Desbloqueo
+
+### Added
+
+- **"Mensaje de finalizacion" Mejorado**
+  - Layout responsive
+  - Sistema de mensajes basado en rendimiento
+  - Sistema de mensajes basado en tiempo
+  - Cálculo dinámico de EXP con bonos por rendimiento y tiempo
+  - Integración de temporizador de lección en LessonView y QuickLevelView
+  - Jerarquía visual mejorada con codificación de colores consistente
+
+### Changed
+
+- **Sistema de Desbloqueo de Niveles**
+  - QuickLevelService.js modificado para requerir >=80% de rendimiento
+  - Solo completar unidades y desbloquear siguiente nivel cuando performance >= 0.8
+  - Mantener entrega de XP pero evitar completar unidades si rendimiento es bajo
+  - Log de rendimiento insuficiente cuando no se cumple el 80%
+
+- **Ocultamiento de Header**
+  - Header se oculta completamente durante pantalla de finalización
+  - Condiciones v-if agregadas en QuickLevelView.vue y LessonView.vue
+  - Header visible solo durante la lección, oculto en CompletionMessage
+
+### Fixed
+
+- Prevención de desbloqueo automático de siguiente nivel con rendimiento bajo
+- Mejora de experiencia visual en pantallas de finalización
+- Compatibilidad hacia atrás con secciones existentes de desbloqueo
+
 ## [3.3.0] - 2025-11-25 - Sistema de Imágenes de Personajes y Mejoras Visuales
 
 ### Added

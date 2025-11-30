@@ -3234,18 +3234,18 @@ function updateUnitsVocabulary() {
 
                 // 3. Mostrar información del ejercicio SOLO si hay errores
                 if (hasErrors) {
-                    console.log(`❌ ERRORES en: Nivel ${errorInfo.levelId} | Unidad ${errorInfo.unitId} | Id ${errorInfo.exerciseId} → Ejercicio ${errorInfo.unitId}):`);
+                    // console.log(`❌ ERRORES en: Nivel ${errorInfo.levelId} | Unidad ${errorInfo.unitId} | Id ${errorInfo.exerciseId} → Ejercicio ${errorInfo.unitId}):`);
 
                     if (errorInfo.missingWords.length > 0) {
-                        console.log(`❌ Palabra:`, errorInfo.missingWords);
+                        // console.log(`❌ Palabra:`, errorInfo.missingWords);
                     }
 
                     if (errorInfo.missingMappings.length > 0) {
-                        console.log(`❌ Esp → Nahua:`, errorInfo.missingMappings);
+                        // console.log(`❌ Esp → Nahua:`, errorInfo.missingMappings);
                     }
 
-                    console.log(`   ❓ Pregunta: "${exercise.question}"`);
-                    console.log(`   📝 Tipo: ${exercise.type}`);
+                    // console.log(`   ❓ Pregunta: "${exercise.question}"`);
+                    // console.log(`   📝 Tipo: ${exercise.type}`);
                 }
             }
         });
