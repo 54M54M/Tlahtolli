@@ -1,7 +1,7 @@
 <template>
     <aside class="md:w-[380px] bg-[#0A2136] text-white p-4 fixed right-0 top-0 h-full overflow-hidden flex flex-col">
         <!-- Contenedor con scroll (sin barra visible) -->
-        <div class="flex-1 overflow-y-auto scrollbar-hide pr-2 md:mt-[-53px]">
+        <div class="flex-1 overflow-y-auto scrollbar-hide md:mt-[-53px]">
             <!-- Espacio para el header fijo -->
             <div class="h-12"></div>
 

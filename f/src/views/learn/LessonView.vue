@@ -1,10 +1,11 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
         <!-- Header con título dinámico - SOLO se muestra durante la lección -->
-        <Header v-if="currentQuestion <= currentExercises.length" variant="progress" :title="currentUnit.title"
+        <Header v-if="currentQuestion <= currentExercises.length" variant="lesson" :title="currentUnit.title"
             :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`" :progressCurrent="currentQuestion - 1"
             :progressTotal="currentExercises.length" :backRoute="`/nivel/${currentLevel.id}`"
-            @exit-lesson="showExitConfirmModal" />
+            :energyCurrent="energy.currentEnergy" :energyMax="energy.maxEnergy" :energyStreak="energy.streakCount"
+            @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick" />
 
         <!-- Contenido -->
         <div class="flex-1 flex items-center justify-center md:mt-[9%] overflow-hidden">
@@ -143,7 +144,8 @@
                     <!-- Mensaje de finalización - DISEÑO LESSONVIEW -->
                     <CompletionMessage v-if="currentQuestion > this.currentExercises.length"
                         title="¡Lección completada!" :back-route="`/nivel/${currentLevel.id}`"
-                        :performance="correctAnswersCount / currentExercises.length" :lesson-time="lessonTime" />
+                        :performance="correctAnswersCount / currentExercises.length" :lesson-time="lessonTime"
+                        :earned-exp="earnedExp" />
                 </div>
             </div>
         </div>
@@ -152,6 +154,11 @@
         <WarningModal :show="showWarningModal" @close="closeWarningModal" @confirm="endSession" />
         <ExitConfirmModal :show="showExitConfirmModalFlag" @close="closeExitConfirmModal"
             @confirm="confirmExitLesson" />
+        <NoEnergyModal :show="showNoEnergyModal" :modal-type="noEnergyModalType"
+            :current-energy="energyStore.currentEnergy" :max-energy="energyStore.maxEnergy" :required-energy="10"
+            :recovery-time="energyStore.getRecoveryTime(requiredEnergyForLesson)"
+            :redirect-to="`/nivel/${currentLevel.id}`" @return="handleEnergyModalReturn"
+            @practice="handlePracticeForEnergy" @close="closeNoEnergyModal" />
     </div>
 </template>
 
@@ -161,6 +168,7 @@ import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
+import NoEnergyModal from '../../components/NoEnergyModal.vue';
 
 import ProcessedText from '../../components/ProcessedText.vue';
 import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
@@ -174,6 +182,8 @@ import { ProgressService } from '../../data/services/ProgressService.js';
 import { SpeechService } from '../../data/services/SpeechService.js';
 import placeholder from '../../assets/300x300.png';
 
+import { EnergyService } from '../../data/services/EnergyService.js';
+import { useEnergyStore } from '../../stores/energy';
 
 export default {
     name: "Lesson",
@@ -186,13 +196,18 @@ export default {
         ProcessedText,
         PronunciationTooltip,
         ExerciseImage,
-        CompletionMessage
+        CompletionMessage,
+        NoEnergyModal
     },
     props: {
         unitId: {
             type: [String, Number],
             required: true
         }
+    },
+    setup() {
+        const energyStore = useEnergyStore();
+        return { energyStore };
     },
     data() {
         return {
@@ -217,7 +232,14 @@ export default {
             correctAnswersCount: 0,
             screenHeight: 0,
             lessonStartTime: null,
-            lessonTime: 0
+            lessonTime: 0,
+            earnedExp: 0,
+            energyService: new EnergyService(),
+            energyChanges: [],
+            showNoEnergyModal: false,
+            noEnergyModalType: 'depleted', // 'insufficient' o 'depleted'
+            requiredEnergyForLesson: 10,
+            energyCheckInterval: null,
         };
     },
     computed: {
@@ -265,15 +287,45 @@ export default {
             } else if (this.screenHeight >= 700) {
                 return 'md:pt-[15%] md:pb-[20%]'; // md:bg-red-700
             }
+        },
+        energy() {
+            return this.energyStore.energyForHeader;
         }
     },
-    created() {
+
+    async created() {
+        // 1️⃣ PRIMERO: Cargar datos de la lección
         this.loadLessonData();
+
+        // 2️⃣ SEGUNDO: Inicializar energía
+        await this.energyStore.initializeEnergy(this.authStore.user?.id || 1);
+
+        // 3️⃣ TERCERO: Configurar prevención de recarga (SIEMPRE se hace)
         this.setupPageReloadPrevention();
-        this.lessonStartTime = Date.now(); // Iniciar timer
+
+        // 4️⃣ CUARTO: Verificar energía
+        if (!this.checkEnergyBeforeLesson()) {
+            // console.log('Energía insuficiente, mostrando modal...');
+            // IMPORTANTE: NO establecer lessonStartTime aquí
+            // El timer se iniciará cuando el usuario cierre el modal con "Seguir adelante"
+            return;
+        }
+
+        // 5️⃣ QUINTO: Iniciar la lección (solo si hay suficiente energía)
+        this.startLesson();
     },
+
     beforeUnmount() {
         this.cleanupPageReloadPrevention();
+
+        // Asegurar limpieza del interval
+        if (this.energyCheckInterval) {
+            clearInterval(this.energyCheckInterval);
+            this.energyCheckInterval = null;
+        }
+
+        // Marcar lección como no en progreso
+        this.lessonInProgress = false;
     },
 
     methods: {
@@ -304,6 +356,19 @@ export default {
 
             // console.log('🏁 FINAL - currentUnit:', this.currentUnit);
             // console.log('🏁 FINAL - currentUnitVocabulary:', this.currentUnitVocabulary);
+        },
+
+        // Nuevo método para iniciar la lección
+        startLesson() {
+            console.log('Iniciando lección...');
+            this.lessonInProgress = true;
+            this.lessonStartTime = Date.now();
+            this.startEnergyMonitoring();
+
+            // console.log('Lección iniciada correctamente:', {
+            //     startTime: new Date(this.lessonStartTime).toLocaleTimeString(),
+            //     exercises: this.currentExercises.length
+            // });
         },
 
         // Usar pronunciación específica cuando esté disponible
@@ -363,31 +428,13 @@ export default {
             }
         },
 
-        verifyAnswer() {
-            if (this.showResult) {
-                this.continueFromModal();
-            } else {
-                this.showResult = true;
-
-                if (this.currentExercise.type === 'multiple-choice') {
-                    this.isAnswerCorrect = this.selectedAnswer === this.currentExercise.correctAnswer;
-                } else if (this.currentExercise.type === 'fill-blank') {
-                    this.isAnswerCorrect = this.currentExercise.validateAnswer(this.textAnswer);
-                }
-
-                // CONTAR RESPUESTAS CORRECTAS
-                if (this.isAnswerCorrect) {
-                    this.correctAnswersCount++;
-                }
-
-                if (this.isAnswerCorrect) {
-                    this.showFeedback('¡Buen trabajo!', this.currentExercise.explanation || 'Respuesta correcta.');
-                } else {
-                    this.showFeedback('Inténtalo de nuevo', this.currentExercise.explanation || 'La respuesta no es correcta.');
-                }
-            }
-        },
         continueFromModal() {
+            // ⚠️ NO CONTINUAR SI LA LECCIÓN NO ESTÁ EN PROGRESO
+            if (!this.lessonInProgress) {
+                this.closeFeedbackModal();
+                return;
+            }
+
             this.closeFeedbackModal();
             this.currentQuestion++;
             this.selectedAnswer = null;
@@ -400,18 +447,63 @@ export default {
                 this.lessonInProgress = false;
             }
         },
-        // manejar el caso de repetición
+
+        // Manejar cuando la energía llega a 0 DURANTE la lección
+        handleEnergyDepleted() {
+            // Prevenir llamadas múltiples
+            if (this.showNoEnergyModal) {
+                // console.log('Modal ya está mostrándose, ignorando...');
+                return;
+            }
+
+            // console.log('Energía agotada durante lección');
+
+            // Marcar lección como no en progreso
+            this.lessonInProgress = false;
+
+            // Detener el monitoreo si aún está activo
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+                this.energyCheckInterval = null;
+            }
+
+            // Cerrar cualquier modal de feedback que esté abierto
+            this.closeFeedbackModal();
+
+            // Mostrar modal de energía agotada
+            this.noEnergyModalType = 'depleted';
+            this.showNoEnergyModal = true;
+        },
+
         completeCurrentUnit() {
-            // Calcular tiempo de lección
-            this.lessonTime = Math.floor((Date.now() - this.lessonStartTime) / 1000);
+            // Calcular tiempo de lección (solo si lessonStartTime existe)
+            if (this.lessonStartTime) {
+                this.lessonTime = Math.floor((Date.now() - this.lessonStartTime) / 1000);
+                console.log('Tiempo total de lección:', this.lessonTime, 'segundos');
+            } else {
+                console.warn('lessonStartTime no definido al completar la lección');
+                this.lessonTime = 0;
+            }
 
             const language = this.authStore.selectedLanguage;
 
-            // CALCULAR PERFORMANCE
+            // CALCULAR PERFORMANCE Y EXP TOTAL
             const performance = this.currentExercises.length > 0 ?
                 this.correctAnswersCount / this.currentExercises.length : 1.0;
 
-            // OBTENER PALABRAS APRENDIDAS DEL VOCABULARIO DE LA UNIDAD (corregido)
+            // CALCULAR EXP TOTAL BASADO EN POINTS
+            const totalPoints = this.calculateTotalPoints();
+            const earnedPoints = this.calculateEarnedPoints();
+
+            // console.log('EXP Calculation:', {
+            //     totalPoints,
+            //     earnedPoints,
+            //     performance,
+            //     correctAnswers: this.correctAnswersCount,
+            //     totalExercises: this.currentExercises.length
+            // });
+
+            // OBTENER PALABRAS APRENDIDAS DEL VOCABULARIO DE LA UNIDAD
             const wordsLearned = this.currentUnit.vocabulary && typeof this.currentUnit.vocabulary === 'object' ?
                 Object.keys(this.currentUnit.vocabulary).map(wordKey => ({
                     word: wordKey,
@@ -419,17 +511,19 @@ export default {
                     dialect: language
                 })) : [];
 
-            // console.log('📝 Palabras aprendidas:', wordsLearned);
-
-            // COMPLETAR LECCIÓN CON PROGRESSSERVICE
+            // COMPLETAR LECCIÓN CON PUNTOS CALCULADOS
             const result = this.progressService.completeLesson(
                 1, // userId
                 language,
                 this.currentLevel.id,
                 this.currentUnit.id,
                 performance,
-                wordsLearned
+                wordsLearned,
+                earnedPoints // 🆕 Pasar puntos ganados
             );
+
+            // Guardar EXP ganado para mostrarlo en CompletionMessage
+            this.earnedExp = result.xpEarned;
 
             // MOSTRAR MENSAJE DIFERENTE SI ES REPETICIÓN
             if (result.wasAlreadyCompleted) {
@@ -438,10 +532,8 @@ export default {
                     'Fresco como una lechuga!'
                 );
             } else {
-                // COMPLETAR UNIDAD EN LEARNINGREPOSITORY (solo si no estaba completada)
+                // COMPLETAR UNIDAD EN LEARNINGREPOSITORY
                 this.learningRepo.completeUnit(language, this.currentLevel.id, this.currentUnit.id);
-
-                // DESBLOQUEAR SIGUIENTE UNIDAD
                 this.unlockNextUnit(language, this.currentLevel.id, this.currentUnit.id);
 
                 this.showFeedback(
@@ -451,7 +543,25 @@ export default {
             }
         },
 
-        // NUEVO MÉTODO PARA DESBLOQUEAR SIGUIENTE UNIDAD
+        calculateTotalPoints() {
+            return this.currentExercises.reduce((total, exercise) => {
+                return total + (exercise.points || 15); // 15 es el valor por defecto
+            }, 0);
+        },
+
+        calculateEarnedPoints() {
+            let earnedPoints = 0;
+
+            this.currentExercises.forEach((exercise, index) => {
+                // Solo sumar puntos de ejercicios respondidos correctamente
+                if (index < this.correctAnswersCount) {
+                    earnedPoints += (exercise.points || 15);
+                }
+            });
+
+            return earnedPoints;
+        },
+
         unlockNextUnit(language, levelId, unitId) {
             const units = this.learningRepo.getUnits(language, levelId);
             const currentUnitIndex = units.findIndex(unit => unit.id === unitId);
@@ -469,7 +579,6 @@ export default {
             this.checkLevelUnlock(language, levelId);
         },
 
-        // VERIFICAR DESBLOQUEO DE NIVEL
         checkLevelUnlock(language, levelId) {
             const currentLevel = this.learningRepo.getLevel(language, levelId);
             const units = this.learningRepo.getUnits(language, levelId);
@@ -506,48 +615,55 @@ export default {
                 }
             }
         },
+
         showFeedback(title, message) {
             this.feedbackTitle = title;
             this.feedbackMessage = message;
             this.showFeedbackModal = true;
         },
+
         closeFeedbackModal() {
             this.showFeedbackModal = false;
         },
+
         showWarning() {
             this.showWarningModal = true;
         },
+
         closeWarningModal() {
             this.showWarningModal = false;
         },
+
         showExitConfirmModal() {
             this.showExitConfirmModalFlag = true;
         },
+
         closeExitConfirmModal() {
             this.showExitConfirmModalFlag = false;
         },
+
         confirmExitLesson() {
             this.closeExitConfirmModal();
             this.$router.push(`/nivel/${this.currentLevel.id}`);
         },
+
         endSession() {
             this.closeWarningModal();
             this.$router.push(`/nivel/${this.currentLevel.id}`);
         },
+
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);
             window.addEventListener('beforeunload', this.preventUnload);
         },
-        cleanupPageReloadPrevention() {
-            window.removeEventListener('keydown', this.preventReloadKeys);
-            window.removeEventListener('beforeunload', this.preventUnload);
-        },
+
         preventReloadKeys(e) {
             if ((e.key === 'F5' || (e.ctrlKey && e.key === 'r')) && this.lessonInProgress) {
                 e.preventDefault();
                 this.showWarning();
             }
         },
+
         preventUnload(e) {
             if (this.lessonInProgress) {
                 e.preventDefault();
@@ -569,8 +685,225 @@ export default {
         cleanupPageReloadPrevention() {
             window.removeEventListener('keydown', this.preventReloadKeys);
             window.removeEventListener('beforeunload', this.preventUnload);
-            window.removeEventListener('resize', this.updateHeight); // Remover listener de resize
+            window.removeEventListener('resize', this.updateHeight);
+
+            // Limpiar interval de energía
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+            }
         },
+
+        // Inicializar energía al comenzar lección
+        initializeEnergy() {
+            const userId = this.authStore.user?.id || 1;
+            const { energy, notification } = this.energyService.initializeEnergy(userId);
+
+            this.energy = energy;
+
+            // Mostrar notificación si la energía estaba llena
+            if (notification?.show) {
+                console.log('⚡ Energía completa:', notification.message);
+            }
+
+            console.log('⚡ Energía inicializada:', this.energy);
+        },
+
+        // Modificar verifyAnswer para incluir energía:
+        async verifyAnswer() {
+            if (this.showResult) {
+                this.continueFromModal();
+            } else {
+                this.showResult = true;
+
+                // Determinar si la respuesta es correcta
+                if (this.currentExercise.type === 'multiple-choice') {
+                    this.isAnswerCorrect = this.selectedAnswer === this.currentExercise.correctAnswer;
+                } else if (this.currentExercise.type === 'fill-blank') {
+                    this.isAnswerCorrect = this.currentExercise.validateAnswer(this.textAnswer);
+                }
+
+                // CONSUMIR ENERGÍA
+                const energyResult = await this.energyStore.consumeForExercise(this.isAnswerCorrect);
+
+                // console.log('Cambio de energía (global):', energyResult);
+
+                // CONTAR RESPUESTAS CORRECTAS
+                if (this.isAnswerCorrect) {
+                    this.correctAnswersCount++;
+                }
+
+                // VERIFICAR SI LA ENERGÍA LLEGÓ A 0 - INMEDIATAMENTE
+                if (this.energyStore.currentEnergy <= 0 && this.lessonInProgress) {
+                    // Detener la lección inmediatamente
+                    this.lessonInProgress = false;
+
+                    // Detener el monitoreo de energía
+                    if (this.energyCheckInterval) {
+                        clearInterval(this.energyCheckInterval);
+                        this.energyCheckInterval = null;
+                    }
+
+                    // Mostrar feedback primero, luego el modal de energía
+                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    if (this.isAnswerCorrect) {
+                        this.showFeedback(
+                            '¡Buen trabajo!',
+                            (this.currentExercise.explanation || 'Respuesta correcta.') + streakBonus
+                        );
+                    } else {
+                        this.showFeedback(
+                            'Inténtalo de nuevo',
+                            this.currentExercise.explanation || 'La respuesta no es correcta.'
+                        );
+                    }
+
+                    // Esperar a que cierre el feedback modal antes de mostrar el de energía
+                    setTimeout(() => {
+                        this.handleEnergyDepleted();
+                    }, 100);
+
+                    return; // Salir del método
+                }
+
+                // Mostrar feedback normal si hay energía suficiente
+                if (this.isAnswerCorrect) {
+                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    this.showFeedback(
+                        '¡Buen trabajo!',
+                        (this.currentExercise.explanation || 'Respuesta correcta.') + streakBonus
+                    );
+                } else {
+                    this.showFeedback(
+                        'Inténtalo de nuevo',
+                        this.currentExercise.explanation || 'La respuesta no es correcta.'
+                    );
+                }
+            }
+        },
+
+        // Mostrar cambios de energía visualmente
+        showEnergyChange(change) {
+            const changeObj = {
+                id: Date.now(),
+                value: change,
+                timestamp: Date.now()
+            };
+
+            this.energyChanges.push(changeObj);
+
+            // Remover después de animación
+            setTimeout(() => {
+                this.energyChanges = this.energyChanges.filter(c => c.id !== changeObj.id);
+            }, 2000);
+        },
+
+        // Manejar click en indicador de energía
+        handleEnergyClick() {
+            const tooltip = `Energía: ${this.energy.currentEnergy}/${this.energy.maxEnergy}
+                            Consumo: -1⚡ por ejercicio
+                            Acierto: +1-2⚡ bonus
+                            Racha (${this.energy.streakCount}): ${this.energy.streakCount >= 3 ? '+3-4⚡ bonus activo! 🔥' : 'Necesitas 3+ aciertos'}`;
+            alert(tooltip);
+        },
+
+        // Verificar energía ANTES de iniciar lección
+        checkEnergyBeforeLesson() {
+            const currentEnergy = this.energyStore.currentEnergy;
+
+            // Si hay suficiente energía, iniciar lección
+            if (currentEnergy >= this.requiredEnergyForLesson) {
+                console.log('✅ Energía suficiente, iniciando timer de lección...');
+                this.startLesson();
+                return true;
+            }
+
+            // ⚡ CORRECCIÓN: Diferenciar entre 0 energía y energía insuficiente
+            if (currentEnergy === 0) {
+                console.log('⚡ Sin energía (0) - Mostrando modal DEPLETED');
+                this.noEnergyModalType = 'depleted';
+            } else {
+                console.log('⚠️ Energía insuficiente pero > 0 - Mostrando modal INSUFFICIENT');
+                this.noEnergyModalType = 'insufficient';
+            }
+
+            this.showNoEnergyModal = true;
+            return false;
+        },
+
+        // Monitorear energía DURANTE la lección
+        startEnergyMonitoring() {
+            // Solo monitorear si no hay un interval activo
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+            }
+
+            // Verificar cada 2 segundos en lugar de cada segundo
+            this.energyCheckInterval = setInterval(() => {
+                // Solo verificar si la lección está en progreso y no hay modal abierto
+                if (this.energyStore.currentEnergy <= 0 &&
+                    this.lessonInProgress &&
+                    !this.showNoEnergyModal) {
+                    this.handleEnergyDepleted();
+                }
+            }, 2000);
+        },
+
+        // Manejar retorno desde modal de energía
+        handleEnergyModalReturn() {
+            this.showNoEnergyModal = false;
+            this.lessonInProgress = false;
+
+            // Limpiar interval si existe
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+                this.energyCheckInterval = null;
+            }
+
+            this.$router.push(`/nivel/${this.currentLevel.id}`);
+        },
+
+        // Manejar práctica para recuperar energía
+        handlePracticeForEnergy() {
+            this.showNoEnergyModal = false;
+            // Redirigir a sección de práctica (ajustar según tu implementación)
+            this.$router.push('/practica');
+        },
+
+        closeNoEnergyModal() {
+            // console.log('NoEnergyModal cerrado desde LessonView, tipo:', this.noEnergyModalType);
+            this.showNoEnergyModal = false;
+
+            // 🚨 CORRECCIÓN: Si el modal era de "insuficiente" y el usuario hizo clic en "Seguir adelante"
+            if (this.noEnergyModalType === 'insufficient') {
+                // console.log('Iniciando lección después de modal de energía insuficiente');
+
+                // 1. Asegurarnos que la lección esté marcada como en progreso
+                this.lessonInProgress = true;
+
+                // 2. Establecer el tiempo de inicio de la lección (SI NO SE HA ESTABLECIDO)
+                if (!this.lessonStartTime) {
+                    this.lessonStartTime = Date.now();
+                    // console.log('Timer de lección iniciado:', new Date(this.lessonStartTime).toLocaleTimeString());
+                }
+
+                // 3. Iniciar el monitoreo de energía
+                this.startEnergyMonitoring();
+
+                // 4. Log para debug
+                // console.log('Lección iniciada con:', {
+                //     lessonInProgress: this.lessonInProgress,
+                //     lessonStartTime: this.lessonStartTime,
+                //     currentEnergy: this.energyStore.currentEnergy
+                // });
+            }
+
+            // Si la energía está en 0, redirigir automáticamente
+            if (this.energyStore.currentEnergy <= 0) {
+                // console.log('Energía en 0, redirigiendo...');
+                this.$router.push(`/nivel/${this.currentLevel.id}`);
+            }
+        },
+
     },
     watch: {
         currentUnitVocabulary: {
@@ -596,17 +929,3 @@ export default {
     }
 };
 </script>
-
-<!-- <Card v-if="currentQuestion > this.currentExercises.length"
-                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
-                        <h2 class="text-xl font-semibold mb-4">¡Lección completada!</h2>
-
-                        <div class="flex flex-col">
-                            <router-link :to="`/nivel/${currentLevel.id}`">
-                                <button
-                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
-                                    RECIBIR EXP
-                                </button>
-                            </router-link>
-                        </div>
-                    </Card> -->

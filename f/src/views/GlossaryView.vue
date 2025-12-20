@@ -3,8 +3,8 @@
         <!-- Top header -->
         <Header variant="simple" :title="currentTabTitle" backRoute="/" class="pt-6 md:pt-5" />
 
-        <main class="container mx-auto px-4 py-2 md:py-10">
-            <div class="max-w-4xl mx-auto">
+        <main class="container mx-auto py-2 md:py-10">
+            <div class="max-w-4xl mx-auto ">
                 <!-- Mostrar tabs solo si hay más de uno disponible -->
                 <Tab v-if="availableTabs.length > 1" :tabs="availableTabs" v-model="activeTab" class="mb-6" />
 

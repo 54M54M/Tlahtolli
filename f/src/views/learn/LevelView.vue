@@ -1,7 +1,7 @@
 <template>
     <div class="md:mt-[70px] mt-[35px] mb-[-15px]">
-        <Header :title="currentLevel.titleNative" :subtitle="currentLevel.titleSpanish" @show-all="handleShowAll"
-            :color="currentLevel.color" />
+        <Header variant="levels" :title="currentLevel.titleNative" :subtitle="currentLevel.titleSpanish"
+            @show-all="handleShowAll" :color="currentLevel.color" />
 
         <div class="space-y-4">
             <!-- Unidades desbloqueadas -->

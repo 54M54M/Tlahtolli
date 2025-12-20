@@ -1,5 +1,198 @@
 # CHANGELOG
 
+## [3.5.1] - 2025-12-18 - Mejoras en Sistema de Energía
+
+### Added
+
+- **Sistema de verificación de energía en lecciones**
+  - Actualización de `NoEnergyModal.vue` para manejar dos tipos de modal:
+    - 'insufficient': cuando el usuario tiene < 10⚡ antes de iniciar
+    - 'depleted': cuando la energía llega a 0⚡ durante la lección
+  - Verificación de energía mínima (10⚡) antes de cargar lección
+  - Monitoreo de energía en tiempo real cada 2 segundos durante la lección
+  - Modal automático cuando la energía llega a 0
+  - Limpieza de intervals al salir de la lección
+
+### Changed
+
+- **LecciónView.vue**
+  - Definición correcta del método `startLesson()` en el objeto methods
+  - Centralización de la lógica de inicio de lección en un solo método
+  - Agregado campo `lessonEndTime` para capturar tiempo exacto de finalización
+  - Agregado método `completePartialLesson()` para manejar progreso parcial
+  - Mejorado `handleEnergyDepleted()` con prevención de llamadas múltiples
+  - Simplificado `closeNoEnergyModal()` para usar `startLesson()`
+  - Agregado `watch` para `lessonStartTime` para depuración
+  - Reemplazo de `this.$once` por `beforeUnmount()` para compatibilidad con Vue 3
+  - Uso de `data()` para almacenar referencias de event listeners
+
+- **QuickLevelView.vue**
+  - Adaptación de la misma lógica de verificación de energía
+  - Prevención de inicio de nivel rápido sin energía suficiente
+  - Detección de agotamiento durante ejercicios
+  - Corrección de tipo de modal cuando usuario inicia con 0 energía
+
+- **NoEnergyModal.vue**
+  - Modal adaptativo con colores e íconos según contexto
+  - Mensajes personalizados por situación
+  - Opciones para volver o practicar para recuperar energía
+  - Delay de 1.5s antes de mostrar modal para ver resultado
+  - Agregado `watcher` para monitorear cambios de tipo de modal
+
+### Fixed
+
+- **Corrección del timer de lección**
+  - Timer ahora funciona tanto con energía suficiente como después del modal
+  - Timer se congela correctamente cuando:
+    - La energía llega a 0 durante la lección
+    - Se completa la lección normalmente
+    - Se presiona 'Seguir adelante' con 0 de energía
+
+- **Corrección de bugs de energía**
+  - Modal de energía ahora se muestra correctamente al llegar a 0
+  - Timer ya no se buguea cuando se agota la energía
+  - Botón 'Seguir adelante' ahora redirige correctamente
+
+- **Corrección de tipo de modal de energía**
+  - Diferenciación entre energía insuficiente (>0 pero <10) y energía agotada (0)
+  - ModalType='depleted' cuando `currentEnergy === 0`
+  - ModalType='insufficient' cuando `0 < currentEnergy < requiredEnergy`
+  - Usuario con 0 energía ahora ve modal 'depleted' (antes veía 'insufficient')
+
+- **Mejoras en UX y depuración**
+  - Mejor logging para depuración del flujo del timer
+  - Verificación inmediata de energía después de consumirla en `verifyAnswer()`
+  - Prevención de que `continueFromModal()` avance si `lessonInProgress` es false
+  - Redirección automática en `closeNoEnergyModal()` si energía está en 0
+  - Limpieza correcta de intervals en `handleEnergyModalReturn()`
+  - Asegurada limpieza completa en `beforeUnmount()`
+
+## [3.5.0] - 2025-12-17 - Sistema de Energía Globalmente Sincronizado
+
+### Added
+
+- **Store Centralizado de Energía (Pinia)**
+  - Nuevo store `stores/energy.js` para manejo centralizado de energía
+  - Sistema de persistencia automática en localStorage
+  - Getters reactivos para acceso a datos de energía
+  - Métodos para consumir, recuperar y sincronizar energía
+  - Sistema de rachas para bonificaciones por aciertos consecutivos
+  - Recuperación pasiva de energía basada en tiempo transcurrido
+
+- **Arquitectura**
+  - Pinia store con persistencia plugin para gestión de estado
+  - Clase `Energy` como modelo de datos centralizado
+  - Actualizaciones event-driven entre componentes
+  - Computed properties en componentes + getters en store
+
+### Changed
+
+- **App.vue**
+  - Inicialización del store de energía al cargar la aplicación
+  - Sincronización de energía desde localStorage al inicio
+
+- **LessonView.vue - QuickLevelView.vue**
+  - Eliminado EnergyService local y reemplazado con store global
+  - Actualizada función `verifyAnswer()` para usar `energyStore.consumeForExercise()`
+  - Datos de energía pasados al vHeader desde el store global
+  - Simplificado manejo de cambios de energía
+  - Actualizado Header con datos del store
+
+- **vHeader.vue**
+  - Importación y uso del store de energía para datos reactivos
+  - Eliminada energía local y uso de computed properties del store
+  - Template preparado para animaciones de cambios de energía
+
+### Removed
+
+- Instancias locales de EnergyService en componentes
+- Lógica duplicada de inicialización de energía
+- Variables de estado de energía redundantes
+
+### Fixed
+
+- **Sincronización Global de Estado**
+  - Un solo punto para el estado de energía
+  - Cambios en energía se propagan automáticamente a todos los componentes
+  - Eliminadas inconsistencias entre diferentes vistas
+
+- **Persistencia de Datos**
+  - Energía se mantiene entre recargas de página
+  - Estado conservado después de cerrar/reabrir navegador
+  - Serialización JSON robusta en localStorage
+
+## [3.4.0] - 2025-12-11 - Rediseño Responsivo de VariantSelection
+
+### Added
+
+- **Diseño Mobile Mejorado para VariantSelection**
+  - Reorganización completa del layout para dispositivos móviles
+  - Implementación de diseño full-screen en mobile con `h-full` y `w-full`
+  - Mantenimiento de diseño original centrado y con dimensiones fijas para desktop
+  - Padding y márgenes ajustados específicamente para cada tipo de dispositivo
+
+### Changed
+
+- **VariantSelection.vue**
+  - Reestructuración del contenedor principal
+  - Reorganización del header
+  - Añadido separador visual (`border-t border-gray-700`) entre header y contenido
+  - Ajustes de padding
+
+- **Mejoras en la Experiencia de Usuario Mobile**
+  - Área de contenido central con scroll independiente
+
+### Fixed
+
+- **Problemas de Layout en Dispositivos Móviles**
+  - Solucionado problema de contenido que no ocupaba toda la altura disponible
+  - Corregido espaciado excesivo que reducía el área visible
+  - Mejorada la accesibilidad del botón de retroceso en pantallas pequeñas
+
+- **Consistencia Visual entre Dispositivos**
+  - Mantenida la identidad visual del diseño desktop original
+  - Asegurada coherencia en colores, tipografía y elementos interactivos
+  - Preservada la funcionalidad completa en ambos tipos de dispositivos
+
+## [3.3.2] - 2025-12-06 - Reorganización de Familias Lingüísticas y Mejoras de Selección
+
+### Added
+
+- **Sistema de Grupos de Idiomas Desplegables**
+  - Reorganizar estructura jerárquica de idiomas en LanguageConfig.js
+  - Se creo el componente `LanguageGroupSelector.vue` con menús desplegables
+  - Añadir información educativa sobre familias lingüísticas
+
+- **Nuevas Funcionalidades de UI**
+  - Expandir grupos por defecto y mantener estado de selección
+  - Optimizar responsive design y scroll para móviles
+
+### Changed
+
+- **VariantSelection.vue**
+  - Integración del componente `LanguageGroupSelector` como sistema principal
+  - Deshabilitar botón CONTINUAR hasta selección explícita de idioma
+  - Mejorar UX forzando selección explícita del usuario
+
+- **LanguageGroupSelector.vue**
+  - Simplifico a diseño dinámico con `v-for` para grupos lingüísticos
+  - Se creo propiedad computada `languageGroups` que obtiene datos desde `LanguageService`
+  - Implemento función `getGroupFlag` para emoji dinámico en encabezados
+  - Reemplazo bloques HTML estáticos con renderizado dinámico
+  - Redujo código duplicado y mejorar mantenibilidad
+
+### Fixed
+
+- **Corrección de Bugs en VariantSelection**
+- Corregio bug que permitía continuar sin selección de idioma
+- Mejoro validación de selección con mensaje informativo
+- Mantuvo compatibilidad con selecciones previas en `authStore`
+
+- **Mejoras de Mantenibilidad**
+- Elimino necesidad de modificar componente al agregar nuevas familias
+- Centralizo configuración de grupos en `LanguageService`
+- Facilitar escalabilidad para futuras familias lingüísticas
+
 ## [3.3.1] - 2025-11-30 - Mejoras en Sistema de Finalización y Desbloqueo
 
 ### Added

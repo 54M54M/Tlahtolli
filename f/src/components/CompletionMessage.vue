@@ -127,14 +127,24 @@ export default {
         nextLevelId: {
             type: [String, Number],
             default: null
+        },
+        earnedExp: {
+            type: Number,
+            default: null
         }
     },
     computed: {
         // Calcular EXP basado en desempeño y tiempo
         totalExp() {
+            // Si se proporcionó earnedExp, usarlo directamente
+            if (this.earnedExp !== null) {
+                return this.earnedExp;
+            }
+
+            // Fallback al cálculo antiguo
             const baseExp = 100;
-            const performanceBonus = Math.round(this.performance * 50); // +50 exp máximo por buen desempeño
-            const timeBonus = this.calculateTimeBonus(); // Bonus por velocidad
+            const performanceBonus = Math.round(this.performance * 50);
+            const timeBonus = this.calculateTimeBonus();
 
             return baseExp + performanceBonus + timeBonus;
         },

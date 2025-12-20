@@ -6,6 +6,7 @@
             ├── citlali-true.webp
             ├── coltzin-false.webp
             ├── coltzin-true.webp
+            ├── cuautli.webp
             ├── neza-false.webp
             ├── neza-true.webp
             ├── tonatiuh-false.webp
@@ -17,14 +18,17 @@
         ├── AchievementsList.vue
         ├── Badge.vue
         ├── Card.vue
+        ├── CompletionMessage.vue
         ├── DesktopAside.vue
         ├── DialectProgress.vue
         ├── ExerciseImage.vue
         ├── ExitConfirmModal.vue
         ├── FeedbackModal.vue
+        ├── LanguageGroupSelector.vue
         ├── LearningStats.vue
         ├── MobileNav.vue
         ├── NextStage.vue
+        ├── NoEnergyModal.vue
         ├── ProcessedText.vue
         ├── ProgressAside.vue
         ├── ProgressBar.vue
@@ -41,6 +45,7 @@
         └── 📁models
             ├── Achievement.js
             ├── DictionaryEntry.js
+            ├── Energy.js
             ├── Exercise.js
             ├── Level.js
             ├── Region.js
@@ -58,6 +63,7 @@
             ├── UserRepository.js
         └── 📁services
             ├── AchievementService.js
+            ├── EnergyService.js
             ├── LanguageService.js
             ├── ProgressService.js
             ├── QuickLevelService.js
@@ -66,14 +72,13 @@
             ├── UnlockService.js
         └── 📁storage
             ├── LocalStorageService.js
-        ├── estructura.txt
-        ├── test.js
     └── 📁layouts
         ├── Layout.vue
     └── 📁router
         ├── index.js
     └── 📁stores
         ├── auth.js
+        ├── energy.js
     └── 📁utils
         ├── preventReload.js
     └── 📁views

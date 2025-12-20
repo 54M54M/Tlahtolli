@@ -157,48 +157,48 @@ export class AchievementService {
 
     isRequirementMet(achievement, stats, user) {
         const requirement = achievement.requirement.toLowerCase();
-        console.log('🔍 Verificando requisito:', achievement.title, '-', requirement);
+        // console.log('Verificando requisito:', achievement.title, '-', requirement);
 
         if (requirement.includes("completar 1 lección") || requirement.includes("primera lección")) {
-            console.log('📊 Lecciones completadas:', stats.lessonsCompleted);
+            // console.log('Lecciones completadas:', stats.lessonsCompleted);
             const result = stats.lessonsCompleted >= 1;
-            console.log('✅ Resultado requisito primera lección:', result);
+            // console.log('Resultado requisito primera lección:', result);
             return result;
         }
 
         if (requirement.includes("7 días") || requirement.includes("racha de 7")) {
             const result = user.streak >= 7;
-            console.log('✅ Resultado requisito 7 días:', result, '(streak:', user.streak, ')');
+            // console.log('Resultado requisito 7 días:', result, '(streak:', user.streak, ')');
             return result;
         }
 
         if (requirement.includes("50 palabras") || requirement.includes("aprender 50")) {
             const result = stats.wordsLearned >= 50;
-            console.log('✅ Resultado requisito 50 palabras:', result, '(words:', stats.wordsLearned, ')');
+            // console.log('Resultado requisito 50 palabras:', result, '(words:', stats.wordsLearned, ')');
             return result;
         }
 
         if (requirement.includes("30 días") || requirement.includes("racha de 30")) {
             const result = user.streak >= 30;
-            console.log('✅ Resultado requisito 30 días:', result, '(streak:', user.streak, ')');
+            // console.log('Resultado requisito 30 días:', result, '(streak:', user.streak, ')');
             return result;
         }
 
         if (requirement.includes("10 lecciones perfectas")) {
             const result = stats.perfectLessons >= 10;
-            console.log('✅ Resultado requisito 10 lecciones perfectas:', result, '(perfect:', stats.perfectLessons, ')');
+            // console.log('Resultado requisito 10 lecciones perfectas:', result, '(perfect:', stats.perfectLessons, ')');
             return result;
         }
 
         if (requirement.includes("1000 minutos")) {
             const result = stats.totalMinutes >= 1000;
-            console.log('✅ Resultado requisito 1000 minutos:', result, '(minutes:', stats.totalMinutes, ')');
+            // console.log('Resultado requisito 1000 minutos:', result, '(minutes:', stats.totalMinutes, ')');
             return result;
         }
 
         if (requirement.includes("2 idiomas")) {
             const result = user.unlockedLanguages.length >= 2;
-            console.log('✅ Resultado requisito 2 idiomas:', result, '(languages:', user.unlockedLanguages.length, ')');
+            // console.log('Resultado requisito 2 idiomas:', result, '(languages:', user.unlockedLanguages.length, ')');
             return result;
         }
 
@@ -207,18 +207,18 @@ export class AchievementService {
             if (languageProgress) {
                 if (requirement.includes("nivel 1 de saludos")) {
                     const result = languageProgress.lessonsCompleted >= 5;
-                    console.log('✅ Resultado requisito nivel 1 saludos:', result, '(lessons:', languageProgress.lessonsCompleted, ')');
+                    // console.log('Resultado requisito nivel 1 saludos:', result, '(lessons:', languageProgress.lessonsCompleted, ')');
                     return result;
                 }
                 if (requirement.includes("10 historias")) {
                     const result = languageProgress.lessonsCompleted >= 10;
-                    console.log('✅ Resultado requisito 10 historias:', result, '(lessons:', languageProgress.lessonsCompleted, ')');
+                    // console.log('Resultado requisito 10 historias:', result, '(lessons:', languageProgress.lessonsCompleted, ')');
                     return result;
                 }
             }
         }
 
-        console.log('❌ Requisito no reconocido:', requirement);
+        console.log('Requisito no reconocido:', requirement);
         return false;
     }
 
@@ -293,27 +293,27 @@ export class AchievementService {
         const user = this.userRepo.getUser(userId);
         const newAchievements = [];
 
-        console.log('🏆 AchievementService - Iniciando verificación de logros...');
-        console.log('📊 Estadísticas del usuario:', {
-            lessonsCompleted: stats.lessonsCompleted,
-            wordsLearned: stats.wordsLearned,
-            perfectLessons: stats.perfectLessons,
-            totalMinutes: stats.totalMinutes
-        });
-        console.log('👤 Datos del usuario:', {
-            streak: user.streak,
-            unlockedLanguages: user.unlockedLanguages.length,
-            xp: user.xp,
-            level: user.level
-        });
+        // console.log('AchievementService - Iniciando verificación de logros...');
+        // console.log('Estadísticas del usuario:', {
+        //     lessonsCompleted: stats.lessonsCompleted,
+        //     wordsLearned: stats.wordsLearned,
+        //     perfectLessons: stats.perfectLessons,
+        //     totalMinutes: stats.totalMinutes
+        // });
+        // console.log('👤 Datos del usuario:', {
+        //     streak: user.streak,
+        //     unlockedLanguages: user.unlockedLanguages.length,
+        //     xp: user.xp,
+        //     level: user.level
+        // });
 
         this.achievements.forEach(achievement => {
             if (!achievement.earned) {
-                console.log(`\n🔍 Verificando logro: ${achievement.title}`);
+                // console.log(`\nVerificando logro: ${achievement.title}`);
 
                 // SOLO VERIFICAR SI EL REQUISITO SE CUMPLE - SIN CONDICIONES DUPLICADAS
                 if (this.isRequirementMet(achievement, stats, user)) {
-                    console.log('✅ REQUISITO CUMPLIDO - Desbloqueando logro:', achievement.title);
+                    // console.log('REQUISITO CUMPLIDO - Desbloqueando logro:', achievement.title);
 
                     const xpReward = achievement.earn();
                     newAchievements.push({
@@ -323,27 +323,27 @@ export class AchievementService {
 
                     // AGREGAR XP - ESTA ES LA PARTE CRÍTICA
                     if (xpReward > 0) {
-                        console.log('💰 AGREGANDO XP:', xpReward, 'al usuario');
+                        // console.log('AGREGANDO XP:', xpReward, 'al usuario');
                         const newXP = this.userRepo.addXP(userId, xpReward);
-                        console.log('💰 XP después de agregar:', newXP);
+                        // console.log('XP después de agregar:', newXP);
 
                         // VERIFICAR QUE SE GUARDÓ
                         const updatedUser = this.userRepo.getUser(userId);
-                        console.log('💰 Usuario actualizado:', {
-                            xp: updatedUser.xp,
-                            totalXP: updatedUser.totalXP,
-                            level: updatedUser.level
-                        });
+                        // console.log('Usuario actualizado:', {
+                        //     xp: updatedUser.xp,
+                        //     totalXP: updatedUser.totalXP,
+                        //     level: updatedUser.level
+                        // });
                     }
 
-                    console.log(`🎉 LOGRO DESBLOQUEADO: ${achievement.title} - +${xpReward} XP`);
+                    console.log(`LOGRO DESBLOQUEADO: ${achievement.title} - +${xpReward} XP`);
                 } else {
                     // DEBUG: Ver progreso actual
                     const progress = this.getAchievementProgress(achievement, stats, user);
-                    console.log('❌ Requisito NO cumplido - Progreso:', progress.percentage + '%');
+                    // console.log('Requisito NO cumplido - Progreso:', progress.percentage + '%');
                 }
             } else {
-                console.log(`📌 Logro ya desbloqueado: ${achievement.title}`);
+                console.log(`Logro ya desbloqueado: ${achievement.title}`);
             }
         });
 
@@ -362,7 +362,7 @@ export class AchievementService {
             const stats = this.statsRepo.getUserStats(userId);
             const user = this.userRepo.getUser(userId);
 
-            // ✅ CORRECCIÓN: NO llamar a checkAndUnlockAchievements aquí para evitar bucle infinito
+            // NO llamar a checkAndUnlockAchievements aquí para evitar bucle infinito
             // Solo calcular el progreso, no desbloquear logros
 
             // Asegurarse de que cada logro sea una instancia de Achievement

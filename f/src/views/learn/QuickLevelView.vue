@@ -1,11 +1,12 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
         <!-- Header con título dinámico - SOLO se muestra durante la lección -->
-        <Header v-if="currentQuestion <= quickExercises.length" variant="progress"
-            :title="`Nivel Rápido ${currentLevel.id}`"
+        <Header v-if="currentQuestion <= quickExercises.length" variant="lesson" :title="`Nivel Rápido ${levelId}`"
             :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
-            :progressCurrent="completedExercises" :progressTotal="totalExercises"
-            :backRoute="`/nivel/${currentLevel.id}`" @exit-lesson="showExitConfirmModal" />
+            :progressCurrent="completedExercises" :progressTotal="totalExercises" :backRoute="`/nivel/${levelId}`"
+            :energyCurrent="energyStore.currentEnergy" :energyMax="energyStore.maxEnergy"
+            :energyStreak="energyStore.streakCount" @exit-lesson="showExitConfirmModal"
+            @energy-click="handleEnergyClick" />
 
         <!-- Contenido -->
         <div class="flex-1 flex items-center justify-center md:mt-[9%] overflow-hidden">
@@ -148,6 +149,11 @@
         <WarningModal :show="showWarningModal" @close="closeWarningModal" @confirm="endSession" />
         <ExitConfirmModal :show="showExitConfirmModalFlag" @close="closeExitConfirmModal"
             @confirm="confirmExitLesson" />
+        <NoEnergyModal :show="showNoEnergyModal" :modal-type="noEnergyModalType"
+            :current-energy="energyStore.currentEnergy" :max-energy="energyStore.maxEnergy"
+            :required-energy="requiredEnergyForLesson"
+            :recovery-time="energyStore.getRecoveryTime(requiredEnergyForLesson)" :redirect-to="`/nivel/${levelId}`"
+            @return="handleEnergyModalReturn" @practice="handlePracticeForEnergy" @close="closeNoEnergyModal" />
     </div>
 </template>
 
@@ -157,6 +163,7 @@ import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
+import NoEnergyModal from '../../components/NoEnergyModal.vue'
 import NextStage from '../../components/NextStage.vue';
 
 import ProcessedText from '../../components/ProcessedText.vue';
@@ -165,11 +172,11 @@ import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
+import { useEnergyStore } from '../../stores/energy';
 import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
 import { ProgressService } from '../../data/services/ProgressService.js';
 import { QuickLevelService } from '../../data/services/QuickLevelService.js';
 import placeholder from '../../assets/300x300.png';
-
 
 export default {
     name: "QuickLevel",
@@ -182,13 +189,18 @@ export default {
         ProcessedText,
         NextStage,
         ExerciseImage,
-        CompletionMessage
+        CompletionMessage,
+        NoEnergyModal
     },
     props: {
         levelId: {
             type: [String, Number],
             required: true
         }
+    },
+    setup() {
+        const energyStore = useEnergyStore();
+        return { energyStore };
     },
     data() {
         return {
@@ -217,17 +229,23 @@ export default {
             performance: 0,
             screenHeight: 0,
             lessonStartTime: null,
-            lessonTime: 0
+            lessonTime: 0,
+            earnedExp: 0,
+            showNoEnergyModal: false,
+            noEnergyModalType: 'depleted',
+            requiredEnergyForLesson: 10,
+            energyCheckInterval: null,
         };
     },
     computed: {
         currentExercise() {
             return this.quickExercises[this.currentQuestion - 1] || {};
         },
+
         totalExercises() {
             return this.quickExercises.length;
         },
-        // Obtener vocabulario combinado de todas las unidades del nivel
+
         currentLevelVocabulary() {
             const units = this.learningRepo.getUnits(this.authStore.selectedLanguage, Number(this.levelId));
             const vocabulary = [];
@@ -247,25 +265,45 @@ export default {
                 }
             });
 
-            // console.log('📚 VOCABULARIO COMBINADO DEL NIVEL:', vocabulary);
             return vocabulary;
         },
+
         containerClasses() {
             if (this.screenHeight <= 658) {
-                return 'md:pt-[-5%] md:py-[-10%]';
+                return 'md:pt-[1%] md:py-[10%]';
             } else if (this.screenHeight >= 700) {
                 return 'md:pt-[15%] md:pb-[20%]';
             }
         }
     },
-    created() {
+
+    async created() {
+        // ✅ CORRECCIÓN: Cargar datos del nivel PRIMERO
         this.loadQuickLevelData();
+
+        // Luego verificar energía
+        await this.energyStore.initializeEnergy(this.authStore.user?.id || 1);
+
+        if (!this.checkEnergyBeforeLesson()) {
+            return;
+        }
+
         this.setupPageReloadPrevention();
-        this.lessonStartTime = Date.now(); // Iniciar timer
+        this.lessonStartTime = Date.now();
+        this.startEnergyMonitoring();
     },
+
     beforeUnmount() {
         this.cleanupPageReloadPrevention();
+
+        if (this.energyCheckInterval) {
+            clearInterval(this.energyCheckInterval);
+            this.energyCheckInterval = null;
+        }
+
+        this.lessonInProgress = false;
     },
+
     methods: {
         async loadQuickLevelData() {
             const language = this.authStore.selectedLanguage;
@@ -291,47 +329,29 @@ export default {
         validateFillBlankAnswer(userAnswer, correctAnswer) {
             if (!userAnswer || !correctAnswer) return false;
 
-            // Normalizar la respuesta del usuario
             const normalizedUser = userAnswer.trim().toLowerCase();
 
-            // Manejar diferentes tipos de correctAnswer
             let normalizedCorrect;
 
             if (typeof correctAnswer === 'string') {
-                // Si es string, usar directamente
                 normalizedCorrect = correctAnswer.trim().toLowerCase();
             } else if (Array.isArray(correctAnswer)) {
-                // Si es array, usar el primer elemento o convertir a string
                 normalizedCorrect = correctAnswer[0] ? correctAnswer[0].toString().trim().toLowerCase() : '';
             } else if (typeof correctAnswer === 'object' && correctAnswer !== null) {
-                // Si es objeto, intentar extraer la respuesta
                 normalizedCorrect = correctAnswer.answer ? correctAnswer.answer.toString().trim().toLowerCase() : '';
             } else {
-                // Para cualquier otro tipo, convertir a string
                 normalizedCorrect = correctAnswer.toString().trim().toLowerCase();
             }
 
-            // console.log('🔍 Validando fill-blank:', {
-            //     userAnswer: normalizedUser,
-            //     correctAnswer: normalizedCorrect,
-            //     originalCorrect: correctAnswer
-            // });
-
-            // Comparación directa
             return normalizedUser === normalizedCorrect;
         },
 
-        verifyAnswer() {
+
+        async verifyAnswer() {
             if (this.showResult) {
                 this.continueFromModal();
             } else {
                 this.showResult = true;
-
-                // DEBUG: Verificar la estructura del ejercicio actual
-                // console.log('🔍 Ejercicio actual:', this.currentExercise);
-                // console.log('🔍 Tipo:', this.currentExercise.type);
-                // console.log('🔍 Respuesta correcta:', this.currentExercise.correctAnswer);
-                // console.log('🔍 Tipo de correctAnswer:', typeof this.currentExercise.correctAnswer);
 
                 if (this.currentExercise.type === 'multiple-choice') {
                     this.isAnswerCorrect = this.selectedAnswer === this.currentExercise.correctAnswer;
@@ -342,19 +362,70 @@ export default {
                     );
                 }
 
+                const energyResult = await this.energyStore.consumeForExercise(this.isAnswerCorrect);
+
+                console.log('⚡ Cambio de energía (QuickLevel):', energyResult);
+
                 if (this.isAnswerCorrect) {
                     this.correctAnswersCount++;
                 }
 
+                // ⚡ VERIFICAR SI LA ENERGÍA LLEGÓ A 0 - INMEDIATAMENTE
+                if (this.energyStore.currentEnergy <= 0 && this.lessonInProgress) {
+                    // Detener la lección inmediatamente
+                    this.lessonInProgress = false;
+
+                    // Detener el monitoreo de energía
+                    if (this.energyCheckInterval) {
+                        clearInterval(this.energyCheckInterval);
+                        this.energyCheckInterval = null;
+                    }
+
+                    // Mostrar feedback primero
+                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    if (this.isAnswerCorrect) {
+                        this.showFeedback(
+                            '¡Correcto!',
+                            (this.currentExercise.explanation || 'Buen trabajo.') + streakBonus
+                        );
+                    } else {
+                        this.showFeedback(
+                            'Incorrecto',
+                            this.currentExercise.explanation || 'Sigue practicando.'
+                        );
+                    }
+
+                    // Esperar a que cierre el feedback modal
+                    setTimeout(() => {
+                        this.handleEnergyDepleted();
+                    }, 100);
+
+                    return;
+                }
+
+                // Mostrar feedback normal si hay energía
                 if (this.isAnswerCorrect) {
-                    this.showFeedback('¡Correcto!', this.currentExercise.explanation || 'Buen trabajo.');
+                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    this.showFeedback(
+                        '¡Correcto!',
+                        (this.currentExercise.explanation || 'Buen trabajo.') + streakBonus
+                    );
                 } else {
-                    this.showFeedback('Incorrecto', this.currentExercise.explanation || 'Sigue practicando.');
+                    this.showFeedback(
+                        'Incorrecto',
+                        this.currentExercise.explanation || 'Sigue practicando.'
+                    );
                 }
             }
         },
 
         continueFromModal() {
+            // ⚠️ NO CONTINUAR SI LA LECCIÓN NO ESTÁ EN PROGRESO
+            if (!this.lessonInProgress) {
+                this.closeFeedbackModal();
+                return;
+            }
+
             this.closeFeedbackModal();
             this.completedExercises++;
             this.currentQuestion++;
@@ -370,105 +441,54 @@ export default {
         },
 
         async completeQuickLevel() {
-            // Calcular tiempo de lección
             this.lessonTime = Math.floor((Date.now() - this.lessonStartTime) / 1000);
 
             const language = this.authStore.selectedLanguage;
             const levelId = Number(this.levelId);
 
-            // console.log(`🚀 INICIANDO COMPLETADO DE QUICKLEVEL - Nivel ${levelId}`);
-
-            // Verificar estado ANTES
-            this.quickLevelService.checkSystemState(language, levelId);
-
-            // CALCULAR PERFORMANCE
             this.performance = this.correctAnswersCount / this.totalExercises;
-            // console.log(`📊 Performance: ${this.performance} (${this.correctAnswersCount}/${this.totalExercises})`);
 
-            // USAR EL NUEVO SERVICIO
+            const earnedPoints = this.calculateEarnedPoints();
+
+            console.log('📊 QuickLevel EXP:', {
+                earnedPoints,
+                correctAnswers: this.correctAnswersCount,
+                totalExercises: this.totalExercises
+            });
+
             const result = await this.quickLevelService.completeQuickLevel(
                 language,
                 levelId,
                 this.performance,
                 this.correctAnswersCount,
-                this.totalExercises
+                this.totalExercises,
+                earnedPoints
             );
 
             this.unlockedNextLevelUnit = result.nextLevelUnlocked;
             this.nextLevelId = result.nextLevelId;
-
-            // VERIFICACIÓN EXTRA - Forzar actualización del repositorio
-            // console.log(`🔄 FORZANDO ACTUALIZACIÓN DEL REPOSITORIO...`);
-            this.learningRepo.checkAndUpdateLevelLockStatus(language);
-
-            // Verificar estado DESPUÉS con más detalle
-            // console.log(`🔍 VERIFICACIÓN FINAL DEL SISTEMA:`);
-            this.quickLevelService.checkSystemState(language, levelId);
-
-            if (result.nextLevelUnlocked && result.nextLevelId) {
-                // console.log(`🎉 NIVEL ${result.nextLevelId} DESBLOQUEADO - Verificando estado:`);
-                this.quickLevelService.checkSystemState(language, result.nextLevelId);
-            }
-
-            if (result.progressRecorded.wasAlreadyCompleted) {
-                this.showFeedback(
-                    '¡Nivel Repasado!',
-                    `Completaste ${this.correctAnswersCount} de ${this.totalExercises} ejercicios correctamente.`
-                );
-            } else {
-                this.showFeedback(
-                    '¡Nivel Rápido Completado!',
-                    `Completaste ${this.correctAnswersCount} de ${this.totalExercises} ejercicios correctamente.${result.nextLevelUnlocked ? ' ¡Nuevo nivel desbloqueado!' : ''}`
-                );
-            }
+            this.earnedExp = result.progressRecorded.xpEarned;
         },
 
-        // método para debugging
-        checkCurrentState() {
-            const language = this.authStore.selectedLanguage;
-            const levelId = Number(this.levelId);
+        calculateEarnedPoints() {
+            let earnedPoints = 0;
 
-            // console.log(`🔍 ESTADO ACTUAL DEL SISTEMA:`);
+            this.quickExercises.forEach((exercise, index) => {
+                if (index < this.correctAnswersCount) {
+                    earnedPoints += (exercise.points || 15);
+                }
+            });
 
-            // Verificar nivel actual
-            const currentLevel = this.learningRepo.getLevel(language, levelId);
-            // console.log(`📊 Nivel actual ${levelId}:`, {
-            //     locked: currentLevel.locked,
-            //     completedUnits: currentLevel.completedUnits,
-            //     totalUnits: currentLevel.units,
-            //     progress: `${((currentLevel.completedUnits / currentLevel.units) * 100).toFixed(1)}%`
-            // });
+            return earnedPoints;
+        },
 
-            // Verificar unidades del nivel actual
-            const currentUnits = this.learningRepo.getUnits(language, levelId);
-            // console.log(`📋 Unidades del nivel ${levelId}:`,
-            //     currentUnits.map(u => ({
-            //         id: u.id,
-            //         completed: u.completed,
-            //         locked: u.locked,
-            //         current: u.current
-            //     }))
-            // );
-
-            // Verificar siguiente nivel si existe
-            const levels = this.learningRepo.getLevels(language);
-            const currentLevelIndex = levels.findIndex(level => level.id === levelId);
-            if (currentLevelIndex < levels.length - 1) {
-                const nextLevel = levels[currentLevelIndex + 1];
-                const nextLevelUnits = this.learningRepo.getUnits(language, nextLevel.id);
-                // console.log(`🔮 Siguiente nivel ${nextLevel.id}:`, {
-                //     locked: nextLevel.locked,
-                //     units: nextLevel.units
-                // });
-                // console.log(`🔮 Unidades del siguiente nivel:`,
-                //     nextLevelUnits.map(u => ({
-                //         id: u.id,
-                //         completed: u.completed,
-                //         locked: u.locked,
-                //         current: u.current
-                //     }))
-                // );
-            }
+        handleEnergyClick() {
+            const energy = this.energyStore.energyForHeader;
+            const tooltip = `Energía: ${energy.current}/${energy.max}⚡
+                            Consumo: -1⚡ por ejercicio
+                            Acierto: +1-2⚡ bonus
+                            Racha (${energy.streak}): ${energy.streak >= 3 ? '+3-4⚡ bonus activo! 🔥' : 'Necesitas 3+ aciertos'}`;
+            alert(tooltip);
         },
 
         showFeedback(title, message) {
@@ -499,22 +519,28 @@ export default {
 
         confirmExitLesson() {
             this.closeExitConfirmModal();
-            this.$router.push(`/nivel/${this.currentLevel.id}`);
+            this.$router.push(`/nivel/${this.levelId}`);
         },
 
         endSession() {
             this.closeWarningModal();
-            this.$router.push(`/nivel/${this.currentLevel.id}`);
+            this.$router.push(`/nivel/${this.levelId}`);
         },
 
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);
             window.addEventListener('beforeunload', this.preventUnload);
+            window.addEventListener('resize', this.updateHeight);
         },
 
         cleanupPageReloadPrevention() {
             window.removeEventListener('keydown', this.preventReloadKeys);
             window.removeEventListener('beforeunload', this.preventUnload);
+            window.removeEventListener('resize', this.updateHeight);
+
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+            }
         },
 
         preventReloadKeys(e) {
@@ -536,56 +562,92 @@ export default {
             this.screenHeight = window.innerHeight;
         },
 
-        setupPageReloadPrevention() {
-            window.addEventListener('keydown', this.preventReloadKeys);
-            window.addEventListener('beforeunload', this.preventUnload);
-            window.addEventListener('resize', this.updateHeight); // Agregar listener de resize
+        checkEnergyBeforeLesson() {
+            const currentEnergy = this.energyStore.currentEnergy;
+
+            if (currentEnergy >= this.requiredEnergyForLesson) {
+                return true;
+            }
+
+            // ⚡ CORRECCIÓN: Diferenciar entre 0 energía y energía insuficiente
+            if (currentEnergy === 0) {
+                console.log('⚡ Sin energía (0) para nivel rápido - Mostrando modal DEPLETED');
+                this.noEnergyModalType = 'depleted';
+            } else {
+                console.log('⚠️ Energía insuficiente para nivel rápido:', currentEnergy);
+                this.noEnergyModalType = 'insufficient';
+            }
+
+            this.showNoEnergyModal = true;
+            return false;
         },
 
-        cleanupPageReloadPrevention() {
-            window.removeEventListener('keydown', this.preventReloadKeys);
-            window.removeEventListener('beforeunload', this.preventUnload);
-            window.removeEventListener('resize', this.updateHeight); // Remover listener de resize
+        startEnergyMonitoring() {
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+            }
+
+            this.energyCheckInterval = setInterval(() => {
+                if (this.energyStore.currentEnergy <= 0 &&
+                    this.lessonInProgress &&
+                    !this.showNoEnergyModal) {
+                    this.handleEnergyDepleted();
+                }
+            }, 2000);
+        },
+
+        handleEnergyDepleted() {
+            // Prevenir llamadas múltiples
+            if (this.showNoEnergyModal) {
+                // console.log('⚡ Modal ya está mostrándose, ignorando...');
+                return;
+            }
+
+            // console.log('⚡ Energía agotada durante nivel rápido');
+
+            this.lessonInProgress = false;
+
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+                this.energyCheckInterval = null;
+            }
+
+            this.closeFeedbackModal();
+
+            this.noEnergyModalType = 'depleted';
+            this.showNoEnergyModal = true;
+        },
+
+        handleEnergyModalReturn() {
+            this.showNoEnergyModal = false;
+            this.lessonInProgress = false;
+
+            if (this.energyCheckInterval) {
+                clearInterval(this.energyCheckInterval);
+                this.energyCheckInterval = null;
+            }
+
+            this.$router.push(`/nivel/${this.levelId}`);
+        },
+
+        handlePracticeForEnergy() {
+            this.showNoEnergyModal = false;
+            this.$router.push('/practica');
+        },
+
+        closeNoEnergyModal() {
+            // console.log('🟢 NoEnergyModal cerrado desde QuickLevelView');
+            this.showNoEnergyModal = false;
+
+            // ⚠️ IMPORTANTE: Si la energía está en 0, redirigir automáticamente
+            if (this.energyStore.currentEnergy <= 0) {
+                // console.log('⚡ Energía en 0, redirigiendo...');
+                this.$router.push(`/nivel/${this.levelId}`);
+            }
         },
     },
     mounted() {
-        this.updateHeight(); // Inicializar la altura al montar
+        this.updateHeight();
     }
 };
 </script>
-
-
-<!-- <Card v-if="currentQuestion > quickExercises.length"
-                        class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
-                        <h2 class="text-xl font-semibold mb-4">¡Nivel Rápido Completado!</h2>
-                        <p class="mb-4">Has completado {{ correctAnswersCount }} de {{ totalExercises }} ejercicios
-                            correctamente.</p> -->
-
-<!-- Mostrar progreso de desbloqueo SOLO si performance >= 80% -->
-<!-- <div v-if="unlockedNextLevelUnit && performance >= 0.8"
-                            class="mb-4 p-4 bg-green-900/20 rounded-lg">
-                            <h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
-                            <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}
-                            </p>
-                            <div class="mt-2 flex items-center justify-center gap-2">
-                                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                                <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
-                            </div>
-                        </div>
-
-                        <div v-else-if="performance < 0.8" class="mb-4 p-4 bg-yellow-900/20 rounded-lg">
-                            <h3 class="font-semibold text-yellow-400 mb-2">Sigue practicando</h3>
-                            <p class="text-sm">Necesitas al menos 80% de aciertos para desbloquear el siguiente nivel.
-                            </p>
-                            <p class="text-sm mt-1">Obtuviste: {{ Math.round(performance * 100) }}%</p>
-                        </div>
-
-                        <div class="flex flex-col">
-                            <router-link :to="`/nivel/${currentLevel.id}`">
-                                <button
-                                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
-                                    RECIBIR EXP
-                                </button>
-                            </router-link>
-                        </div>
-                    </Card> -->

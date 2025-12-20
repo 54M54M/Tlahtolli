@@ -57,12 +57,12 @@ export class User {
 
     // Resto de los métodos permanecen igual...
     addXP(amount) {
-        console.log('👤 User.addXP - Antes:', {
-            xp: this.xp,
-            xpToNextLevel: this.xpToNextLevel,
-            level: this.level,
-            amount
-        });
+        // console.log('👤 User.addXP - Antes:', {
+        //     xp: this.xp,
+        //     xpToNextLevel: this.xpToNextLevel,
+        //     level: this.level,
+        //     amount
+        // });
 
         this.xp += amount;
         this.totalXP += amount;
@@ -71,18 +71,18 @@ export class User {
             this.xp -= this.xpToNextLevel;
             this.level++;
             this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.2);
-            console.log('👤 User.addXP - Subió de nivel:', {
-                nuevoNivel: this.level,
-                xpRestante: this.xp,
-                nuevoXpToNextLevel: this.xpToNextLevel
-            });
+            // console.log('👤 User.addXP - Subió de nivel:', {
+            //     nuevoNivel: this.level,
+            //     xpRestante: this.xp,
+            //     nuevoXpToNextLevel: this.xpToNextLevel
+            // });
         }
 
-        console.log('👤 User.addXP - Después:', {
-            xp: this.xp,
-            xpToNextLevel: this.xpToNextLevel,
-            level: this.level
-        });
+        // console.log('👤 User.addXP - Después:', {
+        //     xp: this.xp,
+        //     xpToNextLevel: this.xpToNextLevel,
+        //     level: this.level
+        // });
     }
 
     updateStreak() {

@@ -2,8 +2,8 @@
     <div class="bg-[#0A2136] text-white">
         <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
 
-        <main class="container mx-auto px-4 py-1 md:py-2 pb-16 md:pb-20">
-            <div class="max-w-md mx-auto">
+        <main class="container mx-auto py-1 md:py-2 pb-16 md:pb-20">
+            <div class="md:w-full">
                 <!-- ✅ CORRECCIÓN: Mostrar solo si userData existe -->
                 <div v-if="userData" class="bg-gray-800 rounded-lg p-3 pb-[1px] md:p-4 md:pb-[2px] mb-3 md:mb-4">
                     <UserProfile :user="userData" />

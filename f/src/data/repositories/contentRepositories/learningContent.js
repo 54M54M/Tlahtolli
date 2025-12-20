@@ -1,9 +1,3 @@
-/*
-
-Hay un bug en quicklevel, fill-blanks
-
-*/
-
 import { Level } from '../../models/Level.js';
 import { Unit } from '../../models/Unit.js';
 import { Exercise } from '../../models/Exercise.js';
@@ -35,7 +29,6 @@ function getVocabularyByWords(language, words) {
 }
 
 // ================= /LEVELS/{ID} =================
-/* HAY QUE ARREGLAR LOS EJERCICIOS, YA QUE MUCHAS PALABRAS SE CORRIJIERON */
 export const LEVELS_DATA = {
     // NAHUATL CENTRAL
     nhce: [
