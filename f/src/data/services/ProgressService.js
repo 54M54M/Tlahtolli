@@ -14,67 +14,65 @@ export class ProgressService {
         this.achievementService = new AchievementService();
     }
 
-    completeLesson(userId, language, levelId, unitId, performance = 1.0, wordsLearned = []) {
+    completeLesson(userId, language, levelId, unitId, performance = 1.0, wordsLearned = [], earnedPoints = null) {
         const user = this.userRepo.getUser(userId);
 
-        // VERIFICAR SI LA UNIDAD YA ESTABA COMPLETADA ANTES - CORREGIDO
+        // VERIFICAR SI LA UNIDAD YA ESTABA COMPLETADA
         const unit = this.learningRepo.getUnit(language, levelId, unitId);
         const wasAlreadyCompleted = unit && unit.completed;
 
-        console.log('📊 ProgressService.completeLesson - Estado unidad:', {
-            language,
-            levelId,
-            unitId,
-            wasAlreadyCompleted,
-            unitStatus: unit ? 'encontrada' : 'no encontrada',
-            unitCompleted: unit?.completed
-        });
+        // console.log('📊 ProgressService.completeLesson - Estado unidad:', {
+        //     language,
+        //     levelId,
+        //     unitId,
+        //     wasAlreadyCompleted,
+        //     earnedPoints
+        // });
 
-        // Calcular XP basado en el rendimiento
-        const baseXP = 100;
-        const performanceMultiplier = performance; // 0.0 to 1.0
-        const xpEarned = Math.floor(baseXP * performanceMultiplier);
+        // 🆕 CALCULAR XP BASADO EN PUNTOS GANADOS
+        let xpEarned;
 
-        // ✅ CORREGIDO: SIEMPRE dar XP, incluso si es repetición
+        if (earnedPoints !== null) {
+            // Usar puntos calculados desde los ejercicios
+            xpEarned = earnedPoints;
+        } else {
+            // Fallback al sistema antiguo (para compatibilidad)
+            const baseXP = 100;
+            const performanceMultiplier = performance;
+            xpEarned = Math.floor(baseXP * performanceMultiplier);
+        }
+
+        // ✅ SIEMPRE dar XP, incluso si es repetición
         user.addXP(xpEarned);
-        console.log('💰 XP ganada:', xpEarned, 'XP total:', user.xp);
+        // console.log('💰 XP ganada:', xpEarned, 'XP total:', user.xp);
 
         // SOLO ACTUALIZAR ESTADÍSTICAS SI LA UNIDAD NO ESTABA COMPLETADA
         if (!wasAlreadyCompleted) {
-            console.log('📈 Unidad nueva - actualizando estadísticas');
+            // console.log('📈 Unidad nueva - actualizando estadísticas');
 
-            // Actualizar estadísticas
             const perfect = performance >= 0.9;
             this.statsRepo.addLessonCompleted(userId, language, perfect);
 
-            // Actualizar palabras aprendidas
             if (wordsLearned.length > 0) {
                 this.statsRepo.addWordsLearned(userId, language, wordsLearned.length);
 
-                // Actualizar progreso de dialecto
                 wordsLearned.forEach(word => {
                     if (word.dialect) {
                         const currentProgress = this.statsRepo.getLanguageProgress(userId, language);
                         const dialectProgress = currentProgress.dialectProgress[word.dialect] || 0;
-                        const newProgress = Math.min(100, dialectProgress + (100 / 50)); // +2% por palabra (50 palabras = 100%)
+                        const newProgress = Math.min(100, dialectProgress + (100 / 50));
                         this.statsRepo.updateDialectProgress(userId, language, word.dialect, newProgress);
                     }
                 });
             }
         } else {
-            console.log('🔄 Unidad repetida - solo XP, sin estadísticas');
+            console.log('Unidad repetida - solo XP, sin estadísticas');
         }
 
-        // Completar unidad (esto maneja el estado interno del repositorio)
         const unitCompleted = this.learningRepo.completeUnit(language, levelId, unitId);
-
-        // Guardar progreso en LocalStorage
         this.saveProgressToStorage(userId, language);
 
-        // VERIFICAR LOGROS DESPUÉS DE COMPLETAR LA LECCIÓN
         const newAchievements = this.achievementService.checkAndUnlockAchievements(userId);
-
-        // Verificar todos los desbloqueos
         const unlocks = this.unlockService.checkAllUnlocks(userId, {
             language,
             levelId,
@@ -82,18 +80,17 @@ export class ProgressService {
             performance
         });
 
-        // Actualizar tiempo de estudio (estimado: 15 minutos por lección)
         this.statsRepo.updateStudyTime(userId, 15);
 
         return {
-            xpEarned,
+            xpEarned, // 🆕 Retornar puntos reales ganados
             newLevel: user.level,
-            perfectLesson: !wasAlreadyCompleted && perfect, // Solo contar como perfecta si es primera vez
+            perfectLesson: !wasAlreadyCompleted && (performance >= 0.9),
             unitCompleted,
             unlocks,
-            newAchievements, // <- AGREGAR NUEVOS LOGROS DESBLOQUEADOS
-            wordsLearned: wasAlreadyCompleted ? 0 : wordsLearned.length, // Solo contar palabras si es primera vez
-            wasAlreadyCompleted // Informar si era una repetición
+            newAchievements,
+            wordsLearned: wasAlreadyCompleted ? 0 : wordsLearned.length,
+            wasAlreadyCompleted
         };
     }
 

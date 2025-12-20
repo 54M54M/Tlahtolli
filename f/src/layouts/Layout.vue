@@ -12,7 +12,7 @@
         <div v-else class="flex flex-1">
             <!-- Desktop Sidebar (hidden en mobile, language selection y lesson) -->
             <DesktopAside v-if="!isLanguageSelectionRoute && !isLessonRoute"
-                class="hidden md:block border-r border-[#374151] fixed h-full z-20 w-60 bg-[#0A2136]" />
+                class="hidden md:block border-r border-[#374151]/90 fixed h-full z-20 w-60 bg-[#0A2136] shadow-none" />
 
             <!-- Main Content Area -->
             <main class="flex-grow pt-16 pb-20 md:pt-8 md:pb-4 relative z-10 w-full" :class="{

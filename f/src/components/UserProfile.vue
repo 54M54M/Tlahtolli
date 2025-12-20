@@ -15,13 +15,21 @@
             <div class="mt-1">
                 <div class="flex justify-between text-xs text-gray-400 mb-1">
                     <span>Nivel {{ user.level }}</span>
-                    <span>
-                        <!-- MOSTRAR XP REAL DEL USUARIO -->
+                    <!-- <span>
                         {{ user.xp }}/{{ user.xpToNextLevel }} XP
-                    </span>
+                    </span> -->
                 </div>
-                <!-- BARRA DE PROGRESO CON XP REAL -->
-                <ProgressBar :current="user.xp" :total="user.xpToNextLevel" class="h-1.5 bg-gray-700" />
+                <!--
+                <ProgressBar :current="user.xp" :total="user.xpToNextLevel" class="h-1.5 bg-gray-700" /> -->
+
+                <!--
+                        
+                xpToNextLevel = puntos undividuales de Exercise({ points:... }) * numero de  Exercise({..}) de una unidad
+
+                15 puntos * 36 ejercicios = 540 xpToNextLevel
+                
+                -->
+
             </div>
         </div>
     </div>

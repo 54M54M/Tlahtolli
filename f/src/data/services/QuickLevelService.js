@@ -11,30 +11,29 @@ export class QuickLevelService {
     /**
      * Completa el QuickLevel y maneja todo el proceso de desbloqueo
      */
-    async completeQuickLevel(language, currentLevelId, performance, correctAnswersCount, totalExercises) {
+    async completeQuickLevel(language, currentLevelId, performance, correctAnswersCount, totalExercises, earnedPoints = null) {
         console.log(`🚀 QUICKLEVEL SERVICE - Completando nivel ${currentLevelId}`);
 
         let currentLevelCompleted = false;
         let unlockResult = { unlocked: false, nextLevelId: null };
 
-        // 1. SOLO completar unidades si el rendimiento es suficiente para desbloquear
         if (performance >= 0.8) {
             currentLevelCompleted = this.completeAllUnitsInCurrentLevel(language, currentLevelId);
             unlockResult = this.unlockNextLevelWithExercises(language, currentLevelId);
         } else {
-            console.log(`❌ Rendimiento insuficiente (${performance}) - No se completan unidades ni se desbloquea siguiente nivel`);
-            // Aquí podrías dar XP pero no completar unidades ni desbloquear
+            console.log(`⚠ Rendimiento insuficiente (${performance}) - No se desbloquea siguiente nivel`);
         }
 
-        // 2. Registrar progreso (siempre dar XP, pero no completar unidades si performance < 80%)
+        // 🆕 PASAR earnedPoints a completeLesson
         const wordsLearned = this.getWordsLearnedFromLevel(language, currentLevelId);
         const progressResult = this.progressService.completeLesson(
-            1, // userId
+            1,
             language,
             currentLevelId,
             'quick-level',
             performance,
-            wordsLearned
+            wordsLearned,
+            earnedPoints // 🆕 Pasar puntos ganados
         );
 
         return {

@@ -1,8 +1,9 @@
 <template>
     <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:py-8 md:pt-1">
-        <h1 class="text-xl font-bold mb-6">¿Que vamos aprender hoy?</h1>
 
-        <div class="w-full mb-12">
+        <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3" />
+
+        <div class="w-full mb-12 pt-[1%]">
             <div class="space-y-4">
                 <!-- Niveles desbloqueados -->
                 <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/nivel/' + level.id"
@@ -85,6 +86,7 @@ import { useRouter } from 'vue-router'
 import { LanguageService } from '../data/services/LanguageService.js'
 import { LocalStorageService } from '../data/storage/LocalStorageService.js'
 import { getLearningRepository } from '../data/repositories/RepositoryFactory.js';
+import Header from '../components/vHeader.vue';
 
 import Badge from '../components/Badge.vue'
 import Card from '../components/Card.vue'
@@ -93,7 +95,8 @@ export default {
     name: 'Inicio',
     components: {
         Badge,
-        Card
+        Card,
+        Header
     },
     setup() {
         const authStore = useAuthStore()

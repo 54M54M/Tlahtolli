@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', {
     getters: {
         isAuthenticated: (state) => !!state.user,
         hasSelectedLanguage: (state) => !!state.selectedLanguage,
-        isLanguageReady: (state) => state.isInitialized // Solo verificar inicialización
+        isLanguageReady: (state) => state.isInitialized
     },
 
     actions: {
@@ -20,7 +20,6 @@ export const useAuthStore = defineStore('auth', {
             const userRepo = new UserRepository()
             this.user = userRepo.getUser(1)
 
-            // Verificar si hay idioma guardado en localStorage
             const savedLanguage = localStorage.getItem('selectedLanguage')
             if (savedLanguage) {
                 this.selectedLanguage = savedLanguage
@@ -46,7 +45,6 @@ export const useAuthStore = defineStore('auth', {
             this.isNewUser = false
             localStorage.setItem('selectedLanguage', languageCode)
 
-            // Actualizar el idioma actual del usuario
             if (this.user) {
                 const userRepo = new UserRepository()
                 userRepo.switchLanguage(1, languageCode)
@@ -54,7 +52,6 @@ export const useAuthStore = defineStore('auth', {
             console.log('Language set to:', languageCode)
         },
 
-        // Método para inicializar el estado desde localStorage
         initialize() {
             try {
                 const savedLanguage = localStorage.getItem('selectedLanguage')
@@ -69,8 +66,26 @@ export const useAuthStore = defineStore('auth', {
                 console.log('Auth store initialized successfully')
             } catch (error) {
                 console.error('Error initializing auth store:', error)
-                this.isInitialized = true // Marcar como inicializado incluso con error
+                this.isInitialized = true
             }
+        },
+
+        // 🆕 NUEVO: Método para refrescar datos del usuario
+        refreshUser() {
+            const userRepo = new UserRepository()
+            this.user = userRepo.getUser(1)
+            console.log('✅ Usuario actualizado en store:', {
+                xp: this.user.xp,
+                level: this.user.level,
+                totalXP: this.user.totalXP
+            })
+        },
+
+        // 🆕 NUEVO: Método para agregar XP y actualizar el estado
+        addXP(amount) {
+            const userRepo = new UserRepository()
+            userRepo.addXP(1, amount)
+            this.refreshUser() // Refrescar después de agregar XP
         }
     },
 
