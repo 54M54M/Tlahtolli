@@ -128,7 +128,7 @@ const hasAccessToDictionary = computed(() => {
 const writingSystemInfo = computed(() => {
     const languageInfo = languageService.getLanguageInfo(selectedLanguage.value);
     const writingSystemNames = {
-        'nhce': 'Silabario',
+        'nhce': 'Alfabeto',
         'tkoc': 'Alfabeto',
     };
     return {

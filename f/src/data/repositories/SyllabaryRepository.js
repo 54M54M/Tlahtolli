@@ -12,7 +12,7 @@ export class SyllabaryRepository {
         // Sistema SILABARIO para Náhuatl Central
         this.writingSystems.set('nhce', 'syllabary');
         this.writingSystemInfo.set('syllabary', {
-            name: 'Silabario',
+            name: 'alfabeto',
             description: 'Con base en la norma escritura según el INALI',
             notes: [
                 'Algunas combinaciones [consonante - vocal] no existen o no se encuentran facilmente en el idioma',
@@ -30,7 +30,7 @@ export class SyllabaryRepository {
         // Sistema ALFABETO para Teenek Occidental
         this.writingSystems.set('tkoc', 'alphabet');
         this.writingSystemInfo.set('alphabet', {
-            name: 'Alfabéto',
+            name: 'alfabéto',
             description: 'Con base en la norma escritura según el INALI',
             notes: [
                 'Oclusión glotal representada con apostrofe (ʼ)',
