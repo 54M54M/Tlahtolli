@@ -1,9 +1,9 @@
 <template>
-    <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:py-8 md:pt-1">
+    <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:pt-1">
 
         <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3" />
 
-        <div class="w-full mb-12 pt-[1%]">
+        <div class="w-full mb-16 md:mb-4 pt-[1%]">
             <div class="space-y-4">
                 <!-- Niveles desbloqueados -->
                 <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/nivel/' + level.id"
@@ -87,6 +87,7 @@ import { LanguageService } from '../data/services/LanguageService.js'
 import { LocalStorageService } from '../data/storage/LocalStorageService.js'
 import { getLearningRepository } from '../data/repositories/RepositoryFactory.js';
 import Header from '../components/vHeader.vue';
+import { useEnergyStore } from '../stores/energy'
 
 import Badge from '../components/Badge.vue'
 import Card from '../components/Card.vue'
@@ -100,6 +101,7 @@ export default {
     },
     setup() {
         const authStore = useAuthStore()
+        const energyStore = useEnergyStore()
         const router = useRouter()
         const learningRepo = getLearningRepository();
         const languageService = new LanguageService()
@@ -145,10 +147,16 @@ export default {
             router.push('/select-language')
         }
 
-        onMounted(() => {
+        onMounted(async () => {
             if (!authStore.selectedLanguage) {
                 router.push('/select-language')
             } else {
+                // Inicializar energía PRIMERO
+                const userId = authStore.user?.id || 1
+                await energyStore.initializeEnergy(userId)
+                // console.log('⚡ Energía inicializada en HomeView:', energyStore.currentEnergy)
+
+                // Luego cargar niveles
                 loadLevels()
             }
         })
@@ -162,8 +170,9 @@ export default {
             unlockedLevels,
             lockedLevels,
             currentLanguageData,
+            energyStore,
             goToLanguageSelection,
-            loadLevels
+            loadLevels,
         }
     },
     methods: {

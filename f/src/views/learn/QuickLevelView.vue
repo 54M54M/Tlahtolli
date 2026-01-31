@@ -382,7 +382,7 @@ export default {
                     }
 
                     // Mostrar feedback primero
-                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    const streakBonus = energyResult.streak >= 3 ? '' : '';
                     if (this.isAnswerCorrect) {
                         this.showFeedback(
                             '¡Correcto!',
@@ -405,7 +405,7 @@ export default {
 
                 // Mostrar feedback normal si hay energía
                 if (this.isAnswerCorrect) {
-                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    const streakBonus = energyResult.streak >= 3 ? '' : '';
                     this.showFeedback(
                         '¡Correcto!',
                         (this.currentExercise.explanation || 'Buen trabajo.') + streakBonus

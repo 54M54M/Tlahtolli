@@ -1,5 +1,5 @@
 <template>
-    <div class="md:mt-[70px] mt-[35px] mb-[-15px]">
+    <div class="md:mt-[70px] mt-[35px] md:mb-[-15px]">
         <Header variant="levels" :title="currentLevel.titleNative" :subtitle="currentLevel.titleSpanish"
             @show-all="handleShowAll" :color="currentLevel.color" />
 
@@ -122,7 +122,7 @@
 
     </div>
     <!-- Componente "¿QUÉ SIGUE DESPUÉS?" -->
-    <NextStage :current-level-id="id" :language="authStore.selectedLanguage" />
+    <NextStage :current-level-id="id" :language="authStore.selectedLanguage"/>
 </template>
 
 <script>

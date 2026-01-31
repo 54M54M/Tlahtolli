@@ -9,7 +9,7 @@
             @select-long-vowel="selectLongVowel" @select-alphabet-letter="selectAlphabetLetter" class="mb-7" />
 
         <!-- ========== PANEL DE INFORMACIÓN DEL SISTEMA DE ESCRITURA ========== -->
-        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6 mb-6">
+        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6 mb-14 md:mb-[-30px]">
             <div class="text-slate-300">
                 <!-- Encabezado -->
                 <div class="text-center mb-6">

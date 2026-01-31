@@ -15,7 +15,7 @@
                 class="hidden md:block border-r border-[#374151]/90 fixed h-full z-20 w-60 bg-[#0A2136] shadow-none" />
 
             <!-- Main Content Area -->
-            <main class="flex-grow pt-16 pb-20 md:pt-8 md:pb-4 relative z-10 w-full" :class="{
+            <main class="flex-grow pt-16 pb-20 md:pt-8 md:pb-4 mb-2 relative z-10 w-full" :class="{
                 'md:ml-0 lg:mr-0': isLanguageSelectionRoute || isLessonRoute,
                 'md:ml-60 lg:mr-96': !isLanguageSelectionRoute && !isLessonRoute
             }">

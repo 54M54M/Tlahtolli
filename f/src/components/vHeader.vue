@@ -12,10 +12,10 @@
         class="py-3 px-4 text-white w-full top-0 left-0 md:left-[-70px] right-20 z-20">
         <div class="max-w-xl mx-auto flex items-center">
             <!-- Izquierda -->
-            <div class="hidden md:block mr-8">
+            <div class="mr-2">
                 <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105"
                     :style="{
-                        backgroundColor: currentLanguageData.color + '40', border: `2px solid ${currentLanguageData.color}`
+                        backgroundColor: currentLanguageData.color + '40',
                     }" @click="$emit('show-all')">
                     <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         :style="{ backgroundColor: currentLanguageData.color }">
@@ -26,11 +26,11 @@
 
             <!-- Centro -->
             <div class="flex-grow flex justify-center">
-                <h1 class="md:text-xl text-[19.6px] font-bold">{{ title }}</h1>
+                <h1 class="md:text-xl text-[18px] truncate font-semibold">{{ title }}</h1>
             </div>
 
             <!-- Derecha -->
-            <div class="ml-8">
+            <div class="ml-2">
                 <!-- En la sección de energía -->
                 <div class="flex items-center px-3 py-1 mt-2 rounded-full transition-all duration-300 hover:scale-105 relative bg-[#FFC10A40]"
                     @click="$emit('energy-click')">
@@ -80,25 +80,48 @@
 
                 <div class="text-center flex-1 max-w-[200px] md:max-w-[315px] mx-4">
                     <h2 class="text-sm font-semibold truncate">{{ subtitle }}</h2>
-                    <h1 class="text-lg font-bold truncate md:">
+                    <h1 class="text-lg font-bold truncate">
                         {{ title }}
                     </h1>
                 </div>
 
-                <!-- Badge dinámico para versión default -->
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105"
-                    :style="{
-                        backgroundColor: currentLanguageData.color + '40',
-                        border: `2px solid ${currentLanguageData.color}`
-                    }" @click="$emit('show-all')">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        :style="{ backgroundColor: currentLanguageData.color }">
-                        {{ currentLanguageData.flag }}
+                <div>
+                    <!-- Desktop: Muestra badge de energía -->
+                    <div v-if="!isMobile"
+                        class="flex items-center px-3 py-1 mt-2 rounded-full transition-all duration-300 hover:scale-105 relative bg-[#FFC10A40]"
+                        @click="$emit('energy-click')">
+                        <div class="h-6 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            <svg width="16px" height="16px" viewBox="0 0 32 32" enable-background="new 0 0 32 32"
+                                version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <path
+                                    d="M26.8,11.5l-12,19C14.7,30.8,14.3,31,14,31c-0.1,0-0.2,0-0.3-0.1c-0.4-0.2-0.7-0.6-0.6-1.1L14.8,17H6    c-0.4,0-0.7-0.2-0.9-0.5c-0.2-0.3-0.1-0.7,0.1-1l10-14c0.3-0.4,0.7-0.5,1.1-0.4C16.7,1.2,17,1.6,17,2v8h9c0.4,0,0.7,0.2,0.9,0.5    C27,10.8,27,11.2,26.8,11.5z"
+                                    fill="#FFC10A" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-semibold ml-1" :style="{ color: '#FFC10A' }">
+                            {{ energyCurrent }}
+                        </span>
                     </div>
-                    <span v-if="!isMobile" class="text-xs font-semibold" :style="{ color: currentLanguageData.color }">
-                        {{ currentLanguageData.name }}
-                    </span>
+
+                    <!-- Mobile: Muestra badge de lengua -->
+                    <div v-else
+                        class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105"
+                        :style="{
+                            backgroundColor: currentLanguageData.color + '40',
+                            border: `2px solid ${currentLanguageData.color}`
+                        }" @click="$emit('show-all')">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                            :style="{ backgroundColor: currentLanguageData.color }">
+                            {{ currentLanguageData.flag }}
+                        </div>
+                        <span v-if="!isMobile" class="text-xs font-semibold"
+                            :style="{ color: currentLanguageData.color }">
+                            {{ currentLanguageData.name }}
+                        </span>
+                    </div>
                 </div>
+
             </div>
 
         </div>
@@ -270,9 +293,9 @@ export default {
         energyTooltip() {
             const tooltips = [
                 `Energía: ${this.energyCurrent}/${this.energyMax}⚡`,
-                `Consumo: -1⚡ por ejercicio`,
-                `Acierto: +1-2⚡ bonus`,
-                `Racha (${this.energyStreak}): +3-4⚡ bonus`
+                `Consumo: -1 por ejercicio`,
+                `Acierto: +1-2 bonus`,
+                `Racha (${this.energyStreak}): +3-4 bonus`
             ];
             return tooltips.join('\n');
         },
