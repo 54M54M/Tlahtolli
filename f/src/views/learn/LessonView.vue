@@ -744,7 +744,7 @@ export default {
                     }
 
                     // Mostrar feedback primero, luego el modal de energía
-                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    const streakBonus = energyResult.streak >= 3 ? '' : '';
                     if (this.isAnswerCorrect) {
                         this.showFeedback(
                             '¡Buen trabajo!',
@@ -767,7 +767,7 @@ export default {
 
                 // Mostrar feedback normal si hay energía suficiente
                 if (this.isAnswerCorrect) {
-                    const streakBonus = energyResult.streak >= 3 ? ' ¡Racha activa! 🔥' : '';
+                    const streakBonus = energyResult.streak >= 3 ? '' : '';
                     this.showFeedback(
                         '¡Buen trabajo!',
                         (this.currentExercise.explanation || 'Respuesta correcta.') + streakBonus
@@ -812,7 +812,7 @@ export default {
 
             // Si hay suficiente energía, iniciar lección
             if (currentEnergy >= this.requiredEnergyForLesson) {
-                console.log('✅ Energía suficiente, iniciando timer de lección...');
+                console.log('Energía suficiente, iniciando timer de lección...');
                 this.startLesson();
                 return true;
             }

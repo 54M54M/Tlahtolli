@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-8 p-6 mb-[73px] md:mb-[0px] rounded-xl border border-[#374151] shadow-sm">
+    <div class="md:mt-8 mt-4 px-6 pt-3 pb-3 mb-[65px] md:mb-[0px] rounded-xl border border-[#374151] shadow-sm">
         <div class="text-center">
             <!-- Información del siguiente nivel -->
             <div v-if="nextLevel" class="mb-1 pb-4 px-4 shadow-sm">

@@ -1,5 +1,77 @@
 # CHANGELOG
 
+## [3.5.2] - 2026-01-31 - Ajustes de UI y mejoras en el flujo de energía
+
+### Added
+
+- **NoEnergyModal.vue**
+  - Modal adaptativo rediseñado con conteo dinámico de botones (ref + setup)
+  - Clases de grid condicionales
+  - Nuevos emits para flujo fino (proceed-without-energy)
+  - Mejora de experiencia en desktop (iconos redimensionados y estilos responsive)
+
+- **vHeader.vue**
+  - Badge de energía para escritorio (SVG)
+  - Render distinto para desktop/mobile
+  - Mejora visual y datos reactivos desde el store de energía
+
+- **HomeView.vue**
+  - Integración de useEnergyStore
+  - Inicialización de energía al montar la vista antes de cargar niveles
+
+### Changed
+
+- **NextStage.vue**
+  - Ajustes de espaciado/padding
+  - Mejoras en clases para responsividad
+
+- **NoEnergyModal.vue**
+  - Correcciones de copy (acentos)
+  - Reorganización del layout (botón principal arriba; botones inferiores en grid condicional)
+  - Microajustes de textos y mensajes informativos
+
+- **vHeader.vue**
+  - Reordenamiento y ajustes de tamaños
+  - Truncamientos y layout mejorados
+  - Separación clara de comportamiento desktop/mobile
+
+- **Layout.vue**
+  - Pequeño ajuste de spacing en el main (se añadió mb-2)
+
+- **HomeView.vue**
+  - Ajustes de márgenes/espaciado
+  - Retorno de energyStore en setup
+
+- **SyllabaryContent.vue**
+  - Ajuste de margen inferior del panel informativo
+
+- **LessonView.vue**
+  - Ajustes de mensajes/console logs
+  - Simplificación de streakBonus para evitar texto duplicado en feedback
+
+- **LevelView.vue**
+  - Correcciones de márgenes
+  - Formateo del componente NextStage
+
+- **QuickLevelView.vue**
+  - Sincronización con la lógica de energía (igual que LessonView)
+  - Simplificación de streakBonus
+  - Reordenamiento de inicialización
+
+### Fixed
+
+- **NoEnergyModal.vue**
+  - Corrección en la lógica de conteo y visibilidad de botones
+  - Manejo de Escape y limpieza de listeners
+  - Corrección de textos ("energía")
+
+- **HomeView.vue**
+  - Asegurada inicialización de energía antes de cargar niveles para evitar condiciones de carrera
+
+- **LessonView.vue y QuickLevelView.vue**
+  - Ajustes en flujo de energía y mensajes de feedback para evitar inconsistencias visuales
+  - Limpieza de logs innecesarios
+
 ## [3.5.1] - 2025-12-18 - Mejoras en Sistema de Energía
 
 ### Added
