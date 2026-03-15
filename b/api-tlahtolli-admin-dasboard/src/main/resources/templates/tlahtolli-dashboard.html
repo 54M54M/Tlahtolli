@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tlahtolli · Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --jade: #00C896;
+      --amber: #F5A623;
+      --coral: #FF6B5B;
+      --ink: #0D0F14;
+      --panel: #151820;
+      --border: #252A35;
+      --muted: #5A6175;
+      --text: #E8ECF4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background-color: var(--ink);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--jade);
+    }
+
+    .logo span {
+      color: var(--text);
+    }
+
+    .logo p {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    nav {
+      flex: 1;
+      padding: 16px 12px;
+    }
+
+    .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .nav-label {
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 0 12px;
+      margin-bottom: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 12px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      transition: background .15s, color .15s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: rgba(0, 200, 150, .12);
+      color: var(--jade);
+    }
+
+    .nav-btn .icon {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer p {
+      font-size: .7rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Main ── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .badge-oracle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .7rem;
+      font-family: 'Space Mono', monospace;
+      color: var(--muted);
+      background: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--jade);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    /* ── Content ── */
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+    }
+
+    /* Tabs */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Stat cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent, var(--jade));
+    }
+
+    .stat-card .label {
+      font-size: .7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-top: 8px;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-card .sub {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h3 {
+      font-size: .95rem;
+      font-weight: 700;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .btn:hover {
+      opacity: .85;
+    }
+
+    .btn-primary {
+      background: var(--jade);
+      color: var(--ink);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(255, 107, 91, .15);
+      color: var(--coral);
+      border: 1px solid rgba(255, 107, 91, .3);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: .72rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, .025);
+    }
+
+    tbody td {
+      padding: 11px 16px;
+      vertical-align: middle;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .68rem;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .chip-green {
+      background: rgba(0, 200, 150, .15);
+      color: var(--jade);
+    }
+
+    .chip-amber {
+      background: rgba(245, 166, 35, .15);
+      color: var(--amber);
+    }
+
+    .chip-red {
+      background: rgba(255, 107, 91, .15);
+      color: var(--coral);
+    }
+
+    .chip-blue {
+      background: rgba(80, 140, 255, .15);
+      color: #7EB3FF;
+    }
+
+    /* Search / filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .input-search {
+      flex: 1;
+      max-width: 320px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'Syne', sans-serif;
+      font-size: .83rem;
+      outline: none;
+    }
+
+    .input-search:focus {
+      border-color: var(--jade);
+    }
+
+    .input-search::placeholder {
+      color: var(--muted);
+    }
+
+    select.filter-sel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: .83rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select.filter-sel:focus {
+      border-color: var(--jade);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 520px;
+      max-width: 95vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      animation: slideUp .2s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .modal h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group.full {
+      grid-column: 1/-1;
+    }
+
+    label {
+      font-size: .72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-family: 'Space Mono', monospace;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=number],
+    select.form-sel {
+      background: var(--ink);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: .85rem;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus,
+    select.form-sel:focus {
+      border-color: var(--jade);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--jade);
+      color: var(--ink);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: .85rem;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .25s, opacity .25s;
+      z-index: 200;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: .8rem;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--jade);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+
+    .empty p {
+      font-size: .9rem;
+      margin-top: 8px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .page-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: .78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      transition: all .15s;
+    }
+
+    .page-btn:hover,
+    .page-btn.active {
+      border-color: var(--jade);
+      color: var(--jade);
+    }
+
+    /* Config panel */
+    .config-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .config-panel h3 {
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .config-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .config-row .form-group {
+      min-width: 180px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+  <aside id="sidebar">
+    <div class="logo">
+      <h1>Tlahtolli<span>·</span></h1>
+      <p>Admin Dashboard</p>
+    </div>
+    <nav>
+      <div class="nav-section">
+        <p class="nav-label">Resumen</p>
+        <button class="nav-btn active" onclick="showTab('overview')">
+          <span class="icon">◈</span> Overview
+        </button>
+      </div>
+      <div class="nav-section">
+        <p class="nav-label">Catálogos</p>
+        <button class="nav-btn" onclick="showTab('languages')">
+          <span class="icon">🌐</span> Idiomas
+        </button>
+        <button class="nav-btn" onclick="showTab('users')">
+          <span class="icon">👤</span> Usuarios
+        </button>
+        <button class="nav-btn" onclick="showTab('vocabulary')">
+          <span class="icon">📖</span> Vocabulario
+        </button>
+        <button class="nav-btn" onclick="showTab('achievements')">
+          <span class="icon">🏆</span> Logros
+        </button>
+      </div>
+      <div class="nav-section">
+        <p class="nav-label">Contenido</p>
+        <button class="nav-btn" onclick="showTab('levels')">
+          <span class="icon">📊</span> Niveles
+        </button>
+        <button class="nav-btn" onclick="showTab('units')">
+          <span class="icon">📦</span> Unidades
+        </button>
+        <button class="nav-btn" onclick="showTab('lessons')">
+          <span class="icon">📝</span> Lecciones
+        </button>
+        <button class="nav-btn" onclick="showTab('exercises')">
+          <span class="icon">✏️</span> Ejercicios
+        </button>
+      </div>
+      <div class="nav-section">
+        <p class="nav-label">Actividad</p>
+        <button class="nav-btn" onclick="showTab('lesson_history')">
+          <span class="icon">📋</span> Historial
+        </button>
+        <button class="nav-btn" onclick="showTab('user_stats')">
+          <span class="icon">📈</span> Estadísticas
+        </button>
+      </div>
+      <div class="nav-section">
+        <p class="nav-label">Sistema</p>
+        <button class="nav-btn" onclick="showTab('config')">
+          <span class="icon">⚙️</span> Configuración
+        </button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <p id="conn-status">● Desconectado</p>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+  <div id="main">
+    <header>
+      <h2 id="page-title">Overview</h2>
+      <div class="badge-oracle">
+        <span class="dot"></span>
+        Oracle XE · <span id="db-host">localhost:1521</span>
+      </div>
+    </header>
+
+    <div id="content">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="tab-pane active" id="tab-overview">
+        <div class="stats-grid" id="stats-overview">
+          <div class="stat-card" style="--accent:var(--jade)">
+            <p class="label">Usuarios</p>
+            <p class="value" id="stat-users">—</p>
+            <p class="sub">Registrados totales</p>
+          </div>
+          <div class="stat-card" style="--accent:var(--amber)">
+            <p class="label">Idiomas</p>
+            <p class="value" id="stat-langs">—</p>
+            <p class="sub">Disponibles</p>
+          </div>
+          <div class="stat-card" style="--accent:#7EB3FF">
+            <p class="label">Ejercicios</p>
+            <p class="value" id="stat-exercises">—</p>
+            <p class="sub">En biblioteca</p>
+          </div>
+          <div class="stat-card" style="--accent:var(--coral)">
+            <p class="label">Vocabulario</p>
+            <p class="value" id="stat-vocab">—</p>
+            <p class="sub">Palabras totales</p>
+          </div>
+          <div class="stat-card" style="--accent:#B07EFF">
+            <p class="label">Logros</p>
+            <p class="value" id="stat-ach">—</p>
+            <p class="sub">Disponibles</p>
+          </div>
+          <div class="stat-card" style="--accent:var(--jade)">
+            <p class="label">Lecciones</p>
+            <p class="value" id="stat-lessons">—</p>
+            <p class="sub">Definidas en contenido</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Últimas lecciones</h3>
+            <button class="btn btn-ghost btn-sm" onclick="loadTab('lesson_history')">Ver todas →</button>
+          </div>
+          <div id="recent-lessons-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── IDIOMAS ── -->
+      <div class="tab-pane" id="tab-languages">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar idioma…"
+            oninput="filterTable('languages-table', this.value)" />
+          <button class="btn btn-primary" onclick="openModal('modal-language')">+ Nuevo idioma</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Idiomas</h3>
+          </div>
+          <div id="languages-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── USUARIOS ── -->
+      <div class="tab-pane" id="tab-users">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar usuario…"
+            oninput="filterTable('users-table', this.value)" />
+          <button class="btn btn-primary" onclick="openModal('modal-user')">+ Nuevo usuario</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Usuarios</h3>
+          </div>
+          <div id="users-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VOCABULARIO ── -->
+      <div class="tab-pane" id="tab-vocabulary">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar palabra…"
+            oninput="filterTable('vocab-table', this.value)" />
+          <select class="filter-sel" id="vocab-lang-filter" onchange="loadVocabulary()">
+            <option value="">Todos los idiomas</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModal('modal-vocab')">+ Nueva palabra</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Vocabulario</h3>
+          </div>
+          <div id="vocab-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LOGROS ── -->
+      <div class="tab-pane" id="tab-achievements">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar logro…"
+            oninput="filterTable('ach-table', this.value)" />
+          <button class="btn btn-primary" onclick="openModal('modal-achievement')">+ Nuevo logro</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Logros</h3>
+          </div>
+          <div id="achievements-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── NIVELES ── -->
+      <div class="tab-pane" id="tab-levels">
+        <div class="filter-bar">
+          <select class="filter-sel" id="levels-lang-filter" onchange="loadLevels()">
+            <option value="">Todos los idiomas</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModal('modal-level')">+ Nuevo nivel</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Niveles</h3>
+          </div>
+          <div id="levels-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── UNIDADES ── -->
+      <div class="tab-pane" id="tab-units">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar unidad…"
+            oninput="filterTable('units-table', this.value)" />
+          <button class="btn btn-primary" onclick="openModal('modal-unit')">+ Nueva unidad</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Unidades</h3>
+          </div>
+          <div id="units-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LECCIONES ── -->
+      <div class="tab-pane" id="tab-lessons">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar lección…"
+            oninput="filterTable('lessons-table', this.value)" />
+          <select class="filter-sel" id="lessons-unit-filter" onchange="loadLessons()">
+            <option value="">Todas las unidades</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModal('modal-lesson')">+ Nueva lección</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Lecciones</h3>
+          </div>
+          <div id="lessons-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EJERCICIOS ── -->
+      <div class="tab-pane" id="tab-exercises">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar ejercicio…"
+            oninput="filterTable('ex-table', this.value)" />
+          <select class="filter-sel" id="ex-type-filter" onchange="loadExercises()">
+            <option value="">Todos los tipos</option>
+            <option>multiple_choice</option>
+            <option>fill_blank</option>
+            <option>translation</option>
+            <option>listening</option>
+            <option>speaking</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModal('modal-exercise')">+ Nuevo ejercicio</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Ejercicios</h3>
+          </div>
+          <div id="exercises-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HISTORIAL ── -->
+      <div class="tab-pane" id="tab-lesson_history">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar usuario…"
+            oninput="filterTable('hist-table', this.value)" />
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Historial de lecciones</h3>
+          </div>
+          <div id="lesson_history-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ESTADÍSTICAS ── -->
+      <div class="tab-pane" id="tab-user_stats">
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Estadísticas por usuario</h3>
+          </div>
+          <div id="user_stats-body">
+            <div class="loading"><span class="spinner"></span> Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CONFIG ── -->
+      <div class="tab-pane" id="tab-config">
+        <div class="config-panel">
+          <h3>Conexión Oracle</h3>
+          <div class="config-row">
+            <div class="form-group">
+              <label>Host</label>
+              <input type="text" id="cfg-host" value="localhost" />
+            </div>
+            <div class="form-group">
+              <label>Puerto</label>
+              <input type="number" id="cfg-port" value="1521" />
+            </div>
+            <div class="form-group">
+              <label>SID / Service</label>
+              <input type="text" id="cfg-sid" value="XE" />
+            </div>
+            <div class="form-group">
+              <label>Usuario</label>
+              <input type="text" id="cfg-user" value="System" />
+            </div>
+            <div class="form-group">
+              <label>Contraseña</label>
+              <input type="text" id="cfg-pass" value="8520" />
+            </div>
+            <div class="form-group" style="align-self:flex-end">
+              <button class="btn btn-primary" onclick="saveConfig()">Guardar y probar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-panel">
+          <h3>API Backend</h3>
+          <div class="config-row">
+            <div class="form-group" style="min-width:280px">
+              <label>Base URL</label>
+              <input type="text" id="cfg-api" value="http://localhost:7575/api" />
+            </div>
+            <div class="form-group" style="align-self:flex-end">
+              <button class="btn btn-ghost" onclick="testConnection()">Test conexión</button>
+            </div>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:12px;font-family:'Space Mono',monospace"
+            id="conn-detail">
+            → Apunta al Spring Boot backend que conecta con Oracle
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div>
+
+  <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+
+  <!-- Language -->
+  <div class="modal-overlay" id="modal-language">
+    <div class="modal">
+      <h3 id="modal-language-title">Nuevo idioma</h3>
+      <input type="hidden" id="lang-id" />
+      <div class="form-grid">
+        <div class="form-group"><label>Código</label><input type="text" id="lang-code" placeholder="NAH"
+            maxlength="10" /></div>
+        <div class="form-group"><label>Nombre</label><input type="text" id="lang-name" placeholder="Náhuatl" /></div>
+        <div class="form-group"><label>Nombre nativo</label><input type="text" id="lang-native" placeholder="Nāhuatl" />
+        </div>
+        <div class="form-group"><label>Color (hex)</label><input type="text" id="lang-color" placeholder="#00C896" />
+        </div>
+        <div class="form-group"><label>Bandera (emoji)</label><input type="text" id="lang-flag" placeholder="🇲🇽" />
+        </div>
+        <div class="form-group"><label>Familia</label><input type="text" id="lang-family" placeholder="Uto-Aztecan" />
+        </div>
+        <div class="form-group full">
+          <label>Sistema de escritura</label>
+          <select class="form-sel" id="lang-ws">
+            <option value="alphabet">Alphabet</option>
+            <option value="syllabary">Syllabary</option>
+            <option value="logogram">Logogram</option>
+            <option value="abugida">Abugida</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-language')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveLanguage()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User -->
+  <div class="modal-overlay" id="modal-user">
+    <div class="modal">
+      <h3 id="modal-user-title">Nuevo usuario</h3>
+      <input type="hidden" id="user-id" />
+      <div class="form-grid">
+        <div class="form-group"><label>Username</label><input type="text" id="user-username" /></div>
+        <div class="form-group"><label>Nombre completo</label><input type="text" id="user-fullname" /></div>
+        <div class="form-group full"><label>Email</label><input type="email" id="user-email" /></div>
+        <div class="form-group"><label>Level</label><input type="number" id="user-level" value="1" min="1" /></div>
+        <div class="form-group"><label>XP</label><input type="number" id="user-xp" value="0" min="0" /></div>
+        <div class="form-group"><label>Streak</label><input type="number" id="user-streak" value="0" min="0" /></div>
+        <div class="form-group">
+          <label>Idioma actual</label>
+          <select class="form-sel" id="user-lang"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-user')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveUser()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vocabulary -->
+  <div class="modal-overlay" id="modal-vocab">
+    <div class="modal">
+      <h3>Nueva palabra</h3>
+      <input type="hidden" id="vocab-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Idioma</label>
+          <select class="form-sel" id="vocab-lang-id"></select>
+        </div>
+        <div class="form-group"><label>Palabra</label><input type="text" id="vocab-word" /></div>
+        <div class="form-group"><label>Traducción</label><input type="text" id="vocab-translation" /></div>
+        <div class="form-group"><label>Pronunciación</label><input type="text" id="vocab-pron" /></div>
+        <div class="form-group full"><label>Ejemplo</label><input type="text" id="vocab-example" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-vocab')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveVocabulary()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement -->
+  <div class="modal-overlay" id="modal-achievement">
+    <div class="modal">
+      <h3>Nuevo logro</h3>
+      <input type="hidden" id="ach-id" />
+      <div class="form-grid">
+        <div class="form-group full"><label>Título</label><input type="text" id="ach-title" /></div>
+        <div class="form-group full"><label>Descripción</label><input type="text" id="ach-desc" /></div>
+        <div class="form-group"><label>Icono</label><input type="text" id="ach-icon" placeholder="🏆" /></div>
+        <div class="form-group"><label>XP Recompensa</label><input type="number" id="ach-xp" value="0" /></div>
+        <div class="form-group"><label>Categoría</label><input type="text" id="ach-cat" /></div>
+        <div class="form-group">
+          <label>Rareza</label>
+          <select class="form-sel" id="ach-rarity">
+            <option>common</option>
+            <option>uncommon</option>
+            <option>rare</option>
+            <option>epic</option>
+            <option>legendary</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-achievement')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveAchievement()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level -->
+  <div class="modal-overlay" id="modal-level">
+    <div class="modal">
+      <h3>Nuevo nivel</h3>
+      <input type="hidden" id="level-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Idioma</label>
+          <select class="form-sel" id="level-lang-id"></select>
+        </div>
+        <div class="form-group"><label>Número de nivel</label><input type="number" id="level-num" min="1" /></div>
+        <div class="form-group"><label>Color</label><input type="text" id="level-color" placeholder="#00C896" /></div>
+        <div class="form-group"><label>Título</label><input type="text" id="level-title" /></div>
+        <div class="form-group"><label>Título nativo</label><input type="text" id="level-native" /></div>
+        <div class="form-group">
+          <label>Gratuito</label>
+          <select class="form-sel" id="level-free">
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-level')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveLevel()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unit -->
+  <div class="modal-overlay" id="modal-unit">
+    <div class="modal">
+      <h3>Nueva unidad</h3>
+      <input type="hidden" id="unit-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nivel</label>
+          <select class="form-sel" id="unit-level-id"></select>
+        </div>
+        <div class="form-group"><label>Número unidad</label><input type="number" id="unit-num" min="1" /></div>
+        <div class="form-group"><label>Color</label><input type="text" id="unit-color" placeholder="#F5A623" /></div>
+        <div class="form-group full"><label>Título</label><input type="text" id="unit-title" /></div>
+        <div class="form-group full"><label>Objetivo</label><input type="text" id="unit-obj" /></div>
+        <div class="form-group full"><label>Gramática</label><input type="text" id="unit-grammar" /></div>
+        <div class="form-group">
+          <label>Gratuita</label>
+          <select class="form-sel" id="unit-free">
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-unit')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveUnit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson -->
+  <div class="modal-overlay" id="modal-lesson">
+    <div class="modal">
+      <h3 id="modal-lesson-title">Nueva lección</h3>
+      <input type="hidden" id="lesson-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Unidad</label>
+          <select class="form-sel" id="lesson-unit-id"></select>
+        </div>
+        <div class="form-group"><label>Número de lección</label><input type="number" id="lesson-num" min="1" /></div>
+        <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" /></div>
+        <div class="form-group full"><label>Título</label><input type="text" id="lesson-title" /></div>
+        <div class="form-group full"><label>Descripción</label><input type="text" id="lesson-desc" /></div>
+        <div class="form-group">
+          <label>Gratuita</label>
+          <select class="form-sel" id="lesson-free">
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-lesson')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveLesson()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise -->
+  <div class="modal-overlay" id="modal-exercise">
+    <div class="modal">
+      <h3>Nuevo ejercicio</h3>
+      <input type="hidden" id="ex-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Lección</label>
+          <select class="form-sel" id="ex-lesson-id"></select>
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select class="form-sel" id="ex-type">
+            <option>multiple_choice</option>
+            <option>fill_blank</option>
+            <option>translation</option>
+            <option>listening</option>
+            <option>speaking</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Dificultad</label>
+          <select class="form-sel" id="ex-diff">
+            <option>easy</option>
+            <option>medium</option>
+            <option>hard</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Puntos</label><input type="number" id="ex-pts" value="10" /></div>
+        <div class="form-group full"><label>Pregunta</label><input type="text" id="ex-question" /></div>
+        <div class="form-group full"><label>Respuesta correcta</label><input type="text" id="ex-answer" /></div>
+        <div class="form-group full"><label>Explicación</label><input type="text" id="ex-explanation" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-exercise')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveExercise()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast"></div>
+
+  <!-- ═══════════════════════════ JS ═══════════════════════════ -->
+  <script>
+    /* ─────────────────────────────────────────────
+       CONFIG
+    ───────────────────────────────────────────── */
+    let API = localStorage.getItem('tlahtolli_api') || 'http://localhost:8080/api';
+    let languagesCache = [];
+    let lessonsCache = [];
+
+    function getAPI() { return API; }
+
+    /* ─────────────────────────────────────────────
+       UTILS
+    ───────────────────────────────────────────── */
+    function toast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = isError ? 'var(--coral)' : 'var(--jade)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+    });
+
+    function filterTable(tableId, query) {
+      const tbl = document.getElementById(tableId);
+      if (!tbl) return;
+      const q = query.toLowerCase();
+      tbl.querySelectorAll('tbody tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+
+    async function apiFetch(path, options = {}) {
+      try {
+        const res = await fetch(getAPI() + path, {
+          headers: { 'Content-Type': 'application/json', ...options.headers },
+          ...options
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.status === 204 ? null : res.json();
+      } catch (e) {
+        toast('Error: ' + e.message, true);
+        throw e;
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       TAB ROUTING
+    ───────────────────────────────────────────── */
+    const tabLoaders = {
+      overview: loadOverview,
+      languages: loadLanguages,
+      users: loadUsers,
+      vocabulary: loadVocabulary,
+      achievements: loadAchievements,
+      levels: loadLevels,
+      units: loadUnits,
+      lessons: loadLessons,
+      exercises: loadExercises,
+      lesson_history: loadHistory,
+      user_stats: loadStats,
+      config: loadConfig
+    };
+
+    const tabTitles = {
+      overview: 'Overview', languages: 'Idiomas', users: 'Usuarios',
+      vocabulary: 'Vocabulario', achievements: 'Logros', levels: 'Niveles',
+      units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
+      lesson_history: 'Historial', user_stats: 'Estadísticas', config: 'Configuración'
+    };
+
+    function showTab(name) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const pane = document.getElementById('tab-' + name);
+      if (pane) pane.classList.add('active');
+      const btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick')?.includes(`'${name}'`));
+      if (btn) btn.classList.add('active');
+      document.getElementById('page-title').textContent = tabTitles[name] || name;
+      if (tabLoaders[name]) tabLoaders[name]();
+    }
+
+    function loadTab(name) { showTab(name); }
+
+    /* ─────────────────────────────────────────────
+       OVERVIEW
+    ───────────────────────────────────────────── */
+    async function loadOverview() {
+      try {
+        const [users, langs, exercises, vocab, ach, lessons] = await Promise.all([
+          apiFetch('/users/count'),
+          apiFetch('/languages/count'),
+          apiFetch('/exercises/count'),
+          apiFetch('/vocabulary/count'),
+          apiFetch('/achievements/count'),
+          apiFetch('/lessons/count')
+        ]);
+        document.getElementById('stat-users').textContent = users?.count ?? users ?? '—';
+        document.getElementById('stat-langs').textContent = langs?.count ?? langs ?? '—';
+        document.getElementById('stat-exercises').textContent = exercises?.count ?? exercises ?? '—';
+        document.getElementById('stat-vocab').textContent = vocab?.count ?? vocab ?? '—';
+        document.getElementById('stat-ach').textContent = ach?.count ?? ach ?? '—';
+        document.getElementById('stat-lessons').textContent = lessons?.count ?? lessons ?? '—';
+      } catch { }
+
+      try {
+        const recent = await apiFetch('/lesson-history?size=8&sort=completedAt,desc');
+        const rows = (recent?.content ?? recent ?? []).slice(0, 8);
+        const body = document.getElementById('recent-lessons-body');
+        if (!rows.length) { body.innerHTML = `<div class="empty"><p>Sin datos</p></div>`; return; }
+        body.innerHTML = `<table id="rec-table">
+      <thead><tr><th>#</th><th>Usuario</th><th>Lección</th><th>Performance</th><th>XP</th><th>Fecha</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td><span style="color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem">${r.id}</span></td>
+        <td>${r.userId ?? r.user_id}</td>
+        <td>${r.lessonId ?? r.lesson_id ?? r.unitId ?? r.unit_id}</td>
+        <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
+        <td>+${r.earnedExp ?? r.earned_exp ?? 0}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       LANGUAGES
+    ───────────────────────────────────────────── */
+    async function loadLanguages() {
+      const body = document.getElementById('languages-body');
+      try {
+        const data = await apiFetch('/languages');
+        const rows = data?.content ?? data ?? [];
+        languagesCache = rows;
+        refreshLangDropdowns();
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="languages-table">
+      <thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Nativo</th><th>Familia</th><th>Escritura</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td><span class="chip chip-green">${r.code}</span></td>
+        <td>${r.langName ?? r.lang_name}</td>
+        <td style="color:var(--muted)">${r.nativeName ?? r.native_name ?? ''}</td>
+        <td style="color:var(--muted);font-size:.8rem">${r.family ?? ''}</td>
+        <td><span class="chip chip-blue">${r.writingSystem ?? r.writing_system ?? ''}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editLanguage(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('languages',${r.id},'loadLanguages')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editLanguage(r) {
+      document.getElementById('lang-id').value = r.id;
+      document.getElementById('lang-code').value = r.code;
+      document.getElementById('lang-name').value = r.langName ?? r.lang_name ?? '';
+      document.getElementById('lang-native').value = r.nativeName ?? r.native_name ?? '';
+      document.getElementById('lang-color').value = r.color ?? '';
+      document.getElementById('lang-flag').value = r.flag ?? '';
+      document.getElementById('lang-family').value = r.family ?? '';
+      document.getElementById('lang-ws').value = r.writingSystem ?? r.writing_system ?? 'alphabet';
+      document.getElementById('modal-language-title').textContent = 'Editar idioma';
+      openModal('modal-language');
+    }
+
+    async function saveLanguage() {
+      const id = document.getElementById('lang-id').value;
+      const payload = {
+        code: document.getElementById('lang-code').value,
+        langName: document.getElementById('lang-name').value,
+        nativeName: document.getElementById('lang-native').value,
+        color: document.getElementById('lang-color').value,
+        flag: document.getElementById('lang-flag').value,
+        family: document.getElementById('lang-family').value,
+        writingSystem: document.getElementById('lang-ws').value
+      };
+      try {
+        if (id) await apiFetch('/languages/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/languages', { method: 'POST', body: JSON.stringify(payload) });
+        toast(id ? 'Idioma actualizado ✓' : 'Idioma creado ✓');
+        closeModal('modal-language');
+        document.getElementById('lang-id').value = '';
+        document.getElementById('modal-language-title').textContent = 'Nuevo idioma';
+        loadLanguages();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       USERS
+    ───────────────────────────────────────────── */
+    async function loadUsers() {
+      const body = document.getElementById('users-body');
+      try {
+        const data = await apiFetch('/users');
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="users-table">
+      <thead><tr><th>ID</th><th>Username</th><th>Nombre</th><th>Email</th><th>Level</th><th>XP</th><th>Streak</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td><strong>${r.username}</strong></td>
+        <td>${r.fullName ?? r.full_name}</td>
+        <td style="color:var(--muted);font-size:.8rem">${r.email}</td>
+        <td><span class="chip chip-blue">Lv ${r.userLevel ?? r.user_level ?? 1}</span></td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--amber)">${(r.xp || 0).toLocaleString()}</td>
+        <td>${r.streak ?? 0} 🔥</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editUser(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('users',${r.id},'loadUsers')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editUser(r) {
+      document.getElementById('user-id').value = r.id;
+      document.getElementById('user-username').value = r.username;
+      document.getElementById('user-fullname').value = r.fullName ?? r.full_name ?? '';
+      document.getElementById('user-email').value = r.email;
+      document.getElementById('user-level').value = r.userLevel ?? r.user_level ?? 1;
+      document.getElementById('user-xp').value = r.xp ?? 0;
+      document.getElementById('user-streak').value = r.streak ?? 0;
+      document.getElementById('modal-user-title').textContent = 'Editar usuario';
+      openModal('modal-user');
+    }
+
+    async function saveUser() {
+      const id = document.getElementById('user-id').value;
+      const payload = {
+        username: document.getElementById('user-username').value,
+        fullName: document.getElementById('user-fullname').value,
+        email: document.getElementById('user-email').value,
+        userLevel: +document.getElementById('user-level').value,
+        xp: +document.getElementById('user-xp').value,
+        streak: +document.getElementById('user-streak').value,
+        currentLang: document.getElementById('user-lang').value || null
+      };
+      try {
+        if (id) await apiFetch('/users/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/users', { method: 'POST', body: JSON.stringify(payload) });
+        toast(id ? 'Usuario actualizado ✓' : 'Usuario creado ✓');
+        closeModal('modal-user');
+        document.getElementById('user-id').value = '';
+        document.getElementById('modal-user-title').textContent = 'Nuevo usuario';
+        loadUsers();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       VOCABULARY
+    ───────────────────────────────────────────── */
+    async function loadVocabulary() {
+      const body = document.getElementById('vocab-body');
+      const langId = document.getElementById('vocab-lang-filter')?.value || '';
+      const url = langId ? `/vocabulary?languageId=${langId}` : '/vocabulary';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="vocab-table">
+      <thead><tr><th>ID</th><th>Idioma</th><th>Palabra</th><th>Traducción</th><th>Pronunciación</th><th>Ejemplo</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
+        <td><strong>${r.word}</strong></td>
+        <td>${r.translation ?? ''}</td>
+        <td style="color:var(--muted);font-size:.8rem;font-family:'Space Mono',monospace">${r.pronunciation ?? ''}</td>
+        <td style="color:var(--muted);font-size:.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.example ?? ''}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editVocab(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('vocabulary',${r.id},'loadVocabulary')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editVocab(r) {
+      document.getElementById('vocab-id').value = r.id;
+      document.getElementById('vocab-lang-id').value = r.languageId ?? r.language_id;
+      document.getElementById('vocab-word').value = r.word;
+      document.getElementById('vocab-translation').value = r.translation ?? '';
+      document.getElementById('vocab-pron').value = r.pronunciation ?? '';
+      document.getElementById('vocab-example').value = r.example ?? '';
+      openModal('modal-vocab');
+    }
+
+    async function saveVocabulary() {
+      const id = document.getElementById('vocab-id').value;
+      const payload = {
+        languageId: +document.getElementById('vocab-lang-id').value,
+        word: document.getElementById('vocab-word').value,
+        translation: document.getElementById('vocab-translation').value,
+        pronunciation: document.getElementById('vocab-pron').value,
+        example: document.getElementById('vocab-example').value
+      };
+      try {
+        if (id) await apiFetch('/vocabulary/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/vocabulary', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Vocabulario guardado ✓');
+        closeModal('modal-vocab');
+        document.getElementById('vocab-id').value = '';
+        loadVocabulary();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       ACHIEVEMENTS
+    ───────────────────────────────────────────── */
+    const rarityChip = { common: 'chip-blue', uncommon: 'chip-green', rare: 'chip-amber', epic: 'chip-red', legendary: 'chip-red' };
+    async function loadAchievements() {
+      const body = document.getElementById('achievements-body');
+      try {
+        const data = await apiFetch('/achievements');
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="ach-table">
+      <thead><tr><th>ID</th><th>Título</th><th>Categoría</th><th>XP</th><th>Rareza</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td><span style="margin-right:6px">${r.icon ?? '🏆'}</span><strong>${r.title}</strong></td>
+        <td><span class="chip chip-blue">${r.category ?? ''}</span></td>
+        <td style="color:var(--amber);font-family:'Space Mono',monospace;font-size:.8rem">+${r.xpReward ?? r.xp_reward ?? 0}</td>
+        <td><span class="chip ${rarityChip[r.rarity] ?? 'chip-blue'}">${r.rarity ?? ''}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editAchievement(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('achievements',${r.id},'loadAchievements')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editAchievement(r) {
+      document.getElementById('ach-id').value = r.id;
+      document.getElementById('ach-title').value = r.title;
+      document.getElementById('ach-desc').value = r.description ?? '';
+      document.getElementById('ach-icon').value = r.icon ?? '';
+      document.getElementById('ach-xp').value = r.xpReward ?? r.xp_reward ?? 0;
+      document.getElementById('ach-cat').value = r.category ?? '';
+      document.getElementById('ach-rarity').value = r.rarity ?? 'common';
+      document.getElementById('ach-req').value = r.requirement ?? '';
+      openModal('modal-achievement');
+    }
+
+    async function saveAchievement() {
+      const id = document.getElementById('ach-id').value;
+      const payload = {
+        title: document.getElementById('ach-title').value,
+        description: document.getElementById('ach-desc').value,
+        icon: document.getElementById('ach-icon').value,
+        xpReward: +document.getElementById('ach-xp').value,
+        category: document.getElementById('ach-cat').value,
+        rarity: document.getElementById('ach-rarity').value,
+        requirement: document.getElementById('ach-req').value
+      };
+      try {
+        if (id) await apiFetch('/achievements/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/achievements', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Logro guardado ✓');
+        closeModal('modal-achievement');
+        document.getElementById('ach-id').value = '';
+        loadAchievements();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       LEVELS
+    ───────────────────────────────────────────── */
+    async function loadLevels() {
+      const body = document.getElementById('levels-body');
+      const langId = document.getElementById('levels-lang-filter')?.value || '';
+      const url = langId ? `/levels?languageId=${langId}` : '/levels';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="levels-table">
+      <thead><tr><th>ID</th><th>Idioma</th><th>#</th><th>Título</th><th>Nativo</th><th>Gratuito</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
+        <td style="font-family:'Space Mono',monospace">${r.levelNum ?? r.level_num}</td>
+        <td><strong>${r.title}</strong></td>
+        <td style="color:var(--muted)">${r.titleNative ?? r.title_native ?? ''}</td>
+        <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editLevel(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('levels',${r.id},'loadLevels')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editLevel(r) {
+      document.getElementById('level-id').value = r.id;
+      document.getElementById('level-lang-id').value = r.languageId ?? r.language_id;
+      document.getElementById('level-num').value = r.levelNum ?? r.level_num;
+      document.getElementById('level-color').value = r.color ?? '';
+      document.getElementById('level-title').value = r.title;
+      document.getElementById('level-native').value = r.titleNative ?? r.title_native ?? '';
+      document.getElementById('level-free').value = r.isFree ?? r.is_free ?? 0;
+      openModal('modal-level');
+    }
+
+    async function saveLevel() {
+      const id = document.getElementById('level-id').value;
+      const payload = {
+        languageId: +document.getElementById('level-lang-id').value,
+        levelNum: +document.getElementById('level-num').value,
+        color: document.getElementById('level-color').value,
+        title: document.getElementById('level-title').value,
+        titleNative: document.getElementById('level-native').value,
+        isFree: +document.getElementById('level-free').value
+      };
+      try {
+        if (id) await apiFetch('/levels/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/levels', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Nivel guardado ✓');
+        closeModal('modal-level');
+        document.getElementById('level-id').value = '';
+        loadLevels();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       UNITS
+    ───────────────────────────────────────────── */
+    async function loadUnits() {
+      const body = document.getElementById('units-body');
+      try {
+        const data = await apiFetch('/units');
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="units-table">
+      <thead><tr><th>ID</th><th>Nivel ID</th><th>#</th><th>Título</th><th>Objetivo</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.levelId ?? r.level_id}</td>
+        <td style="font-family:'Space Mono',monospace">${r.unitNum ?? r.unit_num}</td>
+        <td><strong>${r.title}</strong></td>
+        <td style="color:var(--muted);font-size:.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.objective ?? ''}</td>
+        <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editUnit(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('units',${r.id},'loadUnits')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editUnit(r) {
+      document.getElementById('unit-id').value = r.id;
+      document.getElementById('unit-level-id').value = r.levelId ?? r.level_id;
+      document.getElementById('unit-num').value = r.unitNum ?? r.unit_num;
+      document.getElementById('unit-color').value = r.color ?? '';
+      document.getElementById('unit-title').value = r.title;
+      document.getElementById('unit-obj').value = r.objective ?? '';
+      document.getElementById('unit-grammar').value = r.grammar ?? '';
+      document.getElementById('unit-free').value = r.isFree ?? r.is_free ?? 0;
+      openModal('modal-unit');
+    }
+
+    async function saveUnit() {
+      const id = document.getElementById('unit-id').value;
+      const payload = {
+        levelId: +document.getElementById('unit-level-id').value,
+        unitNum: +document.getElementById('unit-num').value,
+        color: document.getElementById('unit-color').value,
+        title: document.getElementById('unit-title').value,
+        objective: document.getElementById('unit-obj').value,
+        grammar: document.getElementById('unit-grammar').value,
+        isFree: +document.getElementById('unit-free').value
+      };
+      try {
+        if (id) await apiFetch('/units/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/units', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Unidad guardada ✓');
+        closeModal('modal-unit');
+        document.getElementById('unit-id').value = '';
+        loadUnits();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       LESSONS
+    ───────────────────────────────────────────── */
+
+    async function loadLessons() {
+      const body = document.getElementById('lessons-body');
+      const unitId = document.getElementById('lessons-unit-filter')?.value || '';
+      const url = unitId ? `/lessons?unitId=${unitId}` : '/lessons';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        lessonsCache = rows;
+        refreshLessonDropdowns();
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="lessons-table">
+      <thead><tr><th>ID</th><th>Unidad</th><th>#</th><th>Título</th><th>Descripción</th><th>XP</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.unitId ?? r.unit_id}</td>
+        <td style="font-family:'Space Mono',monospace">${r.lessonNum ?? r.lesson_num}</td>
+        <td><strong>${r.title}</strong></td>
+        <td style="color:var(--muted);font-size:.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.description ?? ''}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--amber)">+${r.xpReward ?? r.xp_reward ?? 10}</td>
+        <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editLesson(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('lessons',${r.id},'loadLessons')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editLesson(r) {
+      document.getElementById('lesson-id').value = r.id;
+      document.getElementById('lesson-unit-id').value = r.unitId ?? r.unit_id;
+      document.getElementById('lesson-num').value = r.lessonNum ?? r.lesson_num;
+      document.getElementById('lesson-xp').value = r.xpReward ?? r.xp_reward ?? 10;
+      document.getElementById('lesson-title').value = r.title;
+      document.getElementById('lesson-desc').value = r.description ?? '';
+      document.getElementById('lesson-free').value = r.isFree ?? r.is_free ?? 0;
+      document.getElementById('modal-lesson-title').textContent = 'Editar lección';
+      openModal('modal-lesson');
+    }
+
+    async function saveLesson() {
+      const id = document.getElementById('lesson-id').value;
+      const payload = {
+        unitId: +document.getElementById('lesson-unit-id').value,
+        lessonNum: +document.getElementById('lesson-num').value,
+        xpReward: +document.getElementById('lesson-xp').value,
+        title: document.getElementById('lesson-title').value,
+        description: document.getElementById('lesson-desc').value,
+        isFree: +document.getElementById('lesson-free').value
+      };
+      try {
+        if (id) await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/lessons', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Lección guardada ✓');
+        closeModal('modal-lesson');
+        document.getElementById('lesson-id').value = '';
+        document.getElementById('modal-lesson-title').textContent = 'Nueva lección';
+        loadLessons();
+      } catch { }
+    }
+
+    function refreshLessonDropdowns() {
+      const opts = '<option value="">— Selecciona lección —</option>' +
+        lessonsCache.map(l => `<option value="${l.id}">L${l.lessonNum ?? l.lesson_num} · ${l.title}</option>`).join('');
+      const el = document.getElementById('ex-lesson-id');
+      if (el) el.innerHTML = opts;
+
+      // también el filtro del tab
+      const filt = document.getElementById('lessons-unit-filter');
+      // ese lo poblamos desde unitsCache en loadLevelDropdown
+    }
+
+    /* ─────────────────────────────────────────────
+       EXERCISES
+    ───────────────────────────────────────────── */
+    async function loadExercises() {
+      const body = document.getElementById('exercises-body');
+      const type = document.getElementById('ex-type-filter')?.value || '';
+      const url = type ? `/exercises?type=${encodeURIComponent(type)}` : '/exercises';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="ex-table">
+      <thead><tr><th>ID</th><th>Lección</th><th>Tipo</th><th>Pregunta</th><th>Dificultad</th><th>Pts</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.lessonId ?? r.lesson_id ?? '—'}</td>
+        <td><span class="chip chip-blue">${r.exerciseType ?? r.exercise_type}</span></td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem">${r.question ?? ''}</td>
+        <td><span class="chip ${diffChip(r.difficulty)}">${r.difficulty ?? ''}</span></td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--jade)">${r.points ?? 10}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editExercise(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('exercises',${r.id},'loadExercises')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    function editExercise(r) {
+      document.getElementById('ex-id').value = r.id;
+      document.getElementById('ex-lesson-id').value = r.lessonId ?? r.lesson_id ?? '';
+      document.getElementById('ex-type').value = r.exerciseType ?? r.exercise_type ?? 'multiple_choice';
+      document.getElementById('ex-diff').value = r.difficulty ?? 'easy';
+      document.getElementById('ex-pts').value = r.points ?? 10;
+      document.getElementById('ex-question').value = r.question ?? '';
+      document.getElementById('ex-answer').value = r.answer ?? '';
+      document.getElementById('ex-explanation').value = r.explanation ?? '';
+      openModal('modal-exercise');
+    }
+
+    async function saveExercise() {
+      const id = document.getElementById('ex-id').value;
+      const payload = {
+        lessonId: +document.getElementById('ex-lesson-id').value,
+        exerciseType: document.getElementById('ex-type').value,
+        difficulty: document.getElementById('ex-diff').value,
+        points: +document.getElementById('ex-pts').value,
+        question: document.getElementById('ex-question').value,
+        answer: document.getElementById('ex-answer').value,
+        explanation: document.getElementById('ex-explanation').value
+      };
+      try {
+        if (id) await apiFetch('/exercises/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/exercises', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Ejercicio guardado ✓');
+        closeModal('modal-exercise');
+        document.getElementById('ex-id').value = '';
+        loadExercises();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       HISTORY & STATS
+    ───────────────────────────────────────────── */
+    async function loadHistory() {
+      const body = document.getElementById('lesson_history-body');
+      try {
+        const data = await apiFetch('/lesson-history?size=50&sort=completedAt,desc');
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="hist-table">
+      <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>Tiempo(s)</th><th>XP</th><th>¿Perfecto?</th><th>Fecha</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td>${r.userId ?? r.user_id}</td>
+        <td>${r.unitId ?? r.unit_id}</td>
+        <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
+        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.timeSeconds ?? r.time_seconds ?? 0}s</td>
+        <td style="color:var(--amber);font-family:'Space Mono',monospace;font-size:.8rem">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
+        <td>${(r.wasPerfect ?? r.was_perfect) ? '⭐' : '—'}</td>
+        <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    async function loadStats() {
+      const body = document.getElementById('user_stats-body');
+      try {
+        const data = await apiFetch('/user-stats');
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table>
+      <thead><tr><th>ID</th><th>Usuario</th><th>Idioma</th><th>Palabras</th><th>Lecciones</th><th>Días</th><th>Mejor racha</th><th>Minutos</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td>${r.userId ?? r.user_id}</td>
+        <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
+        <td style="font-family:'Space Mono',monospace">${r.wordsLearned ?? r.words_learned ?? 0}</td>
+        <td style="font-family:'Space Mono',monospace">${r.lessonsDone ?? r.lessons_done ?? 0}</td>
+        <td style="font-family:'Space Mono',monospace">${r.daysStudied ?? r.days_studied ?? 0}</td>
+        <td style="font-family:'Space Mono',monospace;color:var(--amber)">${r.bestStreak ?? r.best_streak ?? 0} 🔥</td>
+        <td style="font-family:'Space Mono',monospace">${r.totalMins ?? r.total_mins ?? 0}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    /* ─────────────────────────────────────────────
+       CONFIG
+    ───────────────────────────────────────────── */
+    function loadConfig() {
+      const saved = localStorage.getItem('tlahtolli_api');
+      if (saved) document.getElementById('cfg-api').value = saved;
+    }
+
+    function saveConfig() {
+      API = document.getElementById('cfg-api').value.trim();
+      localStorage.setItem('tlahtolli_api', API);
+      const host = document.getElementById('cfg-host').value;
+      const port = document.getElementById('cfg-port').value;
+      document.getElementById('db-host').textContent = `${host}:${port}`;
+      testConnection();
+    }
+
+    async function testConnection() {
+      try {
+        await apiFetch('/languages/count');
+        document.getElementById('conn-status').textContent = '● Conectado';
+        document.getElementById('conn-status').style.color = 'var(--jade)';
+        document.getElementById('conn-detail').textContent = '→ Conexión exitosa con la API ✓';
+        toast('Conexión exitosa ✓');
+      } catch {
+        document.getElementById('conn-status').textContent = '● Error';
+        document.getElementById('conn-status').style.color = 'var(--coral)';
+        document.getElementById('conn-detail').textContent = '→ No se pudo conectar. Verifica que Spring Boot esté corriendo.';
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       DELETE GENERIC
+    ───────────────────────────────────────────── */
+    async function deleteRecord(entity, id, reloadFn) {
+      if (!confirm(`¿Eliminar registro #${id} de ${entity}?`)) return;
+      try {
+        await apiFetch(`/${entity}/${id}`, { method: 'DELETE' });
+        toast('Eliminado ✓');
+        if (window[reloadFn]) window[reloadFn]();
+      } catch { }
+    }
+
+    /* ─────────────────────────────────────────────
+       HELPERS
+    ───────────────────────────────────────────── */
+    function getLangCode(id) {
+      const l = languagesCache.find(x => x.id === id || x.id === +id);
+      return l ? l.code : (id ?? '?');
+    }
+
+    function refreshLangDropdowns() {
+      const opts = '<option value="">— Selecciona —</option>' +
+        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+      ['vocab-lang-id', 'level-lang-id', 'user-lang'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = opts;
+      });
+      const filt = document.getElementById('vocab-lang-filter');
+      if (filt) filt.innerHTML = '<option value="">Todos los idiomas</option>' +
+        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+      const levFilt = document.getElementById('levels-lang-filter');
+      if (levFilt) levFilt.innerHTML = '<option value="">Todos los idiomas</option>' +
+        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+      loadLevelDropdown();
+    }
+
+    async function loadLevelDropdown() {
+      try {
+        const data = await apiFetch('/levels');
+        const rows = data?.content ?? data ?? [];
+        const opts = '<option value="">— Selecciona nivel —</option>' +
+          rows.map(l => `<option value="${l.id}">Lv${l.levelNum ?? l.level_num} · ${l.title}</option>`).join('');
+        ['unit-level-id'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.innerHTML = opts;
+        });
+      } catch { }
+      try {
+        const data = await apiFetch('/units');
+        const rows = data?.content ?? data ?? [];
+        const unitOpts = '<option value="">— Selecciona unidad —</option>' +
+          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+        // dropdown en modal de lección
+        ['lesson-unit-id'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.innerHTML = unitOpts;
+        });
+        // filtro del tab de lecciones
+        const filt = document.getElementById('lessons-unit-filter');
+        if (filt) filt.innerHTML = '<option value="">Todas las unidades</option>' +
+          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+      } catch { }
+      // cargar lecciones para el dropdown de ejercicios
+      try {
+        const data = await apiFetch('/lessons');
+        const rows = data?.content ?? data ?? [];
+        lessonsCache = rows;
+        refreshLessonDropdowns();
+      } catch { }
+    }
+
+    function pct(v) {
+      if (!v) return 'chip-red';
+      if (v >= .8) return 'chip-green';
+      if (v >= .5) return 'chip-amber';
+      return 'chip-red';
+    }
+
+    function diffChip(d) {
+      if (d === 'easy') return 'chip-green';
+      if (d === 'medium') return 'chip-amber';
+      if (d === 'hard') return 'chip-red';
+      return 'chip-blue';
+    }
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+      catch { return d; }
+    }
+
+    function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
+    function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Inicia el backend Spring Boot en localhost:8080</small></p></div>`; }
+
+    /* ─────────────────────────────────────────────
+       INIT
+    ───────────────────────────────────────────── */
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedApi = localStorage.getItem('tlahtolli_api');
+      if (savedApi) API = savedApi;
+      loadOverview();
+      // Preload languages for dropdowns
+      apiFetch('/languages').then(d => {
+        languagesCache = d?.content ?? d ?? [];
+        refreshLangDropdowns();
+      }).catch(() => { });
+    });
+  </script>
+</body>
+
+</html>
