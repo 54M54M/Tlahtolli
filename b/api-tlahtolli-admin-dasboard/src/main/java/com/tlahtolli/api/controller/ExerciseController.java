@@ -54,11 +54,15 @@ public class ExerciseController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Exercise> update(@PathVariable Long id, @RequestBody Exercise e) {
-		return repo.findById(id).map(ex -> {
-			e.setId(ex.getId());
-			return ResponseEntity.ok(repo.save(e));
-		}).orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<Exercise> update(@PathVariable Long id, @RequestBody Exercise exercise) {
+	    return repo.findById(id).map(existing -> {
+	        exercise.setId(existing.getId());
+	        // Preservar unitId del registro existente si el nuevo no lo trae
+	        if (exercise.getUnitId() == null) {
+	            exercise.setUnitId(existing.getUnitId());
+	        }
+	        return ResponseEntity.ok(repo.save(exercise));
+	    }).orElse(ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/{id}")

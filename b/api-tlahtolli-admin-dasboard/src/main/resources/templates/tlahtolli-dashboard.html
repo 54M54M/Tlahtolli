@@ -4,179 +4,215 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tlahtolli · Admin Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Tlahtolli · Admin</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"
     rel="stylesheet" />
   <style>
     :root {
       --jade: #00C896;
       --amber: #F5A623;
       --coral: #FF6B5B;
-      --ink: #0D0F14;
-      --panel: #151820;
-      --border: #252A35;
-      --muted: #5A6175;
-      --text: #E8ECF4;
+      --ink: #0B0D11;
+      --panel: #12151C;
+      --card: #181C26;
+      --border: #222636;
+      --muted: #4A5168;
+      --text: #D8DFF0;
+      --white: #FFFFFF;
     }
 
-    * {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html,
     body {
-      font-family: 'Syne', sans-serif;
-      background-color: var(--ink);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
       color: var(--text);
-      min-height: 100vh;
       display: flex;
     }
 
-    /* ── Sidebar ── */
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 99px;
+    }
+
+    /* ══════════════════ SIDEBAR ══════════════════ */
     #sidebar {
-      width: 240px;
-      min-height: 100vh;
+      width: 220px;
+      height: 100vh;
       background: var(--panel);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      overflow-y: auto;
     }
 
     .logo {
-      padding: 28px 24px 20px;
+      padding: 24px 20px 18px;
       border-bottom: 1px solid var(--border);
     }
 
     .logo h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-size: 1.25rem;
+      font-weight: 700;
       color: var(--jade);
+      letter-spacing: -.02em;
     }
 
-    .logo span {
-      color: var(--text);
+    .logo h1 span {
+      color: var(--muted);
     }
 
     .logo p {
-      font-size: .7rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .62rem;
       color: var(--muted);
       margin-top: 2px;
-      font-family: 'Space Mono', monospace;
-      letter-spacing: .08em;
       text-transform: uppercase;
+      letter-spacing: .1em;
     }
 
     nav {
       flex: 1;
-      padding: 16px 12px;
+      padding: 12px 10px;
+      overflow-y: auto;
     }
 
     .nav-section {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .nav-label {
-      font-size: .65rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .58rem;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .1em;
-      padding: 0 12px;
-      margin-bottom: 6px;
-      font-family: 'Space Mono', monospace;
+      letter-spacing: .12em;
+      padding: 0 10px;
+      margin-bottom: 4px;
+      display: block;
     }
 
     .nav-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
-      padding: 9px 12px;
+      padding: 7px 10px;
       border: none;
       background: transparent;
       color: var(--muted);
-      font-family: 'Syne', sans-serif;
-      font-size: .85rem;
-      font-weight: 600;
-      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      border-radius: 7px;
       cursor: pointer;
       text-align: left;
-      transition: background .15s, color .15s;
+      transition: background .12s, color .12s;
     }
 
     .nav-btn:hover {
-      background: rgba(255, 255, 255, .05);
+      background: rgba(255, 255, 255, .04);
       color: var(--text);
     }
 
     .nav-btn.active {
-      background: rgba(0, 200, 150, .12);
+      background: rgba(0, 200, 150, .1);
       color: var(--jade);
     }
 
     .nav-btn .icon {
-      font-size: 1.1rem;
-      width: 20px;
+      font-size: 1rem;
+      width: 18px;
       text-align: center;
+      flex-shrink: 0;
     }
 
     .sidebar-footer {
-      padding: 16px 24px;
+      padding: 12px 20px;
       border-top: 1px solid var(--border);
     }
 
     .sidebar-footer p {
-      font-size: .7rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .65rem;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
+      cursor: pointer;
+      transition: color .15s;
     }
 
-    /* ── Main ── */
+    .sidebar-footer p:hover {
+      color: var(--jade);
+    }
+
+    /* ══════════════════ MAIN ══════════════════ */
     #main {
       flex: 1;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 32px;
+      padding: 16px 28px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
+      flex-shrink: 0;
     }
 
     header h2 {
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: -.01em;
     }
 
-    .badge-oracle {
+    .badge-db {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: .7rem;
-      font-family: 'Space Mono', monospace;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .65rem;
       color: var(--muted);
       background: var(--ink);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 99px;
       padding: 4px 12px;
     }
 
     .dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--jade);
-      animation: pulse 2s infinite;
+      animation: pulse 2.5s infinite;
     }
 
     @keyframes pulse {
@@ -187,18 +223,17 @@
       }
 
       50% {
-        opacity: .4
+        opacity: .3
       }
     }
 
-    /* ── Content ── */
     #content {
       flex: 1;
       overflow-y: auto;
-      padding: 32px;
+      padding: 24px 28px;
     }
 
-    /* Tabs */
+    /* ── Tab panes ── */
     .tab-pane {
       display: none;
     }
@@ -207,60 +242,50 @@
       display: block;
     }
 
-    /* Stat cards */
+    /* ══════════════════ STAT CARDS ══════════════════ */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
     .stat-card {
-      background: var(--panel);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--accent, var(--jade));
+      border-top: 2px solid var(--accent, var(--jade));
+      border-radius: 10px;
+      padding: 16px;
     }
 
     .stat-card .label {
-      font-size: .7rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .6rem;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .08em;
-      font-family: 'Space Mono', monospace;
+      letter-spacing: .1em;
     }
 
     .stat-card .value {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-top: 8px;
+      font-size: 1.8rem;
+      font-weight: 700;
       color: var(--text);
+      margin-top: 6px;
       line-height: 1;
+      font-family: 'IBM Plex Mono', monospace;
     }
 
     .stat-card .sub {
-      font-size: .75rem;
+      font-size: .72rem;
       color: var(--muted);
-      margin-top: 6px;
+      margin-top: 5px;
     }
 
-    /* Table */
+    /* ══════════════════ TABLE WRAP ══════════════════ */
     .table-wrap {
-      background: var(--panel);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
     }
 
@@ -268,72 +293,32 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-bottom: 1px solid var(--border);
     }
 
     .table-header h3 {
-      font-size: .95rem;
+      font-size: .88rem;
       font-weight: 700;
-    }
-
-    .table-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn {
-      padding: 7px 16px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'Syne', sans-serif;
-      font-size: .8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .15s;
-    }
-
-    .btn:hover {
-      opacity: .85;
-    }
-
-    .btn-primary {
-      background: var(--jade);
-      color: var(--ink);
-    }
-
-    .btn-ghost {
-      background: rgba(255, 255, 255, .06);
-      color: var(--text);
-    }
-
-    .btn-danger {
-      background: rgba(255, 107, 91, .15);
-      color: var(--coral);
-      border: 1px solid rgba(255, 107, 91, .3);
-    }
-
-    .btn-sm {
-      padding: 4px 10px;
-      font-size: .72rem;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: .83rem;
+      font-size: .8rem;
     }
 
     thead th {
       text-align: left;
-      padding: 10px 16px;
-      font-size: .68rem;
+      padding: 9px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .6rem;
       text-transform: uppercase;
       letter-spacing: .08em;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
       border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, .02);
+      background: rgba(255, 255, 255, .015);
+      white-space: nowrap;
     }
 
     tbody tr {
@@ -346,21 +331,23 @@
     }
 
     tbody tr:hover {
-      background: rgba(255, 255, 255, .025);
+      background: rgba(255, 255, 255, .02);
     }
 
     tbody td {
-      padding: 11px 16px;
+      padding: 9px 14px;
       vertical-align: middle;
     }
 
+    /* ══════════════════ CHIPS ══════════════════ */
     .chip {
       display: inline-block;
       padding: 2px 8px;
-      border-radius: 20px;
-      font-size: .68rem;
+      border-radius: 99px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .62rem;
       font-weight: 700;
-      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
     }
 
     .chip-green {
@@ -379,63 +366,107 @@
     }
 
     .chip-blue {
-      background: rgba(80, 140, 255, .15);
+      background: rgba(100, 160, 255, .15);
       color: #7EB3FF;
     }
 
-    /* Search / filter bar */
+    .chip-purple {
+      background: rgba(180, 100, 255, .15);
+      color: #C07EFF;
+    }
+
+    /* ══════════════════ BUTTONS ══════════════════ */
+    .btn {
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      opacity: .85;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn-primary {
+      background: var(--jade);
+      color: var(--ink);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: rgba(255, 107, 91, .12);
+      color: var(--coral);
+      border: 1px solid rgba(255, 107, 91, .25);
+    }
+
+    .btn-sm {
+      padding: 4px 9px;
+      font-size: .72rem;
+    }
+
+    /* ══════════════════ FILTER BAR ══════════════════ */
     .filter-bar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .input-search,
+    select.filter-sel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 7px;
+      padding: 7px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      outline: none;
+      transition: border-color .15s;
     }
 
     .input-search {
       flex: 1;
-      max-width: 320px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-family: 'Syne', sans-serif;
-      font-size: .83rem;
-      outline: none;
-    }
-
-    .input-search:focus {
-      border-color: var(--jade);
+      min-width: 160px;
+      max-width: 280px;
     }
 
     .input-search::placeholder {
       color: var(--muted);
     }
 
-    select.filter-sel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: .83rem;
-      outline: none;
-      cursor: pointer;
-    }
-
+    .input-search:focus,
     select.filter-sel:focus {
       border-color: var(--jade);
     }
 
-    /* Modal */
+    select.filter-sel {
+      cursor: pointer;
+    }
+
+    /* ══════════════════ MODAL ══════════════════ */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .7);
+      background: rgba(0, 0, 0, .75);
       backdrop-filter: blur(4px);
-      z-index: 100;
+      z-index: 200;
       align-items: center;
       justify-content: center;
     }
@@ -447,18 +478,22 @@
     .modal {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 12px;
       width: 520px;
-      max-width: 95vw;
-      max-height: 85vh;
+      max-width: 96vw;
+      max-height: 88vh;
       overflow-y: auto;
-      padding: 28px;
-      animation: slideUp .2s ease;
+      padding: 24px;
+      animation: slideUp .18s ease;
+    }
+
+    .modal-lg {
+      width: 620px;
     }
 
     @keyframes slideUp {
       from {
-        transform: translateY(20px);
+        transform: translateY(16px);
         opacity: 0
       }
 
@@ -468,22 +503,23 @@
       }
     }
 
-    .modal h3 {
-      font-size: 1.1rem;
+    .modal-title {
+      font-size: 1rem;
       font-weight: 700;
       margin-bottom: 20px;
+      color: var(--text);
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .form-group.full {
@@ -491,55 +527,71 @@
     }
 
     label {
-      font-size: .72rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .62rem;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .07em;
-      font-family: 'Space Mono', monospace;
+      letter-spacing: .08em;
     }
 
     input[type=text],
     input[type=email],
     input[type=number],
-    select.form-sel {
+    input[type=password],
+    select.form-sel,
+    textarea.form-ta {
       background: var(--ink);
       border: 1px solid var(--border);
       color: var(--text);
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: .85rem;
+      border-radius: 7px;
+      padding: 8px 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .83rem;
       outline: none;
       width: 100%;
+      transition: border-color .15s;
     }
 
     input:focus,
-    select.form-sel:focus {
+    select.form-sel:focus,
+    textarea.form-ta:focus {
       border-color: var(--jade);
+    }
+
+    textarea.form-ta {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    select.form-sel {
+      cursor: pointer;
     }
 
     .modal-footer {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 22px;
+      gap: 8px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
     }
 
-    /* Toast */
+    /* ══════════════════ MISC ══════════════════ */
     #toast {
       position: fixed;
-      bottom: 28px;
-      right: 28px;
+      bottom: 24px;
+      right: 24px;
       background: var(--jade);
       color: var(--ink);
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 10px 18px;
+      border-radius: 8px;
       font-weight: 700;
-      font-size: .85rem;
+      font-size: .82rem;
       transform: translateY(80px);
       opacity: 0;
-      transition: transform .25s, opacity .25s;
-      z-index: 200;
+      transition: transform .22s, opacity .22s;
+      z-index: 999;
+      pointer-events: none;
     }
 
     #toast.show {
@@ -547,106 +599,98 @@
       opacity: 1;
     }
 
-    /* Loading */
     .loading {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 60px;
+      padding: 56px;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
-      font-size: .8rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .75rem;
       gap: 10px;
     }
 
     .spinner {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border: 2px solid var(--border);
       border-top-color: var(--jade);
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin .65s linear infinite;
     }
 
     @keyframes spin {
       to {
-        transform: rotate(360deg)
+        transform: rotate(360deg);
       }
     }
 
-    /* Empty state */
     .empty {
       text-align: center;
-      padding: 60px;
+      padding: 56px;
       color: var(--muted);
+      font-size: .85rem;
     }
 
-    .empty p {
-      font-size: .9rem;
-      margin-top: 8px;
-    }
-
-    /* Pagination */
-    .pagination {
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-      margin-top: 16px;
-    }
-
-    .page-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--muted);
-      font-size: .78rem;
-      cursor: pointer;
+    /* energy bar inline */
+    .ebar {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-family: 'Space Mono', monospace;
-      transition: all .15s;
+      gap: 8px;
     }
 
-    .page-btn:hover,
-    .page-btn.active {
-      border-color: var(--jade);
-      color: var(--jade);
+    .ebar-track {
+      width: 72px;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    /* Config panel */
+    .ebar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* config panel */
     .config-panel {
-      background: var(--panel);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
 
     .config-panel h3 {
-      font-size: .9rem;
+      font-size: .88rem;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .config-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       align-items: flex-end;
     }
 
     .config-row .form-group {
-      min-width: 180px;
+      min-width: 140px;
+    }
+
+    .config-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: 10px;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+  <!-- ══════════ SIDEBAR ══════════ -->
   <aside id="sidebar">
     <div class="logo">
       <h1>Tlahtolli<span>·</span></h1>
@@ -654,69 +698,52 @@
     </div>
     <nav>
       <div class="nav-section">
-        <p class="nav-label">Resumen</p>
-        <button class="nav-btn active" onclick="showTab('overview')">
-          <span class="icon">◈</span> Overview
-        </button>
+        <span class="nav-label">Resumen</span>
+        <button class="nav-btn active" onclick="showTab('overview')"><span class="icon">◈</span>Overview</button>
       </div>
       <div class="nav-section">
-        <p class="nav-label">Catálogos</p>
-        <button class="nav-btn" onclick="showTab('languages')">
-          <span class="icon">🌐</span> Idiomas
-        </button>
-        <button class="nav-btn" onclick="showTab('users')">
-          <span class="icon">👤</span> Usuarios
-        </button>
-        <button class="nav-btn" onclick="showTab('vocabulary')">
-          <span class="icon">📖</span> Vocabulario
-        </button>
-        <button class="nav-btn" onclick="showTab('achievements')">
-          <span class="icon">🏆</span> Logros
-        </button>
+        <span class="nav-label">Catálogos</span>
+        <button class="nav-btn" onclick="showTab('languages')"><span class="icon">🌐</span>Idiomas</button>
+        <button class="nav-btn" onclick="showTab('users')"><span class="icon">👤</span>Usuarios</button>
+        <button class="nav-btn" onclick="showTab('vocabulary')"><span class="icon">📖</span>Vocabulario</button>
+        <button class="nav-btn" onclick="showTab('achievements')"><span class="icon">🏆</span>Logros</button>
       </div>
       <div class="nav-section">
-        <p class="nav-label">Contenido</p>
-        <button class="nav-btn" onclick="showTab('levels')">
-          <span class="icon">📊</span> Niveles
-        </button>
-        <button class="nav-btn" onclick="showTab('units')">
-          <span class="icon">📦</span> Unidades
-        </button>
-        <button class="nav-btn" onclick="showTab('lessons')">
-          <span class="icon">📝</span> Lecciones
-        </button>
-        <button class="nav-btn" onclick="showTab('exercises')">
-          <span class="icon">✏️</span> Ejercicios
-        </button>
+        <span class="nav-label">Contenido</span>
+        <button class="nav-btn" onclick="showTab('levels')"><span class="icon">📊</span>Niveles</button>
+        <button class="nav-btn" onclick="showTab('units')"><span class="icon">📦</span>Unidades</button>
+        <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📝</span>Lecciones</button>
+        <button class="nav-btn" onclick="showTab('exercises')"><span class="icon">✏️</span>Ejercicios</button>
       </div>
       <div class="nav-section">
-        <p class="nav-label">Actividad</p>
-        <button class="nav-btn" onclick="showTab('lesson_history')">
-          <span class="icon">📋</span> Historial
-        </button>
-        <button class="nav-btn" onclick="showTab('user_stats')">
-          <span class="icon">📈</span> Estadísticas
-        </button>
+        <span class="nav-label">Actividad</span>
+        <button class="nav-btn" onclick="showTab('lesson_history')"><span class="icon">📋</span>Historial</button>
+        <button class="nav-btn" onclick="showTab('user_stats')"><span class="icon">📈</span>Estadísticas</button>
       </div>
       <div class="nav-section">
-        <p class="nav-label">Sistema</p>
-        <button class="nav-btn" onclick="showTab('config')">
-          <span class="icon">⚙️</span> Configuración
-        </button>
+        <span class="nav-label">Jugador</span>
+        <button class="nav-btn" onclick="showTab('user_progress')"><span class="icon">🗺️</span>Progreso</button>
+        <button class="nav-btn" onclick="showTab('user_energy')"><span class="icon">⚡</span>Energía</button>
+        <button class="nav-btn" onclick="showTab('writing_systems')"><span class="icon">✍️</span>Sist.
+          Escritura</button>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Sistema</span>
+        <button class="nav-btn" onclick="showTab('config')"><span class="icon">⚙️</span>Configuración</button>
       </div>
     </nav>
     <div class="sidebar-footer">
-      <p id="conn-status">● Desconectado</p>
+      <p id="conn-status" onclick="showTab('config')">● Desconectado</p>
     </div>
   </aside>
 
-  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+  <!-- ══════════ MAIN ══════════ -->
   <div id="main">
     <header>
       <h2 id="page-title">Overview</h2>
-      <div class="badge-oracle">
+      <div class="badge-db">
         <span class="dot"></span>
-        Oracle XE · <span id="db-host">localhost:1521</span>
+        Oracle XE · <span id="db-host">localhost:7575</span>
       </div>
     </header>
 
@@ -728,7 +755,7 @@
           <div class="stat-card" style="--accent:var(--jade)">
             <p class="label">Usuarios</p>
             <p class="value" id="stat-users">—</p>
-            <p class="sub">Registrados totales</p>
+            <p class="sub">Registrados</p>
           </div>
           <div class="stat-card" style="--accent:var(--amber)">
             <p class="label">Idiomas</p>
@@ -745,7 +772,7 @@
             <p class="value" id="stat-vocab">—</p>
             <p class="sub">Palabras totales</p>
           </div>
-          <div class="stat-card" style="--accent:#B07EFF">
+          <div class="stat-card" style="--accent:#C07EFF">
             <p class="label">Logros</p>
             <p class="value" id="stat-ach">—</p>
             <p class="sub">Disponibles</p>
@@ -753,17 +780,31 @@
           <div class="stat-card" style="--accent:var(--jade)">
             <p class="label">Lecciones</p>
             <p class="value" id="stat-lessons">—</p>
-            <p class="sub">Definidas en contenido</p>
+            <p class="sub">Definidas</p>
+          </div>
+          <div class="stat-card" style="--accent:#26CCC0">
+            <p class="label">Progreso</p>
+            <p class="value" id="stat-progress">—</p>
+            <p class="sub">Registros avance</p>
+          </div>
+          <div class="stat-card" style="--accent:#FFC10A">
+            <p class="label">Energía</p>
+            <p class="value" id="stat-energy">—</p>
+            <p class="sub">Sesiones activas</p>
+          </div>
+          <div class="stat-card" style="--accent:#9C27B0">
+            <p class="label">Sist. Escritura</p>
+            <p class="value" id="stat-ws">—</p>
+            <p class="sub">Alfabetos / Silabarios</p>
           </div>
         </div>
-
         <div class="table-wrap">
           <div class="table-header">
-            <h3>Últimas lecciones</h3>
-            <button class="btn btn-ghost btn-sm" onclick="loadTab('lesson_history')">Ver todas →</button>
+            <h3>Últimas lecciones completadas</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showTab('lesson_history')">Ver todas →</button>
           </div>
           <div id="recent-lessons-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -772,7 +813,7 @@
       <div class="tab-pane" id="tab-languages">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar idioma…"
-            oninput="filterTable('languages-table', this.value)" />
+            oninput="filterTable('languages-table',this.value)" />
           <button class="btn btn-primary" onclick="openModal('modal-language')">+ Nuevo idioma</button>
         </div>
         <div class="table-wrap">
@@ -780,7 +821,7 @@
             <h3>Idiomas</h3>
           </div>
           <div id="languages-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -789,15 +830,15 @@
       <div class="tab-pane" id="tab-users">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar usuario…"
-            oninput="filterTable('users-table', this.value)" />
-          <button class="btn btn-primary" onclick="openModal('modal-user')">+ Nuevo usuario</button>
+            oninput="filterTable('users-table',this.value)" />
+          <button class="btn btn-primary" onclick="openModalUser()">+ Nuevo usuario</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Usuarios</h3>
           </div>
           <div id="users-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -806,18 +847,18 @@
       <div class="tab-pane" id="tab-vocabulary">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar palabra…"
-            oninput="filterTable('vocab-table', this.value)" />
+            oninput="filterTable('vocab-table',this.value)" />
           <select class="filter-sel" id="vocab-lang-filter" onchange="loadVocabulary()">
             <option value="">Todos los idiomas</option>
           </select>
-          <button class="btn btn-primary" onclick="openModal('modal-vocab')">+ Nueva palabra</button>
+          <button class="btn btn-primary" onclick="openModalVocab()">+ Nueva palabra</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Vocabulario</h3>
           </div>
           <div id="vocab-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -826,15 +867,15 @@
       <div class="tab-pane" id="tab-achievements">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar logro…"
-            oninput="filterTable('ach-table', this.value)" />
-          <button class="btn btn-primary" onclick="openModal('modal-achievement')">+ Nuevo logro</button>
+            oninput="filterTable('ach-table',this.value)" />
+          <button class="btn btn-primary" onclick="openModalAch()">+ Nuevo logro</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Logros</h3>
           </div>
           <div id="achievements-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -845,14 +886,14 @@
           <select class="filter-sel" id="levels-lang-filter" onchange="loadLevels()">
             <option value="">Todos los idiomas</option>
           </select>
-          <button class="btn btn-primary" onclick="openModal('modal-level')">+ Nuevo nivel</button>
+          <button class="btn btn-primary" onclick="openModalLevel()">+ Nuevo nivel</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Niveles</h3>
           </div>
           <div id="levels-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -861,15 +902,15 @@
       <div class="tab-pane" id="tab-units">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar unidad…"
-            oninput="filterTable('units-table', this.value)" />
-          <button class="btn btn-primary" onclick="openModal('modal-unit')">+ Nueva unidad</button>
+            oninput="filterTable('units-table',this.value)" />
+          <button class="btn btn-primary" onclick="openModalUnit()">+ Nueva unidad</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Unidades</h3>
           </div>
           <div id="units-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -878,18 +919,18 @@
       <div class="tab-pane" id="tab-lessons">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar lección…"
-            oninput="filterTable('lessons-table', this.value)" />
+            oninput="filterTable('lessons-table',this.value)" />
           <select class="filter-sel" id="lessons-unit-filter" onchange="loadLessons()">
             <option value="">Todas las unidades</option>
           </select>
-          <button class="btn btn-primary" onclick="openModal('modal-lesson')">+ Nueva lección</button>
+          <button class="btn btn-primary" onclick="openModalLesson()">+ Nueva lección</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Lecciones</h3>
           </div>
           <div id="lessons-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -898,23 +939,22 @@
       <div class="tab-pane" id="tab-exercises">
         <div class="filter-bar">
           <input class="input-search" type="text" placeholder="Buscar ejercicio…"
-            oninput="filterTable('ex-table', this.value)" />
+            oninput="filterTable('ex-table',this.value)" />
           <select class="filter-sel" id="ex-type-filter" onchange="loadExercises()">
             <option value="">Todos los tipos</option>
-            <option>multiple_choice</option>
-            <option>fill_blank</option>
+            <option>multiple-choice</option>
+            <option>fill-blank</option>
             <option>translation</option>
             <option>listening</option>
-            <option>speaking</option>
           </select>
-          <button class="btn btn-primary" onclick="openModal('modal-exercise')">+ Nuevo ejercicio</button>
+          <button class="btn btn-primary" onclick="openModalEx()">+ Nuevo ejercicio</button>
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Ejercicios</h3>
           </div>
           <div id="exercises-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -922,27 +962,84 @@
       <!-- ── HISTORIAL ── -->
       <div class="tab-pane" id="tab-lesson_history">
         <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar usuario…"
-            oninput="filterTable('hist-table', this.value)" />
+          <input class="input-search" type="text" placeholder="Buscar por usuario o unidad…"
+            oninput="filterTable('hist-table',this.value)" />
         </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Historial de lecciones</h3>
           </div>
           <div id="lesson_history-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
 
       <!-- ── ESTADÍSTICAS ── -->
       <div class="tab-pane" id="tab-user_stats">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar usuario…"
+            oninput="filterTable('stats-table',this.value)" />
+        </div>
         <div class="table-wrap">
           <div class="table-header">
             <h3>Estadísticas por usuario</h3>
           </div>
           <div id="user_stats-body">
-            <div class="loading"><span class="spinner"></span> Cargando…</div>
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROGRESO ── -->
+      <div class="tab-pane" id="tab-user_progress">
+        <div class="filter-bar">
+          <select class="filter-sel" id="progress-user-filter" onchange="loadUserProgress()">
+            <option value="">Todos los usuarios</option>
+          </select>
+          <input class="input-search" type="text" placeholder="Buscar…"
+            oninput="filterTable('progress-table',this.value)" />
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Progreso por unidad</h3>
+          </div>
+          <div id="user_progress-body">
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ENERGÍA ── -->
+      <div class="tab-pane" id="tab-user_energy">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar usuario…"
+            oninput="filterTable('energy-table',this.value)" />
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Energía por usuario</h3>
+          </div>
+          <div id="user_energy-body">
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SISTEMAS DE ESCRITURA ── -->
+      <div class="tab-pane" id="tab-writing_systems">
+        <div class="filter-bar">
+          <select class="filter-sel" id="ws-lang-filter" onchange="loadWritingSystems()">
+            <option value="">Todos los idiomas</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModalWS()">+ Nuevo sistema</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3>Sistemas de escritura</h3>
+          </div>
+          <div id="writing_systems-body">
+            <div class="loading"><span class="spinner"></span>Cargando…</div>
           </div>
         </div>
       </div>
@@ -950,86 +1047,69 @@
       <!-- ── CONFIG ── -->
       <div class="tab-pane" id="tab-config">
         <div class="config-panel">
-          <h3>Conexión Oracle</h3>
-          <div class="config-row">
-            <div class="form-group">
-              <label>Host</label>
-              <input type="text" id="cfg-host" value="localhost" />
-            </div>
-            <div class="form-group">
-              <label>Puerto</label>
-              <input type="number" id="cfg-port" value="1521" />
-            </div>
-            <div class="form-group">
-              <label>SID / Service</label>
-              <input type="text" id="cfg-sid" value="XE" />
-            </div>
-            <div class="form-group">
-              <label>Usuario</label>
-              <input type="text" id="cfg-user" value="System" />
-            </div>
-            <div class="form-group">
-              <label>Contraseña</label>
-              <input type="text" id="cfg-pass" value="8520" />
-            </div>
-            <div class="form-group" style="align-self:flex-end">
-              <button class="btn btn-primary" onclick="saveConfig()">Guardar y probar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="config-panel">
           <h3>API Backend</h3>
           <div class="config-row">
-            <div class="form-group" style="min-width:280px">
+            <div class="form-group" style="min-width:260px">
               <label>Base URL</label>
               <input type="text" id="cfg-api" value="http://localhost:7575/api" />
+            </div>
+            <div class="form-group" style="align-self:flex-end">
+              <button class="btn btn-primary" onclick="saveConfig()">Guardar</button>
             </div>
             <div class="form-group" style="align-self:flex-end">
               <button class="btn btn-ghost" onclick="testConnection()">Test conexión</button>
             </div>
           </div>
-          <p style="font-size:.75rem;color:var(--muted);margin-top:12px;font-family:'Space Mono',monospace"
-            id="conn-detail">
-            → Apunta al Spring Boot backend que conecta con Oracle
-          </p>
+          <p class="config-note" id="conn-detail">→ Apunta al Spring Boot backend (puerto 7575 por defecto)</p>
+        </div>
+        <div class="config-panel">
+          <h3>Base de datos Oracle</h3>
+          <div class="config-row">
+            <div class="form-group"><label>Host</label><input type="text" id="cfg-host" value="localhost" /></div>
+            <div class="form-group"><label>Puerto</label><input type="number" id="cfg-port" value="1521" /></div>
+            <div class="form-group"><label>SID / Service</label><input type="text" id="cfg-sid" value="XE" /></div>
+          </div>
+          <p class="config-note" style="margin-top:8px">Configuración informativa — la conexión real la gestiona Spring
+            Boot</p>
         </div>
       </div>
 
     </div><!-- /content -->
-  </div>
+  </div><!-- /main -->
 
-  <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+  <!-- ══════════════════ MODALES ══════════════════ -->
 
   <!-- Language -->
   <div class="modal-overlay" id="modal-language">
     <div class="modal">
-      <h3 id="modal-language-title">Nuevo idioma</h3>
+      <p class="modal-title" id="modal-language-title">Nuevo idioma</p>
       <input type="hidden" id="lang-id" />
       <div class="form-grid">
-        <div class="form-group"><label>Código</label><input type="text" id="lang-code" placeholder="NAH"
+        <div class="form-group"><label>Código</label><input type="text" id="lang-code" placeholder="nhce"
             maxlength="10" /></div>
-        <div class="form-group"><label>Nombre</label><input type="text" id="lang-name" placeholder="Náhuatl" /></div>
-        <div class="form-group"><label>Nombre nativo</label><input type="text" id="lang-native" placeholder="Nāhuatl" />
+        <div class="form-group"><label>Nombre</label><input type="text" id="lang-name" placeholder="Náhuatl Central" />
         </div>
+        <div class="form-group"><label>Nombre nativo</label><input type="text" id="lang-native"
+            placeholder="Nāhuatlahtōlli" /></div>
         <div class="form-group"><label>Color (hex)</label><input type="text" id="lang-color" placeholder="#00C896" />
         </div>
-        <div class="form-group"><label>Bandera (emoji)</label><input type="text" id="lang-flag" placeholder="🇲🇽" />
+        <div class="form-group"><label>Bandera (emoji)</label><input type="text" id="lang-flag" placeholder="🌽" />
         </div>
         <div class="form-group"><label>Familia</label><input type="text" id="lang-family" placeholder="Uto-Aztecan" />
         </div>
         <div class="form-group full">
           <label>Sistema de escritura</label>
           <select class="form-sel" id="lang-ws">
-            <option value="alphabet">Alphabet</option>
-            <option value="syllabary">Syllabary</option>
-            <option value="logogram">Logogram</option>
-            <option value="abugida">Abugida</option>
+            <option value="alphabet">alphabet</option>
+            <option value="syllabary">syllabary</option>
+            <option value="logogram">logogram</option>
+            <option value="abugida">abugida</option>
           </select>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-language')">Cancelar</button>
+        <button class="btn btn-ghost"
+          onclick="closeModal('modal-language');resetModal('modal-language')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveLanguage()">Guardar</button>
       </div>
     </div>
@@ -1038,7 +1118,7 @@
   <!-- User -->
   <div class="modal-overlay" id="modal-user">
     <div class="modal">
-      <h3 id="modal-user-title">Nuevo usuario</h3>
+      <p class="modal-title" id="modal-user-title">Nuevo usuario</p>
       <input type="hidden" id="user-id" />
       <div class="form-grid">
         <div class="form-group"><label>Username</label><input type="text" id="user-username" /></div>
@@ -1049,11 +1129,13 @@
         <div class="form-group"><label>Streak</label><input type="number" id="user-streak" value="0" min="0" /></div>
         <div class="form-group">
           <label>Idioma actual</label>
-          <select class="form-sel" id="user-lang"></select>
+          <select class="form-sel" id="user-lang">
+            <option value="">— Sin asignar —</option>
+          </select>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-user')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-user');resetModal('modal-user')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveUser()">Guardar</button>
       </div>
     </div>
@@ -1062,12 +1144,14 @@
   <!-- Vocabulary -->
   <div class="modal-overlay" id="modal-vocab">
     <div class="modal">
-      <h3>Nueva palabra</h3>
+      <p class="modal-title" id="modal-vocab-title">Nueva palabra</p>
       <input type="hidden" id="vocab-id" />
       <div class="form-grid">
         <div class="form-group full">
           <label>Idioma</label>
-          <select class="form-sel" id="vocab-lang-id"></select>
+          <select class="form-sel" id="vocab-lang-id">
+            <option value="">— Selecciona —</option>
+          </select>
         </div>
         <div class="form-group"><label>Palabra</label><input type="text" id="vocab-word" /></div>
         <div class="form-group"><label>Traducción</label><input type="text" id="vocab-translation" /></div>
@@ -1075,7 +1159,7 @@
         <div class="form-group full"><label>Ejemplo</label><input type="text" id="vocab-example" /></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-vocab')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-vocab');resetModal('modal-vocab')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveVocabulary()">Guardar</button>
       </div>
     </div>
@@ -1084,28 +1168,29 @@
   <!-- Achievement -->
   <div class="modal-overlay" id="modal-achievement">
     <div class="modal">
-      <h3>Nuevo logro</h3>
+      <p class="modal-title" id="modal-ach-title">Nuevo logro</p>
       <input type="hidden" id="ach-id" />
       <div class="form-grid">
         <div class="form-group full"><label>Título</label><input type="text" id="ach-title" /></div>
         <div class="form-group full"><label>Descripción</label><input type="text" id="ach-desc" /></div>
         <div class="form-group"><label>Icono</label><input type="text" id="ach-icon" placeholder="🏆" /></div>
-        <div class="form-group"><label>XP Recompensa</label><input type="number" id="ach-xp" value="0" /></div>
+        <div class="form-group"><label>XP Recompensa</label><input type="number" id="ach-xp" value="0" min="0" /></div>
         <div class="form-group"><label>Categoría</label><input type="text" id="ach-cat" /></div>
         <div class="form-group">
           <label>Rareza</label>
           <select class="form-sel" id="ach-rarity">
             <option>common</option>
-            <option>uncommon</option>
             <option>rare</option>
             <option>epic</option>
             <option>legendary</option>
           </select>
         </div>
-        <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req" /></div>
+        <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req"
+            placeholder="Completar 1 lección" /></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-achievement')">Cancelar</button>
+        <button class="btn btn-ghost"
+          onclick="closeModal('modal-achievement');resetModal('modal-achievement')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveAchievement()">Guardar</button>
       </div>
     </div>
@@ -1114,14 +1199,16 @@
   <!-- Level -->
   <div class="modal-overlay" id="modal-level">
     <div class="modal">
-      <h3>Nuevo nivel</h3>
+      <p class="modal-title" id="modal-level-title">Nuevo nivel</p>
       <input type="hidden" id="level-id" />
       <div class="form-grid">
         <div class="form-group full">
           <label>Idioma</label>
-          <select class="form-sel" id="level-lang-id"></select>
+          <select class="form-sel" id="level-lang-id">
+            <option value="">— Selecciona —</option>
+          </select>
         </div>
-        <div class="form-group"><label>Número de nivel</label><input type="number" id="level-num" min="1" /></div>
+        <div class="form-group"><label>Número</label><input type="number" id="level-num" min="1" /></div>
         <div class="form-group"><label>Color</label><input type="text" id="level-color" placeholder="#00C896" /></div>
         <div class="form-group"><label>Título</label><input type="text" id="level-title" /></div>
         <div class="form-group"><label>Título nativo</label><input type="text" id="level-native" /></div>
@@ -1134,7 +1221,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-level')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-level');resetModal('modal-level')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveLevel()">Guardar</button>
       </div>
     </div>
@@ -1143,14 +1230,16 @@
   <!-- Unit -->
   <div class="modal-overlay" id="modal-unit">
     <div class="modal">
-      <h3>Nueva unidad</h3>
+      <p class="modal-title" id="modal-unit-title">Nueva unidad</p>
       <input type="hidden" id="unit-id" />
       <div class="form-grid">
         <div class="form-group full">
           <label>Nivel</label>
-          <select class="form-sel" id="unit-level-id"></select>
+          <select class="form-sel" id="unit-level-id">
+            <option value="">— Selecciona —</option>
+          </select>
         </div>
-        <div class="form-group"><label>Número unidad</label><input type="number" id="unit-num" min="1" /></div>
+        <div class="form-group"><label>Número</label><input type="number" id="unit-num" min="1" /></div>
         <div class="form-group"><label>Color</label><input type="text" id="unit-color" placeholder="#F5A623" /></div>
         <div class="form-group full"><label>Título</label><input type="text" id="unit-title" /></div>
         <div class="form-group full"><label>Objetivo</label><input type="text" id="unit-obj" /></div>
@@ -1164,7 +1253,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-unit')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-unit');resetModal('modal-unit')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveUnit()">Guardar</button>
       </div>
     </div>
@@ -1173,15 +1262,18 @@
   <!-- Lesson -->
   <div class="modal-overlay" id="modal-lesson">
     <div class="modal">
-      <h3 id="modal-lesson-title">Nueva lección</h3>
+      <p class="modal-title" id="modal-lesson-title">Nueva lección</p>
       <input type="hidden" id="lesson-id" />
       <div class="form-grid">
         <div class="form-group full">
           <label>Unidad</label>
-          <select class="form-sel" id="lesson-unit-id"></select>
+          <select class="form-sel" id="lesson-unit-id">
+            <option value="">— Selecciona —</option>
+          </select>
         </div>
-        <div class="form-group"><label>Número de lección</label><input type="number" id="lesson-num" min="1" /></div>
-        <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" /></div>
+        <div class="form-group"><label>Número</label><input type="number" id="lesson-num" min="1" /></div>
+        <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" min="0" />
+        </div>
         <div class="form-group full"><label>Título</label><input type="text" id="lesson-title" /></div>
         <div class="form-group full"><label>Descripción</label><input type="text" id="lesson-desc" /></div>
         <div class="form-group">
@@ -1193,7 +1285,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-lesson')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-lesson');resetModal('modal-lesson')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveLesson()">Guardar</button>
       </div>
     </div>
@@ -1201,92 +1293,106 @@
 
   <!-- Exercise -->
   <div class="modal-overlay" id="modal-exercise">
-    <div class="modal">
-      <h3>Nuevo ejercicio</h3>
+    <div class="modal modal-lg">
+      <p class="modal-title" id="modal-ex-title">Nuevo ejercicio</p>
       <input type="hidden" id="ex-id" />
       <div class="form-grid">
         <div class="form-group full">
           <label>Lección</label>
-          <select class="form-sel" id="ex-lesson-id"></select>
+          <select class="form-sel" id="ex-lesson-id">
+            <option value="">— Selecciona —</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Tipo</label>
           <select class="form-sel" id="ex-type">
-            <option>multiple_choice</option>
-            <option>fill_blank</option>
-            <option>translation</option>
-            <option>listening</option>
-            <option>speaking</option>
+            <option value="multiple-choice">multiple-choice</option>
+            <option value="fill-blank">fill-blank</option>
+            <option value="translation">translation</option>
+            <option value="listening">listening</option>
           </select>
         </div>
-        <div class="form-group"><label>Dificultad</label>
+        <div class="form-group">
+          <label>Dificultad</label>
           <select class="form-sel" id="ex-diff">
             <option>easy</option>
             <option>medium</option>
             <option>hard</option>
           </select>
         </div>
-        <div class="form-group"><label>Puntos</label><input type="number" id="ex-pts" value="10" /></div>
+        <div class="form-group"><label>Puntos</label><input type="number" id="ex-pts" value="15" min="0" /></div>
+        <div class="form-group"><label>Personaje</label><input type="text" id="ex-char" placeholder="citlali" /></div>
         <div class="form-group full"><label>Pregunta</label><input type="text" id="ex-question" /></div>
-        <div class="form-group full"><label>Respuesta correcta</label><input type="text" id="ex-answer" /></div>
+        <div class="form-group full"><label>Respuesta (answer / texto con hueco)</label><input type="text"
+            id="ex-answer" /></div>
+        <div class="form-group full"><label>Respuesta correcta (correctAns — puede ser JSON:
+            ["op1","op2"])</label><input type="text" id="ex-correct" /></div>
+        <div class="form-group full"><label>Opciones pregeneradas (OPTIONS — JSON: ["a","b","c","d"])</label><input
+            type="text" id="ex-options" /></div>
         <div class="form-group full"><label>Explicación</label><input type="text" id="ex-explanation" /></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-exercise')">Cancelar</button>
+        <button class="btn btn-ghost"
+          onclick="closeModal('modal-exercise');resetModal('modal-exercise')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveExercise()">Guardar</button>
       </div>
     </div>
   </div>
 
-  <!-- ── Toast ── -->
+  <!-- Writing System -->
+  <div class="modal-overlay" id="modal-writing-system">
+    <div class="modal">
+      <p class="modal-title" id="modal-ws-title">Nuevo sistema de escritura</p>
+      <input type="hidden" id="ws-id" />
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Idioma</label>
+          <select class="form-sel" id="ws-lang-id">
+            <option value="">— Selecciona —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select class="form-sel" id="ws-type">
+            <option value="alphabet">alphabet</option>
+            <option value="syllabary">syllabary</option>
+            <option value="logogram">logogram</option>
+            <option value="abugida">abugida</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Nombre</label><input type="text" id="ws-name"
+            placeholder="Alfabeto Náhuatl INALI" /></div>
+        <div class="form-group full"><label>Descripción</label><input type="text" id="ws-desc" /></div>
+        <div class="form-group full">
+          <label>Notas (JSON array de strings)</label>
+          <textarea class="form-ta" id="ws-notes" placeholder='["Nota 1","Nota 2"]'></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost"
+          onclick="closeModal('modal-writing-system');resetModal('modal-writing-system')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveWritingSystem()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
   <div id="toast"></div>
 
-  <!-- ═══════════════════════════ JS ═══════════════════════════ -->
+  <!-- ══════════════════ JS ══════════════════ -->
   <script>
-    /* ─────────────────────────────────────────────
-       CONFIG
-    ───────────────────────────────────────────── */
-    let API = localStorage.getItem('tlahtolli_api') || 'http://localhost:8080/api';
+    /* ── CONFIG ── */
+    let API = localStorage.getItem('tlahtolli_api') || 'http://localhost:7575/api';
     let languagesCache = [];
     let lessonsCache = [];
+    let usersCache = [];
 
-    function getAPI() { return API; }
-
-    /* ─────────────────────────────────────────────
-       UTILS
-    ───────────────────────────────────────────── */
-    function toast(msg, isError = false) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.background = isError ? 'var(--coral)' : 'var(--jade)';
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.add('open');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('open');
-    }
-    document.querySelectorAll('.modal-overlay').forEach(o => {
-      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-    });
-
-    function filterTable(tableId, query) {
-      const tbl = document.getElementById(tableId);
-      if (!tbl) return;
-      const q = query.toLowerCase();
-      tbl.querySelectorAll('tbody tr').forEach(tr => {
-        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-      });
-    }
-
-    async function apiFetch(path, options = {}) {
+    /* ── API FETCH ── */
+    async function apiFetch(path, opts = {}) {
       try {
-        const res = await fetch(getAPI() + path, {
-          headers: { 'Content-Type': 'application/json', ...options.headers },
-          ...options
+        const res = await fetch(API + path, {
+          headers: { 'Content-Type': 'application/json', ...opts.headers },
+          ...opts
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.status === 204 ? null : res.json();
@@ -1296,29 +1402,96 @@
       }
     }
 
-    /* ─────────────────────────────────────────────
-       TAB ROUTING
-    ───────────────────────────────────────────── */
-    const tabLoaders = {
-      overview: loadOverview,
-      languages: loadLanguages,
-      users: loadUsers,
-      vocabulary: loadVocabulary,
-      achievements: loadAchievements,
-      levels: loadLevels,
-      units: loadUnits,
-      lessons: loadLessons,
-      exercises: loadExercises,
-      lesson_history: loadHistory,
-      user_stats: loadStats,
-      config: loadConfig
-    };
+    /* ── TOAST ── */
+    function toast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = isError ? 'var(--coral)' : 'var(--jade)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
 
-    const tabTitles = {
+    /* ── MODAL ── */
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // Cerrar modal al hacer click en overlay
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+    });
+
+    // Reset de campos al cancelar — título + hidden id
+    function resetModal(id) {
+      const modal = document.getElementById(id);
+      modal.querySelectorAll('input:not([type=hidden]), textarea').forEach(el => el.value = '');
+      modal.querySelectorAll('input[type=hidden]').forEach(el => el.value = '');
+      // Reset títulos
+      const titleEl = modal.querySelector('.modal-title');
+      const defaultTitles = {
+        'modal-language': 'Nuevo idioma', 'modal-user': 'Nuevo usuario',
+        'modal-vocab': 'Nueva palabra', 'modal-achievement': 'Nuevo logro',
+        'modal-level': 'Nuevo nivel', 'modal-unit': 'Nueva unidad',
+        'modal-lesson': 'Nueva lección', 'modal-exercise': 'Nuevo ejercicio',
+        'modal-writing-system': 'Nuevo sistema de escritura'
+      };
+      if (titleEl && defaultTitles[id]) titleEl.textContent = defaultTitles[id];
+    }
+
+    /* ── FILTER TABLE ── */
+    function filterTable(tableId, query) {
+      const tbl = document.getElementById(tableId);
+      if (!tbl) return;
+      const q = query.toLowerCase();
+      tbl.querySelectorAll('tbody tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+
+    /* ── HELPERS ── */
+    function getLangCode(id) {
+      const l = languagesCache.find(x => x.id === id || x.id === +id);
+      return l ? l.code : (id ?? '?');
+    }
+    function pct(v) {
+      if (!v && v !== 0) return 'chip-red';
+      if (v >= .8) return 'chip-green';
+      if (v >= .5) return 'chip-amber';
+      return 'chip-red';
+    }
+    function diffChip(d) {
+      if (d === 'easy') return 'chip-green';
+      if (d === 'medium') return 'chip-amber';
+      if (d === 'hard') return 'chip-red';
+      return 'chip-blue';
+    }
+    function fmtDate(d) {
+      if (!d) return '—';
+      try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit' }); }
+      catch { return d; }
+    }
+    function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
+    function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Verifica que Spring Boot esté corriendo.</small></p></div>`; }
+    function loadingHTML() { return `<div class="loading"><span class="spinner"></span>Cargando…</div>`; }
+    function numVal(id) { return +document.getElementById(id).value || 0; }
+    function strVal(id) { return document.getElementById(id).value.trim(); }
+    function selVal(id) { const v = document.getElementById(id).value; return v || null; }
+
+    /* ── TAB ROUTING ── */
+    const TAB_TITLES = {
       overview: 'Overview', languages: 'Idiomas', users: 'Usuarios',
       vocabulary: 'Vocabulario', achievements: 'Logros', levels: 'Niveles',
       units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
-      lesson_history: 'Historial', user_stats: 'Estadísticas', config: 'Configuración'
+      lesson_history: 'Historial', user_stats: 'Estadísticas',
+      user_progress: 'Progreso de Usuario', user_energy: 'Energía',
+      writing_systems: 'Sistemas de Escritura', config: 'Configuración'
+    };
+    const TAB_LOADERS = {
+      overview: loadOverview, languages: loadLanguages, users: loadUsers,
+      vocabulary: loadVocabulary, achievements: loadAchievements, levels: loadLevels,
+      units: loadUnits, lessons: loadLessons, exercises: loadExercises,
+      lesson_history: loadHistory, user_stats: loadStats,
+      user_progress: loadUserProgress, user_energy: loadUserEnergy,
+      writing_systems: loadWritingSystems, config: loadConfig
     };
 
     function showTab(name) {
@@ -1326,18 +1499,98 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       const pane = document.getElementById('tab-' + name);
       if (pane) pane.classList.add('active');
-      const btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick')?.includes(`'${name}'`));
+      const btn = [...document.querySelectorAll('.nav-btn')]
+        .find(b => b.getAttribute('onclick')?.includes(`'${name}'`));
       if (btn) btn.classList.add('active');
-      document.getElementById('page-title').textContent = tabTitles[name] || name;
-      if (tabLoaders[name]) tabLoaders[name]();
+      document.getElementById('page-title').textContent = TAB_TITLES[name] || name;
+      if (TAB_LOADERS[name]) TAB_LOADERS[name]();
     }
 
-    function loadTab(name) { showTab(name); }
+    /* ── DROPDOWNS GLOBALES ── */
+    function refreshLangDropdowns() {
+      const base = '<option value="">— Selecciona —</option>';
+      const opts = base + languagesCache.map(l =>
+        `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`
+      ).join('');
 
-    /* ─────────────────────────────────────────────
-       OVERVIEW
-    ───────────────────────────────────────────── */
+      // Modales
+      ['vocab-lang-id', 'level-lang-id', 'ws-lang-id'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = opts;
+      });
+      // user-lang permite "sin asignar"
+      const userLangEl = document.getElementById('user-lang');
+      if (userLangEl) userLangEl.innerHTML = '<option value="">— Sin asignar —</option>' +
+        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+
+      // Filtros de tab (incluyen opción "todos")
+      const allOpts = '<option value="">Todos los idiomas</option>' +
+        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+      ['vocab-lang-filter', 'levels-lang-filter', 'ws-lang-filter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = allOpts;
+      });
+    }
+
+    async function refreshDropdowns() {
+      // Niveles → dropdown de unidades
+      try {
+        const data = await apiFetch('/levels');
+        const rows = data?.content ?? data ?? [];
+        const opts = '<option value="">— Selecciona nivel —</option>' +
+          rows.map(l => `<option value="${l.id}">Lv${l.levelNum ?? l.level_num} · ${l.title}</option>`).join('');
+        const el = document.getElementById('unit-level-id');
+        if (el) el.innerHTML = opts;
+      } catch { }
+
+      // Unidades → dropdown de lecciones + filtro
+      try {
+        const data = await apiFetch('/units');
+        const rows = data?.content ?? data ?? [];
+        const opts = '<option value="">— Selecciona unidad —</option>' +
+          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+        const el = document.getElementById('lesson-unit-id');
+        if (el) el.innerHTML = opts;
+        const filt = document.getElementById('lessons-unit-filter');
+        if (filt) filt.innerHTML = '<option value="">Todas las unidades</option>' +
+          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+      } catch { }
+
+      // Lecciones → dropdown de ejercicios
+      try {
+        const data = await apiFetch('/lessons');
+        lessonsCache = data?.content ?? data ?? [];
+        const opts = '<option value="">— Selecciona lección —</option>' +
+          lessonsCache.map(l => `<option value="${l.id}">L${l.lessonNum ?? l.lesson_num} · ${l.title}</option>`).join('');
+        const el = document.getElementById('ex-lesson-id');
+        if (el) el.innerHTML = opts;
+      } catch { }
+
+      // Usuarios → filtro de progreso
+      try {
+        const data = await apiFetch('/users');
+        usersCache = data?.content ?? data ?? [];
+        const sel = document.getElementById('progress-user-filter');
+        if (sel) sel.innerHTML = '<option value="">Todos los usuarios</option>' +
+          usersCache.map(u => `<option value="${u.id}">${u.id} · ${u.username}</option>`).join('');
+      } catch { }
+    }
+
+    /* ── DELETE GENÉRICO ── */
+    async function deleteRecord(entity, id, reloadFn) {
+      if (!confirm(`¿Eliminar registro #${id} de ${entity}?`)) return;
+      try {
+        await apiFetch(`/${entity}/${id}`, { method: 'DELETE' });
+        toast('Eliminado ✓');
+        if (window[reloadFn]) window[reloadFn]();
+      } catch { }
+    }
+
+    /* ════════════════════ LOADERS ════════════════════ */
+
+    /* ── OVERVIEW ── */
     async function loadOverview() {
+      // Contadores — solo los endpoints que existen
       try {
         const [users, langs, exercises, vocab, ach, lessons] = await Promise.all([
           apiFetch('/users/count'),
@@ -1347,38 +1600,55 @@
           apiFetch('/achievements/count'),
           apiFetch('/lessons/count')
         ]);
-        document.getElementById('stat-users').textContent = users?.count ?? users ?? '—';
-        document.getElementById('stat-langs').textContent = langs?.count ?? langs ?? '—';
-        document.getElementById('stat-exercises').textContent = exercises?.count ?? exercises ?? '—';
-        document.getElementById('stat-vocab').textContent = vocab?.count ?? vocab ?? '—';
-        document.getElementById('stat-ach').textContent = ach?.count ?? ach ?? '—';
-        document.getElementById('stat-lessons').textContent = lessons?.count ?? lessons ?? '—';
+        document.getElementById('stat-users').textContent = users?.count ?? '—';
+        document.getElementById('stat-langs').textContent = langs?.count ?? '—';
+        document.getElementById('stat-exercises').textContent = exercises?.count ?? '—';
+        document.getElementById('stat-vocab').textContent = vocab?.count ?? '—';
+        document.getElementById('stat-ach').textContent = ach?.count ?? '—';
+        document.getElementById('stat-lessons').textContent = lessons?.count ?? '—';
       } catch { }
 
+      // Contadores de entidades sin /count — usar la lista y contar localmente
       try {
-        const recent = await apiFetch('/lesson-history?size=8&sort=completedAt,desc');
-        const rows = (recent?.content ?? recent ?? []).slice(0, 8);
+        const [progress, ws] = await Promise.all([
+          apiFetch('/user-progress').catch(() => []),
+          apiFetch('/writing-systems').catch(() => [])
+        ]);
+        document.getElementById('stat-progress').textContent = (progress?.content ?? progress ?? []).length;
+        document.getElementById('stat-ws').textContent = (ws?.content ?? ws ?? []).length;
+      } catch { }
+
+      // Energía activa = cuántos usuarios tienen energía registrada
+      try {
+        const users = await apiFetch('/users');
+        const uList = users?.content ?? users ?? [];
+        document.getElementById('stat-energy').textContent = uList.length;
+      } catch { }
+
+      // Recientes — sin parámetros de paginación (el back no los soporta)
+      try {
+        const data = await apiFetch('/lesson-history');
+        const rows = (data?.content ?? data ?? []).slice(0, 8);
         const body = document.getElementById('recent-lessons-body');
-        if (!rows.length) { body.innerHTML = `<div class="empty"><p>Sin datos</p></div>`; return; }
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
         body.innerHTML = `<table id="rec-table">
-      <thead><tr><th>#</th><th>Usuario</th><th>Lección</th><th>Performance</th><th>XP</th><th>Fecha</th></tr></thead>
+      <thead><tr><th>#</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>XP</th><th>Fecha</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td><span style="color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem">${r.id}</span></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td>${r.userId ?? r.user_id}</td>
-        <td>${r.lessonId ?? r.lesson_id ?? r.unitId ?? r.unit_id}</td>
+        <td>${r.unitId ?? r.unit_id}</td>
         <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
-        <td>+${r.earnedExp ?? r.earned_exp ?? 0}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
+        <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
       </tr>`).join('')}</tbody>
     </table>`;
-      } catch { }
+      } catch { document.getElementById('recent-lessons-body').innerHTML = errorHTML(); }
     }
 
-    /* ─────────────────────────────────────────────
-       LANGUAGES
-    ───────────────────────────────────────────── */
+    /* ── LANGUAGES ── */
     async function loadLanguages() {
       const body = document.getElementById('languages-body');
+      body.innerHTML = loadingHTML();
       try {
         const data = await apiFetch('/languages');
         const rows = data?.content ?? data ?? [];
@@ -1388,21 +1658,21 @@
         body.innerHTML = `<table id="languages-table">
       <thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Nativo</th><th>Familia</th><th>Escritura</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td><span class="chip chip-green">${r.code}</span></td>
-        <td>${r.langName ?? r.lang_name}</td>
+        <td><strong>${r.langName ?? r.lang_name}</strong></td>
         <td style="color:var(--muted)">${r.nativeName ?? r.native_name ?? ''}</td>
-        <td style="color:var(--muted);font-size:.8rem">${r.family ?? ''}</td>
+        <td style="color:var(--muted);font-size:.78rem">${r.family ?? ''}</td>
         <td><span class="chip chip-blue">${r.writingSystem ?? r.writing_system ?? ''}</span></td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editLanguage(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editLanguage(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('languages',${r.id},'loadLanguages')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalLanguage() { resetModal('modal-language'); openModal('modal-language'); }
     function editLanguage(r) {
       document.getElementById('lang-id').value = r.id;
       document.getElementById('lang-code').value = r.code;
@@ -1415,57 +1685,50 @@
       document.getElementById('modal-language-title').textContent = 'Editar idioma';
       openModal('modal-language');
     }
-
     async function saveLanguage() {
-      const id = document.getElementById('lang-id').value;
+      const id = strVal('lang-id');
       const payload = {
-        code: document.getElementById('lang-code').value,
-        langName: document.getElementById('lang-name').value,
-        nativeName: document.getElementById('lang-native').value,
-        color: document.getElementById('lang-color').value,
-        flag: document.getElementById('lang-flag').value,
-        family: document.getElementById('lang-family').value,
-        writingSystem: document.getElementById('lang-ws').value
+        code: strVal('lang-code'), langName: strVal('lang-name'), nativeName: strVal('lang-native'),
+        color: strVal('lang-color'), flag: strVal('lang-flag'), family: strVal('lang-family'),
+        writingSystem: strVal('lang-ws')
       };
       try {
         if (id) await apiFetch('/languages/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/languages', { method: 'POST', body: JSON.stringify(payload) });
         toast(id ? 'Idioma actualizado ✓' : 'Idioma creado ✓');
-        closeModal('modal-language');
-        document.getElementById('lang-id').value = '';
-        document.getElementById('modal-language-title').textContent = 'Nuevo idioma';
+        closeModal('modal-language'); resetModal('modal-language');
         loadLanguages();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       USERS
-    ───────────────────────────────────────────── */
+    /* ── USERS ── */
     async function loadUsers() {
       const body = document.getElementById('users-body');
+      body.innerHTML = loadingHTML();
       try {
         const data = await apiFetch('/users');
         const rows = data?.content ?? data ?? [];
+        usersCache = rows;
         if (!rows.length) { body.innerHTML = emptyHTML(); return; }
         body.innerHTML = `<table id="users-table">
       <thead><tr><th>ID</th><th>Username</th><th>Nombre</th><th>Email</th><th>Level</th><th>XP</th><th>Streak</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td><strong>${r.username}</strong></td>
         <td>${r.fullName ?? r.full_name}</td>
-        <td style="color:var(--muted);font-size:.8rem">${r.email}</td>
+        <td style="color:var(--muted);font-size:.78rem">${r.email}</td>
         <td><span class="chip chip-blue">Lv ${r.userLevel ?? r.user_level ?? 1}</span></td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--amber)">${(r.xp || 0).toLocaleString()}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">${(r.xp || 0).toLocaleString()}</td>
         <td>${r.streak ?? 0} 🔥</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editUser(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editUser(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('users',${r.id},'loadUsers')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalUser() { resetModal('modal-user'); openModal('modal-user'); }
     function editUser(r) {
       document.getElementById('user-id').value = r.id;
       document.getElementById('user-username').value = r.username;
@@ -1474,37 +1737,32 @@
       document.getElementById('user-level').value = r.userLevel ?? r.user_level ?? 1;
       document.getElementById('user-xp').value = r.xp ?? 0;
       document.getElementById('user-streak').value = r.streak ?? 0;
+      document.getElementById('user-lang').value = r.currentLang ?? r.current_lang ?? '';
       document.getElementById('modal-user-title').textContent = 'Editar usuario';
       openModal('modal-user');
     }
-
     async function saveUser() {
-      const id = document.getElementById('user-id').value;
+      const id = strVal('user-id');
+      const langVal = selVal('user-lang');
       const payload = {
-        username: document.getElementById('user-username').value,
-        fullName: document.getElementById('user-fullname').value,
-        email: document.getElementById('user-email').value,
-        userLevel: +document.getElementById('user-level').value,
-        xp: +document.getElementById('user-xp').value,
-        streak: +document.getElementById('user-streak').value,
-        currentLang: document.getElementById('user-lang').value || null
-      };
+        username: strVal('user-username'), fullName: strVal('user-fullname'),
+        email: strVal('user-email'), userLevel: numVal('user-level'),
+        xp: numVal('user-xp'), streak: numVal('user-streak'),
+        currentLang: langVal ? +langVal : null
+      };   // FIX: null en lugar de string vacío
       try {
         if (id) await apiFetch('/users/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/users', { method: 'POST', body: JSON.stringify(payload) });
         toast(id ? 'Usuario actualizado ✓' : 'Usuario creado ✓');
-        closeModal('modal-user');
-        document.getElementById('user-id').value = '';
-        document.getElementById('modal-user-title').textContent = 'Nuevo usuario';
+        closeModal('modal-user'); resetModal('modal-user');
         loadUsers();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       VOCABULARY
-    ───────────────────────────────────────────── */
+    /* ── VOCABULARY ── */
     async function loadVocabulary() {
       const body = document.getElementById('vocab-body');
+      body.innerHTML = loadingHTML();
       const langId = document.getElementById('vocab-lang-filter')?.value || '';
       const url = langId ? `/vocabulary?languageId=${langId}` : '/vocabulary';
       try {
@@ -1514,56 +1772,52 @@
         body.innerHTML = `<table id="vocab-table">
       <thead><tr><th>ID</th><th>Idioma</th><th>Palabra</th><th>Traducción</th><th>Pronunciación</th><th>Ejemplo</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
         <td><strong>${r.word}</strong></td>
         <td>${r.translation ?? ''}</td>
-        <td style="color:var(--muted);font-size:.8rem;font-family:'Space Mono',monospace">${r.pronunciation ?? ''}</td>
-        <td style="color:var(--muted);font-size:.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.example ?? ''}</td>
+        <td style="color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.72rem">${r.pronunciation ?? ''}</td>
+        <td style="color:var(--muted);font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.example ?? ''}</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editVocab(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editVocab(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('vocabulary',${r.id},'loadVocabulary')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalVocab() { resetModal('modal-vocab'); openModal('modal-vocab'); }
     function editVocab(r) {
       document.getElementById('vocab-id').value = r.id;
-      document.getElementById('vocab-lang-id').value = r.languageId ?? r.language_id;
+      document.getElementById('vocab-lang-id').value = r.languageId ?? r.language_id ?? '';
       document.getElementById('vocab-word').value = r.word;
       document.getElementById('vocab-translation').value = r.translation ?? '';
       document.getElementById('vocab-pron').value = r.pronunciation ?? '';
       document.getElementById('vocab-example').value = r.example ?? '';
+      document.getElementById('modal-vocab-title').textContent = 'Editar palabra';
       openModal('modal-vocab');
     }
-
     async function saveVocabulary() {
-      const id = document.getElementById('vocab-id').value;
+      const id = strVal('vocab-id');
       const payload = {
-        languageId: +document.getElementById('vocab-lang-id').value,
-        word: document.getElementById('vocab-word').value,
-        translation: document.getElementById('vocab-translation').value,
-        pronunciation: document.getElementById('vocab-pron').value,
-        example: document.getElementById('vocab-example').value
+        languageId: numVal('vocab-lang-id'), word: strVal('vocab-word'),
+        translation: strVal('vocab-translation'), pronunciation: strVal('vocab-pron'),
+        example: strVal('vocab-example')
       };
       try {
         if (id) await apiFetch('/vocabulary/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/vocabulary', { method: 'POST', body: JSON.stringify(payload) });
         toast('Vocabulario guardado ✓');
-        closeModal('modal-vocab');
-        document.getElementById('vocab-id').value = '';
+        closeModal('modal-vocab'); resetModal('modal-vocab');
         loadVocabulary();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       ACHIEVEMENTS
-    ───────────────────────────────────────────── */
-    const rarityChip = { common: 'chip-blue', uncommon: 'chip-green', rare: 'chip-amber', epic: 'chip-red', legendary: 'chip-red' };
+    /* ── ACHIEVEMENTS ── */
+    const rarityChip = { common: 'chip-blue', rare: 'chip-amber', epic: 'chip-purple', legendary: 'chip-red' };
     async function loadAchievements() {
       const body = document.getElementById('achievements-body');
+      body.innerHTML = loadingHTML();
       try {
         const data = await apiFetch('/achievements');
         const rows = data?.content ?? data ?? [];
@@ -1571,20 +1825,20 @@
         body.innerHTML = `<table id="ach-table">
       <thead><tr><th>ID</th><th>Título</th><th>Categoría</th><th>XP</th><th>Rareza</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
-        <td><span style="margin-right:6px">${r.icon ?? '🏆'}</span><strong>${r.title}</strong></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td><span style="margin-right:5px">${r.icon ?? '🏆'}</span><strong>${r.title}</strong></td>
         <td><span class="chip chip-blue">${r.category ?? ''}</span></td>
-        <td style="color:var(--amber);font-family:'Space Mono',monospace;font-size:.8rem">+${r.xpReward ?? r.xp_reward ?? 0}</td>
+        <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.xpReward ?? r.xp_reward ?? 0}</td>
         <td><span class="chip ${rarityChip[r.rarity] ?? 'chip-blue'}">${r.rarity ?? ''}</span></td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editAchievement(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editAchievement(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('achievements',${r.id},'loadAchievements')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalAch() { resetModal('modal-achievement'); openModal('modal-achievement'); }
     function editAchievement(r) {
       document.getElementById('ach-id').value = r.id;
       document.getElementById('ach-title').value = r.title;
@@ -1594,35 +1848,30 @@
       document.getElementById('ach-cat').value = r.category ?? '';
       document.getElementById('ach-rarity').value = r.rarity ?? 'common';
       document.getElementById('ach-req').value = r.requirement ?? '';
+      document.getElementById('modal-ach-title').textContent = 'Editar logro';
       openModal('modal-achievement');
     }
-
     async function saveAchievement() {
-      const id = document.getElementById('ach-id').value;
+      const id = strVal('ach-id');
       const payload = {
-        title: document.getElementById('ach-title').value,
-        description: document.getElementById('ach-desc').value,
-        icon: document.getElementById('ach-icon').value,
-        xpReward: +document.getElementById('ach-xp').value,
-        category: document.getElementById('ach-cat').value,
-        rarity: document.getElementById('ach-rarity').value,
-        requirement: document.getElementById('ach-req').value
+        title: strVal('ach-title'), description: strVal('ach-desc'),
+        icon: strVal('ach-icon'), xpReward: numVal('ach-xp'),
+        category: strVal('ach-cat'), rarity: strVal('ach-rarity'),
+        requirement: strVal('ach-req')
       };
       try {
         if (id) await apiFetch('/achievements/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/achievements', { method: 'POST', body: JSON.stringify(payload) });
         toast('Logro guardado ✓');
-        closeModal('modal-achievement');
-        document.getElementById('ach-id').value = '';
+        closeModal('modal-achievement'); resetModal('modal-achievement');
         loadAchievements();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       LEVELS
-    ───────────────────────────────────────────── */
+    /* ── LEVELS ── */
     async function loadLevels() {
       const body = document.getElementById('levels-body');
+      body.innerHTML = loadingHTML();
       const langId = document.getElementById('levels-lang-filter')?.value || '';
       const url = langId ? `/levels?languageId=${langId}` : '/levels';
       try {
@@ -1632,21 +1881,21 @@
         body.innerHTML = `<table id="levels-table">
       <thead><tr><th>ID</th><th>Idioma</th><th>#</th><th>Título</th><th>Nativo</th><th>Gratuito</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
-        <td style="font-family:'Space Mono',monospace">${r.levelNum ?? r.level_num}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.levelNum ?? r.level_num}</td>
         <td><strong>${r.title}</strong></td>
         <td style="color:var(--muted)">${r.titleNative ?? r.title_native ?? ''}</td>
         <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editLevel(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editLevel(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('levels',${r.id},'loadLevels')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalLevel() { resetModal('modal-level'); openModal('modal-level'); }
     function editLevel(r) {
       document.getElementById('level-id').value = r.id;
       document.getElementById('level-lang-id').value = r.languageId ?? r.language_id;
@@ -1655,56 +1904,51 @@
       document.getElementById('level-title').value = r.title;
       document.getElementById('level-native').value = r.titleNative ?? r.title_native ?? '';
       document.getElementById('level-free').value = r.isFree ?? r.is_free ?? 0;
+      document.getElementById('modal-level-title').textContent = 'Editar nivel';
       openModal('modal-level');
     }
-
     async function saveLevel() {
-      const id = document.getElementById('level-id').value;
+      const id = strVal('level-id');
       const payload = {
-        languageId: +document.getElementById('level-lang-id').value,
-        levelNum: +document.getElementById('level-num').value,
-        color: document.getElementById('level-color').value,
-        title: document.getElementById('level-title').value,
-        titleNative: document.getElementById('level-native').value,
-        isFree: +document.getElementById('level-free').value
+        languageId: numVal('level-lang-id'), levelNum: numVal('level-num'),
+        color: strVal('level-color'), title: strVal('level-title'),
+        titleNative: strVal('level-native'), isFree: numVal('level-free')
       };
       try {
         if (id) await apiFetch('/levels/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/levels', { method: 'POST', body: JSON.stringify(payload) });
         toast('Nivel guardado ✓');
-        closeModal('modal-level');
-        document.getElementById('level-id').value = '';
+        closeModal('modal-level'); resetModal('modal-level');
         loadLevels();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       UNITS
-    ───────────────────────────────────────────── */
+    /* ── UNITS ── */
     async function loadUnits() {
       const body = document.getElementById('units-body');
+      body.innerHTML = loadingHTML();
       try {
         const data = await apiFetch('/units');
         const rows = data?.content ?? data ?? [];
         if (!rows.length) { body.innerHTML = emptyHTML(); return; }
         body.innerHTML = `<table id="units-table">
-      <thead><tr><th>ID</th><th>Nivel ID</th><th>#</th><th>Título</th><th>Objetivo</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+      <thead><tr><th>ID</th><th>Nivel</th><th>#</th><th>Título</th><th>Objetivo</th><th>Gratuita</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.levelId ?? r.level_id}</td>
-        <td style="font-family:'Space Mono',monospace">${r.unitNum ?? r.unit_num}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.levelId ?? r.level_id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.unitNum ?? r.unit_num}</td>
         <td><strong>${r.title}</strong></td>
-        <td style="color:var(--muted);font-size:.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.objective ?? ''}</td>
+        <td style="color:var(--muted);font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.objective ?? ''}</td>
         <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editUnit(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editUnit(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('units',${r.id},'loadUnits')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalUnit() { resetModal('modal-unit'); openModal('modal-unit'); }
     function editUnit(r) {
       document.getElementById('unit-id').value = r.id;
       document.getElementById('unit-level-id').value = r.levelId ?? r.level_id;
@@ -1714,63 +1958,60 @@
       document.getElementById('unit-obj').value = r.objective ?? '';
       document.getElementById('unit-grammar').value = r.grammar ?? '';
       document.getElementById('unit-free').value = r.isFree ?? r.is_free ?? 0;
+      document.getElementById('modal-unit-title').textContent = 'Editar unidad';
       openModal('modal-unit');
     }
-
     async function saveUnit() {
-      const id = document.getElementById('unit-id').value;
+      const id = strVal('unit-id');
       const payload = {
-        levelId: +document.getElementById('unit-level-id').value,
-        unitNum: +document.getElementById('unit-num').value,
-        color: document.getElementById('unit-color').value,
-        title: document.getElementById('unit-title').value,
-        objective: document.getElementById('unit-obj').value,
-        grammar: document.getElementById('unit-grammar').value,
-        isFree: +document.getElementById('unit-free').value
+        levelId: numVal('unit-level-id'), unitNum: numVal('unit-num'),
+        color: strVal('unit-color'), title: strVal('unit-title'),
+        objective: strVal('unit-obj'), grammar: strVal('unit-grammar'),
+        isFree: numVal('unit-free')
       };
       try {
         if (id) await apiFetch('/units/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/units', { method: 'POST', body: JSON.stringify(payload) });
         toast('Unidad guardada ✓');
-        closeModal('modal-unit');
-        document.getElementById('unit-id').value = '';
+        closeModal('modal-unit'); resetModal('modal-unit');
         loadUnits();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       LESSONS
-    ───────────────────────────────────────────── */
-
+    /* ── LESSONS ── */
     async function loadLessons() {
       const body = document.getElementById('lessons-body');
+      body.innerHTML = loadingHTML();
       const unitId = document.getElementById('lessons-unit-filter')?.value || '';
       const url = unitId ? `/lessons?unitId=${unitId}` : '/lessons';
       try {
         const data = await apiFetch(url);
         const rows = data?.content ?? data ?? [];
         lessonsCache = rows;
-        refreshLessonDropdowns();
+        // Actualizar solo el dropdown de ejercicios, sin relanzar todos los dropdowns
+        const opts = '<option value="">— Selecciona lección —</option>' +
+          lessonsCache.map(l => `<option value="${l.id}">L${l.lessonNum ?? l.lesson_num} · ${l.title}</option>`).join('');
+        const el = document.getElementById('ex-lesson-id');
+        if (el) el.innerHTML = opts;
         if (!rows.length) { body.innerHTML = emptyHTML(); return; }
         body.innerHTML = `<table id="lessons-table">
-      <thead><tr><th>ID</th><th>Unidad</th><th>#</th><th>Título</th><th>Descripción</th><th>XP</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+      <thead><tr><th>ID</th><th>Unidad</th><th>#</th><th>Título</th><th>XP</th><th>Gratuita</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.unitId ?? r.unit_id}</td>
-        <td style="font-family:'Space Mono',monospace">${r.lessonNum ?? r.lesson_num}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.unitId ?? r.unit_id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.lessonNum ?? r.lesson_num}</td>
         <td><strong>${r.title}</strong></td>
-        <td style="color:var(--muted);font-size:.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.description ?? ''}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--amber)">+${r.xpReward ?? r.xp_reward ?? 10}</td>
+        <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.xpReward ?? r.xp_reward ?? 10}</td>
         <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editLesson(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editLesson(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('lessons',${r.id},'loadLessons')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalLesson() { resetModal('modal-lesson'); openModal('modal-lesson'); }
     function editLesson(r) {
       document.getElementById('lesson-id').value = r.id;
       document.getElementById('lesson-unit-id').value = r.unitId ?? r.unit_id;
@@ -1782,44 +2023,26 @@
       document.getElementById('modal-lesson-title').textContent = 'Editar lección';
       openModal('modal-lesson');
     }
-
     async function saveLesson() {
-      const id = document.getElementById('lesson-id').value;
+      const id = strVal('lesson-id');
       const payload = {
-        unitId: +document.getElementById('lesson-unit-id').value,
-        lessonNum: +document.getElementById('lesson-num').value,
-        xpReward: +document.getElementById('lesson-xp').value,
-        title: document.getElementById('lesson-title').value,
-        description: document.getElementById('lesson-desc').value,
-        isFree: +document.getElementById('lesson-free').value
+        unitId: numVal('lesson-unit-id'), lessonNum: numVal('lesson-num'),
+        xpReward: numVal('lesson-xp'), title: strVal('lesson-title'),
+        description: strVal('lesson-desc'), isFree: numVal('lesson-free')
       };
       try {
         if (id) await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/lessons', { method: 'POST', body: JSON.stringify(payload) });
         toast('Lección guardada ✓');
-        closeModal('modal-lesson');
-        document.getElementById('lesson-id').value = '';
-        document.getElementById('modal-lesson-title').textContent = 'Nueva lección';
+        closeModal('modal-lesson'); resetModal('modal-lesson');
         loadLessons();
       } catch { }
     }
 
-    function refreshLessonDropdowns() {
-      const opts = '<option value="">— Selecciona lección —</option>' +
-        lessonsCache.map(l => `<option value="${l.id}">L${l.lessonNum ?? l.lesson_num} · ${l.title}</option>`).join('');
-      const el = document.getElementById('ex-lesson-id');
-      if (el) el.innerHTML = opts;
-
-      // también el filtro del tab
-      const filt = document.getElementById('lessons-unit-filter');
-      // ese lo poblamos desde unitsCache en loadLevelDropdown
-    }
-
-    /* ─────────────────────────────────────────────
-       EXERCISES
-    ───────────────────────────────────────────── */
+    /* ── EXERCISES ── */
     async function loadExercises() {
       const body = document.getElementById('exercises-body');
+      body.innerHTML = loadingHTML();
       const type = document.getElementById('ex-type-filter')?.value || '';
       const url = type ? `/exercises?type=${encodeURIComponent(type)}` : '/exercises';
       try {
@@ -1829,124 +2052,245 @@
         body.innerHTML = `<table id="ex-table">
       <thead><tr><th>ID</th><th>Lección</th><th>Tipo</th><th>Pregunta</th><th>Dificultad</th><th>Pts</th><th>Acciones</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.lessonId ?? r.lesson_id ?? '—'}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.lessonId ?? r.lesson_id ?? '—'}</td>
         <td><span class="chip chip-blue">${r.exerciseType ?? r.exercise_type}</span></td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem">${r.question ?? ''}</td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.question ?? ''}</td>
         <td><span class="chip ${diffChip(r.difficulty)}">${r.difficulty ?? ''}</span></td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem;color:var(--jade)">${r.points ?? 10}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;color:var(--jade)">${r.points ?? 15}</td>
         <td><div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick='editExercise(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick='editExercise(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecord('exercises',${r.id},'loadExercises')">Eliminar</button>
         </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
-
+    function openModalEx() { resetModal('modal-exercise'); openModal('modal-exercise'); }
     function editExercise(r) {
       document.getElementById('ex-id').value = r.id;
       document.getElementById('ex-lesson-id').value = r.lessonId ?? r.lesson_id ?? '';
-      document.getElementById('ex-type').value = r.exerciseType ?? r.exercise_type ?? 'multiple_choice';
+      document.getElementById('ex-type').value = r.exerciseType ?? r.exercise_type ?? 'multiple-choice';
       document.getElementById('ex-diff').value = r.difficulty ?? 'easy';
-      document.getElementById('ex-pts').value = r.points ?? 10;
+      document.getElementById('ex-pts').value = r.points ?? 15;
+      document.getElementById('ex-char').value = r.characterRef ?? r.character_ref ?? '';
       document.getElementById('ex-question').value = r.question ?? '';
       document.getElementById('ex-answer').value = r.answer ?? '';
+      document.getElementById('ex-correct').value = r.correctAns ?? r.correct_ans ?? '';
+      document.getElementById('ex-options').value = r.options ?? '';
       document.getElementById('ex-explanation').value = r.explanation ?? '';
+      document.getElementById('modal-ex-title').textContent = 'Editar ejercicio';
       openModal('modal-exercise');
     }
-
     async function saveExercise() {
-      const id = document.getElementById('ex-id').value;
+      const id = strVal('ex-id');
       const payload = {
-        lessonId: +document.getElementById('ex-lesson-id').value,
-        exerciseType: document.getElementById('ex-type').value,
-        difficulty: document.getElementById('ex-diff').value,
-        points: +document.getElementById('ex-pts').value,
-        question: document.getElementById('ex-question').value,
-        answer: document.getElementById('ex-answer').value,
-        explanation: document.getElementById('ex-explanation').value
+        lessonId: numVal('ex-lesson-id') || null,
+        exerciseType: strVal('ex-type'), difficulty: strVal('ex-diff'),
+        points: numVal('ex-pts'), characterRef: strVal('ex-char'),
+        question: strVal('ex-question'), answer: strVal('ex-answer'),
+        correctAns: strVal('ex-correct') || null,
+        options: strVal('ex-options') || null,
+        explanation: strVal('ex-explanation')
       };
       try {
         if (id) await apiFetch('/exercises/' + id, { method: 'PUT', body: JSON.stringify(payload) });
         else await apiFetch('/exercises', { method: 'POST', body: JSON.stringify(payload) });
         toast('Ejercicio guardado ✓');
-        closeModal('modal-exercise');
-        document.getElementById('ex-id').value = '';
+        closeModal('modal-exercise'); resetModal('modal-exercise');
         loadExercises();
       } catch { }
     }
 
-    /* ─────────────────────────────────────────────
-       HISTORY & STATS
-    ───────────────────────────────────────────── */
+    /* ── HISTORY ── */
     async function loadHistory() {
       const body = document.getElementById('lesson_history-body');
+      body.innerHTML = loadingHTML();
       try {
-        const data = await apiFetch('/lesson-history?size=50&sort=completedAt,desc');
+        const data = await apiFetch('/lesson-history');  // sin parámetros de paginación
         const rows = data?.content ?? data ?? [];
         if (!rows.length) { body.innerHTML = emptyHTML(); return; }
         body.innerHTML = `<table id="hist-table">
-      <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>Tiempo(s)</th><th>XP</th><th>¿Perfecto?</th><th>Fecha</th></tr></thead>
+      <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>Tiempo</th><th>XP</th><th>Perfecto</th><th>Fecha</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td>${r.userId ?? r.user_id}</td>
         <td>${r.unitId ?? r.unit_id}</td>
         <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
-        <td style="font-family:'Space Mono',monospace;font-size:.8rem">${r.timeSeconds ?? r.time_seconds ?? 0}s</td>
-        <td style="color:var(--amber);font-family:'Space Mono',monospace;font-size:.8rem">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.timeSeconds ?? r.time_seconds ?? 0}s</td>
+        <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
         <td>${(r.wasPerfect ?? r.was_perfect) ? '⭐' : '—'}</td>
-        <td style="font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
 
+    /* ── STATS ── */
     async function loadStats() {
       const body = document.getElementById('user_stats-body');
+      body.innerHTML = loadingHTML();
       try {
         const data = await apiFetch('/user-stats');
         const rows = data?.content ?? data ?? [];
         if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table>
+        body.innerHTML = `<table id="stats-table">
       <thead><tr><th>ID</th><th>Usuario</th><th>Idioma</th><th>Palabras</th><th>Lecciones</th><th>Días</th><th>Mejor racha</th><th>Minutos</th></tr></thead>
       <tbody>${rows.map(r => `<tr>
-        <td style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
         <td>${r.userId ?? r.user_id}</td>
         <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
-        <td style="font-family:'Space Mono',monospace">${r.wordsLearned ?? r.words_learned ?? 0}</td>
-        <td style="font-family:'Space Mono',monospace">${r.lessonsDone ?? r.lessons_done ?? 0}</td>
-        <td style="font-family:'Space Mono',monospace">${r.daysStudied ?? r.days_studied ?? 0}</td>
-        <td style="font-family:'Space Mono',monospace;color:var(--amber)">${r.bestStreak ?? r.best_streak ?? 0} 🔥</td>
-        <td style="font-family:'Space Mono',monospace">${r.totalMins ?? r.total_mins ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.wordsLearned ?? r.words_learned ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.lessonsDone ?? r.lessons_done ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.daysStudied ?? r.days_studied ?? 0}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">${r.bestStreak ?? r.best_streak ?? 0} 🔥</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.totalMins ?? r.total_mins ?? 0}</td>
       </tr>`).join('')}</tbody>
     </table>`;
       } catch { body.innerHTML = errorHTML(); }
     }
 
-    /* ─────────────────────────────────────────────
-       CONFIG
-    ───────────────────────────────────────────── */
+    /* ── USER PROGRESS ── */
+    async function loadUserProgress() {
+      const body = document.getElementById('user_progress-body');
+      body.innerHTML = loadingHTML();
+      const userId = document.getElementById('progress-user-filter')?.value || '';
+      const url = userId ? `/user-progress?userId=${userId}` : '/user-progress';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="progress-table">
+      <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Completado</th><th>Actual</th><th>Bloqueado</th><th>Fecha</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.userId ?? r.user_id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace">${r.unitId ?? r.unit_id}</td>
+        <td>${(r.completed ?? 0) == 1 ? '<span class="chip chip-green">✓ Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
+        <td>${(r.isCurrent ?? r.is_current ?? 0) == 1 ? '<span class="chip chip-amber">▶</span>' : '—'}</td>
+        <td>${(r.isLocked ?? r.is_locked ?? 1) == 1 ? '<span class="chip chip-red">🔒</span>' : '<span class="chip chip-green">🔓</span>'}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    /* ── USER ENERGY ── */
+    async function loadUserEnergy() {
+      const body = document.getElementById('user_energy-body');
+      body.innerHTML = loadingHTML();
+      try {
+        const users = await apiFetch('/users');
+        const uList = users?.content ?? users ?? [];
+        if (!uList.length) { body.innerHTML = emptyHTML(); return; }
+
+        // Llamadas en paralelo con catch individual para no romper si un usuario no tiene energía
+        const energyList = await Promise.all(
+          uList.map(u =>
+            apiFetch(`/energy/user/${u.id}`)
+              .then(e => ({ ...e, _username: u.username }))
+              .catch(() => null)
+          )
+        );
+        const rows = energyList.filter(Boolean);
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+
+        body.innerHTML = `<table id="energy-table">
+      <thead><tr><th>Usuario</th><th>Energía</th><th>Máx</th><th>Racha</th><th>Uso diario</th><th>Última actualización</th></tr></thead>
+      <tbody>${rows.map(r => {
+          const cur = r.currentEnergy ?? r.current_enrg ?? 0;
+          const max = r.maxEnergy ?? r.max_energy ?? 15;
+          const p = Math.round((cur / max) * 100);
+          const col = p >= 60 ? 'var(--jade)' : p >= 30 ? 'var(--amber)' : 'var(--coral)';
+          return `<tr>
+          <td style="font-family:'IBM Plex Mono',monospace">${r._username}</td>
+          <td>
+            <div class="ebar">
+              <div class="ebar-track"><div class="ebar-fill" style="width:${p}%;background:${col}"></div></div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:${col}">${cur}/${max}</span>
+            </div>
+          </td>
+          <td style="font-family:'IBM Plex Mono',monospace">${max}</td>
+          <td style="color:var(--amber)">${r.streakCount ?? r.streak_count ?? 0} 🔥</td>
+          <td style="font-family:'IBM Plex Mono',monospace">${r.dailyUsage ?? r.daily_usage ?? 0}</td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.lastUpdate ?? r.last_update)}</td>
+        </tr>`;
+        }).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+
+    /* ── WRITING SYSTEMS ── */
+    async function loadWritingSystems() {
+      const body = document.getElementById('writing_systems-body');
+      body.innerHTML = loadingHTML();
+      const langId = document.getElementById('ws-lang-filter')?.value || '';
+      const url = langId ? `/writing-systems?languageId=${langId}` : '/writing-systems';
+      try {
+        const data = await apiFetch(url);
+        const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="ws-table">
+      <thead><tr><th>ID</th><th>Idioma</th><th>Tipo</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+        <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
+        <td><span class="chip chip-blue">${r.systemType ?? r.system_type ?? ''}</span></td>
+        <td><strong>${r.systemName ?? r.system_name ?? '—'}</strong></td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;color:var(--muted)">${r.description ?? '—'}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick='editWS(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecord('writing-systems',${r.id},'loadWritingSystems')">Eliminar</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+    function openModalWS() { resetModal('modal-writing-system'); openModal('modal-writing-system'); }
+    function editWS(r) {
+      document.getElementById('ws-id').value = r.id;
+      document.getElementById('ws-lang-id').value = r.languageId ?? r.language_id ?? '';
+      document.getElementById('ws-type').value = r.systemType ?? r.system_type ?? 'alphabet';
+      document.getElementById('ws-name').value = r.systemName ?? r.system_name ?? '';
+      document.getElementById('ws-desc').value = r.description ?? '';
+      document.getElementById('ws-notes').value = r.notes ?? '';
+      document.getElementById('modal-ws-title').textContent = 'Editar sistema de escritura';
+      openModal('modal-writing-system');
+    }
+    async function saveWritingSystem() {
+      const id = strVal('ws-id');
+      const payload = {
+        languageId: numVal('ws-lang-id'), systemType: strVal('ws-type'),
+        systemName: strVal('ws-name'), description: strVal('ws-desc'),
+        notes: strVal('ws-notes') || null
+      };
+      try {
+        if (id) await apiFetch('/writing-systems/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/writing-systems', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Sistema guardado ✓');
+        closeModal('modal-writing-system'); resetModal('modal-writing-system');
+        loadWritingSystems();
+      } catch { }
+    }
+
+    /* ── CONFIG ── */
     function loadConfig() {
       const saved = localStorage.getItem('tlahtolli_api');
       if (saved) document.getElementById('cfg-api').value = saved;
     }
-
     function saveConfig() {
       API = document.getElementById('cfg-api').value.trim();
       localStorage.setItem('tlahtolli_api', API);
-      const host = document.getElementById('cfg-host').value;
-      const port = document.getElementById('cfg-port').value;
-      document.getElementById('db-host').textContent = `${host}:${port}`;
+      document.getElementById('db-host').textContent =
+        document.getElementById('cfg-host').value + ':' + document.getElementById('cfg-port').value;
       testConnection();
     }
-
     async function testConnection() {
       try {
         await apiFetch('/languages/count');
         document.getElementById('conn-status').textContent = '● Conectado';
         document.getElementById('conn-status').style.color = 'var(--jade)';
-        document.getElementById('conn-detail').textContent = '→ Conexión exitosa con la API ✓';
+        document.getElementById('conn-detail').textContent = '→ Conexión exitosa ✓';
         toast('Conexión exitosa ✓');
       } catch {
         document.getElementById('conn-status').textContent = '● Error';
@@ -1955,110 +2299,34 @@
       }
     }
 
-    /* ─────────────────────────────────────────────
-       DELETE GENERIC
-    ───────────────────────────────────────────── */
-    async function deleteRecord(entity, id, reloadFn) {
-      if (!confirm(`¿Eliminar registro #${id} de ${entity}?`)) return;
+    /* ── INIT ── */
+    window.addEventListener('DOMContentLoaded', async () => {
+      const saved = localStorage.getItem('tlahtolli_api');
+      if (saved) API = saved;
+
+      // Cargar idiomas primero (base para todos los dropdowns)
       try {
-        await apiFetch(`/${entity}/${id}`, { method: 'DELETE' });
-        toast('Eliminado ✓');
-        if (window[reloadFn]) window[reloadFn]();
-      } catch { }
-    }
-
-    /* ─────────────────────────────────────────────
-       HELPERS
-    ───────────────────────────────────────────── */
-    function getLangCode(id) {
-      const l = languagesCache.find(x => x.id === id || x.id === +id);
-      return l ? l.code : (id ?? '?');
-    }
-
-    function refreshLangDropdowns() {
-      const opts = '<option value="">— Selecciona —</option>' +
-        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      ['vocab-lang-id', 'level-lang-id', 'user-lang'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = opts;
-      });
-      const filt = document.getElementById('vocab-lang-filter');
-      if (filt) filt.innerHTML = '<option value="">Todos los idiomas</option>' +
-        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      const levFilt = document.getElementById('levels-lang-filter');
-      if (levFilt) levFilt.innerHTML = '<option value="">Todos los idiomas</option>' +
-        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      loadLevelDropdown();
-    }
-
-    async function loadLevelDropdown() {
-      try {
-        const data = await apiFetch('/levels');
-        const rows = data?.content ?? data ?? [];
-        const opts = '<option value="">— Selecciona nivel —</option>' +
-          rows.map(l => `<option value="${l.id}">Lv${l.levelNum ?? l.level_num} · ${l.title}</option>`).join('');
-        ['unit-level-id'].forEach(id => {
-          const el = document.getElementById(id); if (el) el.innerHTML = opts;
-        });
-      } catch { }
-      try {
-        const data = await apiFetch('/units');
-        const rows = data?.content ?? data ?? [];
-        const unitOpts = '<option value="">— Selecciona unidad —</option>' +
-          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-        // dropdown en modal de lección
-        ['lesson-unit-id'].forEach(id => {
-          const el = document.getElementById(id); if (el) el.innerHTML = unitOpts;
-        });
-        // filtro del tab de lecciones
-        const filt = document.getElementById('lessons-unit-filter');
-        if (filt) filt.innerHTML = '<option value="">Todas las unidades</option>' +
-          rows.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-      } catch { }
-      // cargar lecciones para el dropdown de ejercicios
-      try {
-        const data = await apiFetch('/lessons');
-        const rows = data?.content ?? data ?? [];
-        lessonsCache = rows;
-        refreshLessonDropdowns();
-      } catch { }
-    }
-
-    function pct(v) {
-      if (!v) return 'chip-red';
-      if (v >= .8) return 'chip-green';
-      if (v >= .5) return 'chip-amber';
-      return 'chip-red';
-    }
-
-    function diffChip(d) {
-      if (d === 'easy') return 'chip-green';
-      if (d === 'medium') return 'chip-amber';
-      if (d === 'hard') return 'chip-red';
-      return 'chip-blue';
-    }
-
-    function fmtDate(d) {
-      if (!d) return '—';
-      try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }); }
-      catch { return d; }
-    }
-
-    function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
-    function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Inicia el backend Spring Boot en localhost:8080</small></p></div>`; }
-
-    /* ─────────────────────────────────────────────
-       INIT
-    ───────────────────────────────────────────── */
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedApi = localStorage.getItem('tlahtolli_api');
-      if (savedApi) API = savedApi;
-      loadOverview();
-      // Preload languages for dropdowns
-      apiFetch('/languages').then(d => {
+        const d = await apiFetch('/languages');
         languagesCache = d?.content ?? d ?? [];
         refreshLangDropdowns();
-      }).catch(() => { });
+      } catch { }
+
+      // Cargar dropdowns dependientes en paralelo (sin bloquear la UI)
+      refreshDropdowns();
+
+      // Cargar overview
+      loadOverview();
+
+      // Test de conexión silencioso
+      apiFetch('/languages/count')
+        .then(() => {
+          document.getElementById('conn-status').textContent = '● Conectado';
+          document.getElementById('conn-status').style.color = 'var(--jade)';
+        })
+        .catch(() => {
+          document.getElementById('conn-status').textContent = '● Desconectado';
+          document.getElementById('conn-status').style.color = 'var(--coral)';
+        });
     });
   </script>
 </body>

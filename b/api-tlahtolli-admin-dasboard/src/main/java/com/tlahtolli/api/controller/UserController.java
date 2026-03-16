@@ -1,68 +1,71 @@
 package com.tlahtolli.api.controller;
 
-import java.util.List;
-import java.util.Map;
-
+import com.tlahtolli.api.entity.User;
+import com.tlahtolli.api.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.tlahtolli.api.entity.User;
-import com.tlahtolli.api.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-	private final UserRepository repo;
+	private final UserService userService;
 
-	public UserController(UserRepository repo) {
-		super();
-		this.repo = repo;
+	public UserController(UserService userService) {
+		this.userService = userService;
 	}
 
 	@GetMapping
 	public List<User> getAll() {
-		return repo.findAll();
+		return userService.getAll();
 	}
 
 	@GetMapping("/count")
 	public Map<String, Long> count() {
-		return Map.of("count", repo.count());
+		return Map.of("count", (long) userService.getAll().size());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getById(@PathVariable Long id) {
-		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+		return userService.getById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/by-username/{username}")
+	public ResponseEntity<User> getByUsername(@PathVariable String username) {
+		return userService.getByUsername(username).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
-	public ResponseEntity<User> create(@RequestBody User u) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(u));
+	public ResponseEntity<?> create(@RequestBody User user) {
+		try {
+			return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(user));
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+		}
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User u) {
-		return repo.findById(id).map(ex -> {
-			u.setId(ex.getId());
-			return ResponseEntity.ok(repo.save(u));
-		}).orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User body) {
+		return userService.update(id, body).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+	}
+
+	/**
+	 * Cambia el idioma activo del usuario. PUT /api/users/{id}/language Body: {
+	 * "languageId": 1 } Usado por authStore.setLanguage() del frontend.
+	 */
+	@PutMapping("/{id}/language")
+	public ResponseEntity<User> switchLanguage(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+		Long languageId = Long.parseLong(body.get("languageId").toString());
+		return userService.switchLanguage(id, languageId).map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (!repo.existsById(id))
-			return ResponseEntity.notFound().build();
-		repo.deleteById(id);
-		return ResponseEntity.noContent().build();
+		return userService.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
 	}
 }

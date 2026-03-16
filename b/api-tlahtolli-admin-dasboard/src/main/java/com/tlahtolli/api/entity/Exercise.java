@@ -1,15 +1,7 @@
 package com.tlahtolli.api.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "EXERCISES")
@@ -23,8 +15,11 @@ public class Exercise {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "UNIT_ID", nullable = false)
+	@Column(name = "UNIT_ID")
 	private Long unitId;
+
+	@Column(name = "LESSON_ID")
+	private Long lessonId;
 
 	@Column(name = "EXERCISE_TYPE", nullable = false, length = 50)
 	private String exerciseType;
@@ -32,8 +27,21 @@ public class Exercise {
 	@Column(name = "QUESTION", length = 2000)
 	private String question;
 
+	// Para fill-blank: texto con el hueco. Para multiple-choice: la respuesta
+	// correcta en texto.
 	@Column(name = "ANSWER", length = 2000)
 	private String answer;
+
+	// JSON almacenado como String.
+	// fill-blank: ["respuesta1", "respuesta2"] (acepta varias)
+	// multiple-choice: "Cualli tonalli" (string simple o array)
+	@Column(name = "CORRECT_ANS", columnDefinition = "CLOB")
+	private String correctAns;
+
+	// JSON con las 4 opciones pregeneradas: ["op1","op2","op3","op4"]
+	// Si está vacío, LearningService las construye dinámicamente desde vocabulario.
+	@Column(name = "OPTIONS", columnDefinition = "CLOB")
+	private String options;
 
 	@Column(name = "EXPLANATION", length = 2000)
 	private String explanation;
@@ -63,6 +71,14 @@ public class Exercise {
 		this.unitId = unitId;
 	}
 
+	public Long getLessonId() {
+		return lessonId;
+	}
+
+	public void setLessonId(Long lessonId) {
+		this.lessonId = lessonId;
+	}
+
 	public String getExerciseType() {
 		return exerciseType;
 	}
@@ -85,6 +101,22 @@ public class Exercise {
 
 	public void setAnswer(String answer) {
 		this.answer = answer;
+	}
+
+	public String getCorrectAns() {
+		return correctAns;
+	}
+
+	public void setCorrectAns(String correctAns) {
+		this.correctAns = correctAns;
+	}
+
+	public String getOptions() {
+		return options;
+	}
+
+	public void setOptions(String options) {
+		this.options = options;
 	}
 
 	public String getExplanation() {
@@ -118,5 +150,4 @@ public class Exercise {
 	public void setCharacterRef(String characterRef) {
 		this.characterRef = characterRef;
 	}
-
 }

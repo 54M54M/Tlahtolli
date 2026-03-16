@@ -1,18 +1,9 @@
 package com.tlahtolli.api.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "LESSON_HISTORY")
@@ -28,20 +19,32 @@ public class LessonHistory {
 
 	@Column(name = "USER_ID", nullable = false)
 	private Long userId;
+
 	@Column(name = "UNIT_ID", nullable = false)
 	private Long unitId;
+
+	// Agregado via ALTER TABLE en el script de BD
+	@Column(name = "LESSON_ID")
+	private Long lessonId;
+
 	@Column(name = "COMPLETED_AT")
 	private LocalDate completedAt;
+
 	@Column(name = "PERFORMANCE", precision = 4, scale = 2)
 	private BigDecimal performance;
+
 	@Column(name = "TIME_SECONDS")
 	private Long timeSeconds;
+
 	@Column(name = "EARNED_EXP")
 	private Integer earnedExp = 0;
+
 	@Column(name = "CORRECT_ANS")
 	private Integer correctAns = 0;
+
 	@Column(name = "TOTAL_EXERC")
 	private Integer totalExerc = 0;
+
 	@Column(name = "WAS_PERFECT")
 	private Integer wasPerfect = 0;
 
@@ -67,6 +70,14 @@ public class LessonHistory {
 
 	public void setUnitId(Long unitId) {
 		this.unitId = unitId;
+	}
+
+	public Long getLessonId() {
+		return lessonId;
+	}
+
+	public void setLessonId(Long lessonId) {
+		this.lessonId = lessonId;
 	}
 
 	public LocalDate getCompletedAt() {
@@ -124,5 +135,4 @@ public class LessonHistory {
 	public void setWasPerfect(Integer wasPerfect) {
 		this.wasPerfect = wasPerfect;
 	}
-
 }

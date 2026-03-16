@@ -1,5 +1,80 @@
 # CHANGELOG (Backend)
 
+## [0.0.4] - 2026-03-15 - Correcciones de Compilación
+
+### Fixed
+
+- **Exercise.java**
+  - Agregados campos `CORRECT_ANS` y `OPTIONS` faltantes en la entidad
+  - Manejo de respuestas y opciones en formato JSON desde la base de datos
+
+- **LessonHistory.java**
+  - Agregado campo `LESSON_ID` que faltaba en la entidad
+
+- **ProgressService.java, AchievementService.java, EnergyService.java**
+  - Reemplazado `.builder()` por `new` + setters para compatibilidad con Lombok
+  - Eliminada dependencia circular en `UserService`
+
+### Changed
+
+- **LearningService.java**
+  - Lógica de prioridad para opciones y respuestas correctas
+  - Deserialización de JSON con `ObjectMapper`
+
+## [0.0.3] - 2026-03-15 - Capa de Servicios
+
+### Added
+
+- **Nuevas Entidades JPA**
+  - `UserProgress.java`: estado de progreso (locked/completed/current) por usuario y unidad
+  - `UserEnergy.java`: sistema de energía del usuario
+  - `UserAchievement.java`: relación usuario-logro con fecha de desbloqueo
+  - `WritingSystem.java`: sistemas de escritura para cada idioma
+  - `UnitVocab.java`: relación de vocabulario por unidad
+
+- **Repositories**
+  - `UserProgressRepository`, `UserEnergyRepository`, `UserAchievementRepository`
+  - `WritingSystemRepository`, `UnitVocabRepository`
+  - Métodos extendidos en repositorios existentes para filtros y búsquedas
+
+- **Services (Capa de Negocio)**
+  - `EnergyService`: inicialización y consumo de energía
+  - `ProgressService`: actualización de progreso con transacciones
+  - `AchievementService`: verificación y desbloqueo de logros
+  - `UserService`: CRUD de usuarios con validación
+  - `LearningService`: datos enriquecidos para el frontend
+
+- **Controllers**
+  - `EnergyController`, `LearningController`, `UserProgressController`, `UserAchievementController`
+  - Controllers actualizados con filtros y nuevos endpoints
+
+### Changed
+
+- Arquitectura refactorizada: controllers → services → repositories
+- Operaciones transaccionales para múltiples tablas con `@Transactional`
+
+## [0.0.2] - 2026-03-15 - Sistemas Completos de Ejercicios
+
+### Added
+
+- **ExerciseController.java**
+  - Controlador REST que maneja todas las operaciones de ejercicios
+  - Puedes obtener todos los ejercicios o buscar por tipo específico
+  - Acceso rápido al conteo total de ejercicios disponibles
+  - Creación, actualización y eliminación de ejercicios sin complicaciones
+  - Protección de datos: al actualizar un ejercicio, preservamos la unidad a la que pertenece
+
+- **Exercise.java**
+  - Modelo que representa cada ejercicio en la plataforma
+  - Almacena desde la pregunta hasta la explicación de la respuesta
+  - Include información de dificultad y puntos para gamificación
+  - Vinculación con lecciones y unidades para mejor organización
+
+- **Tlahtolli_Database_Script**
+  - Base de datos lista para gestionar todos los ejercicios
+  - Tabla EXERCISES con toda la estructura necesaria
+  - Vinculación segura con las unidades de aprendizaje
+
 ## [0.0.1] - 2026-01-31 - Componentes Base y Estructura Inicial
 
 ### Added
