@@ -1,0 +1,51 @@
+-- ============================================================
+--  TRUNCATE ALL TABLES — Tlahtolli
+--  Limpia el contenido sin eliminar las tablas ni el schema.
+--  El orden importa: primero las tablas hijo, luego las padre.
+--  TRUNCATE resetea el autoincremento (IDENTITY) de Oracle.
+-- ============================================================
+
+-- ── 1. Tablas hoja (no tienen hijos) ─────────────────────────
+TRUNCATE TABLE LESSON_HISTORY;
+TRUNCATE TABLE USER_ACHIEVEMENTS;
+TRUNCATE TABLE USER_ENERGY;
+TRUNCATE TABLE USER_PROGRESS;
+TRUNCATE TABLE USER_STATS;
+TRUNCATE TABLE UNIT_VOCAB;
+TRUNCATE TABLE WRITING_SYSTEMS;
+
+-- ── 2. Ejercicios y lecciones ────────────────────────────────
+TRUNCATE TABLE EXERCISES;
+TRUNCATE TABLE LESSONS;
+
+-- ── 3. Estructura de contenido ───────────────────────────────
+TRUNCATE TABLE VOCABULARY;
+TRUNCATE TABLE UNITS;
+TRUNCATE TABLE LEVELS;
+
+-- ── 4. Logros ────────────────────────────────────────────────
+TRUNCATE TABLE ACHIEVEMENTS;
+
+-- ── 5. Tablas raíz ───────────────────────────────────────────
+TRUNCATE TABLE USER_STATS;   -- ya truncada arriba, por si acaso
+TRUNCATE TABLE USERS;
+TRUNCATE TABLE LANGUAGES;
+
+COMMIT;
+
+-- Verificar que todas quedaron vacías
+SELECT 'LANGUAGES'        AS TABLA, COUNT(*) AS FILAS FROM LANGUAGES        UNION ALL
+SELECT 'USERS'            AS TABLA, COUNT(*) AS FILAS FROM USERS             UNION ALL
+SELECT 'USER_ENERGY'      AS TABLA, COUNT(*) AS FILAS FROM USER_ENERGY       UNION ALL
+SELECT 'USER_STATS'       AS TABLA, COUNT(*) AS FILAS FROM USER_STATS        UNION ALL
+SELECT 'LEVELS'           AS TABLA, COUNT(*) AS FILAS FROM LEVELS            UNION ALL
+SELECT 'UNITS'            AS TABLA, COUNT(*) AS FILAS FROM UNITS             UNION ALL
+SELECT 'VOCABULARY'       AS TABLA, COUNT(*) AS FILAS FROM VOCABULARY        UNION ALL
+SELECT 'UNIT_VOCAB'       AS TABLA, COUNT(*) AS FILAS FROM UNIT_VOCAB        UNION ALL
+SELECT 'EXERCISES'        AS TABLA, COUNT(*) AS FILAS FROM EXERCISES         UNION ALL
+SELECT 'LESSONS'          AS TABLA, COUNT(*) AS FILAS FROM LESSONS           UNION ALL
+SELECT 'WRITING_SYSTEMS'  AS TABLA, COUNT(*) AS FILAS FROM WRITING_SYSTEMS   UNION ALL
+SELECT 'ACHIEVEMENTS'     AS TABLA, COUNT(*) AS FILAS FROM ACHIEVEMENTS      UNION ALL
+SELECT 'USER_ACHIEVEMENTS'AS TABLA, COUNT(*) AS FILAS FROM USER_ACHIEVEMENTS UNION ALL
+SELECT 'USER_PROGRESS'    AS TABLA, COUNT(*) AS FILAS FROM USER_PROGRESS     UNION ALL
+SELECT 'LESSON_HISTORY'   AS TABLA, COUNT(*) AS FILAS FROM LESSON_HISTORY;

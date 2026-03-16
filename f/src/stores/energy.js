@@ -1,194 +1,120 @@
+// src/stores/energy.js
 import { defineStore } from 'pinia'
-import { EnergyService } from '../data/services/EnergyService.js'
-import { Energy } from '../data/models/Energy.js'
+import { energyApi } from '../api/apiClient.js'
 
 export const useEnergyStore = defineStore('energy', {
     state: () => ({
         energy: null,
         isLoading: false,
         lastSync: null,
-        energyChanges: []
+        energyChanges: [],
     }),
 
     getters: {
-        // Getters útiles para acceder a los datos de energía
-        currentEnergy: (state) => state.energy?.currentEnergy,
-        maxEnergy: (state) => state.energy?.maxEnergy,
+        currentEnergy: (state) => state.energy?.currentEnergy ?? 15,
+        maxEnergy: (state) => state.energy?.maxEnergy ?? 15,
+        streakCount: (state) => state.energy?.streakCount ?? 0,
         energyPercentage: (state) => {
             if (!state.energy) return 100
             return (state.energy.currentEnergy / state.energy.maxEnergy) * 100
         },
-        streakCount: (state) => state.energy?.streakCount || 0,
-        isLowEnergy: (state) => {
-            if (!state.energy) return false
-            return (state.energy.currentEnergy / state.energy.maxEnergy) < 0.3
-        },
-        isFullEnergy: (state) => {
-            if (!state.energy) return false
-            return state.energy.currentEnergy >= state.energy.maxEnergy
-        },
-        // Para mostrar en el header
-        displayEnergy: (state) => `${state.energy?.currentEnergy}/${state.energy?.maxEnergy}`,
+        isLowEnergy: (state) => state.energy
+            ? (state.energy.currentEnergy / state.energy.maxEnergy) < 0.3
+            : false,
+        isFullEnergy: (state) => state.energy
+            ? state.energy.currentEnergy >= state.energy.maxEnergy
+            : true,
         energyForHeader: (state) => ({
-            current: state.energy?.currentEnergy,
-            max: state.energy?.maxEnergy,
-            streak: state.energy?.streakCount || 0
-        })
+            current: state.energy?.currentEnergy ?? 15,
+            max: state.energy?.maxEnergy ?? 15,
+            streak: state.energy?.streakCount ?? 0,
+        }),
     },
 
     actions: {
-        // Inicializar energía para un usuario
+        // ── inicialización ─────────────────────────────────────────────────────
+
         async initializeEnergy(userId) {
+            // Guardia: no llamar a la API sin un userId válido
+            if (!userId) {
+                console.warn('[energy] initializeEnergy llamado sin userId — ignorado')
+                return
+            }
+
             this.isLoading = true
             try {
-                const energyService = new EnergyService()
-                const { energy, notification } = energyService.initializeEnergy(userId)
-
-                if (energy instanceof Energy) {
-                    this.energy = energy
-                } else {
-                    this.energy = Energy.fromJSON(energy)
-                }
-
+                // El backend aplica recuperación pasiva automáticamente en este GET.
+                // Si no existe, lo crea.
+                this.energy = await energyApi.get(userId)
                 this.lastSync = Date.now()
-
-                if (notification?.show) {
-                    // console.log('⚡ Energía completa:', notification.message)
+                console.log('[energy] Sincronizado para userId:', userId, '→', this.energy?.currentEnergy, '/', this.energy?.maxEnergy)
+            } catch (err) {
+                console.error('[energy] initializeEnergy:', err.message)
+                // Fallback: energía por defecto para no romper la UI
+                if (!this.energy) {
+                    this.energy = { currentEnergy: 15, maxEnergy: 15, streakCount: 0, userId }
                 }
-
-                // console.log('⚡ Energía inicializada globalmente:', this.energy)
-                return this.energy
-            } catch (error) {
-                console.error('Error al inicializar energía:', error)
-                // Crear energía por defecto
-                this.energy = new Energy(userId || 1)
-                return this.energy
             } finally {
                 this.isLoading = false
             }
         },
 
-        // Consumir energía para un ejercicio (sincronizado)
+        // Alias mantenido por compatibilidad con App.vue
+        async syncFromLocalStorage(userId) {
+            return this.initializeEnergy(userId)
+        },
+
+        // ── consumo ────────────────────────────────────────────────────────────
+
         async consumeForExercise(isCorrect) {
-            if (!this.energy) {
-                await this.initializeEnergy(1) // Usuario por defecto
+            const userId = this.energy?.userId
+            if (!userId) {
+                console.warn('[energy] consumeForExercise sin userId')
+                return { newEnergy: 15, energyChange: 0, streak: 0 }
             }
-
-            const energyService = new EnergyService()
-            const energyResult = energyService.consumeForExercise(this.energy, isCorrect)
-
-            // Actualizar energía en el store
-            this.energy.currentEnergy = energyResult.newEnergy
-            this.energy.streakCount = energyResult.streak
-            this.energy.lastUpdate = Date.now()
-
-            // Guardar cambios
-            this.saveToLocalStorage()
-
-            // Agregar cambio para animaciones
-            this.addEnergyChange(energyResult.energyChange)
-
-            return energyResult
-        },
-
-        // Recuperar energía desde práctica
-        async recoverFromPractice() {
-            if (!this.energy) {
-                await this.initializeEnergy(1)
-            }
-
-            const energyService = new EnergyService()
-            const result = energyService.recoverFromPractice(this.energy)
-
-            // Actualizar
-            this.energy.currentEnergy = result.newEnergy
-            this.energy.lastUpdate = Date.now()
-
-            this.saveToLocalStorage()
-            this.addEnergyChange(result.recovery)
-
-            return result
-        },
-
-        // Verificar si hay suficiente energía
-        hasEnoughEnergy(exercisesCount = 1) {
-            if (!this.energy) return false
-            return this.energy.currentEnergy >= exercisesCount
-        },
-
-        // Sincronizar energía desde localStorage (para cuando se abre la app)
-        syncFromLocalStorage(userId = 1) {
-            try {
-                const energyService = new EnergyService()
-                const saved = energyService.loadEnergy(userId)
-
-                if (saved) {
-                    this.energy = Energy.fromJSON(saved)
-                    this.lastSync = Date.now()
-                    // console.log('⚡ Energía sincronizada desde localStorage')
-                } else {
-                    this.initializeEnergy(userId)
-                }
-            } catch (error) {
-                console.error('Error sincronizando energía:', error)
-                this.initializeEnergy(userId)
-            }
-        },
-
-        // Guardar energía en localStorage
-        saveToLocalStorage() {
-            if (!this.energy) return
 
             try {
-                const energyService = new EnergyService()
-                energyService.saveEnergy(this.energy.userId, this.energy)
+                const result = await energyApi.consume(userId, isCorrect)
+                this.energy.currentEnergy = result.newEnergy
+                this.energy.streakCount = result.streak
                 this.lastSync = Date.now()
-            } catch (error) {
-                console.error('Error guardando energía:', error)
+                this._addChange(result.energyChange)
+                return result
+            } catch (err) {
+                console.error('[energy] consumeForExercise:', err.message)
+                return { newEnergy: this.energy?.currentEnergy ?? 15, energyChange: 0, streak: 0 }
             }
         },
 
-        // Agregar cambio para animaciones
-        addEnergyChange(change) {
-            const changeObj = {
-                id: Date.now(),
-                value: change,
-                timestamp: Date.now(),
-                type: change > 0 ? 'gain' : 'loss'
-            }
+        hasEnoughEnergy(required = 1) {
+            return this.currentEnergy >= required
+        },
 
-            this.energyChanges.push(changeObj)
+        getRecoveryTime(energyNeeded = 1) {
+            const minutes = energyNeeded * 20
+            if (minutes < 60) return `${minutes} minutos`
+            const h = Math.floor(minutes / 60)
+            const m = minutes % 60
+            return m > 0 ? `${h}h ${m}min` : `${h} horas`
+        },
 
-            // Limpiar después de 2 segundos
+        // ── animaciones ────────────────────────────────────────────────────────
+
+        _addChange(value) {
+            const obj = { id: Date.now(), value, type: value > 0 ? 'gain' : 'loss' }
+            this.energyChanges.push(obj)
             setTimeout(() => {
-                this.energyChanges = this.energyChanges.filter(c => c.id !== changeObj.id)
+                this.energyChanges = this.energyChanges.filter(c => c.id !== obj.id)
             }, 2000)
         },
 
-        // Resetear cambios (para limpieza)
         clearEnergyChanges() {
             this.energyChanges = []
         },
-
-        // Obtener tiempo de recuperación
-        getRecoveryTime(energyNeeded = 1) {
-            const energyService = new EnergyService()
-            return energyService.calculateRecoveryTime(energyNeeded)
-        },
-
-        // Actualizar energía manualmente (para debugging)
-        setEnergy(value) {
-            if (!this.energy) {
-                this.initializeEnergy(1)
-            }
-
-            this.energy.currentEnergy = Math.max(0, Math.min(this.energy.maxEnergy, value))
-            this.saveToLocalStorage()
-        }
     },
 
     persist: {
         key: 'energy-storage',
-        paths: ['energy', 'lastSync']
-    }
+        paths: ['energy', 'lastSync'],
+    },
 })

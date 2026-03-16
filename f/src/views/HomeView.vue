@@ -1,33 +1,49 @@
 <template>
     <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:pt-1">
 
-        <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3" />
+        <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3"
+            @show-all="goToLanguageSelection" @energy-click="() => { }" />
 
-        <div class="w-full mb-16 md:mb-4 pt-[1%]">
+        <!-- Loading skeleton -->
+        <div v-if="loading" class="w-full space-y-4 mt-4">
+            <div v-for="i in 3" :key="i" class="animate-pulse rounded-xl h-40 bg-gray-800 w-full"></div>
+        </div>
+
+        <!-- Error -->
+        <div v-else-if="error" class="w-full mt-8 text-center text-red-400">
+            <p>No se pudo conectar con el servidor.</p>
+            <button @click="loadLevels" class="mt-3 px-4 py-2 bg-gray-700 rounded-lg text-sm">
+                Reintentar
+            </button>
+        </div>
+
+        <!-- Niveles -->
+        <div v-else class="w-full mb-16 md:mb-4 pt-[1%]">
             <div class="space-y-4">
+
                 <!-- Niveles desbloqueados -->
                 <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/nivel/' + level.id"
                     class="w-full block">
                     <Card
-                        class="rounded-xl text-white overflow-hidden shadow-lg transition-transform transform hover:scale-105 focus:outline-none"
+                        class="rounded-xl text-white overflow-hidden shadow-lg transition-transform transform hover:scale-105"
                         :style="{ backgroundColor: level.color }">
                         <div class="relative p-4 cursor-pointer">
                             <div
                                 class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                                <span class="text-2xl font-bold">{{ level.id }}</span>
+                                <span class="text-2xl font-bold">{{ level.levelNum }}</span>
                             </div>
                             <div class="-mt-3 text-center">
-                                <h2 class="text-sm font-semibold">{{ level.titleSpanish }}</h2>
-                                <h1 class="text-xl font-bold mt-1">{{ getLanguageTitle(level) }}</h1>
+                                <h2 class="text-sm font-semibold">{{ level.title }}</h2>
+                                <h1 class="text-xl font-bold mt-1">{{ level.titleNative }}</h1>
                                 <p class="text-sm mt-2">{{ level.description }}</p>
                             </div>
                             <div class="mt-6">
                                 <div class="h-2 bg-white/30 rounded-full overflow-hidden">
                                     <div class="h-2 bg-white"
-                                        :style="{ width: `${(level.completedUnits / level.units) * 100}%` }"></div>
+                                        :style="{ width: `${(level.completedUnits / level.totalUnits) * 100}%` }"></div>
                                 </div>
-                                <p class="text-xs text-center mt-2">{{ level.completedUnits }}/{{ level.units }}
-                                    unidades
+                                <p class="text-xs text-center mt-2">
+                                    {{ level.completedUnits }}/{{ level.totalUnits }} unidades
                                 </p>
                             </div>
                         </div>
@@ -41,9 +57,8 @@
                         <div class="relative p-4">
                             <div
                                 class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                                <span class="text-2xl font-bold">{{ level.id }}</span>
+                                <span class="text-2xl font-bold">{{ level.levelNum }}</span>
                             </div>
-                            <!-- Icono de candado -->
                             <div class="absolute top-2 right-2">
                                 <svg class="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -52,133 +67,98 @@
                                 </svg>
                             </div>
                             <div class="-mt-3 text-center">
-                                <h2 class="text-sm font-semibold">{{ level.titleSpanish }}</h2>
-                                <h1 class="text-xl font-bold mt-1">{{ getLanguageTitle(level) }}</h1>
-                                <!-- <p class="text-sm mt-2">{{ level.description }}</p> -->
-
-                                <!-- Requisito para desbloquear -->
+                                <h2 class="text-sm font-semibold">{{ level.title }}</h2>
+                                <h1 class="text-xl font-bold mt-1">{{ level.titleNative }}</h1>
                                 <div class="mt-3 p-2 bg-black/20 rounded-lg">
-                                    <p class="text-xs text-white/80">🔒 {{ level.unlockRequirement }}</p>
+                                    <p class="text-xs text-white/80">🔒 {{ level.unlockReq }}</p>
                                 </div>
                             </div>
                             <div class="mt-6">
                                 <div class="h-2 bg-white/20 rounded-full overflow-hidden">
                                     <div class="h-2 bg-white/40"
-                                        :style="{ width: `${(level.completedUnits / level.units) * 100}%` }"></div>
+                                        :style="{ width: `${(level.completedUnits / level.totalUnits) * 100}%` }"></div>
                                 </div>
-                                <p class="text-xs text-center mt-2 text-white/70">{{ level.completedUnits }}/{{
-                                    level.units }}
-                                    unidades
+                                <p class="text-xs text-center mt-2 text-white/70">
+                                    {{ level.completedUnits }}/{{ level.totalUnits }} unidades
                                 </p>
                             </div>
                         </div>
                     </Card>
                 </div>
+
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth.js'
+import { useEnergyStore } from '../stores/energy.js'
+import { learningApi } from '../api/apiClient.js'
 import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { LanguageService } from '../data/services/LanguageService.js'
-import { LocalStorageService } from '../data/storage/LocalStorageService.js'
-import { getLearningRepository } from '../data/repositories/RepositoryFactory.js';
-import Header from '../components/vHeader.vue';
-import { useEnergyStore } from '../stores/energy'
-
+import Header from '../components/vHeader.vue'
 import Badge from '../components/Badge.vue'
 import Card from '../components/Card.vue'
 
 export default {
     name: 'Inicio',
-    components: {
-        Badge,
-        Card,
-        Header
-    },
+    components: { Badge, Card, Header },
     setup() {
         const authStore = useAuthStore()
         const energyStore = useEnergyStore()
         const router = useRouter()
-        const learningRepo = getLearningRepository();
         const languageService = new LanguageService()
 
-        const currentLanguageLevels = ref([])
+        const levels = ref([])
+        const loading = ref(false)
+        const error = ref(false)
 
-        const loadLevels = () => {
-            if (!authStore.selectedLanguage) {
-                currentLanguageLevels.value = []
-                return
+        const unlockedLevels = computed(() => levels.value.filter(l => !l.locked))
+        const lockedLevels = computed(() => levels.value.filter(l => l.locked))
+
+        const loadLevels = async () => {
+            if (!authStore.selectedLangId || !authStore.user) return
+
+            loading.value = true
+            error.value = false
+            try {
+                levels.value = await learningApi.getLevels(
+                    authStore.selectedLangId,
+                    authStore.user.id
+                )
+            } catch (err) {
+                console.error('[HomeView] loadLevels:', err)
+                error.value = true
+            } finally {
+                loading.value = false
             }
-
-            const freshRepo = getLearningRepository();
-            const levels = freshRepo.getLevelsWithUnlockCheck(authStore.selectedLanguage)
-
-            // USAR LocalStorageService DIRECTAMENTE
-            const progress = LocalStorageService.getProgress(authStore.selectedLanguage)
-
-            levels.forEach(level => {
-                const levelProgress = progress.levels?.[level.id]
-                if (levelProgress) {
-                    level.completedUnits = levelProgress.completedUnits || 0
-                }
-            })
-
-            currentLanguageLevels.value = levels
         }
 
-        const unlockedLevels = computed(() => {
-            return currentLanguageLevels.value.filter(level => !level.locked)
-        })
-
-        const lockedLevels = computed(() => {
-            return currentLanguageLevels.value.filter(level => level.locked)
-        })
-
-        const currentLanguageData = computed(() => {
-            if (!authStore.selectedLanguage) return null
-            return languageService.getLanguageInfo(authStore.selectedLanguage)
-        })
-
-        const goToLanguageSelection = () => {
-            router.push('/select-language')
-        }
+        const goToLanguageSelection = () => router.push('/select-language')
 
         onMounted(async () => {
             if (!authStore.selectedLanguage) {
                 router.push('/select-language')
-            } else {
-                // Inicializar energía PRIMERO
-                const userId = authStore.user?.id || 1
-                await energyStore.initializeEnergy(userId)
-                // console.log('⚡ Energía inicializada en HomeView:', energyStore.currentEnergy)
-
-                // Luego cargar niveles
-                loadLevels()
+                return
             }
-        })
-
-        const unwatch = router.afterEach(() => {
-            loadLevels()
+            const userId = authStore.user?.id || 1
+            await energyStore.initializeEnergy(userId)
+            await loadLevels()
         })
 
         return {
-            currentLanguageLevels,
-            unlockedLevels,
-            lockedLevels,
-            currentLanguageData,
-            energyStore,
-            goToLanguageSelection,
-            loadLevels,
+            levels, loading, error,
+            unlockedLevels, lockedLevels,
+            loadLevels, goToLanguageSelection,
+            authStore, energyStore,
         }
     },
     methods: {
         getLanguageTitle(level) {
-            return level.titleNative || level.titleNahuatl || level.title
-        }
-    }
+            return level.titleNative || level.title
+        },
+    },
 }
 </script>

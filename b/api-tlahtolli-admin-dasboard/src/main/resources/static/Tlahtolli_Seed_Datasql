@@ -1,0 +1,355 @@
+-- ============================================================
+--  SEED DATA — Tlahtolli v1.0
+--  Ejecutar DESPUÉS del script de creación de tablas
+--  Orden: LANGUAGES → USERS → USER_ENERGY → LEVELS → UNITS
+--         → VOCABULARY → UNIT_VOCAB → EXERCISES → WRITING_SYSTEMS
+--         → USER_STATS → ACHIEVEMENTS
+-- ============================================================
+-- SCHEMA SQL:
+--  LANGUAGES
+--    └── LEVELS
+--            └── UNITS :: LESSONS
+--                    └── EXERCISES
+--
+-- SCHEMA FRONTEND:
+-- /LEVELS/{ID}
+-- /LEVELS/{ID}/UNITS/{ID}
+-- /LEVELS/{ID}/UNITS/{ID}/EXERCISES
+-- ─────────────────────────────────────────────
+--  1. LANGUAGE
+-- ─────────────────────────────────────────────
+INSERT INTO LANGUAGES (CODE, LANG_NAME, NATIVE_NAME, COLOR, FLAG, FAMILY, WRITING_SYSTEM)
+VALUES ('nhce', 'Náhuatl central', 'Nāhuatlahtōlli Central', '#58CC02', '🌽', 'uto-aztec', 'syllabary');
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  2. USUARIO DEMO
+-- ─────────────────────────────────────────────
+INSERT INTO USERS (USERNAME, FULL_NAME, EMAIL, USER_LEVEL, XP, TOTAL_XP, STREAK, JOIN_DATE, CURRENT_LANG)
+VALUES ('tetecuhtli', 'UserDemo', 'demo@tlahtolli.mx', 1, 0, 0, 0, SYSDATE,
+        (SELECT ID FROM LANGUAGES WHERE CODE = 'nhce'));
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  3. ENERGÍA DEL USUARIO DEMO
+-- ─────────────────────────────────────────────
+INSERT INTO USER_ENERGY (USER_ID, MAX_ENERGY, CURRENT_ENRG, STREAK_COUNT, LAST_UPDATE, DAILY_USAGE)
+VALUES ((SELECT ID FROM USERS WHERE USERNAME = 'tetecuhtli'), 15, 15, 0, SYSTIMESTAMP, 0);
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  4. NIVELES (nhce)
+-- ─────────────────────────────────────────────
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 1, 'Saluda y preséntate', 'Tiquilnamiqui ihuan timitstlania',
+       '#4bb101', 6, 'Ninguno - Nivel inicial', 1
+FROM LANGUAGES WHERE CODE = 'nhce';
+
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 2, 'Describete y describe a tu familia', 'Timitstlania ihuan timitstlania in mocencal',
+       '#1CB0F6', 6, 'Completar Nivel 1', 0
+FROM LANGUAGES WHERE CODE = 'nhce';
+
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 3, 'Pide y da información', 'Tlatlatlauhtia ihuan titlanana',
+       '#FF9600', 6, 'Completar Nivel 2', 0
+FROM LANGUAGES WHERE CODE = 'nhce';
+
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 4, 'Habla en tiempos (ayer/hoy/mañana)', 'Tlahtoa ipan cahuitl',
+       '#FF4B4B', 6, 'Completar Nivel 3', 0
+FROM LANGUAGES WHERE CODE = 'nhce';
+
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 5, 'Describe un día normal', 'Timitstlani ce tonalli neneuhqui',
+       '#26CCC0', 6, 'Completar Nivel 4', 0
+FROM LANGUAGES WHERE CODE = 'nhce';
+
+INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
+SELECT ID, 6, 'Describe y expresa preferencias', 'Timitstlania ihuan tiquixtia in tlen ticneltoca',
+       '#9C27B0', 6, 'Completar Nivel 5', 0
+FROM LANGUAGES WHERE CODE = 'nhce';
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  5. UNIDADES — Nivel 1
+-- ─────────────────────────────────────────────
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 1, 'Saludos básicos', '#4bb101',
+       'Aprender saludos básicos del día y la noche',
+       'Estructura básica de saludos', 1, NULL
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 2, 'Presentaciones simples', '#4bb101',
+       'Aprender a presentarse y despedirse',
+       'Uso de Niltze y Timoittazceh', 0, 'Completar Unidad 1'
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 3, 'Cómo te llamas', '#4bb101',
+       'Aprender a preguntar y decir nombres',
+       'Uso de Notoca y Quen motoca', 0, 'Completar Unidad 2'
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 4, 'Expresar gratitud', '#4bb101',
+       'Aprender a dar las gracias',
+       'Uso de Tlazohcamati y Miac', 0, 'Completar Unidad 3'
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 5, 'Estados y condiciones', '#4bb101',
+       'Aprender a expresar cómo estás',
+       'Uso de Tica, Nicac y Huel', 0, 'Completar Unidad 4'
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+
+INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
+SELECT L.ID, 6, 'Conversación básica', '#4bb101',
+       'Integrar todo lo aprendido en una conversación',
+       'Estructura completa de conversación básica', 0, 'Completar Unidad 5'
+FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  6. VOCABULARIO — Nivel 1
+-- ─────────────────────────────────────────────
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Cualli',        'bien / bueno / buenos / buena / buenas', 'kwal-li',      NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Tonalli',       'dia / día',              'to-nal-li',    NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Yohual',        'noche / noches',         'yo-wal',       NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Teotlac',       'tarde / tardes',         'te-o-tlak',    NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Niltze',        'hola',                   'nil-tse',      NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Timoittazceh',  'adiós / hasta luego',    'ti-mo-i-ta-se',NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Tlazohcamati',  'gracias',                'tla-so-ka-ma-ti', NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Quēmah',        'sí',                     'kee-maj',      NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Ahmo',          'no',                     'aj-mo',        NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Notoca',        'me llamo...',            'no-to-ka',     NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Quen',          'como / cómo',            'ken',          NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Miac',          'mucho / muchos',         'mi-ak',        NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Huel',          'muy / verdaderamente',   'wel',          NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Quenin',        'cómo (de qué manera)',   'ke-nin',       NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Nicac',         'estoy / yo estoy',       'ni-kak',       NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Ni',            'yo (prefijo acción)',    'ni-',          NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Ahmo cualli',   'mal / no bien',          'aj-mo-kwal-li',NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Tlen',          'qué / nada / cosa',      'tlen',         NULL FROM LANGUAGES WHERE CODE='nhce';
+INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
+SELECT ID, 'Ahmotlen',      'ninguna cosa / nada',    'ah-mo-tlen',   NULL FROM LANGUAGES WHERE CODE='nhce';
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  7. UNIT_VOCAB — asociar vocabulario a unidades
+-- ─────────────────────────────────────────────
+-- Unidad 1: Saludos básicos
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 1
+AND V.WORD IN ('Cualli','Tonalli','Yohual','Teotlac','Niltze','Timoittazceh');
+
+-- Unidad 2: Presentaciones
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 2
+AND V.WORD IN ('Niltze','Timoittazceh','Cualli','Tonalli','Yohual');
+
+-- Unidad 3: Nombres
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 3
+AND V.WORD IN ('Notoca','Quen','Quēmah','Ahmo');
+
+-- Unidad 4: Gratitud
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 4
+AND V.WORD IN ('Tlazohcamati','Miac','Cualli','Timoittazceh');
+
+-- Unidad 5: Estados
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 5
+AND V.WORD IN ('Huel','Quenin','Nicac','Ni','Ahmo cualli','Tlazohcamati');
+
+-- Unidad 6: Conversación (todo el vocabulario nivel 1)
+INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
+SELECT U.ID, V.ID FROM UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
+WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 6;
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  8. EJERCICIOS — Unidad 1 (6 ejercicios)
+-- ─────────────────────────────────────────────
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Bueno',
+       '"Cualli"',
+       '["Cualli","Yohual","Niltze","Ahmo"]',
+       'citlali',
+       'Cualli significa bueno, buena, buenos, buenas o bien en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Día',
+       '"Tonalli"',
+       '["Tonalli","Teotlac","Yohual","Cualli"]',
+       'coltzin',
+       'Tonalli significa día o días en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Buenos días',
+       '"Cualli tonalli"',
+       '["Cualli tonalli","Cualli yohual","Niltze","Timoittazceh"]',
+       'neza',
+       'Cualli tonalli es el saludo para buen día en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Noche',
+       '"Yohual"',
+       '["Yohual","Tonalli","Teotlac","Cualli"]',
+       'tonatiuh',
+       'Yohual significa noche o noches en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tardes',
+       '"Teotlac"',
+       '["Teotlac","Yohual","Tonalli","Niltze"]',
+       'xochitl',
+       'Teotlac significa tarde o tardes en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+
+INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
+SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Buenas noches',
+       '"Cualli yohual"',
+       '["Cualli yohual","Cualli tonalli","Cualli teotlac","Niltze"]',
+       'coltzin',
+       'Cualli yohual es el saludo para buena noche en náhuatl',
+       15, 'medium'
+FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  9. SISTEMA DE ESCRITURA — nhce
+-- ─────────────────────────────────────────────
+INSERT INTO WRITING_SYSTEMS (LANGUAGE_ID, SYSTEM_TYPE, SYSTEM_NAME, DESCRIPTION, NOTES)
+SELECT ID, 'syllabary', 'alfabeto',
+       'Con base en la norma de escritura según el INALI',
+       '["Algunas combinaciones [consonante - vocal] no existen en el idioma",
+         "La U como vocal independiente no existe en náhuatl",
+         "Las vocales largas (ā, ē, ī, ō) son distintivas y cambian el significado",
+         "Los dígrafos representan fonemas unitarios (tl, tz, ch, qu, hu)"]'
+FROM LANGUAGES WHERE CODE = 'nhce';
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  10. USER_PROGRESS — unidad 1 desbloqueada para usuario demo
+-- ─────────────────────────────────────────────
+INSERT INTO USER_PROGRESS (USER_ID, UNIT_ID, COMPLETED, IS_CURRENT, IS_LOCKED)
+SELECT USR.ID, U.ID, 0, 1, 0
+FROM USERS USR, UNITS U
+JOIN LEVELS L ON U.LEVEL_ID = L.ID
+JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+WHERE USR.USERNAME = 'tetecuhtli'
+AND LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 1;
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  11. USER_STATS — registro inicial para usuario demo
+-- ─────────────────────────────────────────────
+INSERT INTO USER_STATS (USER_ID, LANGUAGE_ID, WORDS_LEARNED, LESSONS_DONE, PERFECT_LESS, DAYS_STUDIED, BEST_STREAK, TOTAL_MINS)
+SELECT USR.ID, LA.ID, 0, 0, 0, 0, 0, 0
+FROM USERS USR, LANGUAGES LA
+WHERE USR.USERNAME = 'tetecuhtli' AND LA.CODE = 'nhce';
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  12. ACHIEVEMENTS
+-- ─────────────────────────────────────────────
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Primer Día',            'Completaste tu primera lección',             '🎉', 50,  'completar 1 lección',      'general',     'common');
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Racha de 7 días',       'Estudiaste durante 7 días consecutivos',     '🔥', 100, 'mantener racha de 7 días', 'dedication',  'rare');
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Vocabulario Básico',    'Aprendiste 50 palabras nuevas',              '📚', 150, 'aprender 50 palabras',     'vocabulary',  'common');
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Racha de 30 días',      'Estudiaste durante 30 días consecutivos',    '⚡', 300, 'mantener racha de 30 días','dedication',  'epic');
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Perfeccionista',        'Completaste 10 lecciones perfectas',         '⭐', 200, '10 lecciones perfectas',   'performance', 'rare');
+INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
+VALUES ('Estudiante Comprometido','Estudiaste 1000 minutos',                   '⏰', 150, '1000 minutos de estudio',  'dedication',  'common');
+COMMIT;
+
+-- ─────────────────────────────────────────────
+--  VERIFICACIÓN FINAL
+-- ─────────────────────────────────────────────
+SELECT 'LANGUAGES'       AS TABLA, COUNT(*) AS REGISTROS FROM LANGUAGES    UNION ALL
+SELECT 'USERS',                    COUNT(*) FROM USERS                     UNION ALL
+SELECT 'USER_ENERGY',              COUNT(*) FROM USER_ENERGY               UNION ALL
+SELECT 'LEVELS',                   COUNT(*) FROM LEVELS                    UNION ALL
+SELECT 'UNITS',                    COUNT(*) FROM UNITS                     UNION ALL
+SELECT 'VOCABULARY',               COUNT(*) FROM VOCABULARY                UNION ALL
+SELECT 'UNIT_VOCAB',               COUNT(*) FROM UNIT_VOCAB                UNION ALL
+SELECT 'EXERCISES',                COUNT(*) FROM EXERCISES                 UNION ALL
+SELECT 'WRITING_SYSTEMS',          COUNT(*) FROM WRITING_SYSTEMS           UNION ALL
+SELECT 'USER_PROGRESS',            COUNT(*) FROM USER_PROGRESS             UNION ALL
+SELECT 'USER_STATS',               COUNT(*) FROM USER_STATS                UNION ALL
+SELECT 'ACHIEVEMENTS',             COUNT(*) FROM ACHIEVEMENTS;

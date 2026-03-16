@@ -2,8 +2,17 @@ package com.tlahtolli.api.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tlahtolli.api.entity.*;
-import com.tlahtolli.api.repository.*;
+import com.tlahtolli.api.entity.Exercise;
+import com.tlahtolli.api.entity.Level;
+import com.tlahtolli.api.entity.Unit;
+import com.tlahtolli.api.entity.UserProgress;
+import com.tlahtolli.api.entity.Vocabulary;
+import com.tlahtolli.api.repository.ExerciseRepository;
+import com.tlahtolli.api.repository.LevelRepository;
+import com.tlahtolli.api.repository.UnitRepository;
+import com.tlahtolli.api.repository.UnitVocabRepository;
+import com.tlahtolli.api.repository.UserProgressRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;

@@ -1,340 +1,77 @@
-import { UserRepository } from '../repositories/UserRepository.js';
-import { StatsRepository } from '../repositories/StatsRepository.js';
-import { LearningRepository } from '../repositories/LearningRepository.js';
-import { UnlockService } from './UnlockService.js';
-import { AchievementService } from './AchievementService.js';
-import { LocalStorageService } from '../storage/LocalStorageService.js';
+// src/data/services/ProgressService.js
+import { progressApi, statsApi, achievementsApi } from '../../api/apiClient.js'
+import { useAuthStore } from '../../stores/auth.js'
 
 export class ProgressService {
-    constructor() {
-        this.userRepo = new UserRepository();
-        this.statsRepo = new StatsRepository();
-        this.learningRepo = new LearningRepository();
-        this.unlockService = new UnlockService();
-        this.achievementService = new AchievementService();
-    }
 
-    completeLesson(userId, language, levelId, unitId, performance = 1.0, wordsLearned = [], earnedPoints = null) {
-        const user = this.userRepo.getUser(userId);
+    async completeLesson(userId, language, levelId, unitId, performance = 1.0,
+        wordsLearned = [], earnedPoints = null,
+        correctAns = 0, totalExerc = 0, timeSeconds = 0) {
+        try {
+            const auth = useAuthStore()
+            const languageId = auth.selectedLangId
 
-        // VERIFICAR SI LA UNIDAD YA ESTABA COMPLETADA
-        const unit = this.learningRepo.getUnit(language, levelId, unitId);
-        const wasAlreadyCompleted = unit && unit.completed;
+            const result = await progressApi.complete({
+                userId,
+                unitId,
+                languageId,
+                performance,
+                earnedExp: earnedPoints ?? Math.round(performance * 100),
+                correctAns,
+                totalExerc,
+                timeSeconds,
+            })
 
-        // console.log('📊 ProgressService.completeLesson - Estado unidad:', {
-        //     language,
-        //     levelId,
-        //     unitId,
-        //     wasAlreadyCompleted,
-        //     earnedPoints
-        // });
+            await auth.refreshUser()
 
-        // 🆕 CALCULAR XP BASADO EN PUNTOS GANADOS
-        let xpEarned;
-
-        if (earnedPoints !== null) {
-            // Usar puntos calculados desde los ejercicios
-            xpEarned = earnedPoints;
-        } else {
-            // Fallback al sistema antiguo (para compatibilidad)
-            const baseXP = 100;
-            const performanceMultiplier = performance;
-            xpEarned = Math.floor(baseXP * performanceMultiplier);
-        }
-
-        // ✅ SIEMPRE dar XP, incluso si es repetición
-        user.addXP(xpEarned);
-        // console.log('💰 XP ganada:', xpEarned, 'XP total:', user.xp);
-
-        // SOLO ACTUALIZAR ESTADÍSTICAS SI LA UNIDAD NO ESTABA COMPLETADA
-        if (!wasAlreadyCompleted) {
-            // console.log('📈 Unidad nueva - actualizando estadísticas');
-
-            const perfect = performance >= 0.9;
-            this.statsRepo.addLessonCompleted(userId, language, perfect);
-
-            if (wordsLearned.length > 0) {
-                this.statsRepo.addWordsLearned(userId, language, wordsLearned.length);
-
-                wordsLearned.forEach(word => {
-                    if (word.dialect) {
-                        const currentProgress = this.statsRepo.getLanguageProgress(userId, language);
-                        const dialectProgress = currentProgress.dialectProgress[word.dialect] || 0;
-                        const newProgress = Math.min(100, dialectProgress + (100 / 50));
-                        this.statsRepo.updateDialectProgress(userId, language, word.dialect, newProgress);
-                    }
-                });
-            }
-        } else {
-            console.log('Unidad repetida - solo XP, sin estadísticas');
-        }
-
-        const unitCompleted = this.learningRepo.completeUnit(language, levelId, unitId);
-        this.saveProgressToStorage(userId, language);
-
-        const newAchievements = this.achievementService.checkAndUnlockAchievements(userId);
-        const unlocks = this.unlockService.checkAllUnlocks(userId, {
-            language,
-            levelId,
-            unitId,
-            performance
-        });
-
-        this.statsRepo.updateStudyTime(userId, 15);
-
-        return {
-            xpEarned, // 🆕 Retornar puntos reales ganados
-            newLevel: user.level,
-            perfectLesson: !wasAlreadyCompleted && (performance >= 0.9),
-            unitCompleted,
-            unlocks,
-            newAchievements,
-            wordsLearned: wasAlreadyCompleted ? 0 : wordsLearned.length,
-            wasAlreadyCompleted
-        };
-    }
-
-    saveProgressToStorage(userId, language) {
-        const learningRepo = new LearningRepository();
-        const levels = learningRepo.getLevels(language);
-        const completedUnits = learningRepo.getCompletedUnits(language);
-
-        const progressData = {
-            completedUnits: completedUnits.length,
-            totalUnits: 30,
-            levels: {}
-        };
-
-        levels.forEach(level => {
-            progressData.levels[level.id] = {
-                completedUnits: level.completedUnits,
-                totalUnits: level.units
-            };
-        });
-
-        LocalStorageService.saveProgress(language, progressData);
-    }
-
-    completeExerciseSession(userId, sessionResults) {
-        const { session, correct, total, totalPoints, performance } = sessionResults;
-        const user = this.userRepo.getUser(userId);
-
-        // Calcular XP para sesión de ejercicios
-        const xpEarned = Math.floor(totalPoints * performance);
-        user.addXP(xpEarned);
-
-        // Actualizar estadísticas
-        this.statsRepo.addWordsLearned(userId, session.language, correct);
-
-        // Actualizar tiempo de estudio (estimado basado en número de ejercicios)
-        const estimatedMinutes = Math.max(10, Math.floor(total * 1.5));
-        this.statsRepo.updateStudyTime(userId, estimatedMinutes);
-
-        // Verificar desbloqueos
-        const unlocks = this.unlockService.checkAllUnlocks(userId, {
-            performance
-        });
-
-        return {
-            xpEarned,
-            newLevel: user.level,
-            unlocks,
-            sessionScore: sessionResults.score
-        };
-    }
-
-    getUserProgress(userId) {
-        const user = this.userRepo.getUser(userId);
-        const stats = this.statsRepo.getUserStats(userId);
-        const overallProgress = this.statsRepo.getOverallProgress(userId);
-        const availableLanguages = this.unlockService.getAvailableLanguages(userId);
-
-        return {
-            user,
-            stats,
-            overallProgress,
-            nextLevelXP: user.xpToNextLevel - user.xp,
-            availableLanguages,
-            currentLanguage: user.currentLanguage
-        };
-    }
-
-
-
-    getLanguageProgress(userId, language) {
-        const storageProgress = LocalStorageService.getProgress(language);
-        const levels = this.learningRepo.getLevels(language);
-        const completedLevels = levels.filter(level => level.isCompleted()).length;
-
-        return {
-            dialectProgress: storageProgress.completedUnits > 0 ?
-                (storageProgress.completedUnits / storageProgress.totalUnits) * 100 : 0,
-            wordsLearned: storageProgress.completedUnits * 5, // Estimación
-            lessonsCompleted: storageProgress.completedUnits,
-            unitsCompleted: storageProgress.completedUnits,
-            levelsCompleted: completedLevels,
-            totalLevels: levels.length,
-            completionRate: (completedLevels / levels.length) * 100
-        };
-    }
-    getDialectProgress(userId, language) {
-        const progress = this.statsRepo.getLanguageProgress(userId, language);
-        return progress.dialectProgress || {};
-    }
-
-    updateStudyTime(userId, minutes) {
-        const user = this.userRepo.getUser(userId);
-        const stats = this.statsRepo.getUserStats(userId);
-
-        if (user && stats) {
-            user.minutesStudied += minutes;
-            stats.totalMinutes += minutes;
-            stats.daysStudied = Math.ceil(stats.totalMinutes / 60 / 24); // Estimación
-            stats.averageTimePerDay = stats.totalMinutes / Math.max(stats.daysStudied, 1);
-
-            return true;
-        }
-        return false;
-    }
-
-    getStudyStreak(userId) {
-        const user = this.userRepo.getUser(userId);
-        const stats = this.statsRepo.getUserStats(userId);
-
-        return {
-            currentStreak: user.streak,
-            bestStreak: stats.bestStreak,
-            maintained: user.streak > 0
-        };
-    }
-
-    updateStreak(userId) {
-        const user = this.userRepo.getUser(userId);
-        const stats = this.statsRepo.getUserStats(userId);
-
-        if (user && stats) {
-            user.updateStreak();
-            stats.updateStreak(user.streak);
-            return user.streak;
-        }
-        return 0;
-    }
-
-    resetStreak(userId) {
-        const user = this.userRepo.getUser(userId);
-        if (user) {
-            user.streak = 0;
-            return true;
-        }
-        return false;
-    }
-
-    // Método para obtener resumen de progreso para dashboard
-    getProgressSummary(userId) {
-        const progress = this.getUserProgress(userId);
-        const currentLanguage = progress.user.currentLanguage;
-        const languageProgress = this.getLanguageProgress(userId, currentLanguage);
-
-        return {
-            general: {
-                level: progress.user.level,
-                xp: progress.user.xp,
-                nextLevelXP: progress.nextLevelXP,
-                overallProgress: progress.overallProgress,
-                streak: progress.user.streak
-            },
-            currentLanguage: {
-                code: currentLanguage,
-                progress: languageProgress.completionRate,
-                wordsLearned: languageProgress.wordsLearned,
-                lessonsCompleted: languageProgress.lessonsCompleted,
-                nextLevel: languageProgress.nextLevel
-            },
-            studyStats: {
-                totalMinutes: progress.stats.totalMinutes,
-                averageDaily: progress.stats.averageTimePerDay,
-                daysStudied: progress.stats.daysStudied
-            }
-        };
-    }
-
-    // Método para cambiar de idioma
-    switchLanguage(userId, languageCode) {
-        const user = this.userRepo.getUser(userId);
-        if (user && user.unlockedLanguages.includes(languageCode)) {
-            user.currentLanguage = languageCode;
             return {
-                success: true,
-                newLanguage: languageCode,
-                message: `Idioma cambiado a ${languageCode}`
-            };
-        }
-        return {
-            success: false,
-            message: 'Idioma no disponible o no desbloqueado'
-        };
-    }
-
-    // Método para obtener logros recientes
-    getRecentUnlocks(userId) {
-        // En una implementación real, esto vendría de una base de datos
-        // Por ahora, simulamos algunos desbloqueos recientes
-        return [
-            {
-                type: 'LEVEL',
-                title: 'Nivel 1 Completado',
-                description: 'Completaste el nivel 1 de Náhuatl',
-                timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 día atrás
-                xp: 100
+                xpEarned: result.xpEarned,
+                wasAlreadyCompleted: result.wasAlreadyCompleted,
+                perfectLesson: result.perfectLesson,
+                newAchievements: result.newAchievements,
             }
-        ];
+        } catch (err) {
+            console.error('[ProgressService] completeLesson:', err)
+            return {
+                xpEarned: earnedPoints ?? 0,
+                wasAlreadyCompleted: false,
+                perfectLesson: false,
+                newAchievements: 0,
+            }
+        }
     }
 
-    getCompletedUnitsCount(userId, language) {
-        const learningRepo = new LearningRepository();
-        const completedUnits = learningRepo.getCompletedUnits(language);
-        return completedUnits.length;
+    async getLanguageProgress(userId, language) {
+        try {
+            const auth = useAuthStore()
+            const data = await statsApi.getByUserLang(userId, auth.selectedLangId)
+            if (!data) return this._defaultProgress()
+            return {
+                dialectProgress: (data.lessonsDone / 36) * 100,
+                wordsLearned: data.wordsLearned || 0,
+                lessonsCompleted: data.lessonsDone || 0,
+                unitsCompleted: data.lessonsDone || 0,
+                completionRate: (data.lessonsDone / 36) * 100,
+            }
+        } catch (err) {
+            console.error('[ProgressService] getLanguageProgress:', err)
+            return this._defaultProgress()
+        }
     }
 
-    getLearnedWordsCount(userId, language) {
-        const learningRepo = new LearningRepository();
-        const completedUnits = learningRepo.getCompletedUnits(language);
-        return completedUnits.reduce((total, unit) => total + unit.vocabulary.length, 0);
+    async getAllAchievementsWithProgress(userId) {
+        try {
+            return await achievementsApi.getWithStatus(userId)
+        } catch (err) {
+            console.error('[ProgressService] getAllAchievementsWithProgress:', err)
+            return []
+        }
     }
 
-    getLevelCompletionStatus(userId, language, levelId) {
-        const level = this.learningRepo.getLevel(language, levelId);
-        if (!level) return { completed: false, progress: 0 };
-
+    _defaultProgress() {
         return {
-            completed: level.isCompleted(),
-            progress: level.progress,
-            completedUnits: level.completedUnits,
-            totalUnits: level.units
-        };
-    }
-
-    // Método para obtener logros del usuario
-    getUserAchievements(userId) {
-        try {
-            return this.achievementService.getEarnedAchievements();
-        } catch (error) {
-            console.error('Error getting user achievements:', error);
-            return [];
+            dialectProgress: 0, wordsLearned: 0,
+            lessonsCompleted: 0, unitsCompleted: 0, completionRate: 0,
         }
     }
-
-    // Método para obtener todos los logros con progreso
-    getAllAchievementsWithProgress(userId) {
-        try {
-            return this.achievementService.getAllAchievementsWithProgress(userId);
-        } catch (error) {
-            console.error('Error getting achievements with progress:', error);
-            return this.achievementService.achievements.map(achievement => new Achievement({
-                ...achievement,
-                progress: { current: 0, target: 1, percentage: 0 }
-            }));
-        }
-    }
-
 }

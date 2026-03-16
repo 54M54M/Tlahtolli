@@ -1,11 +1,9 @@
 <template>
     <aside class="md:w-[380px] bg-[#0A2136] text-white p-4 fixed right-0 top-0 h-full overflow-hidden flex flex-col">
-        <!-- Contenedor con scroll (sin barra visible) -->
         <div class="flex-1 overflow-y-auto scrollbar-hide md:mt-[-53px]">
-            <!-- Espacio para el header fijo -->
             <div class="h-12"></div>
 
-            <!-- Loading state -->
+            <!-- Loading -->
             <div v-if="!isLanguageReady" class="mb-4 p-4 bg-gray-800 rounded-lg shadow-md">
                 <div class="animate-pulse">
                     <div class="h-4 bg-gray-700 rounded w-1/2 mb-3"></div>
@@ -43,143 +41,96 @@
                 </div>
             </div>
 
-            <!-- Estadísticas de aprendizaje -->
+            <!-- Estadísticas -->
             <div class="md:pt-[1px] rounded-lg">
                 <LearningStats :stats="stats" />
                 <br class="md:hidden">
                 <DialectProgress class="md:mt-4 -mt-1" :dialects="languageProgress" />
             </div>
 
-            <!-- Espacio extra al final para mejor scroll -->
             <div class="h-4"></div>
         </div>
     </aside>
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '../stores/auth';
-import LearningStats from './LearningStats.vue';
-import DialectProgress from './DialectProgress.vue';
-import { LanguageService } from '../data/services/LanguageService.js';
-import { getStatsRepository } from '../data/repositories/RepositoryFactory.js';
-import { LocalStorageService } from '../data/storage/LocalStorageService.js';
+import { computed, ref, onMounted, watch } from 'vue'
+import { useAuthStore } from '../stores/auth.js'
+import { statsApi } from '../api/apiClient.js'
+import { LanguageService } from '../data/services/LanguageService.js'
+import LearningStats from './LearningStats.vue'
+import DialectProgress from './DialectProgress.vue'
 
 export default {
     name: 'ProgressAside',
-    components: {
-        LearningStats,
-        DialectProgress
-    },
+    components: { LearningStats, DialectProgress },
     setup() {
-        const router = useRouter();
-        const authStore = useAuthStore();
-        const languageService = new LanguageService();
-        const statsRepo = getStatsRepository();
+        const authStore = useAuthStore()
+        const languageService = new LanguageService()
+        const rawStats = ref(null)
 
-        const isLanguageReady = computed(() => {
-            return authStore.isLanguageReady && authStore.selectedLanguage
-        });
+        const isLanguageReady = computed(() =>
+            authStore.isLanguageReady && !!authStore.selectedLanguage)
 
         const selectedLanguageData = computed(() => {
-            if (!isLanguageReady.value || !authStore.selectedLanguage) {
-                return {
-                    color: '#666',
-                    name: 'Selecciona un idioma',
-                    nativeName: '',
-                    flag: '🌐'
-                }
+            if (!authStore.selectedLanguage) {
+                return { color: '#666', name: 'Selecciona un idioma', nativeName: '', flag: '🌐' }
             }
-
-            const langInfo = languageService.getLanguageInfo(authStore.selectedLanguage);
-
-            return langInfo || {
-                color: '#666',
-                name: 'Idioma no encontrado',
-                nativeName: '',
-                flag: '❓'
-            };
-        });
-
-        const goToLanguageSelection = () => {
-            router.push('/select-language');
-        };
+            return languageService.getLanguageInfo(authStore.selectedLanguage) ||
+                { color: '#666', name: 'Idioma no encontrado', nativeName: '', flag: '❓' }
+        })
 
         const stats = computed(() => {
-            const userStats = statsRepo.getUserStats(1);
-
+            const s = rawStats.value
             return [
-                {
-                    label: 'Palabras aprendidas',
-                    value: userStats.wordsLearned || 0
-                },
-                {
-                    label: 'Lecciones completadas',
-                    value: userStats.lessonsCompleted || 0
-                },
-                {
-                    label: 'Lecciones perfectas',
-                    value: userStats.perfectLessons || 0
-                },
-                {
-                    label: 'Días estudiados',
-                    value: userStats.daysStudied || 0
-                }
-            ];
-        });
+                { label: 'Palabras aprendidas', value: s?.wordsLearned || 0 },
+                { label: 'Lecciones completadas', value: s?.lessonsDone || 0 },
+                { label: 'Lecciones perfectas', value: s?.perfectLess || 0 },
+                { label: 'Días estudiados', value: s?.daysStudied || 0 },
+            ]
+        })
 
         const languageProgress = computed(() => {
-            const selectedLanguage = authStore.selectedLanguage;
+            const lang = selectedLanguageData.value
+            const done = rawStats.value?.lessonsDone || 0
+            return [{
+                id: authStore.selectedLanguage,
+                name: lang.name,
+                progress: Math.min(100, (done / 36) * 100),
+                color: lang.color,
+            }]
+        })
 
-            if (!selectedLanguage) {
-                return [{
-                    id: 'none',
-                    name: 'Sin idioma seleccionado',
-                    progress: 0,
-                    color: '#666'
-                }];
+        const loadStats = async () => {
+            if (!authStore.user || !authStore.selectedLangId) return
+            try {
+                const results = await statsApi.getByUserLang(
+                    authStore.user.id,
+                    authStore.selectedLangId
+                )
+                rawStats.value = results
+            } catch (err) {
+                console.warn('[ProgressAside] loadStats:', err.message)
             }
+        }
 
-            const languageInfo = languageService.getLanguageInfo(selectedLanguage);
-
-            // USAR LocalStorageService DIRECTAMENTE
-            const progress = LocalStorageService.getProgress(selectedLanguage);
-            const progressPercentage = progress.totalUnits > 0 ?
-                (progress.completedUnits / progress.totalUnits) * 100 : 0;
-
-            return [
-                {
-                    id: selectedLanguage,
-                    name: languageInfo?.name || 'Idioma actual',
-                    progress: progressPercentage,
-                    color: languageInfo?.color || '#666'
-                }
-            ];
-        });
+        onMounted(loadStats)
+        watch(() => authStore.selectedLangId, loadStats)
 
         return {
-            stats,
-            languageProgress,
-            selectedLanguageData,
-            goToLanguageSelection,
-            isLanguageReady
-        };
-    }
+            isLanguageReady, selectedLanguageData, stats, languageProgress,
+        }
+    },
 }
 </script>
 
 <style scoped>
-/* Ocultar scrollbar para Chrome, Safari y Opera */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
 
-/* Ocultar scrollbar para IE, Edge y Firefox */
 .scrollbar-hide {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
 }
 </style>

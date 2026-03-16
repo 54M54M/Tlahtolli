@@ -3,38 +3,32 @@
 </template>
 
 <script>
-import { onMounted } from 'vue';
-import Layout from './layouts/Layout.vue';
-import { useAuthStore } from './stores/auth';
-import { useEnergyStore } from './stores/energy';
+import { onMounted } from 'vue'
+import Layout from './layouts/Layout.vue'
+import { useAuthStore } from './stores/auth.js'
+import { useEnergyStore } from './stores/energy.js'
 
 export default {
   name: 'App',
-  components: {
-    Layout
-  },
+  components: { Layout },
   setup() {
-    // Inicializar el store de autenticación
-    const authStore = useAuthStore();
-    authStore.initialize();
+    const authStore = useAuthStore()
+    const energyStore = useEnergyStore()
 
-    // INICIALIZAR ENERGÍA GLOBALMENTE
-    const energyStore = useEnergyStore();
+    onMounted(async () => {
+      // 1. Inicializar auth PRIMERO — resuelve el usuario real desde la API
+      await authStore.initialize()
 
-    // Sincronizar energía al iniciar la app
-    const initEnergy = async () => {
-      try {
-        const userId = authStore.user?.id || 1;
-        await energyStore.syncFromLocalStorage(userId);
-        // console.log('⚡ Energía global inicializada');
-      } catch (error) {
-        console.error('Error inicializando energía:', error);
+      // 2. Solo inicializar energía si tenemos un userId válido
+      const userId = authStore.user?.id
+      if (userId) {
+        try {
+          await energyStore.initializeEnergy(userId)
+        } catch (err) {
+          console.error('[App] Error inicializando energía:', err)
+        }
       }
-    };
-    // Ejecutar después de que el componente esté montado
-    onMounted(() => {
-      initEnergy();
-    });
-  }
+    })
+  },
 }
 </script>

@@ -1,89 +1,50 @@
-import { LocalStorageService } from '../storage/LocalStorageService.js';
-import { Stats } from '../models/Stats.js';
+// src/data/repositories/StatsRepository.js
+import { statsApi } from '../../api/apiClient.js'
 
 export class StatsRepository {
-    constructor() {
-        this.storageKey = 'user-stats';
-    }
 
-    getUserStats(userId) {
-        const allStats = LocalStorageService.getAllStats();
-        const statsData = allStats[userId] || this.getDefaultStats(userId);
-
-        // Convertir el objeto plano a instancia de Stats
-        return new Stats(statsData);
-    }
-
-    saveUserStats(userId, stats) {
-        const allStats = LocalStorageService.getAllStats();
-        // Guardar como objeto plano (stats ya es una instancia de Stats)
-        allStats[userId] = { ...stats };
-        LocalStorageService.saveStats(allStats);
-    }
-
-    // verificar si ya se completó
-    hasCompletedLesson(userId, language, levelId, unitId) {
-        const stats = this.getUserStats(userId);
-        // Podrías almacenar un historial de lecciones completadas
-        // Por ahora, asumimos que si la unidad está marcada como completada en LearningRepository
-        // entonces ya fue contada en las estadísticas
-        return false; // Esto se determinará desde ProgressService
-    }
-
-    addLessonCompleted(userId, language, perfect = false) {
-        const stats = this.getUserStats(userId);
-        stats.addLessonCompleted(language, perfect);
-        this.saveUserStats(userId, stats);
-    }
-
-    addWordsLearned(userId, language, count = 1) {
-        const stats = this.getUserStats(userId);
-        stats.addWordsLearned(language, count);
-        this.saveUserStats(userId, stats);
-    }
-
-    updateStudyTime(userId, minutes) {
-        const stats = this.getUserStats(userId);
-        stats.totalMinutes += minutes;
-        stats.daysStudied = Math.ceil(stats.totalMinutes / 60 / 24);
-        stats.averageTimePerDay = stats.totalMinutes / Math.max(stats.daysStudied, 1);
-        this.saveUserStats(userId, stats);
-    }
-
-    updateDialectProgress(userId, language, dialect, progress) {
-        const stats = this.getUserStats(userId);
-        if (!stats.languageProgress[language]) {
-            stats.languageProgress[language] = {
-                dialectProgress: {}
-            };
+    async getUserStats(userId) {
+        try {
+            const results = await statsApi.getByUser(userId)
+            // El backend devuelve un array (un registro por idioma)
+            // Para compatibilidad con el frontend que espera un objeto plano,
+            // combinamos todos los idiomas en uno solo
+            if (Array.isArray(results) && results.length > 0) {
+                return results.reduce((acc, stat) => ({
+                    userId: stat.userId,
+                    wordsLearned: (acc.wordsLearned || 0) + (stat.wordsLearned || 0),
+                    lessonsCompleted: (acc.lessonsCompleted || 0) + (stat.lessonsDone || 0),
+                    perfectLessons: (acc.perfectLessons || 0) + (stat.perfectLess || 0),
+                    daysStudied: Math.max(acc.daysStudied || 0, stat.daysStudied || 0),
+                    bestStreak: Math.max(acc.bestStreak || 0, stat.bestStreak || 0),
+                    totalMinutes: (acc.totalMinutes || 0) + (stat.totalMins || 0),
+                }), {})
+            }
+            return this._defaultStats(userId)
+        } catch (err) {
+            console.error('[StatsRepository] getUserStats:', err)
+            return this._defaultStats(userId)
         }
-        stats.languageProgress[language].dialectProgress[dialect] = progress;
-        this.saveUserStats(userId, stats);
     }
 
-    getLanguageProgress(userId, language) {
-        const stats = this.getUserStats(userId);
-        return stats.languageProgress[language] || { dialectProgress: {} };
+    async getStatsByLanguage(userId, languageId) {
+        try {
+            return await statsApi.getByUserLang(userId, languageId)
+        } catch (err) {
+            console.error('[StatsRepository] getStatsByLanguage:', err)
+            return null
+        }
     }
 
-    getOverallProgress(userId) {
-        const stats = this.getUserStats(userId);
-        return Math.min(100, (stats.lessonsCompleted / 100) * 100);
-    }
-
-    getDefaultStats(userId) {
+    _defaultStats(userId) {
         return {
-            userId: userId,
+            userId,
             wordsLearned: 0,
             lessonsCompleted: 0,
             perfectLessons: 0,
             daysStudied: 0,
             bestStreak: 0,
-            totalXP: 0,
-            averageTimePerDay: 0,
-            languageProgress: {},
-            lastStudyDate: null,
-            totalMinutes: 0
-        };
+            totalMinutes: 0,
+        }
     }
 }
