@@ -1,0 +1,1250 @@
+# CHANGELOG (Frontend)
+
+## [1.3.0] - 2026-04-02 - Language Switch Modal & DB-driven Flag
+
+### Added
+
+- `VariantSelection.vue` — nueva prop `isModal: Boolean` (default `false`) que permite abrir el componente como overlay desde el header sin pasar por el router.
+- `VariantSelection.vue` — nuevos emits `close` y `language-selected` usados exclusivamente en modo modal; el segundo emite el objeto completo del idioma (con `icon`/`emoji`/`color`) para que el componente padre actualice la UI sin recargar la página.
+- `auth.js` — nuevo campo de estado `selectedLangObj: null` que almacena el objeto completo del idioma devuelto por la API (incluyendo `icon`, `emoji`, `color`, `nativeName`).
+- `auth.js` — `selectedLangObj` agregado a la lista `persist.paths` para que sobreviva recargas de página.
+- `vHeader.vue` — modal de selección de idioma implementado con `<Teleport to="body">` + `v-if`, reemplazando el `createApp` secundario. El modal vive dentro del árbol Vue principal y comparte la instancia de Pinia sin configuración adicional.
+
+### Changed
+
+- `auth.js` — `setLanguage()` ahora asigna `this.selectedLangObj = lang` junto a `selectedLangId` y `selectedLanguage`.
+- `auth.js` — `initialize()` ahora también restaura `selectedLangObj` cuando solo se dispone del código de idioma persistido (igual que ya hacía con `selectedLangId`).
+- `auth.js` — `logout()` resetea `selectedLangObj` a `null`.
+- `vHeader.vue` — `currentLanguageData` computed prioriza `authStore.selectedLangObj` (datos de la BD) sobre `LanguageService` local; este último pasa a ser fallback para sesiones previas.
+- `ProgressAside.vue` — `selectedLanguageData` computed adopta la misma estrategia: lee primero `authStore.selectedLangObj`, hace fallback a `LanguageService`.
+- `VariantSelection.vue` — `goBack()` emite `close` en modo modal en lugar de hacer `logout` + `router.push('/login')`.
+- `VariantSelection.vue` — `confirmSelection()` emite `language-selected` con el objeto del idioma en modo modal en lugar de navegar a `/`.
+
+### Fixed
+
+- **Loop infinito al abrir el selector de idioma desde el header.** `VariantSelection.onMounted` ejecutaba `router.push('/')` cuando el usuario ya tenía idioma seleccionado, lo que activaba el guard del router y volvía a `/select-language` indefinidamente. Con `isModal: true` esa redirección se omite por completo.
+- **Flag/icono del idioma no reflejaba el valor de la base de datos.** `vHeader` y `ProgressAside` llamaban únicamente a `LanguageService.getLanguageInfo()`, un servicio local con datos estáticos que podía diferir de lo registrado en la BD. Ahora el icono se lee desde `authStore.selectedLangObj`, populado directamente desde la respuesta de la API.
+- **`VariantSelection` montado como app separada no tenía acceso a Pinia.** El `createApp` secundario en `vHeader.openLanguageSelector` no registraba la instancia de Pinia, provocando que `useAuthStore()` dentro de `VariantSelection` fallara silenciosamente o usara un store vacío. Resuelto al migrar al patrón `<Teleport>`.
+- **Recarga innecesaria de página al cambiar idioma.** Se eliminó `window.location.reload()` en `vHeader`; el watcher de `authStore.selectedLangId` en `HomeView` y el emit `language-changed` son suficientes para actualizar los niveles reactivamente.
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend)
+
+## [1.3.0] - 2026-04-02 - Fix: Navegación y persistencia de idioma seleccionado
+
+### Fixed
+- **`VariantSelection.vue`** — `confirmSelection()` ahora usa `window.location.href = '/'` en lugar de `router.push('/')` para evitar race condition entre el estado reactivo de Pinia y el router guard; se agrega `await nextTick()` previo para garantizar que pinia-persist escriba en localStorage antes de navegar.
+- **`router/index.js`** — El guard dejó de usar `isNewUser` como fuente de verdad (campo derivado susceptible a desincronización) y ahora evalúa `selectedLanguage` directamente; se eliminó la llamada a `authStore.initialize()` dentro del guard para evitar peticiones HTTP en cada cambio de ruta.
+- **`stores/auth.js`** — Se agrega método `setSelectedLanguage(languageIdOrCode)` como alias de `setLanguage()`, aceptando tanto ID numérico como código string, resolviendo el crash silencioso en `vHeader.vue` que llamaba un método inexistente.
+- **`stores/auth.js`** — `initialize()` ahora resuelve `selectedLangId` a partir de `selectedLanguage` cuando pinia-persist restauró el código pero no el ID numérico; se agrega early-return para evitar doble inicialización.
+- **`HomeView.vue`** — La guarda de `loadLevels()` se mueve antes de `loading.value = true` para evitar loading eterno cuando `selectedLangId` es null; se agrega `watch(() => authStore.selectedLangId)` para disparar `loadLevels()` automáticamente si el ID llega después de que el componente montó (race condition con `initialize()`).
+
+### Changed
+- **`router/index.js`** — Regla de redirección desde `/login` simplificada: si hay `selectedLanguage` va a `/`, si no va a `/select-language`.
+- **`router/index.js`** — Se reemplaza `authStore.$hydrate()` por lógica directa sobre `selectedLanguage`; el guard es ahora síncrono y determinista.
+- **`stores/auth.js`** — `initialize()` ya no modifica `isNewUser`; esa responsabilidad recae en `setLanguage()` y en el guard, separando correctamente las responsabilidades.
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend - Tlahtolli)
+
+---
+
+## [1.3.0] - 2025-07-10 - Language Selection Accordion UI
+
+### Added
+- Agrupación de idiomas por familia lingüística (`lang.family`) en `VariantSelection`
+- Acordeón expandible por grupo con chevron animado (rotación 180°)
+- Línea lateral de color (`border-l-2`) al expandir variantes de un grupo
+- Auto-expand del grupo correspondiente al idioma previamente seleccionado
+- Checkbox visual coloreado dinámicamente por `lang.color` en cada variante
+
+### Changed
+- Reemplazado el listado plano de idiomas por vista agrupada en `VariantSelection`
+- Lógica de agrupación movida directamente a `VariantSelection` via computed `languageGroups`; se elimina `LanguageGroupSelector`
+- `expandedGroups` usa `Set` con reasignación explícita para forzar reactividad en Vue 3
+
+### Fixed
+- Bug donde solo se mostraba un idioma aunque hubiera más registrados en la DB
+- Eliminada dependencia de `LanguageService` y datos locales
+
+---
+
+## [1.2.0] - 2025-07-09 - VariantSelection Refactor
+
+### Added
+- Estado `loadingLanguages` con spinner mientras se consulta la API
+- Auto-redirect con spinner cuando solo hay 1 idioma disponible en la DB
+- Pre-selección del idioma previo del usuario al montar el componente
+
+### Changed
+- Fuente de idiomas migrada de `LanguageService` (datos locales) a `languagesApi.getAll()`
+- Layout con header/footer fijos y área central con scroll independiente
+- Botón de volver duplicado: mobile (izquierda) y desktop (derecha)
+- `hasSingleLanguage` como computed eliminado; lógica movida a `onMounted`
+
+### Fixed
+- Guard de redirección: si `authStore.selectedLanguage` existe y no es nuevo usuario, no muestra el selector
+
+---
+
+## [1.1.0] - 2025-06-XX - Admin Dashboard & Frontend-Backend Integration
+
+### Added
+- Dashboard de administración con vistas de idiomas, niveles, unidades y ejercicios
+- Integración de endpoints del backend (puerto 7575) con el frontend Vue 3
+
+### Fixed
+- Errores HTTP 400/500 por desalineación de esquema
+- Eliminación de la capa errónea de tabla `LESSONS`
+- FK de ejercicios corregidas para apuntar directamente a `unitId`
+- Valores por defecto de conexión Oracle corregidos en `application.properties`
+
+---
+
+## [1.0.0] - 2025-06-XX - Initial Frontend Setup
+
+### Added
+- Proyecto Vue 3 + Pinia inicializado
+- Configuración de `vue-router` con rutas `/login`, `/variant-selection` y `/`
+- Store de autenticación (`useAuthStore`) con `logout` y `setLanguage`
+- Cliente HTTP (`apiClient.js`) con módulo `languagesApi`
+- Pantalla `VariantSelection` inicial
+
+---------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Backend) — Tlahtolli
+
+Todas las versiones siguen el formato [Semantic Versioning](https://semver.org/).
+
+---
+
+## [1.2.0] - 2026-04-02 - Seed Data: Usuario único con acceso a todos los idiomas
+
+### Changed
+- `General_Seed_Data.sql` — El usuario demo pasa de dos usuarios (`tetecuhtli`, `kawiyel`) a uno solo: `tetecuhtli`, con acceso a todos los idiomas de la base de datos.
+- `Teenek_Seed_Data.sql` — Todas las referencias al usuario `kawiyel` reemplazadas por `tetecuhtli`.
+
+### Added
+- `Teenek_Seed_Data.sql` — Agregado bloque `USER_STATS` para el usuario `tetecuhtli` en el idioma Tének (`ten`), alineando el comportamiento con el seed de Náhuatl.
+
+---
+
+## [1.1.0] - 2026-04-02 - Separación de Seed Data por idioma
+
+### Added
+- `General_Seed_Data.sql` — Nuevo archivo con datos transversales: usuarios demo, energía (`USER_ENERGY`) y logros (`ACHIEVEMENTS`). Debe ejecutarse antes que cualquier seed de idioma.
+- `Nahuatl_Seed_Data.sql` — Seed exclusivo para Náhuatl Central (`nhce`): idioma, niveles, unidades, vocabulario, `UNIT_VOCAB`, ejercicios, sistema de escritura, `USER_PROGRESS` y `USER_STATS`.
+- `Teenek_Seed_Data.sql` — Seed exclusivo para Huasteco / Tének (`ten`): idioma, niveles, unidades, vocabulario, `UNIT_VOCAB`, ejercicios, sistema de escritura y `USER_PROGRESS`.
+
+### Changed
+- Los seeds originales (`Nahuatl_Seed_Data.sql`, `Teenek_Seed_Data.sql`) fueron refactorizados para eliminar duplicidad: usuario demo, energía y logros se centralizaron en `General_Seed_Data.sql`.
+
+### Fixed
+- `Teenek_Seed_Data.sql` — `WRITING_SYSTEM` en `LANGUAGES` y `SYSTEM_TYPE` en `WRITING_SYSTEMS` corregidos de `'latin'` (valor inválido) a `'alphabet'`, cumpliendo el constraint `CHK_LANGUAGES_WS` y `CHK_WRITING_SYS_TYPE` del schema.
+- `Teenek_Seed_Data.sql` — Eliminada referencia al usuario `kawiyel` en `USER_PROGRESS`, el cual nunca era insertado en ningún archivo, causando que el INSERT retornara 0 filas silenciosamente.
+
+---
+
+## [1.0.0] - 2026-04-02 - Schema inicial y seed data base
+
+### Added
+- `Tlahtolli_Database_Script.sql` — Schema completo con 14 tablas: `LANGUAGES`, `USERS`, `USER_STATS`, `LEVELS`, `UNITS`, `EXERCISES`, `WRITING_SYSTEMS`, `USER_PROGRESS`, `VOCABULARY`, `UNIT_VOCAB`, `ACHIEVEMENTS`, `USER_ACHIEVEMENTS`, `USER_ENERGY`, `LESSON_HISTORY`, `LESSONS`.
+- Constraints explícitos con prefijos `PK_`, `FK_`, `UQ_`, `CHK_` en todas las tablas.
+- Columnas `IDENTITY` (`GENERATED ALWAYS AS IDENTITY`) como PKs en todas las tablas.
+- `ALTER TABLE` para agregar `LESSON_ID` a `EXERCISES` y `LESSON_HISTORY`, y columnas JSON (`SYLLABARY_DATA`, `CHARACTERS_JSON`, `RULES_JSON`) a `WRITING_SYSTEMS`.
+- Índices sobre columnas de FK y búsqueda frecuente.
+- Vista `V_UNIT_ACCESS` para calcular estado de acceso por unidad por usuario.
+- `Tlahtolli_Truncate_All.sql` — Script de limpieza completa en orden correcto (hijo → padre), con verificación final de conteo de filas.
+- `Nahuatl_Seed_Data.sql` — Seed inicial para Náhuatl Central con 6 niveles, 6 unidades en nivel 1, 19 palabras de vocabulario, 6 ejercicios de opción múltiple y sistema de escritura.
+- `Teenek_Seed_Data.sql` — Seed inicial para Huasteco / Tének con 6 niveles, 6 unidades en nivel 1, 20 palabras de vocabulario, 6 ejercicios de opción múltiple y sistema de escritura.
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend) — Tlahtolli
+
+---
+
+## [1.3.1] - 2026-04-02 — Fix Router Injection in Modal Dinámico
+
+### Fixed
+- `vHeader.vue` → `openLanguageSelector`: la nueva instancia de `createApp()` ya registra el router con `app.use(router)` antes de montarse, resolviendo el error `Symbol(router) not found` que lanzaba `VariantSelection.vue` al llamar `useRouter()` desde un contexto sin router.
+- `vHeader.vue` → `openLanguageSelector`: `authStore` y `emit` extraídos como variables locales previo a `createApp()` para preservar el contexto correcto (`this` perdido dentro de `render()`), evitando que `onSelect` fallara silenciosamente al intentar llamar `authStore.setSelectedLanguage`.
+- Eliminado el estado "Cargando idioma..." en el que la app quedaba atascada al abrir el selector de idioma desde el header cuando ya había un idioma seleccionado.
+
+### Changed
+- Estilos del `modalDiv` y `container` consolidados con `cssText` en lugar de asignaciones individuales por propiedad.
+
+---
+
+## [1.3.0] - 2026-03-28 — HomeView Migración a API Live + Manejo de Estado
+
+### Added
+- `HomeView.vue`: skeleton de carga animado (`animate-pulse`) mientras se obtienen los niveles del backend.
+- `HomeView.vue`: estado de error con botón de reintento que relanza `loadLevels()`.
+- `HomeView.vue`: listener `@language-changed` en `<Header>` conectado a `handleLanguageUpdate`, que recarga los niveles automáticamente tras un cambio de idioma.
+- `HomeView.vue`: separación visual entre niveles desbloqueados (navegables con `router-link`) y niveles bloqueados (overlay con ícono de candado y mensaje `unlockReq`).
+
+### Changed
+- `HomeView.vue`: reemplazada la carga de datos estáticos/hardcodeados por llamada real a `learningApi.getLevels(langId, userId)`.
+- `HomeView.vue`: computed properties `unlockedLevels` y `lockedLevels` derivadas reactivamente desde `levels`.
+- `HomeView.vue`: inicialización de `energyStore` movida a `onMounted` con el `userId` real del store de autenticación.
+- `HomeView.vue`: guard en `onMounted` — si no hay idioma seleccionado redirige automáticamente a `/select-language`.
+
+---
+
+## [1.2.0] - 2026-03-15 — Header Variantes y Selector de Idioma Dinámico
+
+### Added
+- `vHeader.vue`: variante `homeview` con botón de idioma activo (color dinámico según `currentLanguageData`) y badge de energía.
+- `vHeader.vue`: variante `levels` con botón "Volver" adaptativo (texto en desktop, ícono SVG en mobile) y badge de idioma en mobile / badge de energía en desktop.
+- `vHeader.vue`: variante `lesson` con barra de progreso de ejercicio y badge de energía.
+- `vHeader.vue`: método `openLanguageSelector` con montaje dinámico de `VariantSelection.vue` en un overlay DOM gestionado fuera del árbol de Vue.
+- `vHeader.vue`: animación `slow-pulse` para indicar recuperación de energía.
+- `vHeader.vue`: `recoveryTimer` con intervalo de 60 s que activa la animación de recuperación cuando la energía es menor al máximo.
+
+### Changed
+- `vHeader.vue`: lógica de responsive (`isMobile`) movida a `checkScreenSize()` con listener en `mounted`/`beforeUnmount`.
+
+---
+
+## [1.1.0] - 2026-02-20 — Gamificación: Energía, XP y Streaks
+
+### Added
+- Integración de `useEnergyStore` en componentes de header y vistas de lección.
+- Emisión de evento `energy-click` desde el header para que las vistas padre manejen el modal de energía.
+
+### Changed
+- Props del header unificados bajo `variant` para soportar múltiples layouts desde un solo componente.
+
+---
+
+## [1.0.0] - 2026-01-10 — Release Inicial Tlahtolli Frontend
+
+### Added
+- Estructura base Vue 3 + Pinia + Vue Router.
+- Vistas iniciales: `HomeView`, `LessonView`, `ProfileView`, `VariantSelection`.
+- Integración con Spring Boot backend vía `apiClient.js`.
+- Sistema de autenticación con `useAuthStore` y selección de idioma (`selectedLangId`).
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend)
+
+## [1.3.0] - 2026-04-02 - Shuffle Options & Component Cleanup
+
+### Changed
+- `VariantSelection.vue` — reemplazado el acordeón manual de idiomas por el componente `LanguageGroupSelector`, unificando diseño y eliminando lógica duplicada de agrupación y expansión de grupos
+- `VariantSelection.vue` — eliminada dependencia de computed `languageGroups` y `toggleGroup` locales; ahora delegadas completamente al componente hijo
+
+### Fixed
+- `LessonView.vue` — las opciones de ejercicios `multiple-choice` ahora se mezclan aleatoriamente al cargar la lección; el índice `correctAnswer` se recalcula tras el shuffle para mantener la validación correcta
+- `QuickLevelView.vue` — mismo fix de shuffle aplicado al cargar ejercicios del nivel rápido vía `loadQuickLevelData`
+- `ProfileView.vue` — la sección "Mis logros" ahora muestra únicamente los logros en proceso de obtención (progreso entre 1% y 99%); los logros desbloqueados siguen apareciendo exclusivamente en `AchievementsList`
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG — Tlahtolli Backend (api-tlahtolli)
+
+Todos los cambios notables al backend de Tlahtolli están documentados en este archivo.
+Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
+
+---
+
+## [2.1.0] - 2026-04-02 — Complete Seed Hierarchy: UNITS + LESSONS + EXERCISES
+
+### Added
+- `Tlahtolli_Seed_Completo_v2.sql`: seed completo de la jerarquía de contenido de los 6 niveles
+- **UNITS** para los niveles 2 al 6 (30 unidades nuevas, con `OBJECTIVE`, `GRAMMAR`, `COLOR` y `UNLOCK_REQ` por unidad)
+- **LESSONS** para todos los niveles 1-6 (2 lecciones por unidad: Vocabulario + Práctica → 72 lecciones en total)
+- **EXERCISES** vinculados por `LESSON_ID` (3-4 ejercicios por lección, tipos `multiple-choice` y `fill-blank`)
+- **VOCABULARY** para los niveles 2 al 6 (pronombres, familia, números 1-10, interrogativos, colores, adverbios temporales, actividades diarias, alimentos, preferencias y peticiones)
+- Consulta de verificación final con detalle de `UNIDADES / LECCIONES / EJERCICIOS` agrupado por nivel
+- Cobertura de los 6 niveles narrativos: Saludos → Familia → Información → Tiempos → Rutina → Preferencias
+
+### Changed
+- Los ejercicios ahora se insertan usando `LESSON_ID` en lugar de `UNIT_ID`, alineándose con el ALTER TABLE aplicado en el schema v2.1
+- El campo `UNIT_ID` en `EXERCISES` se deja `NULL` conforme al schema (`MODIFY (UNIT_ID NULL)`)
+- Patrón de INSERT cambiado de `INSERT ... VALUES` a `INSERT ... SELECT ... FROM LESSONS JOIN UNITS JOIN LEVELS JOIN LANGUAGES` para garantizar resolución dinámica de IDs
+
+### Fixed
+- **"0 filas insertadas"**: raíz del problema era la ausencia de `UNITS` para los niveles 2-6; el `SELECT` del seed anterior devolvía vacío sin lanzar error
+- Jerarquía incompleta: el seed original omitía la tabla `LESSONS`, que es el eslabón obligatorio entre `UNITS` y `EXERCISES` según el schema v2.1
+
+---
+
+## [2.0.0] - 2026-03-15 — Schema Refactor: LESSONS Layer + ALTER TABLE
+
+### Added
+- Tabla `LESSONS` con columnas: `UNIT_ID`, `LESSON_NUM`, `TITLE`, `DESCRIPTION`, `IS_FREE`, `XP_REWARD`
+- Restricciones `PK_LESSONS`, `UQ_LESSONS_NUM`, `FK_LESSONS_UNIT`, `CHK_LESSONS_IS_FREE`
+- `IDX_LESSONS_UNIT` índice para join eficiente
+- `LESSON_ID` en tabla `EXERCISES` como FK opcional hacia `LESSONS`
+- `LESSON_ID` en tabla `LESSON_HISTORY` como FK opcional hacia `LESSONS`
+- Vista `V_UNIT_ACCESS` para calcular el estado de desbloqueo por unidad y usuario
+
+### Changed
+- `EXERCISES.UNIT_ID` cambiado de `NOT NULL` a `NULL` (permite ejercicios ligados a lección sin unidad directa)
+- Schema renombrado a v2.1
+
+---
+
+## [1.1.0] - 2026-02-28 — Seed Data Base: LANGUAGES + Nivel 1 + Vocabulario
+
+### Added
+- `Tlahtolli_Seed_Datasql` (seed base v1.0): inserts iniciales para todo el contenido del Nivel 1
+- Idioma `nhce` (Náhuatl Central) con `CODE`, `NATIVE_NAME`, `COLOR`, `FLAG`, `FAMILY`, `WRITING_SYSTEM`
+- 6 LEVELS con `TITLE`, `TITLE_NATIVE`, `COLOR`, `UNLOCK_REQ` e `IS_FREE`
+- 6 UNITS para el Nivel 1: Saludos básicos, Presentaciones, Cómo te llamas, Gratitud, Estados, Conversación básica
+- 19 entradas de VOCABULARY para el Nivel 1 con `PRONUNCIATION`
+- UNIT_VOCAB: asociación vocabulario-unidad para las 6 unidades del Nivel 1
+- 6 EXERCISES para la Unidad 1 del Nivel 1 (tipo `multiple-choice` con `OPTIONS` en JSON)
+- WRITING_SYSTEMS: registro del alfabeto náhuatl con notas fonológicas (vocales largas, dígrafos)
+- Usuario demo `tetecuhtli` con USER_ENERGY, USER_STATS y USER_PROGRESS inicial
+- 6 ACHIEVEMENTS base: Primer Día, Racha 7 días, Vocabulario Básico, Racha 30 días, Perfeccionista, Estudiante Comprometido
+
+### Fixed
+- `NAME` y `LEVEL` renombrados a `FULL_NAME` y `USER_LEVEL` en tabla `USERS` por conflicto con palabras reservadas de Oracle
+
+---
+
+## [1.0.0] - 2026-02-10 — Database Schema Inicial
+
+### Added
+- `Tlahtolli_Database_Script`: creación completa del schema Oracle (v2.1)
+- 14 tablas: `LANGUAGES`, `USERS`, `USER_STATS`, `LEVELS`, `UNITS`, `EXERCISES`, `WRITING_SYSTEMS`, `USER_PROGRESS`, `VOCABULARY`, `UNIT_VOCAB`, `ACHIEVEMENTS`, `USER_ACHIEVEMENTS`, `USER_ENERGY`, `LESSON_HISTORY`
+- Todas las tablas con `GENERATED ALWAYS AS IDENTITY` para PKs autoincrement en Oracle
+- Constraints: PKs, UQs, FKs con `ON DELETE CASCADE`, CHECKs para booleanos (`0/1`) y enumerados
+- 18 índices para optimizar joins frecuentes (`IDX_EXERCISES_UNIT`, `IDX_UNITS_LEVEL`, etc.)
+- `Tlahtolli_Truncate_All.sql`: script utilitario de limpieza ordenada por dependencias FK (hijo → padre) con `COMMIT` y consulta de verificación de filas
+
+---
+
+## Jerarquía de contenido (estado actual)
+
+```
+LANGUAGES
+    └── LEVELS          (6 niveles por idioma)
+            └── UNITS   (6 unidades por nivel → 36 total)
+                    └── LESSONS     (2 lecciones por unidad → 72 total)
+                                └── EXERCISES   (3-7 por lección, tipos: multiple-choice, fill-blank)
+```
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend)
+
+## [3.6.0] - 2026-04-02 - Integración completa con API Backend (Spring Boot)
+
+### Added
+
+- **LoginView.vue**
+  - Formulario real con campos de `usuario` y `contraseña`
+  - Sección de credenciales demo visible con botón "Usar" para auto-rellenar
+  - Manejo de errores con mensaje visible en pantalla al fallar el login
+
+- **VariantSelection.vue**
+  - Carga de idiomas directamente desde `languagesApi.getAll()` (API real)
+  - Lista dinámica de todos los idiomas registrados en la base de datos
+  - Auto-selección y redirección cuando solo hay un idioma disponible
+  - Pre-selección del idioma previo al volver a la pantalla
+
+- **SyllabaryRepository.js**
+  - Método `getVowels()` ahora construye correctamente el objeto `{a, e, i, o}` desde entradas `type: "vowel"`
+  - Método `getLongVowels()` mapea correctamente las vocales largas (`ā → a`, `ē → e`, etc.)
+  - Cache por clave string para evitar colisiones entre idiomas
+
+### Changed
+
+- **vHeader.vue**
+  - Agregado `'homeview'` al validador del prop `variant`
+  - Eliminados los props `energyCurrent`, `energyMax`, `energyStreak` que colisionaban con `computed` del mismo nombre
+  - El template ahora lee directamente desde `energyStore.currentEnergy` en todos los variantes
+
+- **auth.js**
+  - `login(username, password)` ahora acepta credenciales explícitas en lugar de auto-login
+  - Al hacer login siempre se limpia `selectedLanguage` y se establece `isNewUser = true` para forzar `/select-language`
+  - `initialize()` solo refresca datos si ya hay sesión persistida, sin auto-login silencioso
+  - `logout()` limpia todo incluyendo `localStorage.removeItem('selectedLanguage')`
+
+- **LevelView.vue**
+  - Reescrito para cargar datos desde `learningApi.getLevels()` + `learningApi.getUnits()`
+  - Preservado el diseño original con tarjetas ricas (objetivo, gramática, íconos de completado/actual)
+  - Unidades desbloqueadas linkan a `/leccion/:unitId`, bloqueadas muestran `unlockReq`
+
+- **LessonView.vue**
+  - `loadLessonData()` reemplazado por función de `lessonApi.js` (carga via API real)
+  - `completeCurrentUnit()` ahora llama a `completeLesson()` de `lessonApi.js`
+  - Vocabulario del API (`{word: {...}}`) convertido a array en `currentUnitVocabulary`
+  - Validación fill-blank inline sin dependencia del modelo `Exercise.js` local
+  - Eliminados los props de energía del `<Header>` (ya no existen en `vHeader.vue`)
+
+- **QuickLevelView.vue**
+  - Ejercicios cargados desde `learningApi.getQuick(levelId, 6)`
+  - Vocabulario del nivel combinado desde todas las unidades via `learningApi.getVocabulary()`
+  - Completado registrado via `progressApi.complete()` directo
+  - Preservado el diseño original con layout idéntico a `LessonView`
+
+- **SyllabaryContent.vue**
+  - Todos los `computed` async convertidos a `ref` con carga en `onMounted` y `watch`
+  - Usa `authStore.selectedLangId` (numérico) en lugar de `authStore.selectedLanguage` (string código)
+  - Cada método del repositorio protegido con `try/catch` para no romper si falla uno
+
+- **ProfileView.vue**
+  - Datos del usuario ahora vienen de `authStore.user` (store real) en lugar de `UserRepository` local
+  - Logros cargados desde `achievementsApi.getWithStatus(userId)` (API real)
+  - Sección "Logros desbloqueados" renderiza el campo `{achievement, earned, earnedAt}` del backend
+  - Sección "Mis logros" muestra logros pendientes (`earned: false`)
+
+- **ProgressService.java** (backend)
+  - Inyectado `UnitVocabRepository` al constructor
+  - Al completar una unidad por primera vez, suma el conteo de `UNIT_VOCAB` a `wordsLearned` en `USER_STATS`
+  - Manejo del caso `unitId == null` (QuickLevel) sin lanzar excepción
+
+### Fixed
+
+- **vHeader.vue**
+  - Corregido error `[Vue warn]: Computed property "energyCurrent" is already defined in Props` que aparecía en todas las vistas
+  - Corregido `Invalid prop: custom validator check failed for prop "variant"` al usar `variant="homeview"`
+
+- **SyllabaryRepository.js**
+  - Corregido bug que dejaba vacías las secciones de **Vocales** y **Sílabas** en `GlossaryView`
+  - `getVowels()` buscaba `e.vowel` (inexistente) en lugar de filtrar por `e.type === 'vowel'`
+
+- **LevelView.vue**
+  - Corregido error `Failed to fetch dynamically imported module: LevelView.vue` por imports incorrectos
+
+- **LoginView.vue**
+  - Corregido flujo donde al cerrar sesión redirigía al "usuario demo" pre-autenticado en lugar de mostrar un formulario de login real
+
+- **auth.js**
+  - Corregido flujo donde al hacer login el usuario era enviado directamente a `/` con el idioma Náhuatl persistido, saltándose `VariantSelection`
+
+- **VariantSelection.vue**
+  - Corregido bug crítico donde solo se mostraba un idioma sin importar cuántos hubiera en la base de datos
+  - Causa: la cadena `LanguageGroupSelector → LanguageService → LANGUAGE_GROUPS (LanguageConfig.js)` tenía `variants: ["NHCE"]` hardcodeado
+
+- **ProfileView.vue**
+  - Corregido sección de logros que aparecía siempre vacía por usar `ProgressService.getAllAchievementsWithProgress()` local que no tenía acceso a datos reales
+
+- **ProgressService.java** (backend)
+  - Corregido que `wordsLearned` en `USER_STATS` permanecía siempre en `0` después de completar lecciones
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG - Tlahtolli
+
+## [2.1.0] - 2026-03-31 - Tének de Occidente Integration
+
+### Added
+- Nuevo idioma: Tének de Occidente (Huasteco Potosino) con código `tkoc`
+- Archivo `Teenek_Language_Data.sql` con todos los datos del idioma Tének:
+  - Registro en LANGUAGES con nombre nativo "Tének"
+  - 6 niveles de aprendizaje traducidos al tének
+  - 6 unidades del Nivel 1 con títulos y objetivos en tének
+  - 20 palabras de vocabulario básico en tének
+  - Asociación de vocabulario por unidad (UNIT_VOCAB)
+  - 6 ejercicios de opción múltiple para la Unidad 1
+  - Sistema de escritura con alfabeto tének y caracteres especiales (saltillo ꞌ)
+- Archivo `Teenek_User_Data.sql` con datos de usuario para el idioma Tének:
+  - Registro en USER_PROGRESS para usuario demo `tetecuhtli`
+  - Registro en USER_STATS para el idioma tkoc
+
+### Changed
+- Código de idioma Tének actualizado de `ten` a `tkoc` (Tének de Occidente)
+- Vocabulario adaptado del náhuatl al tének:
+  - Saludos: Tsakalwaꞌ (hola), Kꞌaꞌakꞌaꞌab (adiós)
+  - Expresiones: Kꞌaw (bueno), Jawꞌab (gracias)
+  - Tiempos: Kꞌinal (día), Akꞌab (noche), Uxum (tarde)
+  - Afirmaciones: Haꞌ (sí), Maꞌ (no)
+- Explicaciones de ejercicios actualizadas para referenciar el idioma tének
+- Sistema de escritura cambiado de silabario a alfabeto latino
+
+### Fixed
+- Separación completa de datos de idioma y datos de usuario en archivos independientes
+- Corrección del código ISO para Tének de Occidente (tkoc)
+- Completadas secciones faltantes en el seed data original del tének
+
+----------------------------------------------------------------------------------------------------------
+
+# Changelog - Frontend
+
+## [1.2.0] - 2026-03-31 - Unified Language Selector Interface
+
+### Added
+- Diseño unificado del selector de idiomas combinando la funcionalidad del componente original con las mejoras visuales del segundo diseño
+- Header responsive con botón de volver visible tanto en mobile como desktop
+- Prevención de scroll en el body cuando el componente está activo
+- Scrollbar personalizada con estilos mejorados para la lista de idiomas
+- Validación de usuario nuevo para redirección inteligente
+
+### Changed
+- **VariantSelection.vue**: Refactorizado completamente para unificar ambas implementaciones
+  - Mantenida la carga de idiomas desde API (`languagesApi.getAll()`)
+  - Incorporada la estructura visual mejorada del segundo componente
+  - Mejorada la gestión de estados de carga (loading inicial, auto-redirect, selector)
+- Optimizada la lógica de redirección:
+  - Auto-redirección cuando hay solo 1 idioma disponible
+  - Redirección a home si el usuario ya tiene idioma seleccionado y no es nuevo
+  - Preselección del idioma guardado en el store cuando existe
+- Mejorados los estilos visuales:
+  - Contenedor principal con fondo `#0A2136`
+  - Header con borde inferior y mejor espaciado
+  - Tarjetas de idiomas con hover effects y checkbox visual personalizable
+  - Botón continuar con estados disabled estilizados
+
+### Fixed
+- Problema de scroll excesivo en mobile al mostrar la lista de idiomas
+- Comportamiento inconsistente entre la carga inicial y el auto-redireccionamiento
+- Validación de autenticación para prevenir accesos no autorizados
+- Manejo de errores en la carga de idiomas desde la API
+
+### Technical Details
+- Eliminada dependencia de `LanguageService` y `LanguageGroupSelector` para usar directamente la API
+- Simplificada la lógica de selección manteniendo la funcionalidad completa
+- Mejorada la experiencia responsive con clases Tailwind específicas para mobile/desktop
+
+## [1.1.0] - 2026-03-30 - Language Auto-redirection Enhancement
+
+### Added
+- Auto-redirección automática cuando solo existe 1 idioma disponible en la base de datos
+- Estado de carga visual durante el proceso de auto-redireccionamiento
+- Validación de `isNewUser` para evitar redirecciones innecesarias en usuarios existentes
+
+### Changed
+- Mejorada la lógica de inicialización del selector de idiomas
+- Optimizada la carga de idiomas desde el `LanguageService`
+
+### Fixed
+- Problema donde el selector mostraba múltiples idiomas cuando solo había 1 registrado
+- Error de redirección en usuarios que ya habían seleccionado idioma previamente
+
+## [1.0.0] - 2026-03-25 - Initial Language Selector Implementation
+
+### Added
+- Componente `VariantSelection.vue` con selector de idiomas funcional
+- Integración con `languagesApi` para obtener idiomas desde el backend
+- Sistema de selección visual con checkbox personalizado por idioma
+- Soporte para flags, colores y nombres nativos de idiomas
+- Estado de carga inicial mientras se obtienen los idiomas
+- Botón de volver que ejecuta logout y redirige al login
+- Persistencia del idioma seleccionado en `authStore`
+- Estilos responsive con Tailwind CSS
+- Scroll personalizado para la lista de idiomas
+
+### Technical Details
+- Uso de Vue 3 Composition API con `<script setup>`
+- Integración con Vue Router para navegación
+- Store de autenticación para manejo de estado del usuario
+- API client modular para peticiones HTTP
+- Sistema de colores dinámico basado en el color de cada idioma
+- Transiciones y animaciones suaves en interacciones
+
+### Dependencies
+- Vue 3
+- Vue Router
+- Pinia (Auth Store)
+- Tailwind CSS
+- API Client personalizado
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (frontend)
+
+## [1.4.0] - 2026-04-01 - Mejora de Visualización de Logros y Selector de Idiomas
+
+### Added
+- **Barra de progreso visual** en la sección "Mis logros" para logros en proceso (1%-99%)
+- **Grid adaptable dinámico** que ajusta columnas según cantidad de logros en progreso (1-4 columnas)
+- **Indicador visual de porcentaje** en cada logro en progreso
+- **Botón de limpiar datos locales** en la sección de ajustes para debugging
+- **Mensajes de estado mejorados** cuando no hay logros disponibles
+
+### Changed
+- **Mejorada la lógica de filtrado** de logros: ahora solo muestra logros no desbloqueados con progreso entre 1% y 99%
+- **Optimizada la carga de datos** del perfil de usuario usando el authStore en lugar de repositorio directo
+- **Actualizado el diseño de logros desbloqueados** con colores por rareza (Común, Raro, Épico, Legendario)
+- **Mejorada la experiencia visual** con transiciones y efectos hover en tarjetas de logros
+- **Actualizado el componente VariantSelection** para mantener diseño exacto con funcionalidad mejorada
+
+### Fixed
+- **Corregida la visualización** de logros en proceso que anteriormente no mostraban barra de progreso
+- **Solucionado el filtrado incorrecto** que mostraba logros completados en la sección "Mis logros"
+- **Arreglada la persistencia** del idioma seleccionado al recargar la página
+- **Corregido el auto-redireccionamiento** cuando solo hay un idioma disponible
+
+---
+
+## [1.3.0] - 2026-03-30 - Implementación de API de Logros
+
+### Added
+- **Integración con achievementsApi** para obtener logros con estado de progreso
+- **Sistema de cálculo de progreso** para logros basado en lecciones completadas
+- **Categorización de logros** por rareza (common, rare, epic, legendary)
+- **Formateo de fechas** para mostrar cuándo se desbloqueó cada logro
+
+### Changed
+- **Migrado de datos mock a API real** para logros del usuario
+- **Actualizado el servicio ProgressService** para calcular porcentajes de logros
+- **Mejorada la respuesta visual** con estados de carga y error
+
+### Fixed
+- **Corregido error** donde los logros no actualizaban su estado después de completar lecciones
+- **Solucionado problema** con el cálculo de XP al desbloquear logros
+
+---
+
+## [1.2.0] - 2026-03-28 - Refactorización del Selector de Idiomas
+
+### Added
+- **Componente LanguageGroupSelector** para selección jerárquica de idiomas
+- **Sistema de acordeón** para agrupar idiomas por familia lingüística
+- **Auto-detección** cuando solo hay un idioma disponible
+- **Mensaje de loading** mientras se cargan los idiomas disponibles
+
+### Changed
+- **Rediseño completo** del flujo de selección de idioma para nuevos usuarios
+- **Mejorada la lógica de persistencia** del idioma seleccionado en el authStore
+- **Actualizado el manejo de usuarios nuevos** (isNewUser) para mostrar selector solo cuando es necesario
+
+### Fixed
+- **Corregido bug** donde el selector de idioma aparecía para usuarios que ya tenían idioma seleccionado
+- **Solucionado problema** con el botón de retroceso que no redirigía correctamente al login
+
+---
+
+## [1.1.0] - 2026-03-25 - Mejoras en Perfil de Usuario
+
+### Added
+- **Sección de ajustes** con panel de configuración de idioma y preferencias
+- **Información detallada de cuenta** (usuario, fecha de membresía, idioma actual)
+- **Componente UserProfile** para mostrar estadísticas del usuario (nivel, XP, racha)
+- **Botón de logout** en versión móvil
+
+### Changed
+- **Mejorada la estructura de tabs** entre Logros y Ajustes
+- **Optimizada la carga** de datos del usuario usando authStore centralizado
+- **Actualizado el diseño** de tarjetas con fondos semitransparentes
+
+### Fixed
+- **Corregido error** donde el perfil no se cargaba correctamente al iniciar sesión
+- **Solucionado problema** con la visualización de la fecha de membresía
+
+---
+
+## [1.0.0] - 2026-03-20 - Versión Inicial del Frontend
+
+### Added
+- **Estructura base** del componente ProfileView con tabs (Logros y Ajustes)
+- **Visualización básica** de logros desbloqueados
+- **Integración inicial** con el authStore para datos de usuario
+- **Componentes reutilizables**: Header, Card, Tab, SettingsPanel
+- **Estilos base** con Tailwind CSS y tema oscuro
+
+### Changed
+- N/A (versión inicial)
+
+### Fixed
+- N/A (versión inicial)
+
+---
+
+## Notas de versión
+
+- **Formato de fechas**: YYYY-MM-DD
+- **Categorías**: 
+  - `Added`: Nuevas funcionalidades
+  - `Changed`: Cambios en funcionalidades existentes
+  - `Fixed`: Correcciones de bugs
+- **Compatibilidad**: Todas las versiones mantienen retrocompatibilidad con la API existente
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (frontend)
+
+## [1.0.0] - 2026-04-01 - Refactorización del Selector de Idiomas
+
+### Added
+- **LanguageGroupSelector**: Nueva prop `languages` para recibir idiomas dinámicamente desde componentes padres
+- **LanguageGroupSelector**: Soporte para transformar automáticamente idiomas de API al formato interno del componente
+- **LanguageGroupSelector**: Agrupación dinámica por familia de idiomas usando datos externos
+- **LanguageGroupSelector**: `watch` para reactividad en `initialLanguage` y expansión automática de grupos
+
+### Changed
+- **LanguageGroupSelector**: Modificado para ser más flexible - ahora puede recibir idiomas por prop o usar `LanguageService` como fallback
+- **LanguageGroupSelector**: Reemplazada dependencia exclusiva de `LanguageService` por sistema híbrido (prop + servicio)
+- **LanguageGroupSelector**: Función `transformLanguages` agregada para normalizar diferentes formatos de datos de idiomas
+- **LanguageGroupSelector**: Lógica de agrupación ahora basada en campo `family` en lugar de grupos predefinidos
+
+### Fixed
+- **VariantSelection**: Integración corregida con `LanguageGroupSelector` - ahora pasando datos correctamente vía prop `:languages`
+- **VariantSelection**: Eliminada lógica redundante de agrupación manual que causaba conflictos
+- **VariantSelection**: Corregido problema donde los idiomas de la API no se mostraban correctamente en el selector
+- **VariantSelection**: Solucionado error de incompatibilidad entre formato de datos de API y formato esperado por `LanguageGroupSelector`
+
+### Technical Details
+- Archivos modificados:
+  - `src/components/LanguageGroupSelector.vue`
+  - `src/components/VariantSelection.vue`
+- Cambio de arquitectura: De acoplamiento directo a `LanguageService` a sistema basado en props para mayor reutilización
+- Mejora de compatibilidad: Soporte para múltiples formatos de datos de idiomas (API, servicio interno, etc.)
+
+----------------------------------------------------------------------------------------------------------
+
+Basado en el historial de la conversación y las modificaciones realizadas, aquí está el changelog:
+
+```markdown
+# CHANGELOG - Frontend
+
+## [1.0.0] - 2026-04-01 - Language Selection & Header Integration
+
+### Added
+- **vHeader.vue**: Nuevo botón de cambio de idioma en vista `homeview`
+  - Añadido evento `@language-changed` para comunicación con componentes padre
+  - Método `openLanguageSelector()` que navega a `/select-language`
+  - Método `handleLanguageChange()` para procesar cambios de idioma y recargar la interfaz
+  - Soporte para mostrar flag/emoji desde base de datos (prioridad: `flag` → `emoji` → `🌐`)
+
+- **HomeView.vue**: Nueva funcionalidad de actualización de idioma
+  - Método `handleLanguageUpdate()` que recarga niveles al cambiar idioma
+  - Escucha del evento `@language-changed` del componente Header
+
+### Changed
+- **vHeader.vue**: Botón de idioma en vista `homeview`
+  - Cambiado de emitir `show-all` a `openLanguageSelector()`
+  - Añadida clase `cursor-pointer` para mejor UX
+  - Ahora permite cambiar idioma directamente desde la pantalla principal
+
+- **vHeader.vue**: Vista `levels` (mobile)
+  - Badge de idioma ahora también abre selector (mismo comportamiento que desktop)
+  - Añadida clase `cursor-pointer` y evento `@click`
+
+### Fixed
+- **HomeView.vue**: Error de propiedad no definida
+  - Corregido: `handleLanguageUpdate` ahora está definido en el `setup()` y retornado
+  - Eliminado warning: "Property 'handleLanguageUpdate' was accessed during render but is not defined"
+
+- **vHeader.vue**: Errores de creación dinámica de modales
+  - Eliminado intento fallido de crear modal con `createApp` que causaba errores de router
+  - Simplificado a navegación directa `/select-language`
+  - Corregido error: `this.$createElement is not a function`
+  - Corregido error: `Cannot read properties of undefined (reading 'extend')`
+
+## Notas técnicas
+
+### Componentes modificados
+- `src/components/vHeader.vue`
+- `src/views/HomeView.vue`
+
+### Eventos emitidos
+```javascript
+// vHeader.vue ahora emite:
+emits: ['show-all', 'exit-lesson', 'energy-click', 'language-changed']
+```
+
+### Flujo de cambio de idioma
+1. Usuario hace clic en badge de idioma en HomeView
+2. Header emite `@language-changed` o navega a `/select-language`
+3. HomeView ejecuta `handleLanguageUpdate()` → recarga niveles
+4. La interfaz se actualiza con el nuevo idioma
+
+### Dependencias utilizadas
+- Vue Router 4
+- Pinia stores (auth, energy)
+- LanguageService para obtener flags/emoji desde BD
+```
+
+Este changelog documenta todas las modificaciones realizadas durante la sesión del 2026-04-01 para implementar el selector rápido de idioma desde el Header de la aplicación.
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Frontend)
+
+## [2.0.0] - 2026-03-26 - [Refactorización de Lecciones y Energía con API Unificada]
+
+### Added
+- **LevelView**: Tarjeta de acceso a "Nivel Rápido" con 6 ejercicios aleatorios por nivel
+- **NextStage**: Componente "¿Qué sigue después?" con navegación a nivel rápido cuando el siguiente nivel está bloqueado
+- **lessonApi.js**: Mixin centralizado para carga de lecciones y registro de progreso usando API
+- **QuickLevelView**: Vista de práctica rápida con ejercicios aleatorios del nivel completo
+- Sistema de monitoreo de energía cada 2 segundos durante las lecciones
+- Modal de energía insuficiente que diferencia entre `depleted` (0⚡) e `insufficient` (>0⚡ pero <10⚡)
+
+### Changed
+- **LessonView**: Migrado de datos mock locales (`LearningRepository`) a API real (`learningApi` / `progressApi`)
+- **LessonView**: Botones de opción múltiple ahora mantienen estilo visual correcto (verde para correcta, rojo para incorrecta)
+- **QuickLevelView**: Migrado de `QuickLevelService` mock a API real (`learningApi.getQuick()`)
+- **NextStage**: Cambiado de `LearningRepository` a `learningApi.getLevels()` para consistencia con el resto de la app
+- **NextStage**: Texto del botón dinámico: "PRACTICAR RÁPIDO" (nivel bloqueado) / "CONTINUAR" (nivel desbloqueado)
+- **NextStage**: Descripción reemplazada por título del nivel (`titleNative` > `titleSpanish` > `title` > `description`)
+- Header de lección ahora recibe `energyCurrent`, `energyMax`, `energyStreak` desde el store global
+
+### Fixed
+- **LessonView**: Botones de opciones no renderizaban colores correctos después de verificar respuesta
+- **LevelView**: Componente `NextStage` no se mostraba por inconsistencia entre datos mock y API
+- **LessonView/QuickLevelView**: Prevención de recarga (F5/Ctrl+R) ahora funciona correctamente durante lecciones activas
+- **LessonView**: Corrección en flujo de energía insuficiente al iniciar lección (no iniciaba timer hasta cerrar modal)
+- **QuickLevelView**: Validación de respuestas tipo `fill-blank` ahora soporta arrays de respuestas correctas
+
+---
+
+## [1.5.0] - 2026-03-20 - [Implementación de Sistema de Energía]
+
+### Added
+- **EnergyStore**: Store global de energía con recarga automática cada 10 segundos
+- **NoEnergyModal**: Modal para manejo de energía agotada o insuficiente
+- Consumo de energía por ejercicio: `-1⚡` base, bonificación por aciertos y rachas
+- Sistema de rachas (streak) que multiplica bonificación de energía
+- Header muestra indicador de energía actual, máxima y racha
+
+### Changed
+- **LessonView/QuickLevelView**: Integración con `energyStore.consumeForExercise()`
+- Verificación de energía antes de iniciar lección (requiere mínimo 10⚡)
+- Monitoreo de energía durante lección (cada 2 segundos)
+
+---
+
+## [1.0.0] - 2026-03-10 - [Estructura Inicial de Lecciones]
+
+### Added
+- **LessonView**: Vista principal de lecciones con ejercicios tipo multiple-choice y fill-blank
+- **LevelView**: Vista de nivel con unidades desbloqueadas y bloqueadas
+- **QuickLevelView**: Vista inicial de nivel rápido (mock)
+- **lessonApi.js**: Lógica compartida entre LessonView y QuickLevelView
+- Prevención de recarga de página durante lecciones activas
+- FeedbackModal para respuestas correctas/incorrectas
+
+### Changed
+- Integración con `learningApi` y `progressApi` para datos reales
+- Header dinámico con progreso de lección
+- ExerciseImage muestra personajes según estado de respuesta
+- ProcessedText maneja vocabulario con pronunciación y ejemplos
+
+### Fixed
+- Navegación entre niveles y unidades
+- Estado de unidades completadas refleja correctamente en LevelView
+- Loading states en todas las vistas
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (frontend)
+
+## [1.0.0] - 2026-03-25 - Implementación de editor JSON para sistemas de escritura
+
+### Added
+- Nuevo campo de texto `ws-characters` en el modal de sistemas de escritura para pegar directamente la estructura JSON del alfabeto/silabario
+- Soporte para guardar la estructura completa del alfabeto Náhuatl en el campo `characters` de la base de datos
+- Plantilla JSON predefinida para el Náhuatl central (nhce) con 24 caracteres (vocales, consonantes, dígrafos y vocales largas)
+
+### Changed
+- Modal `modal-writing-system`: reemplazado el campo genérico por un textarea específico para JSON (`ws-characters`)
+- Función `saveWritingSystem()`: modificado el payload para enviar los datos al campo `characters` del backend (antes no se enviaba correctamente)
+- Función `editWritingSystem()`: ahora carga los datos desde `r.characters` en lugar de `r.syllabaryData`
+- Función `openModalWS()`: ahora limpia el campo `ws-characters` en lugar de `ws-syllabary-data`
+- Función `loadWritingSystems()`: ahora cuenta los caracteres desde `r.characters`
+
+### Fixed
+- Corrección del nombre del campo en el payload de `saveWritingSystem()`: `syllabaryData` → `characters` (ahora coincide con la entidad `WritingSystem` del backend)
+- Los datos del alfabeto ahora se guardan correctamente en la base de datos (antes no se persistían porque el campo no coincidía)
+
+---
+
+## [0.9.0] - 2026-03-24 - Versión inicial del dashboard
+
+### Added
+- Dashboard administrativo completo con gestión de idiomas, usuarios, vocabulario, niveles, unidades, lecciones, ejercicios y sistemas de escritura
+- Sidebar con navegación por módulos
+- Modales para creación/edición de cada entidad
+- Conexión a API REST con configuración dinámica de endpoint
+- Estadísticas generales en vista Overview
+- Tablas con filtros de búsqueda
+- Sistema de notificaciones (toast)
+- Soporte para Oracle Database vía Spring Boot backend
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG - Backend Database Schema
+
+## [1.0.0] - 2025-04-03 - Diseño Inicial de Base de Datos
+
+### Added
+- ✅ **Schema completo de base de datos** con 12 tablas esenciales
+  - `users` - Gestión de usuarios y perfiles
+  - `languages` - Catálogo de idiomas (náhuatl central, teenek occidental)
+  - `levels` - Niveles de aprendizaje por idioma
+  - `units` - Unidades didácticas por nivel
+  - `exercises` - Ejercicios individuales con tipos múltiples
+  - `vocabulary` - Diccionario global por idioma
+  - `unit_vocabulary` - Relación vocabulario-unidad
+  - `user_progress` - Tracking de progreso por unidad
+  - `user_stats` - Estadísticas de aprendizaje por usuario/idioma
+  - `user_energy` - Sistema de energía/gamificación
+  - `achievements` - Catálogo de logros disponibles
+  - `user_achievements` - Logros desbloqueados por usuario
+  - `lesson_history` - Historial de lecciones completadas
+
+- 🔄 **Conversión a Oracle SQL**
+  - Migración de tipos PostgreSQL → Oracle
+  - `SERIAL` → `NUMBER GENERATED ALWAYS AS IDENTITY`
+  - `VARCHAR()` → `VARCHAR2()`
+  - `INTEGER` → `NUMBER`
+  - `CURRENT_DATE` → `SYSDATE`
+  - `CURRENT_TIMESTAMP` → `SYSTIMESTAMP`
+
+- 📊 **Sistema de escritura flexible** (`writing_systems`)
+  - Soporte para silabarios (náhuatl)
+  - Soporte para alfabetos (teenek)
+  - Estructura JSON adaptable por tipo de sistema
+  - Campos: `characters`, `rules`, `notes`
+
+- 🔓 **Lógica de acceso y desbloqueo**
+  - Campo `is_free` en `levels` y `units`
+  - Nivel 1, Unidad 1 gratuito para TODOS los idiomas
+  - Desbloqueo automático al completar requisitos
+  - Sistema multi-idioma independiente
+
+- 🎯 **Índices optimizados**
+  - `idx_users_username` - Búsqueda rápida por username
+  - `idx_users_email` - Búsqueda rápida por email
+  - `idx_levels_language` - Filtrado por idioma/nivel
+  - `idx_units_level` - Filtrado por nivel/unidad
+  - `idx_exercises_unit` - Ejercicios por unidad
+  - `idx_user_progress_user` - Progreso por usuario
+  - `idx_vocabulary_language` - Vocabulario por idioma
+
+- ⚡ **Triggers automáticos**
+  - `update_updated_at_column()` - Actualización automática de timestamps
+  - Triggers en: `users`, `user_progress`, `user_stats`, `user_energy`
+
+- 🔐 **Constraints de integridad**
+  - Foreign keys con `ON DELETE CASCADE`
+  - Unique constraints en combinaciones críticas
+  - Check constraints para valores booleanos
+
+### Changed
+- 🗂️ **Migración de datos estáticos**
+  - De: `learningContent.js` (JavaScript estático)
+  - A: Tablas relacionales (PostgreSQL/Oracle)
+  - Separación de contenido y progreso
+
+- 💾 **Reemplazo de LocalStorage**
+  - De: Almacenamiento cliente (LocalStorage)
+  - A: Base de datos centralizada
+  - Datos afectados: progreso, estadísticas, logros, energía
+
+- 📐 **Normalización de datos**
+  - Eliminación de redundancia en vocabulario
+  - Relaciones many-to-many para `unit_vocabulary`
+  - Separación de contenido estático vs dinámico
+
+### Fixed
+- 🐛 **Tipos de datos compatibles Oracle**
+  - Corrección de auto-incremento (`IDENTITY` vs `SEQUENCE`)
+  - Compatibilidad con Oracle 12c+
+  - Fallback para Oracle 11g con SEQUENCES
+
+- 🔧 **Estructura de JSON flexible**
+  - Campo `correct_answer` en `exercises` ahora soporta:
+    - String simple
+    - Array de respuestas válidas
+    - Objeto con múltiples formatos
+  - Campo `characters` en `writing_systems` adaptable por tipo
+
+- ✅ **Validación de progreso**
+  - Lógica de desbloqueo basada en completitud
+  - Prevención de acceso a contenido bloqueado
+  - Verificación de unidades anteriores completadas
+
+---
+
+## Notas Técnicas
+
+### Compatibilidad de Versiones
+- **Oracle 12c+**: Soporte completo con `IDENTITY`
+- **Oracle 11g**: Requiere uso de `SEQUENCE` manual
+- **PostgreSQL 9.5+**: Schema original compatible
+
+### Migración de Datos
+Se requieren scripts de migración para:
+1. Convertir `EXERCISES_DATA` → tabla `exercises`
+2. Convertir `VOCABULARY_DATA` → tabla `vocabulary`
+3. Migrar `LocalStorage` → tablas de progreso
+
+### Próximos Pasos Sugeridos
+- [ ] Scripts de seed data (datos iniciales)
+- [ ] API REST/GraphQL para acceso
+- [ ] Procedimientos almacenados para lógica de desbloqueo
+- [ ] Vistas materializadas para consultas frecuentes
+
+---
+
+**Estructura Final**: 12 tablas | 15+ índices | 4 triggers | Soporte multi-idioma
+
+----------------------------------------------------------------------------------------------------------
+
+# Tlahtolli Admin Dashboard — CHANGELOG
+
+Todos los cambios notables de este proyecto están documentados aquí.
+Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
+
+---
+
+## [1.3.0] - 2026-03-15 - Remove Lessons Layer & Fix Exercise FK
+
+### Changed
+- **Frontend:** Sección "Lecciones" eliminada completamente del sidebar y del flujo de contenido
+- **Frontend:** Modal de ejercicios actualizado — el campo `Lección` reemplazado por `Unidad` (`ex-unit-id`) reflejando la FK real de la tabla `EXERCISES`
+- **Frontend:** Filtro de tab "Ejercicios" ahora filtra por `unitId` en lugar de `lessonId`
+- **Frontend:** Tabla de ejercicios muestra columna `Unidad` en lugar de `Lección`
+- **Frontend:** `saveExercise()` envía `unitId` al backend en lugar de `lessonId`
+- **Frontend:** `loadExercises()` construye URL con parámetro `unitId`
+- **Frontend:** `refreshDropdowns()` ya no carga el dropdown de lecciones; puebla `ex-unit-id` desde `/units`
+- **Frontend:** `unitsCache` reemplaza a `lessonsCache` como cache intermedio para el dropdown de ejercicios
+- **Frontend:** Schema de navegación corregido: `LANGUAGES → LEVELS → UNITS → EXERCISES`
+
+### Fixed
+- **Frontend:** Error lógico donde ejercicios dependían de `lessonId` siendo que `EXERCISES.UNIT_ID` es la FK real en Oracle
+- **Frontend:** Filtro combinado de tipo + unidad en ejercicios ahora construye query params correctamente
+
+### Removed
+- **Frontend:** Tab pane `#tab-lessons` completo (HTML, JS loader, modal, funciones CRUD)
+- **Frontend:** Funciones `loadLessons()`, `openModalLesson()`, `editLesson()`, `saveLesson()`
+- **Frontend:** `lessonsCache` y toda referencia a lecciones en dropdowns
+- **Frontend:** Modal `#modal-lesson` y todos sus campos
+- **Frontend:** Botón "Lecciones" del sidebar bajo sección Contenido
+- **Frontend:** Stat card "Lecciones" del Overview y llamada a `/lessons/count`
+- **Frontend:** Entradas `lessons` de `TAB_TITLES` y `TAB_LOADERS`
+
+---
+
+## [1.2.1] - 2026-03-15 - Fix Exercise unitId Nullable & SQL Deduplication
+
+### Fixed
+- **Backend:** `Exercise.java` — `unitId` cambiado de `nullable = false` a `nullable = true` eliminando el `PropertyValueException` que Hibernate lanzaba al recibir `unitId` nulo
+- **Backend:** `ExerciseController.update()` — agregada lógica para preservar `unitId` del registro existente si el payload entrante lo omite:
+  ```java
+  if (exercise.getUnitId() == null) {
+      exercise.setUnitId(existing.getUnitId());
+  }
+  ```
+- **Database:** Script SQL limpiado — eliminados `ALTER TABLE` duplicados que causaban `ORA-01430`, `ORA-02275` y `ORA-01451` al re-ejecutar el script completo
+- **Database:** Confirmado que todos los ALTERs estaban ya aplicados correctamente (los errores Oracle confirmaron el estado correcto de la DB)
+
+### Changed
+- **Database:** Bloque de ALTERs consolidado en orden correcto sin repeticiones:
+  ```sql
+  ALTER TABLE EXERCISES ADD LESSON_ID NUMBER;
+  ALTER TABLE EXERCISES ADD CONSTRAINT FK_EXERCISES_LESSON
+      FOREIGN KEY (LESSON_ID) REFERENCES LESSONS(ID) ON DELETE CASCADE;
+  ALTER TABLE EXERCISES MODIFY (UNIT_ID NULL);
+  ALTER TABLE LESSON_HISTORY ADD LESSON_ID NUMBER;
+  ALTER TABLE LESSON_HISTORY ADD CONSTRAINT FK_LESSON_HIST_LESSON
+      FOREIGN KEY (LESSON_ID) REFERENCES LESSONS(ID) ON DELETE CASCADE;
+  ```
+
+---
+
+## [1.2.0] - 2026-03-15 - Add LESSONS Table & Backend Integration
+
+### Added
+- **Database:** Nueva tabla `LESSONS` con estructura `UNITS → LESSONS → EXERCISES`
+- **Database:** `LESSON_ID` agregado a `EXERCISES` como FK hacia `LESSONS` (ON DELETE CASCADE)
+- **Database:** `LESSON_ID` agregado a `LESSON_HISTORY` como FK hacia `LESSONS`
+- **Database:** `UNIT_ID` en `EXERCISES` modificado a nullable
+- **Database:** Índice `IDX_LESSONS_UNIT` sobre `LESSONS(UNIT_ID)`
+- **Backend:** Entity `Lesson.java` con campos `id`, `unitId`, `lessonNum`, `title`, `description`, `isFree`, `xpReward`
+- **Backend:** `LessonRepository.java` con método `findByUnitId(Long unitId)`
+- **Backend:** `LessonController.java` con endpoints: `GET /lessons`, `GET /lessons/{id}`, `GET /lessons/count`, `POST`, `PUT`, `DELETE`, con filtro opcional `?unitId=`
+- **Frontend:** Sección "Lecciones" agregada al sidebar bajo "Contenido" entre Unidades y Ejercicios
+- **Frontend:** Tab pane con tabla (Unidad, #, Título, XP, Gratuita) y filtro por unidad
+- **Frontend:** Modal `#modal-lesson` con campos: unidad, número, título, descripción, XP, gratuita
+- **Frontend:** Funciones `loadLessons()`, `openModalLesson()`, `editLesson()`, `saveLesson()`
+- **Frontend:** `lessonsCache` para alimentar el dropdown `ex-lesson-id` del modal de ejercicios
+- **Frontend:** Stat card "Lecciones" en Overview conectada a `/lessons/count`
+
+### Changed
+- **Backend:** `Exercise.java` — agregado campo `lessonId` como nueva FK principal hacia `LESSONS`
+- **Frontend:** Modal de ejercicios — selector cambiado de unidad a lección (`ex-lesson-id`)
+- **Frontend:** Jerarquía de contenido en sidebar: `Niveles → Unidades → Lecciones → Ejercicios`
+
+---
+
+## [1.1.0] - 2026-03-15 - Dashboard Config & Overview Correction
+
+### Fixed
+- **Frontend:** Stat card "Lecciones" en Overview corregida — antes apuntaba a `LESSON_HISTORY` (actividad), ahora refleja lecciones de contenido definidas
+
+### Changed
+- **Frontend:** Panel de Configuración Oracle — valores por defecto actualizados:
+  - Puerto: `1522` → `1521`
+  - Usuario: `tlahtolli_own` → `System`
+  - Contraseña: vacío → `8520`
+- **Frontend:** Badge del header actualizado: `localhost:1522` → `localhost:1521`
+- **Frontend:** Subtítulo de stat card "Lecciones" cambiado a "Definidas en contenido"
+
+---
+
+## [1.0.0] - 2026-03-15 - Initial Dashboard Release
+
+### Added
+- **Frontend:** Dashboard HTML single-file con Tailwind CDN, IBM Plex Mono y DM Sans
+- **Frontend:** Sidebar con secciones: Resumen, Catálogos, Contenido, Actividad, Jugador, Sistema
+- **Frontend:** 14 tabs: Overview, Idiomas, Usuarios, Vocabulario, Logros, Niveles, Unidades, Ejercicios, Historial, Estadísticas, Progreso, Energía, Sistemas de Escritura, Configuración
+- **Frontend:** Stat cards en Overview: Usuarios, Idiomas, Ejercicios, Vocabulario, Logros, Progreso, Energía, Sistemas de Escritura
+- **Frontend:** Tabla de últimas lecciones completadas en Overview
+- **Frontend:** CRUD completo con modales para: Idiomas, Usuarios, Vocabulario, Logros, Niveles, Unidades, Ejercicios, Sistemas de Escritura
+- **Frontend:** Búsqueda y filtro en tiempo real por tabla (`filterTable()`)
+- **Frontend:** Filtros de dropdown por idioma (vocabulario, niveles, WS) y por tipo (ejercicios)
+- **Frontend:** Chips de color para rareza, dificultad, performance y estado de progreso
+- **Frontend:** Barra de energía visual con color dinámico (verde / ámbar / rojo) según porcentaje
+- **Frontend:** Panel de Configuración con Base URL de API y datos informativos de Oracle
+- **Frontend:** Indicador de estado de conexión en footer del sidebar con dot animado
+- **Frontend:** Toast notifications para operaciones exitosas y errores
+- **Frontend:** `languagesCache` y `refreshLangDropdowns()` para selectores en cascada
+- **Frontend:** `refreshDropdowns()` carga niveles → unidades en cadena al iniciar
+- **Frontend:** `resetModal()` limpia campos y títulos al cancelar o reabrir modales
+- **Backend:** Entity + Repository + Controller para: `Language`, `User`, `Vocabulary`, `Achievement`, `Level`, `Unit`, `Exercise`, `LessonHistory`, `UserStats`
+- **Backend:** Endpoint `GET /count` en todos los recursos principales para el Overview
+- **Backend:** `CorsConfig.java` con `allowedOrigins("*")` para uso desde archivo HTML local
+- **Backend:** `application.yml` con datasource Oracle XE, puerto `1521`, usuario `System`
+- **Database:** Schema v2.1 con 14 tablas: `LANGUAGES`, `USERS`, `USER_STATS`, `LEVELS`, `UNITS`, `EXERCISES`, `WRITING_SYSTEMS`, `USER_PROGRESS`, `VOCABULARY`, `UNIT_VOCAB`, `ACHIEVEMENTS`, `USER_ACHIEVEMENTS`, `USER_ENERGY`, `LESSON_HISTORY`
+- **Database:** Vista `V_UNIT_ACCESS` para estado de acceso por unidad según progreso del usuario
+- **Database:** 17 índices sobre FKs y columnas de búsqueda frecuente
+- **Database:** Constraints nombrados con prefijos `PK_`, `FK_`, `UQ_`, `CHK_`
+- **Database:** `GENERATED ALWAYS AS IDENTITY` en todas las PKs (sin secuencias)
+- **Database:** `COMMIT` explícito después de cada tabla y bloque de índices
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG — Tlahtolli Full-Stack Integration
+
+## [4.2.0] - 2026-04-03 - Exercise Validation & Level UI Fixes
+
+### Fixed
+- **LessonView.vue** — Botones de opción múltiple no mostraban color al validar respuesta. Causa: múltiples condiciones `:class` conflictivas que Vue resolvía con la última activa. Solución: método `buttonClass(index)` que devuelve una sola clase calculada de forma exclusiva.
+- **LessonView.vue** — `currentExercise.validateAnswer()` lanzaba error porque los ejercicios de la API son objetos planos sin métodos del modelo `Exercise`. Reemplazado por `validateFillBlank()` con lógica inline (soporta array y string).
+- **LessonView.vue** — `loadLessonData()` usaba `getLearningRepository()` local (datos hardcodeados). Reemplazado por `loadLessonData()` de `lessonApi.js` que consulta la API.
+- **LessonView.vue** — `completeCurrentUnit()` llamaba a `progressService.completeLesson()` local. Reemplazado por `completeLesson()` de `lessonApi.js` que usa `progressApi.complete()`.
+- **LessonView.vue** — Vocabulario para `ProcessedText` venía vacío. Ahora se convierte el objeto `{ palabra: { translation, pronunciation } }` de la API a array.
+- **LevelView.vue** — Faltaba la card de acceso a Nivel Rápido al final de la vista. Se mantiene `<NextStage>` respetando la estructura original.
+- **LevelView.vue** — `currentLevel.titleSpanish` y `currentLevel.titleNative` daban `undefined` cuando el nivel no está aún cargado por ser llamadas síncronas al repositorio local. Adaptado a carga asíncrona desde la API con guards `?.`.
+
+### Changed
+- **LessonView.vue** — `created()` ahora es async y espera `fetchLessonData()` antes de inicializar energía y verificar requisitos.
+- **LessonView.vue** — Eliminada dependencia de `getLearningRepository`, `ProgressService`, `EnergyService` (local) y `SpeechService`. Reemplazados por `lessonApi.js` y `useEnergyStore`.
+
+---
+
+## [4.1.0] - 2026-04-03 - SyllabaryContent Async Load & GlossaryView Cleanup
+
+### Fixed
+- **SyllabaryContent.vue** — Todos los métodos del `SyllabaryRepository` son `async`, pero el original los llamaba en `computed()` sin `await`, devolviendo `Promise` en lugar del valor. Refactorizado a `onMounted` + `ref` reactivos con carga asíncrona.
+- **GlossaryView.vue** — Importaba `DictionaryContent`, `WordBankContent`, `ProgressService` y `getLearningRepository` que jalaban `learningContent.js`, causando error 500 de Vite. Eliminados todos esos imports; la vista solo muestra el tab de sistema de escritura.
+- **SyllabaryRepository.js** — `getWritingSystem()` era `async` y se llamaba en `computed` de `SyllabaryContent`. Convertido a síncrono con carga en background y fallback `'alphabet'`.
+- **SyllabaryRepository.js** — `_resolveId()` detecta si recibe código string (`'nhce'`) y lo convierte al ID numérico desde `authStore.selectedLangId`, evitando el `400 Bad Request` en `/writing-systems?languageId=nhce`.
+
+---
+
+## [4.0.0] - 2026-04-03 - Frontend–Backend Full Integration
+
+### Added
+- **`src/api/apiClient.js`** — Cliente HTTP centralizado con `fetch`. Agrupa endpoints por dominio: `usersApi`, `languagesApi`, `learningApi`, `progressApi`, `energyApi`, `statsApi`, `achievementsApi`, `historyApi`, `writingApi`. Manejo correcto de body vacío en 404 (`res.text()` antes de `JSON.parse`).
+- **`src/views/learn/lessonApi.js`** — Composable con `loadLessonData(unitId)` y `completeLesson({...})` para uso en `LessonView` y `QuickLevelView`.
+- **`src/data/services/QuickLevelService.js`** — Versión adaptada para backend: elimina uso de `learningContent.js` y repositorios locales. `completeQuickLevel()` usa `progressApi.complete()`.
+- **`src/data/services/AchievementService.js`** — Versión adaptada: delega en `achievementsApi.getWithStatus()` en lugar de `LocalStorageService`.
+- **`src/data/services/UnlockService.js`** — Stub de compatibilidad; el desbloqueo lo maneja el backend en `/user-progress/complete`.
+- **`src/data/repositories/UserRepository.js`** — Lee del `authStore` (que obtiene el usuario real desde la API) en lugar de `LocalStorageService`. Stubs para métodos de mutación.
+
+### Changed
+- **`src/stores/auth.js`** — Eliminado `DEMO_USER_ID = 1` hardcodeado. `initialize()` ahora llama a `usersApi.getByUsername('tetecuhtli')` para resolver el ID real de la BD.
+- **`src/stores/energy.js`** — `initializeEnergy(userId)` tiene guardia de `userId` nulo. `consumeForExercise()` usa `energyApi.consume()`. Alias `syncFromLocalStorage()` mantenido por compatibilidad.
+- **`src/App.vue`** — Orden de inicialización corregido: auth primero (resuelve userId real), energía después (usa el userId correcto).
+- **`src/data/repositories/LearningRepository.js`** — Todos los métodos delegan en `learningApi`. `getLevels()` y `getUnits()` síncronos devuelven `[]` (compatibilidad con código legado); las vistas usan las versiones async.
+- **`src/data/repositories/StatsRepository.js`** — `getUserStats()` usa `statsApi.getByUser()` y combina stats de múltiples idiomas.
+- **`src/data/repositories/RepositoryFactory.js`** — Importa las nuevas implementaciones de repositorios adaptadas a la API.
+- **`src/views/LoginView.vue`** — Eliminada dependencia de `getUserRepository()` local para mostrar datos del usuario demo. Muestra datos estáticos de `tetecuhtli`.
+- **`src/views/ProfileView.vue`** — `userData` proviene de `authStore.user` (API) en lugar de `UserRepository`. `loadAchievements()` usa `progressService.getAllAchievementsWithProgress(userId)` que llama a la API.
+- **`src/components/ProgressAside.vue`** — `loadStats()` usa `statsApi.getByUserLang()` directamente. Eliminada dependencia de `StatsRepository` local.
+- **`src/views/HomeView.vue`** — `loadLevels()` usa `learningApi.getLevels(selectedLangId, userId)`.
+- **`src/views/learn/QuickLevelView.vue`** — `loadQuickLevelData()` usa `learningApi.getQuick()`. `finishQuickLevel()` usa `progressApi.complete()`.
+
+### Fixed
+- **`src/stores/auth.js`** — `GET /users/1 → 404`: el ID hardcodeado `1` no existía en la BD (usuario tiene ID `23`). Resuelto con resolución dinámica por username.
+- **`src/stores/energy.js`** — `GET /energy/user/1 → 500 ORA-02291`: FK violada al intentar crear energía para `userId=1` inexistente. Resuelto al esperar que auth resuelva el usuario real antes de inicializar energía.
+- **`apiClient.js`** — `Unexpected end of JSON input` en respuestas 404 con body vacío. Resuelto usando `res.text()` y parseando solo si hay contenido.
+
+---
+
+## [3.6.0] - 2026-03-16 - Backend Controllers & Services
+
+### Added
+- **`EnergyController`** — `GET /api/energy/user/{userId}`, `POST /api/energy/user/{userId}/consume`, `PUT /api/energy/user/{userId}/set`.
+- **`LearningController`** — `GET /api/learning/levels`, `GET /api/learning/levels/{id}/units`, `GET /api/learning/units/{id}/exercises`, `GET /api/learning/units/{id}/vocabulary`, `GET /api/learning/levels/{id}/quick`.
+- **`UserProgressController`** — `POST /api/user-progress/complete` (actualiza `LESSON_HISTORY`, `USER_PROGRESS`, `USERS`, `USER_STATS` en una transacción), `POST /api/user-progress/init`.
+- **`UserAchievementController`** — `GET /api/user-achievements?userId=`.
+- **`WritingSystemController`** — `GET /api/writing-systems?languageId=&type=`.
+- **`EnergyService`** — Recuperación pasiva (1 punto cada 20 min), consumo con bonus por racha, creación automática de `USER_ENERGY` si no existe.
+- **`ProgressService`** (backend) — `completeLesson()` con `@Transactional` actualiza 4 tablas en una operación.
+- **`LearningService`** — `getLevelsWithProgress()`, `getUnitsWithProgress()`, `getExercisesForUnit()` con opciones mezcladas, `getVocabularyForUnit()`, `getRandomExercisesForLevel()`.
+- **`UserController`** — `GET /api/users/by-username/{username}`, `PUT /api/users/{id}/language`.
+
+### Changed
+- **`CorsConfig.java`** — Reemplazado `allowedOrigins("*")` (conflicto con `allowedOriginPatterns`) por `allowedOriginPatterns("http://localhost:*", "http://127.0.0.1:*")`.
+
+### Fixed
+- **`LessonHistory`, `UserStats`** — Getters manuales conflictuaban con `@Builder` de Lombok. Todos los services usan `new Entidad()` + setters en lugar de `.builder()`.
+- **`ExerciseController`** — `PUT` preserva `unitId` del registro existente si el body no lo incluye.
+
+----------------------------------------------------------------------------------------------------------
+
+# CHANGELOG (Backend - Database)
+
+---
+
+## [2.1.0] - 2026-04-04 - Fix Reserved Words and Schema Stabilization
+
+### Fixed
+- Renamed `USERS.NAME` → `FULL_NAME` (palabra reservada en Oracle)
+- Renamed `USERS.LEVEL` → `USER_LEVEL` (palabra reservada en Oracle)
+- Renamed `EXERCISES.TYPE` → `EXERCISE_TYPE` (palabra reservada en Oracle)
+- Renamed `EXERCISES.CHARACTER` → `CHARACTER_REF` (función nativa de Oracle)
+- Renamed `LANGUAGES.NAME` → `LANG_NAME` (palabra reservada en Oracle)
+- Corregido error en cascada `ORA-00942` en tablas con FK a `USERS` (`USER_STATS`, `USER_PROGRESS`, `USER_ACHIEVEMENTS`, `USER_ENERGY`, `LESSON_HISTORY`) causado por fallo en creación de `USERS`
+- Corregidos índices fallidos sobre tablas dependientes de `USERS`
+- Corregida vista `V_UNIT_ACCESS` que fallaba por `USER_PROGRESS` no creada
+
+---
+
+## [2.0.0] - 2026-04-04 - Schema Rewrite with Preferred Oracle Structure
+
+### Changed
+- Eliminadas secuencias manuales (`CREATE SEQUENCE`) en favor de `GENERATED ALWAYS AS IDENTITY` en todas las PKs
+- Todos los constraints renombrados con prefijos explícitos: `PK_`, `FK_`, `UQ_`, `CHK_`
+- Todo el DDL convertido a mayúsculas siguiendo convención del proyecto
+- `COMMIT` agregado después de cada `CREATE TABLE`
+- Bloque `DROP TABLE` reordenado en sentido inverso a las FK para evitar errores de dependencia
+
+---
+
+## [1.0.0] - 2026-04-04 - Initial Schema Creation
+
+### Added
+- Tabla `LANGUAGES` con campos `CODE`, `NATIVE_NAME`, `WRITING_SYSTEM` y constraint `CHK_LANGUAGES_WS`
+- Tabla `USERS` con soporte multi-idioma vía `CURRENT_LANG FK → LANGUAGES`
+- Tabla `USER_STATS` con progreso por usuario por idioma y constraint `UQ` compuesta `(USER_ID, LANGUAGE_ID)`
+- Tabla `LEVELS` con campos `IS_FREE`, `UNLOCK_REQ` y constraint `UQ` compuesta `(LANGUAGE_ID, LEVEL_NUM)`
+- Tabla `UNITS` con campos `IS_FREE`, `UNLOCK_REQ` y constraint `UQ` compuesta `(LEVEL_ID, UNIT_NUM)`
+- Tabla `EXERCISES` con campos `CORRECT_ANS` y `OPTIONS` de tipo `CLOB` para soporte JSON
+- Tabla `WRITING_SYSTEMS` reemplazando `SYLLABARY`; soporta tipos `syllabary`, `alphabet`, `logogram`, `abugida` con campos `CHARACTERS`, `RULES`, `NOTES` en `CLOB`
+- Tabla `USER_PROGRESS` con lógica de bloqueo (`IS_LOCKED`) y constraints `CHK` en campos booleanos
+- Tabla `VOCABULARY` como diccionario global por idioma
+- Tabla `UNIT_VOCAB` tabla pivot `UNITS ↔ VOCABULARY` con constraint `UQ (UNIT_ID, VOCAB_ID)`
+- Tabla `ACHIEVEMENTS` con campos `RARITY`, `CATEGORY`, `XP_REWARD`
+- Tabla `USER_ACHIEVEMENTS` con `PROGRESS` en `CLOB` para tracking JSON
+- Tabla `USER_ENERGY` con `MAX_ENERGY` default 15 y constraint `CHK` de rango `(0 ≤ CURRENT_ENRG ≤ MAX_ENERGY)`
+- Tabla `LESSON_HISTORY` con `PERFORMANCE NUMBER(4,2)`, `WAS_PERFECT` y audit trail completo
+- 17 índices sobre columnas de FK y filtros frecuentes
+- Vista `V_UNIT_ACCESS` implementando lógica de desbloqueo: `UNIT_NUM = 1` siempre `UNLOCKED`, resto valida unidad anterior completada
+
+----------------------------------------------------------------------------------------------------------

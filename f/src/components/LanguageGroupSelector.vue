@@ -3,7 +3,7 @@
         <!-- Grupos de idiomas desplegables -->
         <div class="space-y-3">
             <!-- Grupo dinámico para cada grupo de idiomas -->
-            <div v-for="group in languageGroups" :key="group.id"
+            <div v-for="group in groupedLanguages" :key="group.id"
                 class="rounded-lg overflow-hidden border border-gray-700">
 
                 <!-- Botón del grupo -->
@@ -61,53 +61,81 @@
                 </div>
             </div>
         </div>
-
-        <!-- Idioma seleccionado -->
-        <!-- <div v-if="selectedLanguageInfo" class="mt-4 p-4 rounded-lg border-2" :style="{
-            borderColor: selectedLanguageInfo.color,
-            backgroundColor: `${selectedLanguageInfo.color}15`
-        }">
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center text-white"
-                    :style="{ backgroundColor: selectedLanguageInfo.color }">
-                    {{ selectedLanguageInfo.flag }}
-                </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-lg">{{ selectedLanguageInfo.name }}</h3>
-                    <p class="text-gray-300">{{ selectedLanguageInfo.nativeName }}</p>
-                    <p class="text-sm text-gray-400">{{ selectedLanguageInfo.description }}</p>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { LanguageService } from '../data/services/LanguageService'
 
 const props = defineProps({
     initialLanguage: {
         type: String,
         default: null
+    },
+    // Nueva prop para recibir idiomas desde fuera
+    languages: {
+        type: Array,
+        default: null
     }
 })
 
-const emit = defineEmits(['language-selected', 'confirm'])
+const emit = defineEmits(['language-selected'])
 
 const languageService = new LanguageService()
 const selectedLanguage = ref(props.initialLanguage)
 const expandedGroups = ref(new Set())
 
-// Obtener todos los grupos de idiomas
-const languageGroups = computed(() => {
-    return languageService.getLanguageGroups()
-})
+// Función para transformar los idiomas de la API al formato que espera el componente
+const transformLanguages = (langs) => {
+    if (!langs || !Array.isArray(langs)) return []
 
-// Obtener información del idioma seleccionado
-const selectedLanguageInfo = computed(() => {
-    if (!selectedLanguage.value) return null
-    return languageService.getLanguageInfo(selectedLanguage.value)
+    return langs.map(lang => ({
+        code: lang.code?.toLowerCase() || lang.id?.toLowerCase(),
+        name: lang.langName || lang.lang_name || lang.name,
+        nativeName: lang.nativeName || lang.native_name || '',
+        flag: lang.flag || '🌐',
+        color: lang.color || '#58CC02',
+        family: lang.family || lang.langName || lang.lang_name || 'Otros'
+    }))
+}
+
+// Obtener los idiomas a usar (desde prop o desde el servicio)
+const getLanguages = () => {
+    if (props.languages) {
+        return transformLanguages(props.languages)
+    }
+    // Si no hay prop, usar el servicio
+    const groups = languageService.getLanguageGroups()
+    const allLanguages = []
+    groups.forEach(group => {
+        allLanguages.push(...group.languages)
+    })
+    return allLanguages
+}
+
+// Agrupar idiomas por familia
+const groupedLanguages = computed(() => {
+    const languages = getLanguages()
+    const groupsMap = new Map()
+
+    languages.forEach(lang => {
+        const familyKey = lang.family || 'Otros'
+
+        if (!groupsMap.has(familyKey)) {
+            groupsMap.set(familyKey, {
+                id: familyKey,
+                name: familyKey,
+                description: `Idiomas ${familyKey}`,
+                color: lang.color || '#58CC02',
+                languages: []
+            })
+        }
+
+        groupsMap.get(familyKey).languages.push(lang)
+    })
+
+    return Array.from(groupsMap.values())
 })
 
 // Obtener el emoji de bandera del primer idioma del grupo para mostrar en el encabezado
@@ -115,7 +143,7 @@ const getGroupFlag = (languages) => {
     if (languages.length > 0 && languages[0].flag) {
         return languages[0].flag
     }
-    return '🌐' // Emoji por defecto
+    return '🌐'
 }
 
 // Función para alternar grupo
@@ -133,16 +161,24 @@ const selectVariant = (languageCode) => {
     emit('language-selected', languageCode)
 }
 
-onMounted(() => {
-    // Si hay un idioma inicial, expandir su grupo
-    if (props.initialLanguage) {
-        const lang = languageService.getLanguageInfo(props.initialLanguage)
+// Expandir grupo del idioma inicial cuando cambia
+watch(() => props.initialLanguage, (newLang) => {
+    if (newLang) {
+        const languages = getLanguages()
+        const lang = languages.find(l => l.code === newLang)
         if (lang) {
-            const group = languageService.getLanguageGroup(props.initialLanguage)
-            if (group && !expandedGroups.value.has(group.id)) {
-                expandedGroups.value.add(group.id)
+            const familyKey = lang.family || 'Otros'
+            if (!expandedGroups.value.has(familyKey)) {
+                expandedGroups.value.add(familyKey)
             }
         }
+    }
+}, { immediate: true })
+
+// Actualizar selectedLanguage cuando cambia initialLanguage
+watch(() => props.initialLanguage, (newLang) => {
+    if (newLang) {
+        selectedLanguage.value = newLang
     }
 })
 </script>

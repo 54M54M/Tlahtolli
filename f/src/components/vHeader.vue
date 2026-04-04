@@ -11,12 +11,10 @@
     <div v-else-if="variant === 'homeview'"
         class="py-3 px-4 text-white w-full top-0 left-0 md:left-[-70px] right-20 z-20">
         <div class="max-w-xl mx-auto flex items-center">
-            <!-- Izquierda -->
+            <!-- Izquierda - Botón para cambiar idioma -->
             <div class="mr-2">
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105"
-                    :style="{
-                        backgroundColor: currentLanguageData.color + '40',
-                    }" @click="$emit('show-all')">
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105 cursor-pointer"
+                    :style="{ backgroundColor: currentLanguageData.color + '40' }" @click="openLanguageSelector">
                     <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         :style="{ backgroundColor: currentLanguageData.color }">
                         {{ currentLanguageData.flag }}
@@ -31,7 +29,6 @@
 
             <!-- Derecha -->
             <div class="ml-2">
-                <!-- En la sección de energía -->
                 <div class="flex items-center px-3 py-1 mt-2 rounded-full transition-all duration-300 hover:scale-105 relative bg-[#FFC10A40]"
                     @click="$emit('energy-click')">
                     <div class="h-6 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -44,7 +41,7 @@
                         </svg>
                     </div>
                     <span class="text-xs font-semibold ml-1" :style="{ color: '#FFC10A' }">
-                        {{ energyCurrent }}
+                        {{ energyStore.currentEnergy }}
                     </span>
                 </div>
             </div>
@@ -66,8 +63,6 @@
                             <svg fill="#d1d5db" height="20px" width="20px" version="1.1" id="Capa_1"
                                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                 viewBox="0 0 460.775 460.775" xml:space="preserve">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                 <g id="SVGRepo_iconCarrier">
                                     <path
                                         d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z">
@@ -80,9 +75,7 @@
 
                 <div class="text-center flex-1 max-w-[200px] md:max-w-[315px] mx-4">
                     <h2 class="text-sm font-semibold truncate">{{ subtitle }}</h2>
-                    <h1 class="text-lg font-bold truncate">
-                        {{ title }}
-                    </h1>
+                    <h1 class="text-lg font-bold truncate">{{ title }}</h1>
                 </div>
 
                 <div>
@@ -100,7 +93,7 @@
                             </svg>
                         </div>
                         <span class="text-xs font-semibold ml-1" :style="{ color: '#FFC10A' }">
-                            {{ energyCurrent }}
+                            {{ energyStore.currentEnergy }}
                         </span>
                     </div>
 
@@ -110,15 +103,11 @@
                         :style="{
                             backgroundColor: currentLanguageData.color + '40',
                             border: `2px solid ${currentLanguageData.color}`
-                        }" @click="$emit('show-all')">
+                        }">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                             :style="{ backgroundColor: currentLanguageData.color }">
                             {{ currentLanguageData.flag }}
                         </div>
-                        <span v-if="!isMobile" class="text-xs font-semibold"
-                            :style="{ color: currentLanguageData.color }">
-                            {{ currentLanguageData.name }}
-                        </span>
                     </div>
                 </div>
 
@@ -134,7 +123,6 @@
             <div class="max-w-xl mx-auto md:max-w-5xl">
                 <div class="flex justify-between items-center mb-3 mt-2">
 
-                    <!-- CAMBIO: Reemplazar router-link por button -->
                     <button @click="$emit('exit-lesson')"
                         class="text-white text-sm flex items-center gap-2 px-3 pt-2 rounded-full transition-all duration-300 hover:scale-105">
                         <span class="font-bold">
@@ -143,8 +131,6 @@
                                 <svg fill="#d1d5db" height="20px" width="20px" version="1.1" id="Capa_1"
                                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                     viewBox="0 0 460.775 460.775" xml:space="preserve">
-                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                     <g id="SVGRepo_iconCarrier">
                                         <path
                                             d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z">
@@ -161,7 +147,6 @@
                         </h2>
                     </div>
 
-                    <!-- En la sección de energía -->
                     <div class="flex items-center px-3 py-1 mt-2 rounded-full transition-all duration-300 hover:scale-105 relative bg-[#FFC10A40]"
                         @click="$emit('energy-click')">
                         <div class="h-6 rounded-full flex items-center justify-center text-white text-xs font-bold">
@@ -174,10 +159,9 @@
                             </svg>
                         </div>
                         <span class="text-xs font-semibold ml-1" :style="{ color: '#FFC10A' }">
-                            {{ energyCurrent }}
+                            {{ energyStore.currentEnergy }}
                         </span>
 
-                        <!-- Animación de cambios de energía desde store global -->
                         <div v-if="energyStore.energyChanges.length > 0 && energyStore.currentEnergy < 15"
                             class="absolute -top-1 -left-1">
                             <div v-for="change in energyStore.energyChanges" :key="change.id"
@@ -201,6 +185,17 @@
 
     </div>
 
+    <!-- ── Modal de selección de idioma (Teleport → mismo árbol Vue/Pinia) ──── -->
+    <Teleport to="body">
+        <div v-if="showLanguageModal" class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70"
+            @click.self="closeLanguageModal">
+            <div class="w-[90%] max-w-[500px]">
+                <VariantSelection :is-modal="true" @close="closeLanguageModal"
+                    @language-selected="onLanguageSelected" />
+            </div>
+        </div>
+    </Teleport>
+
 </template>
 
 <script>
@@ -209,14 +204,14 @@ import ProgressBar from './ProgressBar.vue';
 import { useAuthStore } from '../stores/auth';
 import { LanguageService } from '../data/services/LanguageService.js';
 import { useEnergyStore } from '../stores/energy';
-
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import VariantSelection from '../views/VariantSelection.vue';
 
 export default {
     name: 'Header',
     components: {
         Badge,
-        ProgressBar
+        ProgressBar,
+        VariantSelection,
     },
     setup() {
         const energyStore = useEnergyStore();
@@ -225,8 +220,8 @@ export default {
     props: {
         variant: {
             type: String,
-            default: 'default',
-            validator: (value) => ['simple', 'levels', 'lesson'].includes(value)
+            default: 'simple',
+            validator: (value) => ['simple', 'levels', 'lesson', 'homeview'].includes(value)
         },
         title: {
             type: String,
@@ -252,120 +247,102 @@ export default {
             type: String,
             default: '#58cc02'
         },
-        // Nuevas props para energía
-        energyCurrent: {
-            type: Number,
-            default: 15
-            // default: 25
-        },
-        energyMax: {
-            type: Number,
-            default: 15
-            // default: 25
-        },
-        energyStreak: {
-            type: Number,
-            default: 0
-        },
         showEnergy: {
             type: Boolean,
             default: true
         }
     },
-    emits: ['show-all', 'exit-lesson', 'energy-click'],
+    emits: ['show-all', 'exit-lesson', 'energy-click', 'language-changed'],
+
     data() {
         return {
             authStore: useAuthStore(),
             languageService: new LanguageService(),
             isMobile: false,
+            showLanguageModal: false,
             showRecoveryAnimation: false,
-            recoveryTimer: null
+            recoveryTimer: null,
         };
     },
+
     computed: {
         currentLanguageData() {
             if (!this.authStore.selectedLanguage) {
                 return { color: '#666', name: 'Selecciona idioma', flag: '🌐' };
             }
-            return this.languageService.getLanguageInfo(this.authStore.selectedLanguage) ||
-                { color: '#666', name: 'Idioma no encontrado', flag: '❓' };
-        },
-        energyTooltip() {
-            const tooltips = [
-                `Energía: ${this.energyCurrent}/${this.energyMax}⚡`,
-                `Consumo: -1 por ejercicio`,
-                `Acierto: +1-2 bonus`,
-                `Racha (${this.energyStreak}): +3-4 bonus`
-            ];
-            return tooltips.join('\n');
-        },
-        isLowEnergy() {
-            return (this.energyCurrent / this.energyMax) < 0.3;
-        },
-        energyPercentage() {
-            return (this.energyCurrent / this.energyMax) * 100;
-        },
-        // Obtener energía del store global
-        energyForDisplay() {
-            return this.energyStore.energyForHeader;
-        },
-        energyCurrent() {
-            return this.energyForDisplay.current;
-        },
-        energyMax() {
-            return this.energyForDisplay.max;
-        },
-        energyStreak() {
-            return this.energyForDisplay.streak;
+
+            // 1. Intentar obtener el icon/emoji desde el objeto completo guardado en el store (viene de la BD)
+            const langObj = this.authStore.selectedLangObj;
+            if (langObj) {
+                return {
+                    color: langObj.color || '#666',
+                    name: langObj.name || langObj.code || this.authStore.selectedLanguage,
+                    flag: langObj.icon || langObj.emoji || langObj.flag || '🌐',
+                };
+            }
+
+            // 2. Fallback al LanguageService local (datos estáticos)
+            const languageInfo = this.languageService.getLanguageInfo(this.authStore.selectedLanguage);
+            return {
+                ...languageInfo,
+                flag: languageInfo?.flag || languageInfo?.emoji || '🌐',
+            };
         },
     },
+
     methods: {
         checkScreenSize() {
             this.isMobile = window.innerWidth < 768;
         },
+
         startRecoveryAnimation() {
-            // Mostrar animación cuando la energía está recuperándose
-            if (this.energyCurrent < this.energyMax) {
+            if (this.energyStore.currentEnergy < this.energyStore.maxEnergy) {
                 this.showRecoveryAnimation = true;
                 setTimeout(() => {
                     this.showRecoveryAnimation = false;
                 }, 3000);
             }
         },
-        updateEnergyDisplay() {
-            // Este método sería llamado desde el componente padre cuando la energía cambia
-            this.startRecoveryAnimation();
-        }
+
+        // Abre el modal de selección de idioma (mismo árbol Vue → Pinia accesible)
+        openLanguageSelector() {
+            this.showLanguageModal = true;
+        },
+
+        closeLanguageModal() {
+            this.showLanguageModal = false;
+        },
+
+        // Recibe el objeto idioma completo desde VariantSelection (con icon/emoji de la BD)
+        async onLanguageSelected(langObj) {
+            this.showLanguageModal = false;
+            // El store ya fue actualizado por VariantSelection (setLanguage).
+            // Emitimos el evento para que HomeView recargue los niveles sin reload.
+            this.$emit('language-changed', langObj);
+        },
     },
+
     mounted() {
         this.checkScreenSize();
         window.addEventListener('resize', this.checkScreenSize);
 
-        // Iniciar timer para animación de recarga (cada 20 minutos simbólico)
         this.recoveryTimer = setInterval(() => {
-            if (this.energyCurrent < this.energyMax) {
+            if (this.energyStore.currentEnergy < this.energyStore.maxEnergy) {
                 this.startRecoveryAnimation();
             }
-        }, 60000); // Cada minuto para demostración
+        }, 60000);
     },
+
     beforeUnmount() {
         window.removeEventListener('resize', this.checkScreenSize);
         if (this.recoveryTimer) {
             clearInterval(this.recoveryTimer);
         }
     },
-    watch: {
-        energyCurrent(newVal, oldVal) {
-            if (newVal > oldVal) {
-                this.startRecoveryAnimation();
-            }
-        }
-    }
 };
 </script>
 
 <style scoped>
-/* Animación de pulso lento con fade in/out */
 @keyframes slow-pulse {
     0% {
         opacity: 0;

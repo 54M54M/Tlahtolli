@@ -1,5 +1,7 @@
 # CHANGELOG (Frontend)
 
+----- CTUALIXAR CHANGELOG -----
+
 ## [3.5.2] - 2026-01-31 - Ajustes de UI y mejoras en el flujo de energía
 
 ### Added

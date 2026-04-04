@@ -1,5 +1,9 @@
 -- ============================================================
---  SCHEMA - LANGUAGE LEARNING APP  v2.1
+-- ORDEN DE EJECUCION
+-- 1. Tlahtolli_Database_Script.sql
+-- 2. General_Seed_Data.sql ← usuarios demo + logros
+-- 3. Nahuatl_Seed_Data.sql
+-- 4. Teenek_Seed_Data.sql
 -- ============================================================
 
 -- ─────────────────────────────────────────────
@@ -309,6 +313,12 @@ ALTER TABLE EXERCISES MODIFY (UNIT_ID NULL);
 ALTER TABLE LESSON_HISTORY ADD LESSON_ID NUMBER;
 ALTER TABLE LESSON_HISTORY ADD CONSTRAINT FK_LESSON_HIST_LESSON
     FOREIGN KEY (LESSON_ID) REFERENCES LESSONS(ID) ON DELETE CASCADE;
+
+ALTER TABLE WRITING_SYSTEMS ADD (
+    SYLLABARY_DATA CLOB,           -- JSON completo con la estructura del silabario/alfabeto
+    CHARACTERS_JSON CLOB,          -- JSON con caracteres por categoría
+    RULES_JSON CLOB                -- JSON con reglas de escritura
+);
 
 COMMIT;
 

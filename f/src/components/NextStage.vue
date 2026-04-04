@@ -43,7 +43,12 @@
                     </div>
 
                     <!-- Descripción -->
-                    <p class="text-lg text-gray-300 max-w-md">{{ nextLevel.description }}</p>
+                    <p class="text-xl text-gray-300 max-w-md font-bold">
+                        {{ nextLevel.titleSpanish || nextLevel.title || nextLevel.description }}
+                    </p>
+                    <p class="text-lg text-gray-300 max-w-md font-bold">
+                        {{ nextLevel.titleNative || nextLevel.title || nextLevel.description }}
+                    </p>
                 </div>
             </div>
 
@@ -52,8 +57,8 @@
                 <!-- Botón para nivel bloqueado o desbloqueado -->
                 <button v-if="nextLevel" @click="handleLevelAction"
                     class="text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:opacity-90"
-                    :style="{ backgroundColor: nextLevel.color }">
-                    {{ nextLevel.locked ? '¿SALTAR AQUÍ?' : 'CONTINUAR' }}
+                    :style="{ backgroundColor: nextLevel.color || '#4bb101' }">
+                    {{ nextLevel.locked ? 'PRACTICAR RÁPIDO' : 'CONTINUAR' }}
                 </button>
             </div>
         </div>
@@ -62,7 +67,7 @@
 
 <script>
 import { useAuthStore } from '../stores/auth.js';
-import { getLearningRepository } from '../data/repositories/RepositoryFactory.js';
+import { learningApi } from '../api/apiClient.js';
 
 export default {
     name: 'NextStage',
@@ -78,32 +83,53 @@ export default {
     },
     data() {
         return {
-            learningRepo: getLearningRepository(),
-            authStore: useAuthStore()
+            authStore: useAuthStore(),
+            nextLevel: null,
+            loading: false
         };
     },
-    computed: {
-        nextLevel() {
-            const currentLevelNum = Number(this.currentLevelId);
-            const allLevels = this.learningRepo.getLevels(this.language) || [];
-            return allLevels.find(level => level.id === currentLevelNum + 1);
+    async mounted() {
+        await this.loadNextLevel();
+    },
+    watch: {
+        currentLevelId: {
+            handler() {
+                this.loadNextLevel();
+            }
         }
     },
     methods: {
-        handleSkip() {
-            if (this.nextLevel) {
-                console.log('Saltando al nivel rápido del nivel:', this.currentLevelId);
-                // Navegar a la vista de QuickLevel del nivel ACTUAL
-                this.$router.push(`/nivel-rapido/${this.currentLevelId}`);
+        async loadNextLevel() {
+            if (!this.authStore.selectedLangId || !this.authStore.user) return;
+
+            this.loading = true;
+            try {
+                const currentLevelNum = Number(this.currentLevelId);
+                const levels = await learningApi.getLevels(
+                    this.authStore.selectedLangId,
+                    this.authStore.user.id
+                );
+                this.nextLevel = levels.find(level => level.id === currentLevelNum + 1) || null;
+            } catch (err) {
+                console.error('[NextStage] loadNextLevel:', err);
+                this.nextLevel = null;
+            } finally {
+                this.loading = false;
             }
         },
+        handleQuickLevel() {
+            this.$router.push(`/nivel-rapido/${this.currentLevelId}`);
+        },
+        handleContinueToNextLevel() {
+            this.$router.push(`/nivel/${this.nextLevel.id}`);
+        },
         handleLevelAction() {
+            if (!this.nextLevel) return;
+
             if (this.nextLevel.locked) {
-                // Si está bloqueado, usa la lógica existente de handleSkip
-                this.handleSkip();
+                this.handleQuickLevel();
             } else {
-                // Si está desbloqueado, navega al SIGUIENTE nivel
-                this.$router.push(`/nivel/${this.nextLevel.id}`);
+                this.handleContinueToNextLevel();
             }
         }
     },

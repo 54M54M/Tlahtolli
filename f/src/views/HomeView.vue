@@ -2,7 +2,7 @@
     <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:pt-1">
 
         <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3"
-            @show-all="goToLanguageSelection" @energy-click="() => { }" />
+            @show-all="goToLanguageSelection" @energy-click="() => { }" @language-changed="handleLanguageUpdate" />
 
         <!-- Loading skeleton -->
         <div v-if="loading" class="w-full space-y-4 mt-4">
@@ -95,7 +95,7 @@
 import { useAuthStore } from '../stores/auth.js'
 import { useEnergyStore } from '../stores/energy.js'
 import { learningApi } from '../api/apiClient.js'
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { LanguageService } from '../data/services/LanguageService.js'
 import Header from '../components/vHeader.vue'
@@ -119,7 +119,10 @@ export default {
         const lockedLevels = computed(() => levels.value.filter(l => l.locked))
 
         const loadLevels = async () => {
-            if (!authStore.selectedLangId || !authStore.user) return
+            if (!authStore.selectedLangId || !authStore.user) {
+                console.warn('[HomeView] loadLevels abortado — selectedLangId:', authStore.selectedLangId)
+                return
+            }
 
             loading.value = true
             error.value = false
@@ -138,20 +141,51 @@ export default {
 
         const goToLanguageSelection = () => router.push('/select-language')
 
+        const handleLanguageUpdate = async () => {
+            await loadLevels()
+        }
+
+        // Watcher: si selectedLangId llega tarde (initialize() async todavía resolviendo),
+        // dispara loadLevels automáticamente sin recargar la página.
+        watch(
+            () => authStore.selectedLangId,
+            (newId, oldId) => {
+                if (newId && newId !== oldId && levels.value.length === 0) {
+                    console.log('[HomeView] selectedLangId disponible vía watch:', newId)
+                    loadLevels()
+                }
+            }
+        )
+
         onMounted(async () => {
             if (!authStore.selectedLanguage) {
                 router.push('/select-language')
                 return
             }
+
             const userId = authStore.user?.id || 1
             await energyStore.initializeEnergy(userId)
-            await loadLevels()
+
+            // Si selectedLangId ya está listo (persist funcionó), carga directo.
+            // Si no, llamar initialize() para que lo resuelva; el watch lo detectará.
+            if (authStore.selectedLangId) {
+                await loadLevels()
+            } else {
+                console.warn('[HomeView] selectedLangId null al montar, llamando initialize...')
+                await authStore.initialize()
+                // initialize puede haberlo resuelto sincrónicamente; intentar de nuevo
+                if (authStore.selectedLangId) {
+                    await loadLevels()
+                }
+                // Si aún sigue null, el watch lo atrapará cuando Pinia lo reactive
+            }
         })
 
         return {
             levels, loading, error,
             unlockedLevels, lockedLevels,
             loadLevels, goToLanguageSelection,
+            handleLanguageUpdate,
             authStore, energyStore,
         }
     },

@@ -39,84 +39,88 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/auth';
-import { LanguageService } from '../../data/services/LanguageService.js';
 import { getSyllabaryRepository } from '../../data/repositories/RepositoryFactory.js';
 import WritingSystem from '../../components/WritingSystem.vue';
 
 const authStore = useAuthStore();
-const languageService = new LanguageService();
 const syllabaryRepo = getSyllabaryRepository();
 
 const selectedSyllableInfo = ref(null);
-const selectedAlphabetLetter = ref(null);
+const selectedAlphabetLetterData = ref(null);
 
-// Sistema de escritura
-const writingSystem = computed(() => {
-    if (!authStore.selectedLanguage) return 'alphabet';
-    return syllabaryRepo.getWritingSystem(authStore.selectedLanguage);
-});
+// Datos reactivos inicializados con defaults
+const writingSystem = ref('alphabet');
+const syllabaryData = ref([]);
+const vowelsData = ref({});
+const longVowels = ref(null);
+const basicConsonants = ref([]);
+const specialCombinations = ref([]);
+const alphabetByType = ref({ vowels: [], consonants: [], ejectives: [], longVowels: [] });
+const writingSystemInfo = ref({ name: 'Sistema de Escritura', description: '', notes: [] });
 
-// ========== DATOS PARA SILABARIOS ==========
-const syllabaryData = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'syllabary') return [];
-    return syllabaryRepo.getSyllabary(authStore.selectedLanguage);
-});
+// Carga async de todos los datos
+async function loadData() {
+    const langId = authStore.selectedLangId;
+    if (!langId) return;
 
-const vowelsData = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'syllabary') return {};
-    return syllabaryRepo.getVowels(authStore.selectedLanguage);
-});
-
-const longVowels = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'syllabary') return null;
-    return syllabaryRepo.getLongVowels(authStore.selectedLanguage);
-});
-
-const basicConsonants = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'syllabary') return [];
-    return syllabaryRepo.getConsonants(authStore.selectedLanguage).filter(entry =>
-        !entry.notes || !entry.notes.includes('glotalizada')
-    );
-});
-
-const specialCombinations = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'syllabary') return [];
-    return syllabaryRepo.getSpecialCharacters(authStore.selectedLanguage);
-});
-
-// ========== DATOS PARA ALFABETOS ==========
-const alphabetByType = computed(() => {
-    if (!authStore.selectedLanguage || writingSystem.value !== 'alphabet') {
-        return { vowels: [], consonants: [], ejectives: [], longVowels: [] };
+    try {
+        writingSystem.value = await syllabaryRepo.getWritingSystem(langId);
+    } catch (e) {
+        writingSystem.value = 'alphabet';
     }
-    return syllabaryRepo.getAlphabetByType(authStore.selectedLanguage);
-});
 
-const totalLetters = computed(() => {
-    return alphabetByType.value.vowels.length +
-        alphabetByType.value.consonants.length +
-        alphabetByType.value.ejectives.length +
-        alphabetByType.value.longVowels.length;
-});
-
-// ========== INFORMACIÓN DEL SISTEMA DE ESCRITURA ==========
-const writingSystemInfo = computed(() => {
-    if (!authStore.selectedLanguage) {
-        return syllabaryRepo.getWritingSystemInfo('alphabet');
+    try {
+        syllabaryData.value = await syllabaryRepo.getSyllabary(langId);
+    } catch (e) {
+        syllabaryData.value = [];
     }
-    return syllabaryRepo.getCurrentWritingSystemInfo(authStore.selectedLanguage);
-});
 
-// ========== FUNCIONES AUXILIARES ==========
-const getLongVowelPronunciation = (vowel) => {
-    const baseVowel = vowelsData.value[vowel] || vowel;
-    return `${baseVowel}${baseVowel}`;
-};
+    try {
+        vowelsData.value = await syllabaryRepo.getVowels(langId);
+    } catch (e) {
+        vowelsData.value = {};
+    }
+
+    try {
+        longVowels.value = await syllabaryRepo.getLongVowels(langId);
+    } catch (e) {
+        longVowels.value = null;
+    }
+
+    try {
+        const consonants = await syllabaryRepo.getConsonants(langId);
+        basicConsonants.value = consonants.filter(
+            entry => !entry.notes || !entry.notes.includes('glotalizada')
+        );
+    } catch (e) {
+        basicConsonants.value = [];
+    }
+
+    try {
+        specialCombinations.value = await syllabaryRepo.getSpecialCharacters(langId);
+    } catch (e) {
+        specialCombinations.value = [];
+    }
+
+    try {
+        alphabetByType.value = await syllabaryRepo.getAlphabetByType(langId);
+    } catch (e) {
+        alphabetByType.value = { vowels: [], consonants: [], ejectives: [], longVowels: [] };
+    }
+
+    try {
+        writingSystemInfo.value = await syllabaryRepo.getCurrentWritingSystemInfo(langId);
+    } catch (e) {
+        writingSystemInfo.value = { name: 'Sistema de Escritura', description: '', notes: [] };
+    }
+}
+
+onMounted(loadData);
+watch(() => authStore.selectedLangId, loadData);
 
 // ========== FUNCIONES DE SELECCIÓN ==========
-// Para silabarios
 const selectVowel = (vowel) => {
     if (writingSystem.value !== 'syllabary') return;
     selectedSyllableInfo.value = {
@@ -126,42 +130,37 @@ const selectVowel = (vowel) => {
             [vowel]: `${vowelsData.value[vowel] || vowel}`
         }
     };
-    selectedAlphabetLetter.value = null;
+    selectedAlphabetLetterData.value = null;
 };
 
 const selectSyllable = (entry, vowel) => {
     if (writingSystem.value !== 'syllabary') return;
     selectedSyllableInfo.value = entry;
-    selectedAlphabetLetter.value = null;
+    selectedAlphabetLetterData.value = null;
 };
 
 const selectLetter = (entry) => {
     if (writingSystem.value !== 'syllabary') return;
     selectedSyllableInfo.value = entry;
-    selectedAlphabetLetter.value = null;
+    selectedAlphabetLetterData.value = null;
 };
 
-const selectEmpty = () => {
-    // No hacer nada para celdas vacías
-};
+const selectEmpty = () => { };
 
 const selectLongVowel = (vowel) => {
     if (writingSystem.value !== 'syllabary' || !longVowels.value || !longVowels.value[vowel]) return;
     selectedSyllableInfo.value = {
         letter: null,
-        pronunciation: `Vocal larga: ${getLongVowelPronunciation(vowel)}`,
-        syllables: {
-            [vowel]: longVowels.value[vowel]
-        },
+        pronunciation: `Vocal larga: ${vowelsData.value[vowel] || vowel}${vowelsData.value[vowel] || vowel}`,
+        syllables: { [vowel]: longVowels.value[vowel] },
         isLongVowel: true
     };
-    selectedAlphabetLetter.value = null;
+    selectedAlphabetLetterData.value = null;
 };
 
-// Para alfabetos
 const selectAlphabetLetter = (letter) => {
     if (writingSystem.value !== 'alphabet') return;
-    selectedAlphabetLetter.value = letter;
+    selectedAlphabetLetterData.value = letter;
     selectedSyllableInfo.value = null;
 };
 </script>

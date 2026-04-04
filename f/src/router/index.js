@@ -13,9 +13,8 @@ const routes = [
         path: '/select-language',
         name: 'LanguageSelection',
         component: () => import("../views/VariantSelection.vue"),
-        meta: { requiresAuth: true, requiresLanguage: false }
+        meta: { requiresAuth: true }
     },
-    // ---------------------------------------------------------------
     {
         path: '/',
         name: 'Inicio',
@@ -43,19 +42,12 @@ const routes = [
         props: true,
         meta: { hideNav: true, requiresAuth: true },
     },
-    // ---------------------------------------------------------------
     {
         path: '/glosario',
         name: 'Glosario',
         component: () => import("../views/GlossaryView.vue"),
         meta: { requiresAuth: true }
     },
-    // {
-    //     path: '/mapa',
-    //     name: 'Mapa',
-    //     component: () => import("../views/MapView.vue"),
-    //     meta: { requiresAuth: true }
-    // },
     {
         path: '/estadisticas',
         name: 'Estadísticas',
@@ -78,33 +70,25 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
 
-    // Esperar a que el store esté hidratado si usa persistencia
-    if (authStore.$hydrate) {
-        await authStore.$hydrate()
-    }
-
-    // Si la ruta requiere autenticación y no hay usuario
+    // 1. Sin usuario → solo puede ir a login
     if (to.meta.requiresAuth && !authStore.user) {
         return next('/login')
     }
 
-    // Si la ruta requiere ser invitado (como login) y ya está autenticado
-    if (to.meta.requiresGuest && authStore.user) {
-        // Redirigir según si es nuevo usuario o no
-        if (authStore.isNewUser) {
-            return next('/select-language') // Cambiado
-        } else {
-            return next('/')
-        }
+    // 2. Ya autenticado intentando ir a login → redirigir según estado
+    if (to.name === 'Login' && authStore.user) {
+        return authStore.selectedLanguage ? next('/') : next('/select-language')
     }
 
-    // Si está autenticado pero es nuevo usuario y no está en select-language
-    if (authStore.user && authStore.isNewUser && to.name !== 'LanguageSelection') { // Cambiado
-        return next('/select-language') // Cambiado
+    // 3. Autenticado pero sin idioma elegido → forzar selección
+    //    Usamos selectedLanguage directamente, NO isNewUser (puede estar desincronizado)
+    if (authStore.user && !authStore.selectedLanguage && to.name !== 'LanguageSelection') {
+        return next('/select-language')
     }
 
-    // Si tiene idioma seleccionado y trata de acceder a select-language
-    if (to.name === 'LanguageSelection' && authStore.user && !authStore.isNewUser) { // Cambiado
+    // 4. Ya tiene idioma y quiere ir a select-language → home
+    //    Permite acceder si viene del header (el header lo maneja como modal, no como ruta)
+    if (to.name === 'LanguageSelection' && authStore.user && authStore.selectedLanguage) {
         return next('/')
     }
 

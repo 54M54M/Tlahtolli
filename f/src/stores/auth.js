@@ -1,15 +1,12 @@
-// src/stores/auth.js
 import { defineStore } from 'pinia'
 import { usersApi, languagesApi, progressApi, learningApi } from '../api/apiClient.js'
-
-// Username del usuario demo — el ID real lo resuelve la API
-const DEMO_USERNAME = 'tetecuhtli'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
-        selectedLanguage: null,   // código string: 'nhce', 'tkoc'…
-        selectedLangId: null,   // ID numérico en la BD
+        selectedLanguage: null,     // código string: 'nhce', 'tkoc'…
+        selectedLangId: null,       // ID numérico en la BD
+        selectedLangObj: null,      // objeto completo del idioma (con icon/emoji/color de la BD)
         isNewUser: true,
         isInitialized: false,
     }),
@@ -21,55 +18,75 @@ export const useAuthStore = defineStore('auth', {
     },
 
     actions: {
-        // ── inicialización ─────────────────────────────────────────────────────
-
-        async initialize() {
-            try {
-                // 1. Obtener usuario por username (no por ID hardcodeado)
-                const user = await usersApi.getByUsername(DEMO_USERNAME)
-                if (!user) throw new Error('Usuario demo no encontrado')
-                this.user = user
-
-                // 2. Si tiene idioma activo en la BD, usarlo
-                if (user.currentLang) {
-                    this.selectedLangId = user.currentLang
-                    const lang = await languagesApi.getById(user.currentLang)
-                    if (lang) {
-                        this.selectedLanguage = lang.code.toLowerCase()
-                        this.isNewUser = false
-                    }
-                } else {
-                    // Fallback a localStorage mientras no haya idioma en BD
-                    const saved = localStorage.getItem('selectedLanguage')
-                    if (saved) {
-                        this.selectedLanguage = saved
-                        this.isNewUser = false
-                    }
-                }
-
-                this.isInitialized = true
-                console.log('[auth] Usuario cargado:', this.user.username, '(ID:', this.user.id, ')')
-            } catch (err) {
-                console.error('[auth] initialize error:', err)
-                this._fallbackToLocalStorage()
+        // ── Login con credenciales ─────────────────────────────────────────────
+        async login(username, password) {
+            const DEMO_PASSWORD = 'demo1234'
+            if (password !== DEMO_PASSWORD) {
+                throw new Error('Contraseña incorrecta.')
             }
+
+            const user = await usersApi.getByUsername(username)
+            if (!user) {
+                throw new Error('Usuario no encontrado.')
+            }
+
+            this.user = user
+            this.selectedLanguage = null
+            this.selectedLangId = null
+            this.selectedLangObj = null
+            this.isNewUser = true
+            this.isInitialized = true
+
+            localStorage.removeItem('selectedLanguage')
+
+            console.log('[auth] Login exitoso:', user.username, '(ID:', user.id, ')')
         },
 
-        async login() {
-            await this.initialize()
+        // ── Inicialización silenciosa (al recargar con sesión persistida) ──────
+        async initialize() {
+            if (this.isInitialized && this.user && this.selectedLangId) {
+                return
+            }
+
+            if (this.user) {
+                try {
+                    this.user = await usersApi.getById(this.user.id)
+                } catch (err) {
+                    console.warn('[auth] initialize refresh user:', err.message)
+                }
+
+                // Resolver selectedLangId y selectedLangObj si faltan
+                if (this.selectedLanguage && (!this.selectedLangId || !this.selectedLangObj)) {
+                    try {
+                        const langs = await languagesApi.getAll()
+                        const lang = langs.find(l =>
+                            l.code.toLowerCase() === this.selectedLanguage.toLowerCase()
+                        )
+                        if (lang) {
+                            this.selectedLangId = lang.id
+                            this.selectedLangObj = lang
+                            console.log('[auth] selectedLangId recuperado:', lang.id)
+                        }
+                    } catch (err) {
+                        console.warn('[auth] initialize resolve langId:', err.message)
+                    }
+                }
+            }
+
+            this.isInitialized = true
         },
 
         logout() {
             this.user = null
             this.selectedLanguage = null
             this.selectedLangId = null
+            this.selectedLangObj = null
             this.isNewUser = true
             this.isInitialized = false
             localStorage.removeItem('selectedLanguage')
         },
 
-        // ── cambio de idioma ───────────────────────────────────────────────────
-
+        // ── Cambio de idioma (recibe código string: 'nhce', 'tkoc'…) ──────────
         async setLanguage(languageCode) {
             try {
                 const langs = await languagesApi.getAll()
@@ -80,6 +97,7 @@ export const useAuthStore = defineStore('auth', {
                 this.user = updatedUser
                 this.selectedLanguage = languageCode
                 this.selectedLangId = lang.id
+                this.selectedLangObj = lang        // ← objeto completo (icon/emoji/color de la BD)
                 this.isNewUser = false
 
                 localStorage.setItem('selectedLanguage', languageCode)
@@ -92,8 +110,18 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        // ── datos del usuario ──────────────────────────────────────────────────
+        // ── Alias para vHeader que llama setSelectedLanguage(id | code) ────────
+        async setSelectedLanguage(languageIdOrCode) {
+            if (typeof languageIdOrCode === 'number') {
+                const langs = await languagesApi.getAll()
+                const lang = langs.find(l => l.id === languageIdOrCode)
+                if (!lang) throw new Error(`Idioma no encontrado por ID: ${languageIdOrCode}`)
+                return this.setLanguage(lang.code)
+            }
+            return this.setLanguage(languageIdOrCode)
+        },
 
+        // ── Refrescar datos del usuario ────────────────────────────────────────
         async refreshUser() {
             try {
                 if (!this.user?.id) return
@@ -103,8 +131,7 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        // ── privados ───────────────────────────────────────────────────────────
-
+        // ── Privados ───────────────────────────────────────────────────────────
         async _initProgress(languageId) {
             try {
                 const levels = await learningApi.getLevels(languageId, this.user.id)
@@ -116,20 +143,10 @@ export const useAuthStore = defineStore('auth', {
                 console.warn('[auth] _initProgress:', err.message)
             }
         },
-
-        _fallbackToLocalStorage() {
-            const saved = localStorage.getItem('selectedLanguage')
-            if (saved) {
-                this.selectedLanguage = saved
-                this.isNewUser = false
-            }
-            this.isInitialized = true
-            console.warn('[auth] Fallback a localStorage — API no devolvió usuario')
-        },
     },
 
     persist: {
         key: 'auth-storage',
-        paths: ['user', 'selectedLanguage', 'selectedLangId', 'isNewUser', 'isInitialized'],
+        paths: ['user', 'selectedLanguage', 'selectedLangId', 'selectedLangObj', 'isNewUser', 'isInitialized'],
     },
 })

@@ -76,6 +76,19 @@ export default {
             if (!authStore.selectedLanguage) {
                 return { color: '#666', name: 'Selecciona un idioma', nativeName: '', flag: '🌐' }
             }
+
+            // 1. Objeto completo guardado en el store al momento de seleccionar (viene de la BD)
+            const langObj = authStore.selectedLangObj
+            if (langObj) {
+                return {
+                    color: langObj.color || '#666',
+                    name: langObj.name || langObj.code || authStore.selectedLanguage,
+                    nativeName: langObj.nativeName || langObj.native_name || '',
+                    flag: langObj.icon || langObj.emoji || langObj.flag || '🌐',
+                }
+            }
+
+            // 2. Fallback al servicio local (datos estáticos) para sesiones previas al cambio
             return languageService.getLanguageInfo(authStore.selectedLanguage) ||
                 { color: '#666', name: 'Idioma no encontrado', nativeName: '', flag: '❓' }
         })
