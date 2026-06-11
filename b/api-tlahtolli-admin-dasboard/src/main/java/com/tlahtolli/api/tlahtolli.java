@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiTlahtolliAdminDasboardApplication {
+public class ApiTlahtolli {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ApiTlahtolliAdminDasboardApplication.class, args);
+		SpringApplication.run(ApiTlahtolli.class, args);
 	}
 
 }
