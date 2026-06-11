@@ -1,68 +1,76 @@
 package com.tlahtolli.api.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.tlahtolli.api.dto.request.AchievementRequest;
+import com.tlahtolli.api.dto.response.AchievementResponse;
 import com.tlahtolli.api.entity.Achievement;
 import com.tlahtolli.api.repository.AchievementRepository;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/achievements")
 public class AchievementController {
 
-	private final AchievementRepository repo;
+    private final AchievementRepository repo;
 
-	public AchievementController(AchievementRepository repo) {
-		super();
-		this.repo = repo;
-	}
+    public AchievementController(AchievementRepository repo) {
+        this.repo = repo;
+    }
 
-	@GetMapping
-	public List<Achievement> getAll() {
-		return repo.findAll();
-	}
+    @GetMapping
+    public List<AchievementResponse> getAll() {
+        return repo.findAll().stream().map(AchievementResponse::from).toList();
+    }
 
-	@GetMapping("/count")
-	public Map<String, Long> count() {
-		return Map.of("count", repo.count());
-	}
+    @GetMapping("/count")
+    public Map<String, Long> count() {
+        return Map.of("count", repo.count());
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Achievement> getById(@PathVariable Long id) {
-		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<AchievementResponse> getById(@PathVariable Long id) {
+        return repo.findById(id).map(AchievementResponse::from).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-	@PostMapping
-	public ResponseEntity<Achievement> create(@RequestBody Achievement a) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(a));
-	}
+    @PostMapping
+    public ResponseEntity<AchievementResponse> create(@Valid @RequestBody AchievementRequest dto) {
+        Achievement a = Achievement.builder()
+                .title(dto.title())
+                .description(dto.description())
+                .icon(dto.icon())
+                .xpReward(dto.xpReward() != null ? dto.xpReward() : 0)
+                .requirement(dto.requirement())
+                .category(dto.category())
+                .rarity(dto.rarity())
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(AchievementResponse.from(repo.save(a)));
+    }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<Achievement> update(@PathVariable Long id, @RequestBody Achievement a) {
-		return repo.findById(id).map(ex -> {
-			a.setId(ex.getId());
-			return ResponseEntity.ok(repo.save(a));
-		}).orElse(ResponseEntity.notFound().build());
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<AchievementResponse> update(@PathVariable Long id, @Valid @RequestBody AchievementRequest dto) {
+        return repo.findById(id).map(existing -> {
+            existing.setTitle(dto.title());
+            existing.setDescription(dto.description());
+            existing.setIcon(dto.icon());
+            existing.setXpReward(dto.xpReward() != null ? dto.xpReward() : existing.getXpReward());
+            existing.setRequirement(dto.requirement());
+            existing.setCategory(dto.category());
+            existing.setRarity(dto.rarity());
+            return ResponseEntity.ok(AchievementResponse.from(repo.save(existing)));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (!repo.existsById(id))
-			return ResponseEntity.notFound().build();
-		repo.deleteById(id);
-		return ResponseEntity.noContent().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!repo.existsById(id))
+            return ResponseEntity.notFound().build();
+        repo.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

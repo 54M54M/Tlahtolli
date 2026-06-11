@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class AchievementService {
@@ -81,20 +82,31 @@ public class AchievementService {
 	private boolean isMet(Achievement a, UserStats stats, User user) {
 		if (a.getRequirement() == null || stats == null || user == null)
 			return false;
-		String req = a.getRequirement().toLowerCase();
+		String req = a.getRequirement().toLowerCase(Locale.ROOT);
+		return isLessonReq(req, stats) || isStreakReq(req, user) || isStatReq(req, stats);
+	}
 
+	private boolean isLessonReq(String req, UserStats stats) {
 		if (req.contains("completar 1 lección") || req.contains("primera lección"))
 			return stats.getLessonsDone() >= 1;
-		if (req.contains("50 palabras"))
-			return stats.getWordsLearned() >= 50;
 		if (req.contains("10 lecciones perfectas"))
 			return stats.getPerfectLess() >= 10;
-		if (req.contains("1000 minutos"))
-			return stats.getTotalMins() >= 1000;
+		return false;
+	}
+
+	private boolean isStreakReq(String req, User user) {
 		if (req.contains("7 días"))
 			return user.getStreak() >= 7;
 		if (req.contains("30 días"))
 			return user.getStreak() >= 30;
+		return false;
+	}
+
+	private boolean isStatReq(String req, UserStats stats) {
+		if (req.contains("50 palabras"))
+			return stats.getWordsLearned() >= 50;
+		if (req.contains("1000 minutos"))
+			return stats.getTotalMins() >= 1000;
 		return false;
 	}
 

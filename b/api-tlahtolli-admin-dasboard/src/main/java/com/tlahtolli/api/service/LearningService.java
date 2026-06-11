@@ -180,12 +180,13 @@ public class LearningService {
 	}
 
 	private List<String> parseJsonList(String json) {
-		if (json == null || json.isBlank())
+		if (json == null || json.isBlank() || !json.trim().startsWith("["))
 			return new ArrayList<>();
 		try {
-			return mapper.readValue(json, new TypeReference<List<String>>() {
-			});
-		} catch (Exception e) {
+			return mapper.readValue(json, new TypeReference<List<String>>() {});
+		} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+			org.slf4j.LoggerFactory.getLogger(LearningService.class)
+					.warn("Failed to parse JSON list: {}", e.getMessage());
 			return new ArrayList<>();
 		}
 	}
@@ -194,11 +195,11 @@ public class LearningService {
 		if (level.getLevelNum() == 1)
 			return false;
 		List<Level> allLevels = levelRepo.findByLanguageId(level.getLanguageId());
-		Optional<Level> prev = allLevels.stream().filter(l -> l.getLevelNum() == level.getLevelNum() - 1).findFirst();
-		if (prev.isEmpty())
-			return true;
-		long completedInPrev = progressRepo.countCompletedByUserAndLevel(userId, prev.get().getId());
-		return completedInPrev < prev.get().getTotalUnits();
+		return allLevels.stream()
+				.filter(l -> l.getLevelNum() == level.getLevelNum() - 1)
+				.findFirst()
+				.map(prev -> progressRepo.countCompletedByUserAndLevel(userId, prev.getId()) < prev.getTotalUnits())
+				.orElse(true);
 	}
 
 	private List<String> buildOptions(String correct, List<String> vocabPool) {

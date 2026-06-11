@@ -1,44 +1,25 @@
 -- ============================================================
---  SEED DATA — Tlahtolli v1.0
---  Ejecutar DESPUÉS del script de creación de tablas
---  Orden: LANGUAGES → USERS → USER_ENERGY → LEVELS → UNITS
---         → VOCABULARY → UNIT_VOCAB → EXERCISES → WRITING_SYSTEMS
---         → USER_STATS → ACHIEVEMENTS
--- ============================================================
--- SCHEMA SQL:
---  LANGUAGES
---    └── LEVELS
---            └── UNITS :: LESSONS
---                    └── EXERCISES
+--  SEED DATA — Náhuatl Central (nhce)
+--  Tlahtolli v1.0  [PostgreSQL]
 --
--- SCHEMA FRONTEND:
--- /LEVELS/{ID}
--- /LEVELS/{ID}/UNITS/{ID}
--- /LEVELS/{ID}/UNITS/{ID}/EXERCISES
+--  Ejecutar DESPUÉS de:
+--    1. Tlahtolli_Database_Script.sql
+--    2. General_Seed_Data.sql   (crea usuario demo y logros)
+--
+--  Contenido:
+--    LANGUAGES → LEVELS → UNITS → VOCABULARY
+--    → UNIT_VOCAB → EXERCISES → WRITING_SYSTEMS
+--    → USER_PROGRESS → USER_STATS  (para usuario demo)
+-- ============================================================
+
 -- ─────────────────────────────────────────────
---  1. LANGUAGE
+--  1. IDIOMA
 -- ─────────────────────────────────────────────
 INSERT INTO LANGUAGES (CODE, LANG_NAME, NATIVE_NAME, COLOR, FLAG, FAMILY, WRITING_SYSTEM)
-VALUES ('nhce', 'Náhuatl central', 'Nāhuatlahtōlli Central', '#58CC02', '🌽', 'uto-aztec', 'syllabary');
-COMMIT;
+VALUES ('nhce', 'Náhuatl central', 'Nāhuatlahtōlli Central', '#58CC02', '🦅', 'uto-aztec', 'syllabary');
 
 -- ─────────────────────────────────────────────
---  2. USUARIO DEMO
--- ─────────────────────────────────────────────
-INSERT INTO USERS (USERNAME, FULL_NAME, EMAIL, USER_LEVEL, XP, TOTAL_XP, STREAK, JOIN_DATE, CURRENT_LANG)
-VALUES ('tetecuhtli', 'UserDemo', 'demo@tlahtolli.mx', 1, 0, 0, 0, SYSDATE,
-        (SELECT ID FROM LANGUAGES WHERE CODE = 'nhce'));
-COMMIT;
-
--- ─────────────────────────────────────────────
---  3. ENERGÍA DEL USUARIO DEMO
--- ─────────────────────────────────────────────
-INSERT INTO USER_ENERGY (USER_ID, MAX_ENERGY, CURRENT_ENRG, STREAK_COUNT, LAST_UPDATE, DAILY_USAGE)
-VALUES ((SELECT ID FROM USERS WHERE USERNAME = 'tetecuhtli'), 15, 15, 0, SYSTIMESTAMP, 0);
-COMMIT;
-
--- ─────────────────────────────────────────────
---  4. NIVELES (nhce)
+--  2. NIVELES
 -- ─────────────────────────────────────────────
 INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UNITS, UNLOCK_REQ, IS_FREE)
 SELECT ID, 1, 'Saluda y preséntate', 'Tiquilnamiqui ihuan timitstlania',
@@ -69,10 +50,9 @@ INSERT INTO LEVELS (LANGUAGE_ID, LEVEL_NUM, TITLE, TITLE_NATIVE, COLOR, TOTAL_UN
 SELECT ID, 6, 'Describe y expresa preferencias', 'Timitstlania ihuan tiquixtia in tlen ticneltoca',
        '#9C27B0', 6, 'Completar Nivel 5', 0
 FROM LANGUAGES WHERE CODE = 'nhce';
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  5. UNIDADES — Nivel 1
+--  3. UNIDADES — Nivel 1
 -- ─────────────────────────────────────────────
 INSERT INTO UNITS (LEVEL_ID, UNIT_NUM, TITLE, COLOR, OBJECTIVE, GRAMMAR, IS_FREE, UNLOCK_REQ)
 SELECT L.ID, 1, 'Saludos básicos', '#4bb101',
@@ -115,53 +95,51 @@ SELECT L.ID, 6, 'Conversación básica', '#4bb101',
        'Estructura completa de conversación básica', 0, 'Completar Unidad 5'
 FROM LEVELS L JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
 WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1;
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  6. VOCABULARIO — Nivel 1
+--  4. VOCABULARIO — Nivel 1
 -- ─────────────────────────────────────────────
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Cualli',        'bien / bueno / buenos / buena / buenas', 'kwal-li',      NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Cualli',        'bien / bueno / buenos / buena / buenas', 'kwal-li',       NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Tonalli',       'dia / día',              'to-nal-li',    NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Tonalli',       'dia / día',              'to-nal-li',     NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Yohual',        'noche / noches',         'yo-wal',       NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Yohual',        'noche / noches',         'yo-wal',        NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Teotlac',       'tarde / tardes',         'te-o-tlak',    NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Teotlac',       'tarde / tardes',         'te-o-tlak',     NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Niltze',        'hola',                   'nil-tse',      NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Niltze',        'hola',                   'nil-tse',       NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Timoittazceh',  'adiós / hasta luego',    'ti-mo-i-ta-se',NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Timoittazceh',  'adiós / hasta luego',    'ti-mo-i-ta-se', NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
 SELECT ID, 'Tlazohcamati',  'gracias',                'tla-so-ka-ma-ti', NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Quēmah',        'sí',                     'kee-maj',      NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Quēmah',        'sí',                     'kee-maj',       NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Ahmo',          'no',                     'aj-mo',        NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Ahmo',          'no',                     'aj-mo',         NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Notoca',        'me llamo...',            'no-to-ka',     NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Notoca',        'me llamo...',            'no-to-ka',      NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Quen',          'como / cómo',            'ken',          NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Quen',          'como / cómo',            'ken',           NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Miac',          'mucho / muchos',         'mi-ak',        NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Miac',          'mucho / muchos',         'mi-ak',         NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Huel',          'muy / verdaderamente',   'wel',          NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Huel',          'muy / verdaderamente',   'wel',           NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Quenin',        'cómo (de qué manera)',   'ke-nin',       NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Quenin',        'cómo (de qué manera)',   'ke-nin',        NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Nicac',         'estoy / yo estoy',       'ni-kak',       NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Nicac',         'estoy / yo estoy',       'ni-kak',        NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Ni',            'yo (prefijo acción)',    'ni-',          NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Ni',            'yo (prefijo acción)',    'ni-',           NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Ahmo cualli',   'mal / no bien',          'aj-mo-kwal-li',NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Ahmo cualli',   'mal / no bien',          'aj-mo-kwal-li', NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Tlen',          'qué / nada / cosa',      'tlen',         NULL FROM LANGUAGES WHERE CODE='nhce';
+SELECT ID, 'Tlen',          'qué / nada / cosa',      'tlen',          NULL FROM LANGUAGES WHERE CODE='nhce';
 INSERT INTO VOCABULARY (LANGUAGE_ID, WORD, TRANSLATION, PRONUNCIATION, EXAMPLE)
-SELECT ID, 'Ahmotlen',      'ninguna cosa / nada',    'ah-mo-tlen',   NULL FROM LANGUAGES WHERE CODE='nhce';
-COMMIT;
+SELECT ID, 'Ahmotlen',      'ninguna cosa / nada',    'ah-mo-tlen',    NULL FROM LANGUAGES WHERE CODE='nhce';
 
 -- ─────────────────────────────────────────────
---  7. UNIT_VOCAB — asociar vocabulario a unidades
+--  5. UNIT_VOCAB — asociar vocabulario a unidades
 -- ─────────────────────────────────────────────
 -- Unidad 1: Saludos básicos
 INSERT INTO UNIT_VOCAB (UNIT_ID, VOCAB_ID)
@@ -215,15 +193,14 @@ JOIN LEVELS L ON U.LEVEL_ID = L.ID
 JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
 JOIN VOCABULARY V ON V.LANGUAGE_ID = LA.ID
 WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 6;
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  8. EJERCICIOS — Unidad 1 (6 ejercicios)
+--  6. EJERCICIOS — Unidad 1 (6 ejercicios)
 -- ─────────────────────────────────────────────
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Bueno',
-       '"Cualli"',
+       '["Cualli"]',
        '["Cualli","Yohual","Niltze","Ahmo"]',
        'citlali',
        'Cualli significa bueno, buena, buenos, buenas o bien en náhuatl',
@@ -234,7 +211,7 @@ WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Día',
-       '"Tonalli"',
+       '["Tonalli"]',
        '["Tonalli","Teotlac","Yohual","Cualli"]',
        'coltzin',
        'Tonalli significa día o días en náhuatl',
@@ -245,7 +222,7 @@ WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Buenos días',
-       '"Cualli tonalli"',
+       '["Cualli tonalli"]',
        '["Cualli tonalli","Cualli yohual","Niltze","Timoittazceh"]',
        'neza',
        'Cualli tonalli es el saludo para buen día en náhuatl',
@@ -256,7 +233,7 @@ WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Noche',
-       '"Yohual"',
+       '["Yohual"]',
        '["Yohual","Tonalli","Teotlac","Cualli"]',
        'tonatiuh',
        'Yohual significa noche o noches en náhuatl',
@@ -267,7 +244,7 @@ WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Tardes',
-       '"Teotlac"',
+       '["Teotlac"]',
        '["Teotlac","Yohual","Tonalli","Niltze"]',
        'xochitl',
        'Teotlac significa tarde o tardes en náhuatl',
@@ -278,17 +255,16 @@ WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
 INSERT INTO EXERCISES (UNIT_ID, EXERCISE_TYPE, QUESTION, ANSWER, CORRECT_ANS, OPTIONS, CHARACTER_REF, EXPLANATION, POINTS, DIFFICULTY)
 SELECT U.ID, 'multiple-choice', 'Selecciona la traducción correcta',
        'Buenas noches',
-       '"Cualli yohual"',
+       '["Cualli yohual"]',
        '["Cualli yohual","Cualli tonalli","Cualli teotlac","Niltze"]',
        'coltzin',
        'Cualli yohual es el saludo para buena noche en náhuatl',
        15, 'medium'
 FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID = L.ID JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
 WHERE LA.CODE='nhce' AND L.LEVEL_NUM=1 AND U.UNIT_NUM=1;
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  9. SISTEMA DE ESCRITURA — nhce
+--  7. SISTEMA DE ESCRITURA
 -- ─────────────────────────────────────────────
 INSERT INTO WRITING_SYSTEMS (LANGUAGE_ID, SYSTEM_TYPE, SYSTEM_NAME, DESCRIPTION, NOTES)
 SELECT ID, 'syllabary', 'alfabeto',
@@ -298,58 +274,36 @@ SELECT ID, 'syllabary', 'alfabeto',
          "Las vocales largas (ā, ē, ī, ō) son distintivas y cambian el significado",
          "Los dígrafos representan fonemas unitarios (tl, tz, ch, qu, hu)"]'
 FROM LANGUAGES WHERE CODE = 'nhce';
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  10. USER_PROGRESS — unidad 1 desbloqueada para usuario demo
+--  8. USER_PROGRESS — unidad 1 desbloqueada para usuario demo
 -- ─────────────────────────────────────────────
 INSERT INTO USER_PROGRESS (USER_ID, UNIT_ID, COMPLETED, IS_CURRENT, IS_LOCKED)
 SELECT USR.ID, U.ID, 0, 1, 0
-FROM USERS USR, UNITS U
-JOIN LEVELS L ON U.LEVEL_ID = L.ID
-JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
-WHERE USR.USERNAME = 'tetecuhtli'
-AND LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 1;
-COMMIT;
+FROM USERS USR
+CROSS JOIN (
+    SELECT U.ID FROM UNITS U
+    JOIN LEVELS L ON U.LEVEL_ID = L.ID
+    JOIN LANGUAGES LA ON L.LANGUAGE_ID = LA.ID
+    WHERE LA.CODE = 'nhce' AND L.LEVEL_NUM = 1 AND U.UNIT_NUM = 1
+) U
+WHERE USR.USERNAME = 'tetecuhtli';
 
 -- ─────────────────────────────────────────────
---  11. USER_STATS — registro inicial para usuario demo
+--  9. USER_STATS — registro inicial para usuario demo
 -- ─────────────────────────────────────────────
 INSERT INTO USER_STATS (USER_ID, LANGUAGE_ID, WORDS_LEARNED, LESSONS_DONE, PERFECT_LESS, DAYS_STUDIED, BEST_STREAK, TOTAL_MINS)
 SELECT USR.ID, LA.ID, 0, 0, 0, 0, 0, 0
-FROM USERS USR, LANGUAGES LA
+FROM USERS USR
+CROSS JOIN LANGUAGES LA
 WHERE USR.USERNAME = 'tetecuhtli' AND LA.CODE = 'nhce';
-COMMIT;
 
 -- ─────────────────────────────────────────────
---  12. ACHIEVEMENTS
+--  VERIFICACIÓN
 -- ─────────────────────────────────────────────
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Primer Día',            'Completaste tu primera lección',             '🎉', 50,  'completar 1 lección',      'general',     'common');
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Racha de 7 días',       'Estudiaste durante 7 días consecutivos',     '🔥', 100, 'mantener racha de 7 días', 'dedication',  'rare');
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Vocabulario Básico',    'Aprendiste 50 palabras nuevas',              '📚', 150, 'aprender 50 palabras',     'vocabulary',  'common');
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Racha de 30 días',      'Estudiaste durante 30 días consecutivos',    '⚡', 300, 'mantener racha de 30 días','dedication',  'epic');
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Perfeccionista',        'Completaste 10 lecciones perfectas',         '⭐', 200, '10 lecciones perfectas',   'performance', 'rare');
-INSERT INTO ACHIEVEMENTS (TITLE, DESCRIPTION, ICON, XP_REWARD, REQUIREMENT, CATEGORY, RARITY)
-VALUES ('Estudiante Comprometido','Estudiaste 1000 minutos',                   '⏰', 150, '1000 minutos de estudio',  'dedication',  'common');
-COMMIT;
-
--- ─────────────────────────────────────────────
---  VERIFICACIÓN FINAL
--- ─────────────────────────────────────────────
-SELECT 'LANGUAGES'       AS TABLA, COUNT(*) AS REGISTROS FROM LANGUAGES    UNION ALL
-SELECT 'USERS',                    COUNT(*) FROM USERS                     UNION ALL
-SELECT 'USER_ENERGY',              COUNT(*) FROM USER_ENERGY               UNION ALL
-SELECT 'LEVELS',                   COUNT(*) FROM LEVELS                    UNION ALL
-SELECT 'UNITS',                    COUNT(*) FROM UNITS                     UNION ALL
-SELECT 'VOCABULARY',               COUNT(*) FROM VOCABULARY                UNION ALL
-SELECT 'UNIT_VOCAB',               COUNT(*) FROM UNIT_VOCAB                UNION ALL
-SELECT 'EXERCISES',                COUNT(*) FROM EXERCISES                 UNION ALL
-SELECT 'WRITING_SYSTEMS',          COUNT(*) FROM WRITING_SYSTEMS           UNION ALL
-SELECT 'USER_PROGRESS',            COUNT(*) FROM USER_PROGRESS             UNION ALL
-SELECT 'USER_STATS',               COUNT(*) FROM USER_STATS                UNION ALL
-SELECT 'ACHIEVEMENTS',             COUNT(*) FROM ACHIEVEMENTS;
+SELECT 'LANGUAGES (nhce)'       AS TABLA, COUNT(*) AS REGISTROS FROM LANGUAGES    WHERE CODE = 'nhce'    UNION ALL
+SELECT 'LEVELS (nhce)',          COUNT(*) FROM LEVELS    WHERE LANGUAGE_ID = (SELECT ID FROM LANGUAGES WHERE CODE='nhce') UNION ALL
+SELECT 'UNITS (nhce)',           COUNT(*) FROM UNITS     WHERE LEVEL_ID IN (SELECT ID FROM LEVELS WHERE LANGUAGE_ID = (SELECT ID FROM LANGUAGES WHERE CODE='nhce')) UNION ALL
+SELECT 'VOCABULARY (nhce)',      COUNT(*) FROM VOCABULARY WHERE LANGUAGE_ID = (SELECT ID FROM LANGUAGES WHERE CODE='nhce') UNION ALL
+SELECT 'EXERCISES (nhce)',       COUNT(*) FROM EXERCISES  WHERE UNIT_ID IN (SELECT U.ID FROM UNITS U JOIN LEVELS L ON U.LEVEL_ID=L.ID WHERE L.LANGUAGE_ID=(SELECT ID FROM LANGUAGES WHERE CODE='nhce')) UNION ALL
+SELECT 'WRITING_SYSTEMS (nhce)', COUNT(*) FROM WRITING_SYSTEMS WHERE LANGUAGE_ID = (SELECT ID FROM LANGUAGES WHERE CODE='nhce');

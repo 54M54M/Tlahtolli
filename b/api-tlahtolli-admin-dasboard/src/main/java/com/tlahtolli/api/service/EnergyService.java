@@ -5,6 +5,7 @@ import com.tlahtolli.api.repository.UserEnergyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class EnergyService {
 
 	private static final int RECOVERY_MINUTES = 20;
+	private static final SecureRandom RANDOM = new SecureRandom();
 
 	private final UserEnergyRepository energyRepo;
 
@@ -34,10 +36,10 @@ public class EnergyService {
 		int change = -1; // consumo base siempre
 
 		if (isCorrect) {
-			change += (Math.random() < 0.5) ? 1 : 2; // bonus +1 o +2
+			change += RANDOM.nextBoolean() ? 1 : 2; // bonus +1 o +2
 			e.setStreakCount(e.getStreakCount() + 1);
 			if (e.getStreakCount() >= 3) {
-				change += (Math.random() < 0.5) ? 3 : 4; // bonus por racha
+				change += RANDOM.nextBoolean() ? 3 : 4; // bonus por racha
 			}
 		} else {
 			e.setStreakCount(0);
