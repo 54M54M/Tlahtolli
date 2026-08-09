@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getById(@PathVariable Integer id) {
         return userService.getById(id).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -51,7 +51,7 @@ public class UserController {
             user.setUsername(dto.username());
             user.setFullName(dto.fullName());
             user.setEmail(dto.email());
-            user.setCurrentLang(dto.currentLang());
+            user.setCurrentLang(Math.toIntExact(dto.currentLang()));
             return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(userService.create(user)));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -59,28 +59,28 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @Valid @RequestBody UserRequest dto) {
+    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto) {
         User body = new User();
         body.setUsername(dto.username());
         body.setFullName(dto.fullName());
         body.setEmail(dto.email());
-        body.setCurrentLang(dto.currentLang());
+        body.setCurrentLang(Math.toIntExact(dto.currentLang()));
         return userService.update(id, body).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/language")
-    public ResponseEntity<?> switchLanguage(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+    public ResponseEntity<?> switchLanguage(@PathVariable Integer id, @RequestBody Map<String, Object> body) {
         Object raw = body.get("languageId");
         if (raw == null)
             return ResponseEntity.badRequest().body(Map.of("error", "languageId es requerido"));
-        Long languageId = Long.parseLong(raw.toString());
+        Integer languageId = Integer.parseInt(raw.toString());
         return userService.switchLanguage(id, languageId).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         return userService.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

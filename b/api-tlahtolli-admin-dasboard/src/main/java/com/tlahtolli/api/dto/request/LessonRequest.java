@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 
 public record LessonRequest(
         @NotNull Long unitId,
-        @NotNull Integer lessonNum,
+        @NotNull Short lessonNum,
         @NotBlank @Size(max = 200) String title,
         @Size(max = 1000) String description,
-        Integer isFree,
+        Short isFree,
         Integer xpReward
 ) {}

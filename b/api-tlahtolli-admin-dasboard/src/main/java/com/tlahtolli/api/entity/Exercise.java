@@ -13,13 +13,13 @@ public class Exercise {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "UNIT_ID")
-	private Long unitId;
+	private Integer unitId;
 
 	@Column(name = "LESSON_ID")
-	private Long lessonId;
+	private Integer lessonId;
 
 	@Column(name = "EXERCISE_TYPE", nullable = false, length = 50)
 	private String exerciseType;
@@ -35,19 +35,19 @@ public class Exercise {
 	// JSON almacenado como String.
 	// fill-blank: ["respuesta1", "respuesta2"] (acepta varias)
 	// multiple-choice: "Cualli tonalli" (string simple o array)
-	@Column(name = "CORRECT_ANS", columnDefinition = "CLOB")
+	@Column(name = "CORRECT_ANS", columnDefinition = "TEXT")
 	private String correctAns;
 
 	// JSON con las 4 opciones pregeneradas: ["op1","op2","op3","op4"]
 	// Si está vacío, LearningService las construye dinámicamente desde vocabulario.
-	@Column(name = "OPTIONS", columnDefinition = "CLOB")
+	@Column(name = "OPTIONS", columnDefinition = "TEXT")
 	private String options;
 
 	@Column(name = "EXPLANATION", length = 2000)
 	private String explanation;
 
 	@Column(name = "POINTS")
-	private Integer points = 10;
+	private Short points = 10;
 
 	@Column(name = "DIFFICULTY", length = 20)
 	private String difficulty;
@@ -55,27 +55,27 @@ public class Exercise {
 	@Column(name = "CHARACTER_REF", length = 100)
 	private String characterRef;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUnitId() {
+	public Integer getUnitId() {
 		return unitId;
 	}
 
-	public void setUnitId(Long unitId) {
+	public void setUnitId(Integer unitId) {
 		this.unitId = unitId;
 	}
 
-	public Long getLessonId() {
+	public Integer getLessonId() {
 		return lessonId;
 	}
 
-	public void setLessonId(Long lessonId) {
+	public void setLessonId(Integer lessonId) {
 		this.lessonId = lessonId;
 	}
 
@@ -127,11 +127,11 @@ public class Exercise {
 		this.explanation = explanation;
 	}
 
-	public Integer getPoints() {
+	public Short getPoints() {
 		return points;
 	}
 
-	public void setPoints(Integer points) {
+	public void setPoints(Short points) {
 		this.points = points;
 	}
 

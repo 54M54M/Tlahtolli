@@ -24,7 +24,7 @@ public class UserProgressController {
 
 	/** Progreso completo de un usuario (todos los idiomas). */
 	@GetMapping
-	public List<UserProgress> getAll(@RequestParam(required = false) Long userId) {
+	public List<UserProgress> getAll(@RequestParam(required = false) Integer userId) {
 		if (userId != null)
 			return repo.findByUserId(userId);
 		return repo.findAll();
@@ -32,7 +32,7 @@ public class UserProgressController {
 
 	/** Progreso de un usuario para una unidad específica. */
 	@GetMapping("/user/{userId}/unit/{unitId}")
-	public ResponseEntity<UserProgress> getByUserAndUnit(@PathVariable Long userId, @PathVariable Long unitId) {
+	public ResponseEntity<UserProgress> getByUserAndUnit(@PathVariable Integer userId, @PathVariable Integer unitId) {
 		return repo.findByUserIdAndUnitId(userId, unitId).map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
 	}
@@ -44,14 +44,14 @@ public class UserProgressController {
 	 */
 	@PostMapping("/complete")
 	public ResponseEntity<Map<String, Object>> completeLesson(@RequestBody Map<String, Object> body) {
-		Long userId = toLong(body.get("userId"));
-		Long unitId = toLong(body.get("unitId"));
-		Long languageId = toLong(body.get("languageId"));
+		Integer userId = toInt(body.get("userId"));
+		Integer unitId = toInt(body.get("unitId"));
+		Integer languageId = toInt(body.get("languageId"));
 		double performance = toDouble(body.get("performance"));
 		int earnedExp = toInt(body.get("earnedExp"));
 		int correctAns = toInt(body.get("correctAns"));
 		int totalExerc = toInt(body.get("totalExerc"));
-		long timeSecs = toLong(body.get("timeSeconds"));
+		int timeSecs = toInt(body.get("timeSeconds"));
 
 		Map<String, Object> result = progressService.completeLesson(userId, unitId, languageId, performance, earnedExp,
 				correctAns, totalExerc, timeSecs);
@@ -59,21 +59,15 @@ public class UserProgressController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
-	/** Inicializar progreso de un usuario (primera unidad desbloqueada). */
 	@PostMapping("/init")
 	public ResponseEntity<Void> init(@RequestBody Map<String, Object> body) {
-		Long userId = toLong(body.get("userId"));
-		Long firstUnitId = toLong(body.get("firstUnitId"));
+		Integer userId = toInt(body.get("userId"));
+		Integer firstUnitId = toInt(body.get("firstUnitId"));
 		progressService.initializeProgress(userId, firstUnitId);
 		return ResponseEntity.ok().build();
 	}
 
-	// ── helpers de conversión ──────────────────────────────────────────────────
-	private Long toLong(Object v) {
-		return v == null ? 0L : Long.parseLong(v.toString());
-	}
-
-	private int toInt(Object v) {
+	private Integer toInt(Object v) {
 		return v == null ? 0 : Integer.parseInt(v.toString());
 	}
 

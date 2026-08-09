@@ -24,7 +24,7 @@ public class UserService {
 		return userRepo.findAll();
 	}
 
-	public Optional<User> getById(Long id) {
+	public Optional<User> getById(Integer id) {
 		return userRepo.findById(id);
 	}
 
@@ -41,10 +41,10 @@ public class UserService {
 			throw new IllegalArgumentException("Email ya existe: " + user.getEmail());
 
 		user.setJoinDate(LocalDate.now());
-		user.setUserLevel(1);
-		user.setXp(0L);
-		user.setTotalXp(0L);
-		user.setStreak(0);
+		user.setUserLevel((short) 1);
+		user.setXp(0);
+		user.setTotalXp(0);
+		user.setStreak((short) 0);
 		User saved = userRepo.save(user);
 
 		energyService.getOrCreate(saved.getId());
@@ -52,7 +52,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public Optional<User> update(Long id, User body) {
+	public Optional<User> update(Integer id, User body) {
 		return userRepo.findById(id).map(existing -> {
 			body.setId(existing.getId());
 			return userRepo.save(body);
@@ -60,7 +60,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public boolean delete(Long id) {
+	public boolean delete(Integer id) {
 		if (!userRepo.existsById(id))
 			return false;
 		userRepo.deleteById(id);
@@ -69,7 +69,7 @@ public class UserService {
 
 	/** Cambia el idioma activo del usuario. */
 	@Transactional
-	public Optional<User> switchLanguage(Long userId, Long languageId) {
+	public Optional<User> switchLanguage(Integer userId, Integer languageId) {
 		return userRepo.findById(userId).map(u -> {
 			u.setCurrentLang(languageId);
 			return userRepo.save(u);

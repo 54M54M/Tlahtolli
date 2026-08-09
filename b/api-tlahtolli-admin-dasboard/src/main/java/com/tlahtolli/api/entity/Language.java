@@ -21,7 +21,7 @@ public class Language {
  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
  
     @Column(name = "CODE", nullable = false, unique = true, length = 10)
     private String code;
@@ -44,11 +44,11 @@ public class Language {
     @Column(name = "WRITING_SYSTEM", length = 20)
     private String writingSystem;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

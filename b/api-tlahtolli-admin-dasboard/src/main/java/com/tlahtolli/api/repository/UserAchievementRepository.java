@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tlahtolli.api.entity.UserAchievement;
 
-public interface UserAchievementRepository extends JpaRepository<UserAchievement, Long> {
+public interface UserAchievementRepository extends JpaRepository<UserAchievement, Integer> {
 	 
-    List<UserAchievement> findByUserId(Long userId);
+    List<UserAchievement> findByUserId(Integer userId);
  
-    Optional<UserAchievement> findByUserIdAndAchieveId(Long userId, Long achieveId);
+    Optional<UserAchievement> findByUserIdAndAchieveId(Integer userId, Integer achieveId);
  
-    boolean existsByUserIdAndAchieveId(Long userId, Long achieveId);
+    boolean existsByUserIdAndAchieveId(Integer userId, Integer achieveId);
 }
  

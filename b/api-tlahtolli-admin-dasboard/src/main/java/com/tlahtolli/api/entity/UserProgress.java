@@ -23,71 +23,71 @@ public class UserProgress {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "USER_ID", nullable = false)
-	private Long userId;
+	private Integer userId;
 
 	@Column(name = "UNIT_ID", nullable = false)
-	private Long unitId;
+	private Integer unitId;
 
 	@Column(name = "COMPLETED")
-	private Integer completed = 0; // 0 | 1
+	private Short completed = 0; // 0 | 1
 
 	@Column(name = "IS_CURRENT")
-	private Integer isCurrent = 0; // 0 | 1
+	private Short isCurrent = 0; // 0 | 1
 
 	@Column(name = "IS_LOCKED")
-	private Integer isLocked = 1; // 0 | 1 (por defecto bloqueado)
+	private Short isLocked = 1; // 0 | 1 (por defecto bloqueado)
 
 	@Column(name = "COMPLETED_AT")
 	private LocalDate completedAt;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Long getUnitId() {
+	public Integer getUnitId() {
 		return unitId;
 	}
 
-	public void setUnitId(Long unitId) {
+	public void setUnitId(Integer unitId) {
 		this.unitId = unitId;
 	}
 
-	public Integer getCompleted() {
+	public Short getCompleted() {
 		return completed;
 	}
 
-	public void setCompleted(Integer completed) {
+	public void setCompleted(Short completed) {
 		this.completed = completed;
 	}
 
-	public Integer getIsCurrent() {
+	public Short getIsCurrent() {
 		return isCurrent;
 	}
 
-	public void setIsCurrent(Integer isCurrent) {
+	public void setIsCurrent(Short isCurrent) {
 		this.isCurrent = isCurrent;
 	}
 
-	public Integer getIsLocked() {
+	public Short getIsLocked() {
 		return isLocked;
 	}
 
-	public void setIsLocked(Integer isLocked) {
+	public void setIsLocked(Short isLocked) {
 		this.isLocked = isLocked;
 	}
 

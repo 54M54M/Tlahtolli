@@ -33,7 +33,7 @@ public class AchievementController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AchievementResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<AchievementResponse> getById(@PathVariable Integer id) {
         return repo.findById(id).map(AchievementResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -53,7 +53,7 @@ public class AchievementController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AchievementResponse> update(@PathVariable Long id, @Valid @RequestBody AchievementRequest dto) {
+    public ResponseEntity<AchievementResponse> update(@PathVariable Integer id, @Valid @RequestBody AchievementRequest dto) {
         return repo.findById(id).map(existing -> {
             existing.setTitle(dto.title());
             existing.setDescription(dto.description());
@@ -67,7 +67,7 @@ public class AchievementController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         if (!repo.existsById(id))
             return ResponseEntity.notFound().build();
         repo.deleteById(id);

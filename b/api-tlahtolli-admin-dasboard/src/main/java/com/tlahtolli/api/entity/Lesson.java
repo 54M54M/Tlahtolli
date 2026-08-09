@@ -21,13 +21,13 @@ public class Lesson {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "UNIT_ID", nullable = false)
-	private Long unitId;
+	private Integer unitId;
 
 	@Column(name = "LESSON_NUM", nullable = false)
-	private Integer lessonNum;
+	private Short lessonNum;
 
 	@Column(name = "TITLE", nullable = false, length = 200)
 	private String title;
@@ -36,32 +36,32 @@ public class Lesson {
 	private String description;
 
 	@Column(name = "IS_FREE")
-	private Integer isFree = 0;
+	private Short isFree = 0;
 
 	@Column(name = "XP_REWARD")
 	private Integer xpReward = 10;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUnitId() {
+	public Integer getUnitId() {
 		return unitId;
 	}
 
-	public void setUnitId(Long unitId) {
+	public void setUnitId(Integer unitId) {
 		this.unitId = unitId;
 	}
 
-	public Integer getLessonNum() {
+	public Short getLessonNum() {
 		return lessonNum;
 	}
 
-	public void setLessonNum(Integer lessonNum) {
+	public void setLessonNum(Short lessonNum) {
 		this.lessonNum = lessonNum;
 	}
 
@@ -81,11 +81,11 @@ public class Lesson {
 		this.description = description;
 	}
 
-	public Integer getIsFree() {
+	public Short getIsFree() {
 		return isFree;
 	}
 
-	public void setIsFree(Integer isFree) {
+	public void setIsFree(Short isFree) {
 		this.isFree = isFree;
 	}
 

@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:orcl
-    username: System
-    password: Cesar25garcia
-    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 12345
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -11,8 +11,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.OracleDialect
-        format-sql: true
+            format-sql: true
 
 server:
   port: 7575

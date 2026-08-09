@@ -20,8 +20,8 @@ public class UserStatsController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long languageId) {
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) Integer languageId) {
 
         if (userId != null && languageId != null) {
             return repo.findByUserIdAndLanguageId(userId, languageId)
@@ -40,7 +40,7 @@ public class UserStatsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserStatsResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<UserStatsResponse> getById(@PathVariable Integer id) {
         return repo.findById(id).map(UserStatsResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -51,7 +51,7 @@ public class UserStatsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserStatsResponse> update(@PathVariable Long id, @RequestBody UserStats s) {
+    public ResponseEntity<UserStatsResponse> update(@PathVariable Integer id, @RequestBody UserStats s) {
         return repo.findById(id).map(existing -> {
             s.setId(existing.getId());
             return ResponseEntity.ok(UserStatsResponse.from(repo.save(s)));

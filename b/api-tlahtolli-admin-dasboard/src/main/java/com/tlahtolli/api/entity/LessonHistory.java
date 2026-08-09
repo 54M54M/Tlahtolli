@@ -15,17 +15,16 @@ public class LessonHistory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "USER_ID", nullable = false)
-	private Long userId;
+	private Integer userId;
 
 	@Column(name = "UNIT_ID", nullable = false)
-	private Long unitId;
+	private Integer unitId;
 
-	// Agregado via ALTER TABLE en el script de BD
 	@Column(name = "LESSON_ID")
-	private Long lessonId;
+	private Integer lessonId;
 
 	@Column(name = "COMPLETED_AT")
 	private LocalDate completedAt;
@@ -34,49 +33,49 @@ public class LessonHistory {
 	private BigDecimal performance;
 
 	@Column(name = "TIME_SECONDS")
-	private Long timeSeconds;
+	private Integer timeSeconds;
 
 	@Column(name = "EARNED_EXP")
 	private Integer earnedExp = 0;
 
 	@Column(name = "CORRECT_ANS")
-	private Integer correctAns = 0;
+	private Short correctAns = 0;
 
 	@Column(name = "TOTAL_EXERC")
-	private Integer totalExerc = 0;
+	private Short totalExerc = 0;
 
 	@Column(name = "WAS_PERFECT")
-	private Integer wasPerfect = 0;
+	private Short wasPerfect = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Long getUnitId() {
+	public Integer getUnitId() {
 		return unitId;
 	}
 
-	public void setUnitId(Long unitId) {
+	public void setUnitId(Integer unitId) {
 		this.unitId = unitId;
 	}
 
-	public Long getLessonId() {
+	public Integer getLessonId() {
 		return lessonId;
 	}
 
-	public void setLessonId(Long lessonId) {
+	public void setLessonId(Integer lessonId) {
 		this.lessonId = lessonId;
 	}
 
@@ -96,11 +95,11 @@ public class LessonHistory {
 		this.performance = performance;
 	}
 
-	public Long getTimeSeconds() {
+	public Integer getTimeSeconds() {
 		return timeSeconds;
 	}
 
-	public void setTimeSeconds(Long timeSeconds) {
+	public void setTimeSeconds(Integer timeSeconds) {
 		this.timeSeconds = timeSeconds;
 	}
 
@@ -112,27 +111,27 @@ public class LessonHistory {
 		this.earnedExp = earnedExp;
 	}
 
-	public Integer getCorrectAns() {
+	public Short getCorrectAns() {
 		return correctAns;
 	}
 
-	public void setCorrectAns(Integer correctAns) {
+	public void setCorrectAns(Short correctAns) {
 		this.correctAns = correctAns;
 	}
 
-	public Integer getTotalExerc() {
+	public Short getTotalExerc() {
 		return totalExerc;
 	}
 
-	public void setTotalExerc(Integer totalExerc) {
+	public void setTotalExerc(Short totalExerc) {
 		this.totalExerc = totalExerc;
 	}
 
-	public Integer getWasPerfect() {
+	public Short getWasPerfect() {
 		return wasPerfect;
 	}
 
-	public void setWasPerfect(Integer wasPerfect) {
+	public void setWasPerfect(Short wasPerfect) {
 		this.wasPerfect = wasPerfect;
 	}
 }

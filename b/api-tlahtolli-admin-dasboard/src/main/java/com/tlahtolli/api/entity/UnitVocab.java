@@ -21,20 +21,20 @@ public class UnitVocab {
  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
  
     @Column(name = "UNIT_ID", nullable = false)
-    private Long unitId;
+    private Integer unitId;
  
     @Column(name = "VOCAB_ID", nullable = false)
-    private Long vocabId;
+    private Integer vocabId;
  
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
  
-    public Long getUnitId() { return unitId; }
-    public void setUnitId(Long unitId) { this.unitId = unitId; }
+    public Integer getUnitId() { return unitId; }
+    public void setUnitId(Integer unitId) { this.unitId = unitId; }
  
-    public Long getVocabId() { return vocabId; }
-    public void setVocabId(Long vocabId) { this.vocabId = vocabId; }
+    public Integer getVocabId() { return vocabId; }
+    public void setVocabId(Integer vocabId) { this.vocabId = vocabId; }
 }

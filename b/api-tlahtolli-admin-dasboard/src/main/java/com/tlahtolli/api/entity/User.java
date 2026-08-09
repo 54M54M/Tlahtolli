@@ -14,7 +14,7 @@ public class User {
  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
  
     @Column(name = "USERNAME", nullable = false, unique = true, length = 50)
     private String username;
@@ -26,28 +26,28 @@ public class User {
     private String email;
  
     @Column(name = "USER_LEVEL")
-    private Integer userLevel = 1;
+    private Short userLevel = 1;
  
     @Column(name = "XP")
-    private Long xp = 0L;
+    private Integer xp = 0;
  
     @Column(name = "TOTAL_XP")
-    private Long totalXp = 0L;
+    private Integer totalXp = 0;
  
     @Column(name = "STREAK")
-    private Integer streak = 0;
+    private Short streak = 0;
  
     @Column(name = "JOIN_DATE")
     private LocalDate joinDate;
  
     @Column(name = "CURRENT_LANG")
-    private Long currentLang;
+    private Integer currentLang;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -75,35 +75,35 @@ public class User {
 		this.email = email;
 	}
 
-	public Integer getUserLevel() {
+	public Short getUserLevel() {
 		return userLevel;
 	}
 
-	public void setUserLevel(Integer userLevel) {
+	public void setUserLevel(Short userLevel) {
 		this.userLevel = userLevel;
 	}
 
-	public Long getXp() {
+	public Integer getXp() {
 		return xp;
 	}
 
-	public void setXp(Long xp) {
+	public void setXp(Integer xp) {
 		this.xp = xp;
 	}
 
-	public Long getTotalXp() {
+	public Integer getTotalXp() {
 		return totalXp;
 	}
 
-	public void setTotalXp(Long totalXp) {
+	public void setTotalXp(Integer totalXp) {
 		this.totalXp = totalXp;
 	}
 
-	public Integer getStreak() {
+	public Short getStreak() {
 		return streak;
 	}
 
-	public void setStreak(Integer streak) {
+	public void setStreak(Short streak) {
 		this.streak = streak;
 	}
 
@@ -115,11 +115,11 @@ public class User {
 		this.joinDate = joinDate;
 	}
 
-	public Long getCurrentLang() {
+	public Integer getCurrentLang() {
 		return currentLang;
 	}
 
-	public void setCurrentLang(Long currentLang) {
+	public void setCurrentLang(Integer currentLang) {
 		this.currentLang = currentLang;
 	}
         

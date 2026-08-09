@@ -7,13 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tlahtolli.api.entity.UserStats;
 
-public interface UserStatsRepository extends JpaRepository<UserStats, Long> {
+public interface UserStatsRepository extends JpaRepository<UserStats, Integer> {
 
-    // El registro es único por (userId, languageId) — ver UQ_USER_STATS
-    Optional<UserStats> findByUserIdAndLanguageId(Long userId, Long languageId);
+    Optional<UserStats> findByUserIdAndLanguageId(Integer userId, Integer languageId);
  
-    // Todas las stats de un usuario (un registro por idioma)
-    List<UserStats> findByUserId(Long userId);
+    List<UserStats> findByUserId(Integer userId);
  
-    boolean existsByUserIdAndLanguageId(Long userId, Long languageId);
+    boolean existsByUserIdAndLanguageId(Integer userId, Integer languageId);
 }

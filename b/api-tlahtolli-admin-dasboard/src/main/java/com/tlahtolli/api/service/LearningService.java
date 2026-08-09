@@ -39,7 +39,7 @@ public class LearningService {
 
 	// ── Niveles ───────────────────────────────────────────────────────────────
 
-	public List<Map<String, Object>> getLevelsWithProgress(Long languageId, Long userId) {
+	public List<Map<String, Object>> getLevelsWithProgress(Integer languageId, Integer userId) {
 		return levelRepo.findByLanguageId(languageId).stream().map(level -> {
 			long completed = progressRepo.countCompletedByUserAndLevel(userId, level.getId());
 			boolean locked = isLevelLocked(level, userId);
@@ -61,7 +61,7 @@ public class LearningService {
 
 	// ── Unidades ──────────────────────────────────────────────────────────────
 
-	public List<Map<String, Object>> getUnitsWithProgress(Long levelId, Long userId) {
+	public List<Map<String, Object>> getUnitsWithProgress(Integer levelId, Integer userId) {
 		return unitRepo.findByLevelIdOrderByUnitNum(levelId).stream().map(unit -> {
 			Optional<UserProgress> up = progressRepo.findByUserIdAndUnitId(userId, unit.getId());
 
@@ -87,7 +87,7 @@ public class LearningService {
 
 	// ── Ejercicios ────────────────────────────────────────────────────────────
 
-	public List<Map<String, Object>> getExercisesForUnit(Long unitId) {
+	public List<Map<String, Object>> getExercisesForUnit(Integer unitId) {
 		List<Exercise> exercises = exerciseRepo.findByUnitId(unitId);
 		List<Vocabulary> vocab = unitVocabRepo.findVocabularyByUnitId(unitId);
 		List<String> vocabWords = vocab.stream().map(Vocabulary::getWord).toList();
@@ -95,7 +95,7 @@ public class LearningService {
 		return exercises.stream().map(ex -> buildExerciseMap(ex, vocabWords)).toList();
 	}
 
-	public List<Map<String, Object>> getRandomExercisesForLevel(Long levelId, int count) {
+	public List<Map<String, Object>> getRandomExercisesForLevel(Integer levelId, int count) {
 		List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
 		List<Map<String, Object>> all = new ArrayList<>();
 		units.forEach(u -> all.addAll(getExercisesForUnit(u.getId())));
@@ -110,7 +110,7 @@ public class LearningService {
 	 * PronunciationTooltip: { "palabra": { "translation": "...", "pronunciation":
 	 * "...", "example": "..." } }
 	 */
-	public Map<String, Object> getVocabularyForUnit(Long unitId) {
+	public Map<String, Object> getVocabularyForUnit(Integer unitId) {
 		List<Vocabulary> vocab = unitVocabRepo.findVocabularyByUnitId(unitId);
 		Map<String, Object> result = new LinkedHashMap<>();
 		for (Vocabulary v : vocab) {
@@ -191,7 +191,7 @@ public class LearningService {
 		}
 	}
 
-	private boolean isLevelLocked(Level level, Long userId) {
+	private boolean isLevelLocked(Level level, Integer userId) {
 		if (level.getLevelNum() == 1)
 			return false;
 		List<Level> allLevels = levelRepo.findByLanguageId(level.getLanguageId());

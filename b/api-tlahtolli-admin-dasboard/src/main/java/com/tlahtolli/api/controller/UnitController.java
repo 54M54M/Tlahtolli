@@ -41,7 +41,7 @@ public class UnitController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Unit> getById(@PathVariable Long id) {
+	public ResponseEntity<Unit> getById(@PathVariable Integer id) {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
@@ -51,7 +51,7 @@ public class UnitController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Unit> update(@PathVariable Long id, @RequestBody Unit u) {
+	public ResponseEntity<Unit> update(@PathVariable Integer id, @RequestBody Unit u) {
 		return repo.findById(id).map(ex -> {
 			u.setId(ex.getId());
 			return ResponseEntity.ok(repo.save(u));
@@ -59,7 +59,7 @@ public class UnitController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		if (!repo.existsById(id))
 			return ResponseEntity.notFound().build();
 		repo.deleteById(id);

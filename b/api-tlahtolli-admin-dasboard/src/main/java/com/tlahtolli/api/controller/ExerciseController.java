@@ -44,7 +44,7 @@ public class ExerciseController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Exercise> getById(@PathVariable Long id) {
+	public ResponseEntity<Exercise> getById(@PathVariable Integer id) {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
@@ -54,7 +54,7 @@ public class ExerciseController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Exercise> update(@PathVariable Long id, @RequestBody Exercise exercise) {
+	public ResponseEntity<Exercise> update(@PathVariable Integer id, @RequestBody Exercise exercise) {
 	    return repo.findById(id).map(existing -> {
 	        exercise.setId(existing.getId());
 	        // Preservar unitId del registro existente si el nuevo no lo trae
@@ -66,7 +66,7 @@ public class ExerciseController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		if (!repo.existsById(id))
 			return ResponseEntity.notFound().build();
 		repo.deleteById(id);

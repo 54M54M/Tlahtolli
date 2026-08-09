@@ -21,10 +21,10 @@ public class WritingSystem {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "LANGUAGE_ID", nullable = false)
-	private Long languageId;
+	private Integer languageId;
 
 	// 'syllabary' | 'alphabet' | 'logogram' | 'abugida'
 	@Column(name = "SYSTEM_TYPE", nullable = false, length = 30)
@@ -37,30 +37,28 @@ public class WritingSystem {
 	private String description;
 
 	// JSON con el array de caracteres / sílabas
-	@Column(name = "CHARACTERS", columnDefinition = "CLOB")
+	@Column(name = "CHARACTERS", columnDefinition = "TEXT")
 	private String characters;
 
-	// JSON con reglas del sistema
-	@Column(name = "RULES", columnDefinition = "CLOB")
+	@Column(name = "RULES", columnDefinition = "TEXT")
 	private String rules;
 
-	// JSON con notas adicionales (array de strings)
-	@Column(name = "NOTES", columnDefinition = "CLOB")
+	@Column(name = "NOTES", columnDefinition = "TEXT")
 	private String notes;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getLanguageId() {
+	public Integer getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(Long languageId) {
+	public void setLanguageId(Integer languageId) {
 		this.languageId = languageId;
 	}
 

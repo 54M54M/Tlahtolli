@@ -6,18 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tlahtolli.api.entity.Exercise;
 
-public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
+public interface ExerciseRepository extends JpaRepository<Exercise, Integer> {
 	
-	// Por tipo
-    List<Exercise> findByExerciseType(String type);
+	List<Exercise> findByExerciseType(String type);
  
-    // Por unidad (para cargar ejercicios de una lección directamente)
-    List<Exercise> findByUnitId(Long unitId);
+    List<Exercise> findByUnitId(Integer unitId);
  
-    // Por lección
-    List<Exercise> findByLessonId(Long lessonId);
+    List<Exercise> findByLessonId(Integer lessonId);
  
-    // Por lección ordenados
-    List<Exercise> findByLessonIdOrderById(Long lessonId);
+    List<Exercise> findByLessonIdOrderById(Integer lessonId);
 	
 }

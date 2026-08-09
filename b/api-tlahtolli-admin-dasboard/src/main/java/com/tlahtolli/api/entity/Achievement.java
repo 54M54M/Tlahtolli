@@ -21,7 +21,7 @@ public class Achievement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "TITLE", nullable = false, length = 200)
 	private String title;
@@ -44,11 +44,11 @@ public class Achievement {
 	@Column(name = "RARITY", length = 50)
 	private String rarity;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

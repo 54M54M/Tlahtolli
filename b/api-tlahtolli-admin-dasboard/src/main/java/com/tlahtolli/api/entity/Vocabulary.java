@@ -13,10 +13,10 @@ public class Vocabulary {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "LANGUAGE_ID", nullable = false)
-	private Long languageId;
+	private Integer languageId;
 
 	@Column(name = "WORD", nullable = false, length = 500)
 	private String word;
@@ -30,19 +30,19 @@ public class Vocabulary {
 	@Column(name = "EXAMPLE", length = 1000)
 	private String example;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getLanguageId() {
+	public Integer getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(Long languageId) {
+	public void setLanguageId(Integer languageId) {
 		this.languageId = languageId;
 	}
 

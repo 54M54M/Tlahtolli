@@ -32,7 +32,7 @@ public class LevelController {
 	}
 
 	@GetMapping
-	public List<Level> getAll(@RequestParam(required = false) Long languageId) {
+	public List<Level> getAll(@RequestParam(required = false) Integer languageId) {
 		if (languageId != null)
 			return repo.findByLanguageId(languageId);
 		return repo.findAll();
@@ -44,7 +44,7 @@ public class LevelController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Level> getById(@PathVariable Long id) {
+	public ResponseEntity<Level> getById(@PathVariable Integer id) {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
@@ -54,7 +54,7 @@ public class LevelController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Level> update(@PathVariable Long id, @RequestBody Level l) {
+	public ResponseEntity<Level> update(@PathVariable Integer id, @RequestBody Level l) {
 		return repo.findById(id).map(ex -> {
 			l.setId(ex.getId());
 			return ResponseEntity.ok(repo.save(l));
@@ -62,7 +62,7 @@ public class LevelController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		if (!repo.existsById(id))
 			return ResponseEntity.notFound().build();
 		repo.deleteById(id);

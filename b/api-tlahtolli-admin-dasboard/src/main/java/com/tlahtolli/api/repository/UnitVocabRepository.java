@@ -9,20 +9,19 @@ import org.springframework.data.repository.query.Param;
 import com.tlahtolli.api.entity.UnitVocab;
 import com.tlahtolli.api.entity.Vocabulary;
 
-public interface UnitVocabRepository extends JpaRepository<UnitVocab, Long> {
+public interface UnitVocabRepository extends JpaRepository<UnitVocab, Integer> {
 	 
-    List<UnitVocab> findByUnitId(Long unitId);
+    List<UnitVocab> findByUnitId(Integer unitId);
  
-    List<UnitVocab> findByVocabId(Long vocabId);
+    List<UnitVocab> findByVocabId(Integer vocabId);
  
-    boolean existsByUnitIdAndVocabId(Long unitId, Long vocabId);
+    boolean existsByUnitIdAndVocabId(Integer unitId, Integer vocabId);
  
-    void deleteByUnitIdAndVocabId(Long unitId, Long vocabId);
+    void deleteByUnitIdAndVocabId(Integer unitId, Integer vocabId);
  
-    // Obtener el vocabulario completo de una unidad con JOIN
     @Query("SELECT v FROM Vocabulary v " +
            "JOIN UnitVocab uv ON uv.vocabId = v.id " +
            "WHERE uv.unitId = :unitId")
-    List<Vocabulary> findVocabularyByUnitId(@Param("unitId") Long unitId);
+    List<Vocabulary> findVocabularyByUnitId(@Param("unitId") Integer unitId);
 }
  

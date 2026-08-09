@@ -3,7 +3,7 @@ package com.tlahtolli.api.dto.response;
 import com.tlahtolli.api.entity.Achievement;
 
 public record AchievementResponse(
-        Long id,
+        Integer id,
         String title,
         String description,
         String icon,

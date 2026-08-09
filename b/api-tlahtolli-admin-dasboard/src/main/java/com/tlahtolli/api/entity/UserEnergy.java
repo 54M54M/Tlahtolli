@@ -23,63 +23,63 @@ public class UserEnergy {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "USER_ID", nullable = false, unique = true)
-	private Long userId;
+	private Integer userId;
 
 	@Column(name = "MAX_ENERGY")
-	private Integer maxEnergy = 15;
+	private Short maxEnergy = 15;
 
 	@Column(name = "CURRENT_ENRG")
-	private Integer currentEnergy = 15;
+	private Short currentEnergy = 15;
 
 	@Column(name = "STREAK_COUNT")
-	private Integer streakCount = 0;
+	private Short streakCount = 0;
 
 	@Column(name = "LAST_UPDATE")
 	private LocalDateTime lastUpdate;
 
 	@Column(name = "DAILY_USAGE")
-	private Integer dailyUsage = 0;
+	private Short dailyUsage = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Integer getMaxEnergy() {
+	public Short getMaxEnergy() {
 		return maxEnergy;
 	}
 
-	public void setMaxEnergy(Integer maxEnergy) {
+	public void setMaxEnergy(Short maxEnergy) {
 		this.maxEnergy = maxEnergy;
 	}
 
-	public Integer getCurrentEnergy() {
+	public Short getCurrentEnergy() {
 		return currentEnergy;
 	}
 
-	public void setCurrentEnergy(Integer currentEnergy) {
+	public void setCurrentEnergy(Short currentEnergy) {
 		this.currentEnergy = currentEnergy;
 	}
 
-	public Integer getStreakCount() {
+	public Short getStreakCount() {
 		return streakCount;
 	}
 
-	public void setStreakCount(Integer streakCount) {
+	public void setStreakCount(Short streakCount) {
 		this.streakCount = streakCount;
 	}
 
@@ -91,11 +91,11 @@ public class UserEnergy {
 		this.lastUpdate = lastUpdate;
 	}
 
-	public Integer getDailyUsage() {
+	public Short getDailyUsage() {
 		return dailyUsage;
 	}
 
-	public void setDailyUsage(Integer dailyUsage) {
+	public void setDailyUsage(Short dailyUsage) {
 		this.dailyUsage = dailyUsage;
 	}
 }

@@ -4,16 +4,16 @@ import com.tlahtolli.api.entity.User;
 import java.time.LocalDate;
 
 public record UserResponse(
-        Long id,
+        Integer id,
         String username,
         String fullName,
         String email,
-        Integer userLevel,
-        Long xp,
-        Long totalXp,
-        Integer streak,
+        Short userLevel,
+        Integer xp,
+        Integer totalXp,
+        Short streak,
         LocalDate joinDate,
-        Long currentLang
+        Integer currentLang
 ) {
     public static UserResponse from(User u) {
         return new UserResponse(

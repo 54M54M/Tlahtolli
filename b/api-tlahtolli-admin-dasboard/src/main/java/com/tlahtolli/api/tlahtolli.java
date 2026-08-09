@@ -11,3 +11,13 @@ public class tlahtolli {
 	}
 
 }
+
+/*
+
+CONTENT:
+--> LEVELS
+	--> UNITS [ obtiene data directo de EXERCISES ]
+		--> LESSONS [ tabla huerfana ]
+			--> EXERCISES
+
+ */

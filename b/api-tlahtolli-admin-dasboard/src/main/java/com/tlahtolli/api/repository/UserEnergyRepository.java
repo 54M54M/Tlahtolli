@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tlahtolli.api.entity.UserEnergy;
 
-public interface UserEnergyRepository extends JpaRepository<UserEnergy, Long> {
+public interface UserEnergyRepository extends JpaRepository<UserEnergy, Integer> {
 	 
-    // Un usuario tiene exactamente un registro de energía (UNIQUE en BD)
-    Optional<UserEnergy> findByUserId(Long userId);
+    Optional<UserEnergy> findByUserId(Integer userId);
  
-    boolean existsByUserId(Long userId);
+    boolean existsByUserId(Integer userId);
 }
  

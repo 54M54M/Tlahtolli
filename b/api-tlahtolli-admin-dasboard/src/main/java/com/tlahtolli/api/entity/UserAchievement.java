@@ -23,42 +23,42 @@ public class UserAchievement {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "USER_ID", nullable = false)
-	private Long userId;
+	private Integer userId;
 
 	@Column(name = "ACHIEVE_ID", nullable = false)
-	private Long achieveId;
+	private Integer achieveId;
 
 	@Column(name = "EARNED_AT")
 	private LocalDate earnedAt;
 
 	// JSON almacenado como String; el frontend lo interpreta
-	@Column(name = "PROGRESS", columnDefinition = "CLOB")
+	@Column(name = "PROGRESS", columnDefinition = "TEXT")
 	private String progress;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Long getAchieveId() {
+	public Integer getAchieveId() {
 		return achieveId;
 	}
 
-	public void setAchieveId(Long achieveId) {
+	public void setAchieveId(Integer achieveId) {
 		this.achieveId = achieveId;
 	}
 

@@ -31,7 +31,7 @@ public class AchievementService {
 	 * Devuelve la lista de logros recién desbloqueados en esta llamada.
 	 */
 	@Transactional
-	public List<UserAchievement> checkAndUnlock(Long userId, Long languageId) {
+	public List<UserAchievement> checkAndUnlock(Integer userId, Integer languageId) {
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 		UserStats stats = statsRepo.findByUserIdAndLanguageId(userId, languageId).orElse(null);
@@ -66,7 +66,7 @@ public class AchievementService {
 	}
 
 	/** Devuelve todos los logros con flag de si el usuario los tiene. */
-	public List<AchievementWithStatus> getAllWithStatus(Long userId) {
+	public List<AchievementWithStatus> getAllWithStatus(Integer userId) {
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 

@@ -24,30 +24,29 @@ public class EnergyService {
 
 	/** Obtiene o crea la energía del usuario, aplicando recuperación pasiva. */
 	@Transactional
-	public UserEnergy getOrCreate(Long userId) {
+	public UserEnergy getOrCreate(Integer userId) {
 		return energyRepo.findByUserId(userId).map(this::applyPassiveRecovery).orElseGet(() -> createDefault(userId));
 	}
 
-	/** Consume energía al responder un ejercicio. */
 	@Transactional
-	public Map<String, Object> consume(Long userId, boolean isCorrect) {
+	public Map<String, Object> consume(Integer userId, boolean isCorrect) {
 		UserEnergy e = getOrCreate(userId);
 
 		int change = -1; // consumo base siempre
 
 		if (isCorrect) {
 			change += RANDOM.nextBoolean() ? 1 : 2; // bonus +1 o +2
-			e.setStreakCount(e.getStreakCount() + 1);
+			e.setStreakCount((short) (e.getStreakCount() + 1));
 			if (e.getStreakCount() >= 3) {
 				change += RANDOM.nextBoolean() ? 3 : 4; // bonus por racha
 			}
 		} else {
-			e.setStreakCount(0);
+			e.setStreakCount((short) 0);
 		}
 
 		int newEnergy = Math.max(0, Math.min(e.getMaxEnergy(), e.getCurrentEnergy() + change));
-		e.setCurrentEnergy(newEnergy);
-		e.setDailyUsage(e.getDailyUsage() + 1);
+		e.setCurrentEnergy((short) newEnergy);
+		e.setDailyUsage((short) (e.getDailyUsage() + 1));
 		e.setLastUpdate(LocalDateTime.now());
 		energyRepo.save(e);
 
@@ -57,9 +56,9 @@ public class EnergyService {
 
 	/** Sobrescribe la energía directamente (admin / debug). */
 	@Transactional
-	public UserEnergy setEnergy(Long userId, int value) {
+	public UserEnergy setEnergy(Integer userId, int value) {
 		UserEnergy e = getOrCreate(userId);
-		e.setCurrentEnergy(Math.max(0, Math.min(e.getMaxEnergy(), value)));
+		e.setCurrentEnergy((short) Math.max(0, Math.min(e.getMaxEnergy(), value)));
 		e.setLastUpdate(LocalDateTime.now());
 		return energyRepo.save(e);
 	}
@@ -72,20 +71,20 @@ public class EnergyService {
 		long minutesPassed = ChronoUnit.MINUTES.between(e.getLastUpdate(), LocalDateTime.now());
 		int recovered = (int) (minutesPassed / RECOVERY_MINUTES);
 		if (recovered > 0) {
-			e.setCurrentEnergy(Math.min(e.getMaxEnergy(), e.getCurrentEnergy() + recovered));
+			e.setCurrentEnergy((short) Math.min(e.getMaxEnergy(), e.getCurrentEnergy() + recovered));
 			e.setLastUpdate(LocalDateTime.now());
 			energyRepo.save(e);
 		}
 		return e;
 	}
 
-	private UserEnergy createDefault(Long userId) {
+	private UserEnergy createDefault(Integer userId) {
 		UserEnergy e = new UserEnergy();
 		e.setUserId(userId);
-		e.setMaxEnergy(15);
-		e.setCurrentEnergy(15);
-		e.setStreakCount(0);
-		e.setDailyUsage(0);
+		e.setMaxEnergy((short) 15);
+		e.setCurrentEnergy((short) 15);
+		e.setStreakCount((short) 0);
+		e.setDailyUsage((short) 0);
 		e.setLastUpdate(LocalDateTime.now());
 		return energyRepo.save(e);
 	}

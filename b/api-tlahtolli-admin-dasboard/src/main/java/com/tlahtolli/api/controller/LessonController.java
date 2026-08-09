@@ -23,7 +23,7 @@ public class LessonController {
     }
 
     @GetMapping
-    public List<LessonResponse> getAll(@RequestParam(required = false) Long unitId) {
+    public List<LessonResponse> getAll(@RequestParam(required = false) Integer unitId) {
         List<Lesson> lessons = unitId != null ? repo.findByUnitId(unitId) : repo.findAll();
         return lessons.stream().map(LessonResponse::from).toList();
     }
@@ -42,7 +42,7 @@ public class LessonController {
     @PostMapping
     public ResponseEntity<LessonResponse> create(@Valid @RequestBody LessonRequest dto) {
         Lesson lesson = Lesson.builder()
-                .unitId(dto.unitId())
+                .unitId(Math.toIntExact(dto.unitId()))
                 .lessonNum(dto.lessonNum())
                 .title(dto.title())
                 .description(dto.description())
@@ -55,7 +55,7 @@ public class LessonController {
     @PutMapping("/{id}")
     public ResponseEntity<LessonResponse> update(@PathVariable Long id, @Valid @RequestBody LessonRequest dto) {
         return repo.findById(id).map(existing -> {
-            existing.setUnitId(dto.unitId());
+            existing.setUnitId(Math.toIntExact(dto.unitId()));
             existing.setLessonNum(dto.lessonNum());
             existing.setTitle(dto.title());
             existing.setDescription(dto.description());

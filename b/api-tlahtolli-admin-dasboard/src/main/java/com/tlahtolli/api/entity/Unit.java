@@ -21,13 +21,13 @@ public class Unit {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "LEVEL_ID", nullable = false)
-	private Long levelId;
+	private Integer levelId;
 
 	@Column(name = "UNIT_NUM", nullable = false)
-	private Integer unitNum;
+	private Short unitNum;
 
 	@Column(name = "TITLE", nullable = false, length = 200)
 	private String title;
@@ -42,32 +42,32 @@ public class Unit {
 	private String grammar;
 
 	@Column(name = "IS_FREE")
-	private Integer isFree = 0;
+	private Short isFree = 0;
 
 	@Column(name = "UNLOCK_REQ", length = 500)
 	private String unlockReq;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getLevelId() {
+	public Integer getLevelId() {
 		return levelId;
 	}
 
-	public void setLevelId(Long levelId) {
+	public void setLevelId(Integer levelId) {
 		this.levelId = levelId;
 	}
 
-	public Integer getUnitNum() {
+	public Short getUnitNum() {
 		return unitNum;
 	}
 
-	public void setUnitNum(Integer unitNum) {
+	public void setUnitNum(Short unitNum) {
 		this.unitNum = unitNum;
 	}
 
@@ -103,11 +103,11 @@ public class Unit {
 		this.grammar = grammar;
 	}
 
-	public Integer getIsFree() {
+	public Short getIsFree() {
 		return isFree;
 	}
 
-	public void setIsFree(Integer isFree) {
+	public void setIsFree(Short isFree) {
 		this.isFree = isFree;
 	}
 

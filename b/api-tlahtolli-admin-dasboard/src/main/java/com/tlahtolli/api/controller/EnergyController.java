@@ -19,25 +19,19 @@ public class EnergyController {
 
 	/** Obtiene (o crea) la energía de un usuario, aplicando recuperación pasiva. */
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<UserEnergy> getEnergy(@PathVariable Long userId) {
+	public ResponseEntity<UserEnergy> getEnergy(@PathVariable Integer userId) {
 		return ResponseEntity.ok(energyService.getOrCreate(userId));
 	}
 
-	/**
-	 * Consume energía al responder un ejercicio. Body: { "isCorrect": true }
-	 */
 	@PostMapping("/user/{userId}/consume")
-	public ResponseEntity<Map<String, Object>> consume(@PathVariable Long userId,
+	public ResponseEntity<Map<String, Object>> consume(@PathVariable Integer userId,
 			@RequestBody Map<String, Object> body) {
 		boolean isCorrect = Boolean.TRUE.equals(body.get("isCorrect"));
 		return ResponseEntity.ok(energyService.consume(userId, isCorrect));
 	}
 
-	/**
-	 * Sobrescribe la energía directamente (admin / debug). Body: { "value": 10 }
-	 */
 	@PutMapping("/user/{userId}/set")
-	public ResponseEntity<UserEnergy> setEnergy(@PathVariable Long userId, @RequestBody Map<String, Object> body) {
+	public ResponseEntity<UserEnergy> setEnergy(@PathVariable Integer userId, @RequestBody Map<String, Object> body) {
 		int value = Integer.parseInt(body.get("value").toString());
 		return ResponseEntity.ok(energyService.setEnergy(userId, value));
 	}

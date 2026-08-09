@@ -26,8 +26,8 @@ public class LessonHistoryController {
 	 * ProgressService para verificar si ya completó una unidad.
 	 */
 	@GetMapping
-	public List<LessonHistory> getAll(@RequestParam(required = false) Long userId,
-			@RequestParam(required = false) Long unitId) {
+	public List<LessonHistory> getAll(@RequestParam(required = false) Integer userId,
+			@RequestParam(required = false) Integer unitId) {
 
 		if (userId != null && unitId != null) {
 			return repo.findByUserIdAndUnitId(userId, unitId);
@@ -44,7 +44,7 @@ public class LessonHistoryController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<LessonHistory> getById(@PathVariable Long id) {
+	public ResponseEntity<LessonHistory> getById(@PathVariable Integer id) {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 

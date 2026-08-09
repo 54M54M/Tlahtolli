@@ -34,65 +34,52 @@ public class ProgressService {
 		this.achievementService = achievementService;
 	}
 
-	/**
-	 * Punto de entrada principal cuando el usuario completa una lección.
-	 * Actualiza en una sola transacción:
-	 * LESSON_HISTORY, USER_PROGRESS, USERS (XP), USER_STATS, USER_ACHIEVEMENTS
-	 */
 	@Transactional
-	public Map<String, Object> completeLesson(Long userId, Long unitId, Long languageId, double performance,
-			int earnedExp, int correctAns, int totalExerc, long timeSeconds) {
+	public Map<String, Object> completeLesson(Integer userId, Integer unitId, Integer languageId, double performance,
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
 
-		// Manejar unitId nulo (QuickLevel sin unidad específica)
 		if (unitId == null || unitId == 0) {
-			return completeQuickLevel(userId, languageId, performance, earnedExp,
-					correctAns, totalExerc, timeSeconds);
+			return completeQuickLevel(userId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
 		}
 
 		boolean wasAlreadyCompleted = historyRepo.existsByUserIdAndUnitId(userId, unitId);
 
-		// 1. Guardar en historial
 		LessonHistory history = new LessonHistory();
 		history.setUserId(userId);
 		history.setUnitId(unitId);
 		history.setCompletedAt(LocalDate.now());
 		history.setPerformance(BigDecimal.valueOf(performance));
 		history.setEarnedExp(earnedExp);
-		history.setCorrectAns(correctAns);
-		history.setTotalExerc(totalExerc);
+		history.setCorrectAns((short) correctAns);
+		history.setTotalExerc((short) totalExerc);
 		history.setTimeSeconds(timeSeconds);
-		history.setWasPerfect(performance >= 0.9 ? 1 : 0);
+		history.setWasPerfect((short) (performance >= 0.9 ? 1 : 0));
 		historyRepo.save(history);
 
-		// 2. Actualizar USER_PROGRESS
 		UserProgress up = progressRepo.findByUserIdAndUnitId(userId, unitId).orElseGet(() -> {
 			UserProgress p = new UserProgress();
 			p.setUserId(userId);
 			p.setUnitId(unitId);
-			p.setIsLocked(0);
+			p.setIsLocked((short) 0);
 			return p;
 		});
-		up.setCompleted(1);
-		up.setIsCurrent(0);
+		up.setCompleted((short) 1);
+		up.setIsCurrent((short) 0);
 		up.setCompletedAt(LocalDate.now());
 		progressRepo.save(up);
 
-		// 3. Desbloquear la siguiente unidad
-		Long nextUnitId = unlockNextUnit(userId, unitId);
+		Integer nextUnitId = unlockNextUnit(userId, unitId);
 
-		// 4. Dar XP al usuario
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
 		userRepo.save(user);
 
-		// 5. Actualizar estadísticas SOLO si es la primera vez
 		if (!wasAlreadyCompleted) {
 			UserStats stats = getOrCreateStats(userId, languageId);
 			stats.setLessonsDone(stats.getLessonsDone() + 1);
 
-			// Contar vocabulario de la unidad para actualizar wordsLearned
-			int vocabCount = (int) unitVocabRepo.findByUnitId(unitId).size();
+			int vocabCount = unitVocabRepo.findByUnitId(unitId).size();
 			if (vocabCount > 0) {
 				stats.setWordsLearned(stats.getWordsLearned() + vocabCount);
 			}
@@ -104,10 +91,8 @@ public class ProgressService {
 			statsRepo.save(stats);
 		}
 
-		// 6. Verificar y desbloquear logros
 		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
 
-		// 7. Armar respuesta
 		Map<String, Object> result = new HashMap<>();
 		result.put("xpEarned", earnedExp);
 		result.put("wasAlreadyCompleted", wasAlreadyCompleted);
@@ -118,19 +103,14 @@ public class ProgressService {
 		return result;
 	}
 
-	/**
-	 * Maneja el caso de QuickLevel donde no hay una unidad específica.
-	 */
-	private Map<String, Object> completeQuickLevel(Long userId, Long languageId, double performance,
-			int earnedExp, int correctAns, int totalExerc, long timeSeconds) {
+	private Map<String, Object> completeQuickLevel(Integer userId, Integer languageId, double performance,
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
 
-		// Dar XP al usuario
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
 		userRepo.save(user);
 
-		// Verificar logros
 		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
 
 		Map<String, Object> result = new HashMap<>();
@@ -143,8 +123,7 @@ public class ProgressService {
 		return result;
 	}
 
-	/** Progreso completo de un usuario para un idioma. */
-	public Map<String, Object> getUserProgress(Long userId, Long languageId) {
+	public Map<String, Object> getUserProgress(Integer userId, Integer languageId) {
 		List<UserProgress> progressList = progressRepo.findByUserId(userId);
 		UserStats stats = getOrCreateStats(userId, languageId);
 		Map<String, Object> result = new HashMap<>();
@@ -153,24 +132,21 @@ public class ProgressService {
 		return result;
 	}
 
-	/** Inicializa el progreso: desbloquea la primera unidad de un idioma. */
 	@Transactional
-	public void initializeProgress(Long userId, Long firstUnitId) {
+	public void initializeProgress(Integer userId, Integer firstUnitId) {
 		boolean exists = progressRepo.findByUserIdAndUnitId(userId, firstUnitId).isPresent();
 		if (!exists) {
 			UserProgress first = new UserProgress();
 			first.setUserId(userId);
 			first.setUnitId(firstUnitId);
-			first.setIsLocked(0);
-			first.setIsCurrent(1);
-			first.setCompleted(0);
+			first.setIsLocked((short) 0);
+			first.setIsCurrent((short) 1);
+			first.setCompleted((short) 0);
 			progressRepo.save(first);
 		}
 	}
 
-	// ── helpers privados ──────────────────────────────────────────────────────
-
-	private Long unlockNextUnit(Long userId, Long completedUnitId) {
+	private Integer unlockNextUnit(Integer userId, Integer completedUnitId) {
 		Unit completed = unitRepo.findById(completedUnitId).orElse(null);
 		if (completed == null) return null;
 
@@ -182,19 +158,19 @@ public class ProgressService {
 					UserProgress p = new UserProgress();
 					p.setUserId(userId);
 					p.setUnitId(next.getId());
-					p.setCompleted(0);
+					p.setCompleted((short) 0);
 					return p;
 				});
-				nextUp.setIsLocked(0);
-				nextUp.setIsCurrent(1);
+				nextUp.setIsLocked((short) 0);
+				nextUp.setIsCurrent((short) 1);
 				progressRepo.save(nextUp);
 				return next.getId();
 			}
 		}
-		return null; // era la última unidad del nivel
+		return null;
 	}
 
-	private UserStats getOrCreateStats(Long userId, Long languageId) {
+	private UserStats getOrCreateStats(Integer userId, Integer languageId) {
 		return statsRepo.findByUserIdAndLanguageId(userId, languageId).orElseGet(() -> {
 			UserStats s = new UserStats();
 			s.setUserId(userId);
@@ -203,7 +179,7 @@ public class ProgressService {
 			s.setLessonsDone(0);
 			s.setPerfectLess(0);
 			s.setDaysStudied(0);
-			s.setBestStreak(0);
+			s.setBestStreak((short) 0);
 			s.setTotalMins(0);
 			return statsRepo.save(s);
 		});

@@ -23,8 +23,8 @@ public class LearningController {
 	 * getLevelsWithUnlockCheck() del frontend.
 	 */
 	@GetMapping("/levels")
-	public ResponseEntity<List<Map<String, Object>>> getLevels(@RequestParam Long languageId,
-			@RequestParam Long userId) {
+	public ResponseEntity<List<Map<String, Object>>> getLevels(@RequestParam Integer languageId,
+			@RequestParam Integer userId) {
 		return ResponseEntity.ok(learningService.getLevelsWithProgress(languageId, userId));
 	}
 
@@ -34,7 +34,7 @@ public class LearningController {
 	 * de estado del frontend.
 	 */
 	@GetMapping("/levels/{levelId}/units")
-	public ResponseEntity<List<Map<String, Object>>> getUnits(@PathVariable Long levelId, @RequestParam Long userId) {
+	public ResponseEntity<List<Map<String, Object>>> getUnits(@PathVariable Integer levelId, @RequestParam Integer userId) {
 		return ResponseEntity.ok(learningService.getUnitsWithProgress(levelId, userId));
 	}
 
@@ -44,7 +44,7 @@ public class LearningController {
 	 * LearningRepository del frontend.
 	 */
 	@GetMapping("/units/{unitId}/exercises")
-	public ResponseEntity<List<Map<String, Object>>> getExercises(@PathVariable Long unitId) {
+	public ResponseEntity<List<Map<String, Object>>> getExercises(@PathVariable Integer unitId) {
 		return ResponseEntity.ok(learningService.getExercisesForUnit(unitId));
 	}
 
@@ -54,7 +54,7 @@ public class LearningController {
 	 * PronunciationTooltip del frontend.
 	 */
 	@GetMapping("/units/{unitId}/vocabulary")
-	public ResponseEntity<Object> getVocabulary(@PathVariable Long unitId) {
+	public ResponseEntity<Object> getVocabulary(@PathVariable Integer unitId) {
 		return ResponseEntity.ok(learningService.getVocabularyForUnit(unitId));
 	}
 
@@ -63,7 +63,7 @@ public class LearningController {
 	 * /api/learning/levels/{levelId}/quick?count=6
 	 */
 	@GetMapping("/levels/{levelId}/quick")
-	public ResponseEntity<List<Map<String, Object>>> getQuickExercises(@PathVariable Long levelId,
+	public ResponseEntity<List<Map<String, Object>>> getQuickExercises(@PathVariable Integer levelId,
 			@RequestParam(defaultValue = "6") int count) {
 		return ResponseEntity.ok(learningService.getRandomExercisesForLevel(levelId, count));
 	}

@@ -21,13 +21,13 @@ public class Level {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "LANGUAGE_ID", nullable = false)
-	private Long languageId;
+	private Integer languageId;
 
 	@Column(name = "LEVEL_NUM", nullable = false)
-	private Integer levelNum;
+	private Short levelNum;
 
 	@Column(name = "TITLE", nullable = false, length = 200)
 	private String title;
@@ -39,35 +39,35 @@ public class Level {
 	private String color;
 
 	@Column(name = "TOTAL_UNITS")
-	private Integer totalUnits = 0;
+	private Short totalUnits = 0;
 
 	@Column(name = "UNLOCK_REQ", length = 500)
 	private String unlockReq;
 
 	@Column(name = "IS_FREE")
-	private Integer isFree = 0;
+	private Short isFree = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getLanguageId() {
+	public Integer getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(Long languageId) {
+	public void setLanguageId(Integer languageId) {
 		this.languageId = languageId;
 	}
 
-	public Integer getLevelNum() {
+	public Short getLevelNum() {
 		return levelNum;
 	}
 
-	public void setLevelNum(Integer levelNum) {
+	public void setLevelNum(Short levelNum) {
 		this.levelNum = levelNum;
 	}
 
@@ -95,11 +95,11 @@ public class Level {
 		this.color = color;
 	}
 
-	public Integer getTotalUnits() {
+	public Short getTotalUnits() {
 		return totalUnits;
 	}
 
-	public void setTotalUnits(Integer totalUnits) {
+	public void setTotalUnits(Short totalUnits) {
 		this.totalUnits = totalUnits;
 	}
 
@@ -111,11 +111,11 @@ public class Level {
 		this.unlockReq = unlockReq;
 	}
 
-	public Integer getIsFree() {
+	public Short getIsFree() {
 		return isFree;
 	}
 
-	public void setIsFree(Integer isFree) {
+	public void setIsFree(Short isFree) {
 		this.isFree = isFree;
 	}
 

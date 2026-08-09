@@ -21,46 +21,53 @@ public class UserStats {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	@Column(name = "USER_ID", nullable = false)
-	private Long userId;
+	private Integer userId;
+
 	@Column(name = "LANGUAGE_ID", nullable = false)
-	private Long languageId;
+	private Integer languageId;
+
 	@Column(name = "WORDS_LEARNED")
 	private Integer wordsLearned = 0;
+
 	@Column(name = "LESSONS_DONE")
 	private Integer lessonsDone = 0;
+
 	@Column(name = "PERFECT_LESS")
 	private Integer perfectLess = 0;
+
 	@Column(name = "DAYS_STUDIED")
 	private Integer daysStudied = 0;
+
 	@Column(name = "BEST_STREAK")
-	private Integer bestStreak = 0;
+	private Short bestStreak = 0;
+
 	@Column(name = "TOTAL_MINS")
 	private Integer totalMins = 0;
 
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public Long getUserId() {
+	public Integer getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
 
-	public Long getLanguageId() {
+	public Integer getLanguageId() {
 		return languageId;
 	}
 
-	public void setLanguageId(Long languageId) {
+	public void setLanguageId(Integer languageId) {
 		this.languageId = languageId;
 	}
 
@@ -96,11 +103,11 @@ public class UserStats {
 		this.daysStudied = daysStudied;
 	}
 
-	public Integer getBestStreak() {
+	public Short getBestStreak() {
 		return bestStreak;
 	}
 
-	public void setBestStreak(Integer bestStreak) {
+	public void setBestStreak(Short bestStreak) {
 		this.bestStreak = bestStreak;
 	}
 

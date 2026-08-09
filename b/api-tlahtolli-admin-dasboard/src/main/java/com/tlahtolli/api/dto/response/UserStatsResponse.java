@@ -3,14 +3,14 @@ package com.tlahtolli.api.dto.response;
 import com.tlahtolli.api.entity.UserStats;
 
 public record UserStatsResponse(
-        Long id,
-        Long userId,
-        Long languageId,
+        Integer id,
+        Integer userId,
+        Integer languageId,
         Integer wordsLearned,
         Integer lessonsDone,
         Integer perfectLess,
         Integer daysStudied,
-        Integer bestStreak,
+        Short bestStreak,
         Integer totalMins
 ) {
     public static UserStatsResponse from(UserStats s) {

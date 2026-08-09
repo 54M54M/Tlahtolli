@@ -9,25 +9,19 @@ import org.springframework.data.repository.query.Param;
 
 import com.tlahtolli.api.entity.UserProgress;
 
-public interface UserProgressRepository extends JpaRepository<UserProgress, Long> {
+public interface UserProgressRepository extends JpaRepository<UserProgress, Integer> {
 
-	// Progreso completo de un usuario
-	List<UserProgress> findByUserId(Long userId);
+	List<UserProgress> findByUserId(Integer userId);
 
-	// Estado de una unidad específica para un usuario
-	Optional<UserProgress> findByUserIdAndUnitId(Long userId, Long unitId);
+	Optional<UserProgress> findByUserIdAndUnitId(Integer userId, Integer unitId);
 
-	// Todas las unidades completadas de un usuario
-	List<UserProgress> findByUserIdAndCompleted(Long userId, Integer completed);
+	List<UserProgress> findByUserIdAndCompleted(Integer userId, Integer completed);
 
-	// Unidades desbloqueadas (no bloqueadas) de un usuario
-	List<UserProgress> findByUserIdAndIsLocked(Long userId, Integer isLocked);
+	List<UserProgress> findByUserIdAndIsLocked(Integer userId, Integer isLocked);
 
-	// ¿Ya completó esta unidad?
-	boolean existsByUserIdAndUnitIdAndCompleted(Long userId, Long unitId, Integer completed);
+	boolean existsByUserIdAndUnitIdAndCompleted(Integer userId, Integer unitId, Integer completed);
 
-	// Contar unidades completadas por usuario (para calcular progreso de nivel)
 	@Query("SELECT COUNT(up) FROM UserProgress up " + "JOIN Unit u ON u.id = up.unitId "
 			+ "WHERE up.userId = :userId AND u.levelId = :levelId AND up.completed = 1")
-	long countCompletedByUserAndLevel(@Param("userId") Long userId, @Param("levelId") Long levelId);
+	long countCompletedByUserAndLevel(@Param("userId") Integer userId, @Param("levelId") Integer levelId);
 }

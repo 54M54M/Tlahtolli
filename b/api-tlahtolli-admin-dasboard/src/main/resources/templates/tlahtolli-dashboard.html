@@ -708,6 +708,7 @@
         <span class="nav-label">Contenido</span>
         <button class="nav-btn" onclick="showTab('levels')"><span class="icon">📊</span>Niveles</button>
         <button class="nav-btn" onclick="showTab('units')"><span class="icon">📦</span>Unidades</button>
+        <!-- <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button> -->
         <button class="nav-btn" onclick="showTab('exercises')"><span class="icon">✏️</span>Ejercicios</button>
       </div>
       <div class="nav-section">
@@ -719,8 +720,8 @@
         <span class="nav-label">Jugador</span>
         <button class="nav-btn" onclick="showTab('user_progress')"><span class="icon">🗺️</span>Progreso</button>
         <button class="nav-btn" onclick="showTab('user_energy')"><span class="icon">⚡</span>Energía</button>
-        <button class="nav-btn" onclick="showTab('writing_systems')"><span class="icon">✍️</span>Sist.
-          Escritura</button>
+        <button class="nav-btn" onclick="showTab('user_achievements')"><span class="icon">🎖️</span>Logros Usuario</button>
+        <button class="nav-btn" onclick="showTab('writing_systems')"><span class="icon">✍️</span>Sist. Escritura</button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Sistema</span>
@@ -738,7 +739,7 @@
       <h2 id="page-title">Overview</h2>
       <div class="badge-db">
         <span class="dot"></span>
-        Oracle XE · <span id="db-host">localhost:7575</span>
+        PostgreSQL · <span id="db-host">localhost:7575</span>
       </div>
     </header>
 
@@ -780,12 +781,22 @@
           <div class="stat-card" style="--accent:#FFC10A">
             <p class="label">Energía</p>
             <p class="value" id="stat-energy">—</p>
-            <p class="sub">Sesiones activas</p>
+            <p class="sub">Registros energía</p>
           </div>
           <div class="stat-card" style="--accent:#9C27B0">
             <p class="label">Sist. Escritura</p>
             <p class="value" id="stat-ws">—</p>
             <p class="sub">Alfabetos / Silabarios</p>
+          </div>
+          <div class="stat-card" style="--accent:#FF8A65">
+            <p class="label">Lecciones</p>
+            <p class="value" id="stat-lessons">—</p>
+            <p class="sub">En catálogo</p>
+          </div>
+          <div class="stat-card" style="--accent:#4DB6AC">
+            <p class="label">Historial</p>
+            <p class="value" id="stat-history">—</p>
+            <p class="sub">Lecciones completadas</p>
           </div>
         </div>
         <div class="table-wrap">
@@ -905,6 +916,22 @@
         </div>
       </div>
 
+      <!-- LECCIONES -->
+      <div class="tab-pane" id="tab-lessons">
+        <div class="filter-bar">
+          <input class="input-search" type="text" placeholder="Buscar lección…"
+            oninput="filterTable('lessons-table',this.value)" />
+          <select class="filter-sel" id="lessons-unit-filter" onchange="loadLessons()">
+            <option value="">Todas las unidades</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModalLesson()">+ Nueva lección</button>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><h3>Lecciones</h3></div>
+          <div id="lessons-body"><div class="loading"><span class="spinner"></span>Cargando…</div></div>
+        </div>
+      </div>
+
       <!-- EJERCICIOS — FK: UNIT_ID (LANGUAGES → LEVELS → UNITS → EXERCISES) -->
       <div class="tab-pane" id="tab-exercises">
         <div class="filter-bar">
@@ -999,6 +1026,19 @@
         </div>
       </div>
 
+      <!-- LOGROS DE USUARIO -->
+      <div class="tab-pane" id="tab-user_achievements">
+        <div class="filter-bar">
+          <select class="filter-sel" id="ua-user-filter" onchange="loadUserAchievements()">
+            <option value="">— Selecciona usuario —</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><h3>Logros por usuario</h3></div>
+          <div id="user_achievements-body"><div class="empty"><p>Selecciona un usuario para ver sus logros</p></div></div>
+        </div>
+      </div>
+
       <!-- SISTEMAS DE ESCRITURA -->
       <div class="tab-pane" id="tab-writing_systems">
         <div class="filter-bar">
@@ -1030,16 +1070,6 @@
                 onclick="testConnection()">Test conexión</button></div>
           </div>
           <p class="config-note" id="conn-detail">→ Apunta al Spring Boot backend (puerto 7575 por defecto)</p>
-        </div>
-        <div class="config-panel">
-          <h3>Base de datos Oracle</h3>
-          <div class="config-row">
-            <div class="form-group"><label>Host</label><input type="text" id="cfg-host" value="localhost" /></div>
-            <div class="form-group"><label>Puerto</label><input type="number" id="cfg-port" value="1521" /></div>
-            <div class="form-group"><label>SID / Service</label><input type="text" id="cfg-sid" value="XE" /></div>
-          </div>
-          <p class="config-note" style="margin-top:8px">Configuración informativa — la conexión real la gestiona Spring
-            Boot</p>
         </div>
       </div>
 
@@ -1253,6 +1283,31 @@
     </div>
   </div>
 
+  <!-- Lesson -->
+  <div class="modal-overlay" id="modal-lesson">
+    <div class="modal">
+      <p class="modal-title" id="modal-lesson-title">Nueva lección</p>
+      <input type="hidden" id="lesson-id" />
+      <div class="form-grid">
+        <div class="form-group full"><label>Unidad</label><select class="form-sel" id="lesson-unit-id">
+            <option value="">— Selecciona —</option>
+          </select></div>
+        <div class="form-group"><label>Número</label><input type="number" id="lesson-num" min="1" /></div>
+        <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" min="0" /></div>
+        <div class="form-group full"><label>Título</label><input type="text" id="lesson-title" /></div>
+        <div class="form-group full"><label>Descripción</label><textarea class="form-ta" id="lesson-desc"></textarea></div>
+        <div class="form-group"><label>Gratuita</label><select class="form-sel" id="lesson-free">
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-lesson');resetModal('modal-lesson')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveLesson()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Writing System -->
   <div class="modal-overlay" id="modal-writing-system">
     <div class="modal modal-lg">
@@ -1325,7 +1380,7 @@
       const defaults = {
         'modal-language': 'Nuevo idioma', 'modal-user': 'Nuevo usuario', 'modal-vocab': 'Nueva palabra',
         'modal-achievement': 'Nuevo logro', 'modal-level': 'Nuevo nivel', 'modal-unit': 'Nueva unidad',
-        'modal-exercise': 'Nuevo ejercicio', 'modal-writing-system': 'Nuevo Sistema de Escritura'
+        'modal-lesson': 'Nueva lección', 'modal-exercise': 'Nuevo ejercicio', 'modal-writing-system': 'Nuevo Sistema de Escritura'
       };
       const titleEl = modal.querySelector('.modal-title');
       if (titleEl && defaults[id]) titleEl.textContent = defaults[id];
@@ -1352,15 +1407,15 @@
     /* TAB ROUTING */
     const TAB_TITLES = {
       overview: 'Overview', languages: 'Idiomas', users: 'Usuarios', vocabulary: 'Vocabulario',
-      achievements: 'Logros', levels: 'Niveles', units: 'Unidades', exercises: 'Ejercicios',
+      achievements: 'Logros', levels: 'Niveles', units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
       lesson_history: 'Historial', user_stats: 'Estadísticas', user_progress: 'Progreso de Usuario',
-      user_energy: 'Energía', writing_systems: 'Sistemas de Escritura', config: 'Configuración'
+      user_energy: 'Energía', user_achievements: 'Logros de Usuario', writing_systems: 'Sistemas de Escritura', config: 'Configuración'
     };
     const TAB_LOADERS = {
       overview: loadOverview, languages: loadLanguages, users: loadUsers, vocabulary: loadVocabulary,
-      achievements: loadAchievements, levels: loadLevels, units: loadUnits, exercises: loadExercises,
+      achievements: loadAchievements, levels: loadLevels, units: loadUnits, lessons: loadLessons, exercises: loadExercises,
       lesson_history: loadHistory, user_stats: loadStats, user_progress: loadUserProgress,
-      user_energy: loadUserEnergy, writing_systems: loadWritingSystems, config: loadConfig
+      user_energy: loadUserEnergy, user_achievements: loadUserAchievements, writing_systems: loadWritingSystems, config: loadConfig
     };
 
     function showTab(name) {
@@ -1397,25 +1452,27 @@
         const el = document.getElementById('unit-level-id'); if (el) el.innerHTML = opts;
       } catch { }
 
-      // Unidades → dropdown de ejercicios + filtro de tab
+      // Unidades → dropdown de ejercicios + lecciones + filtros de tab
       try {
         const data = await apiFetch('/units');
         unitsCache = data?.content ?? data ?? [];
-        const opts = '<option value="">— Selecciona unidad —</option>' +
+        const unitOpts = '<option value="">— Selecciona unidad —</option>' +
           unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-        const el = document.getElementById('ex-unit-id'); if (el) el.innerHTML = opts;
-        const filt = document.getElementById('ex-unit-filter');
-        if (filt) filt.innerHTML = '<option value="">Todas las unidades</option>' +
+        ['ex-unit-id', 'lesson-unit-id'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitOpts; });
+        const unitFilterOpts = '<option value="">Todas las unidades</option>' +
           unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+        ['ex-unit-filter', 'lessons-unit-filter'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitFilterOpts; });
       } catch { }
 
-      // Usuarios → filtro de progreso
+      // Usuarios → filtros de progreso y logros
       try {
         const data = await apiFetch('/users');
         usersCache = data?.content ?? data ?? [];
+        const userOpts = usersCache.map(u => `<option value="${u.id}">${u.id} · ${u.username}</option>`).join('');
         const sel = document.getElementById('progress-user-filter');
-        if (sel) sel.innerHTML = '<option value="">Todos los usuarios</option>' +
-          usersCache.map(u => `<option value="${u.id}">${u.id} · ${u.username}</option>`).join('');
+        if (sel) sel.innerHTML = '<option value="">Todos los usuarios</option>' + userOpts;
+        const uaSel = document.getElementById('ua-user-filter');
+        if (uaSel) uaSel.innerHTML = '<option value="">— Selecciona usuario —</option>' + userOpts;
       } catch { }
     }
 
@@ -1428,24 +1485,31 @@
 
     async function loadOverview() {
       try {
-        const [users, langs, exercises, vocab, ach] = await Promise.all([
+        const [users, langs, exercises, vocab, ach, lessons, history] = await Promise.all([
           apiFetch('/users/count'), apiFetch('/languages/count'), apiFetch('/exercises/count'),
-          apiFetch('/vocabulary/count'), apiFetch('/achievements/count')
+          apiFetch('/vocabulary/count'), apiFetch('/achievements/count'),
+          apiFetch('/lessons/count'), apiFetch('/lesson-history/count')
         ]);
         document.getElementById('stat-users').textContent = users?.count ?? '—';
         document.getElementById('stat-langs').textContent = langs?.count ?? '—';
         document.getElementById('stat-exercises').textContent = exercises?.count ?? '—';
         document.getElementById('stat-vocab').textContent = vocab?.count ?? '—';
         document.getElementById('stat-ach').textContent = ach?.count ?? '—';
+        document.getElementById('stat-lessons').textContent = lessons?.count ?? '—';
+        document.getElementById('stat-history').textContent = history?.count ?? '—';
       } catch { }
       try {
-        const [progress, ws] = await Promise.all([apiFetch('/user-progress').catch(() => []), apiFetch('/writing-systems').catch(() => [])]);
+        const [progress, ws, energyUsers] = await Promise.all([
+          apiFetch('/user-progress').catch(() => []),
+          apiFetch('/writing-systems').catch(() => []),
+          apiFetch('/users').catch(() => [])
+        ]);
         document.getElementById('stat-progress').textContent = (progress?.content ?? progress ?? []).length;
         document.getElementById('stat-ws').textContent = (ws?.content ?? ws ?? []).length;
-      } catch { }
-      try {
-        const users = await apiFetch('/users');
-        document.getElementById('stat-energy').textContent = (users?.content ?? users ?? []).length;
+        // Contar registros de energía existentes
+        const uList = energyUsers?.content ?? energyUsers ?? [];
+        const energyResults = await Promise.allSettled(uList.map(u => apiFetch(`/energy/user/${u.id}`)));
+        document.getElementById('stat-energy').textContent = energyResults.filter(r => r.status === 'fulfilled').length;
       } catch { }
       try {
         const data = await apiFetch('/lesson-history');
@@ -1756,6 +1820,85 @@
         else await apiFetch('/exercises', { method: 'POST', body: JSON.stringify(payload) });
         toast('Ejercicio guardado ✓'); closeModal('modal-exercise'); resetModal('modal-exercise'); loadExercises();
       } catch { }
+    }
+
+    async function loadLessons() {
+      const body = document.getElementById('lessons-body'); body.innerHTML = loadingHTML();
+      const unitId = document.getElementById('lessons-unit-filter')?.value || '';
+      try {
+        const data = await apiFetch(unitId ? `/lessons?unitId=${unitId}` : '/lessons'); const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="lessons-table">
+          <thead><tr><th>ID</th><th>Unidad</th><th>#</th><th>Título</th><th>Descripción</th><th>XP</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+          <tbody>${rows.map(r => `<tr>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+            <td style="font-family:'IBM Plex Mono',monospace">${r.unitId ?? r.unit_id}</td>
+            <td style="font-family:'IBM Plex Mono',monospace">${r.lessonNum ?? r.lesson_num}</td>
+            <td><strong>${r.title ?? ''}</strong></td>
+            <td style="color:var(--muted);font-size:.78rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.description ?? ''}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">+${r.xpReward ?? r.xp_reward ?? 0}</td>
+            <td>${(r.isFree ?? r.is_free) ? '<span class="chip chip-green">Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
+            <td><div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick='editLesson(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteRecord('lessons',${r.id},'loadLessons')">Eliminar</button>
+            </div></td></tr>`).join('')}</tbody></table>`;
+      } catch { body.innerHTML = errorHTML(); }
+    }
+    async function openModalLesson() {
+      if (!unitsCache.length) await refreshDropdowns();
+      resetModal('modal-lesson');
+      const sel = document.getElementById('lesson-unit-id');
+      if (sel) sel.innerHTML = '<option value="">— Selecciona unidad —</option>' +
+        unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+      openModal('modal-lesson');
+    }
+    function editLesson(r) {
+      document.getElementById('lesson-id').value = r.id;
+      document.getElementById('lesson-unit-id').value = r.unitId ?? r.unit_id ?? '';
+      document.getElementById('lesson-num').value = r.lessonNum ?? r.lesson_num ?? '';
+      document.getElementById('lesson-xp').value = r.xpReward ?? r.xp_reward ?? 10;
+      document.getElementById('lesson-title').value = r.title ?? '';
+      document.getElementById('lesson-desc').value = r.description ?? '';
+      document.getElementById('lesson-free').value = r.isFree ?? r.is_free ?? 0;
+      document.getElementById('modal-lesson-title').textContent = 'Editar lección'; openModal('modal-lesson');
+    }
+    async function saveLesson() {
+      const id = strVal('lesson-id');
+      const unitId = selVal('lesson-unit-id');
+      const lessonNum = numVal('lesson-num');
+      const title = strVal('lesson-title');
+      if (!unitId) { toast('Selecciona una unidad', true); return; }
+      if (!lessonNum) { toast('El número de lección es requerido', true); return; }
+      if (!title) { toast('El título es requerido', true); return; }
+      const payload = {
+        unitId: +unitId, lessonNum: lessonNum, xpReward: numVal('lesson-xp'),
+        title, description: strVal('lesson-desc'), isFree: numVal('lesson-free')
+      };
+      try {
+        if (id) await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        else await apiFetch('/lessons', { method: 'POST', body: JSON.stringify(payload) });
+        toast('Lección guardada ✓'); closeModal('modal-lesson'); resetModal('modal-lesson'); loadLessons();
+      } catch { }
+    }
+
+    async function loadUserAchievements() {
+      const body = document.getElementById('user_achievements-body');
+      const userId = document.getElementById('ua-user-filter')?.value || '';
+      if (!userId) { body.innerHTML = '<div class="empty"><p>Selecciona un usuario para ver sus logros</p></div>'; return; }
+      body.innerHTML = loadingHTML();
+      try {
+        const data = await apiFetch(`/user-achievements?userId=${userId}`); const rows = data?.content ?? data ?? [];
+        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+        body.innerHTML = `<table id="ua-table">
+          <thead><tr><th>Logro</th><th>Estado</th><th>XP</th><th>Rareza</th><th>Fecha obtenido</th></tr></thead>
+          <tbody>${rows.map(r => `<tr>
+            <td><span style="margin-right:5px">${r.icon ?? '🏆'}</span><strong>${r.title ?? r.achievementTitle ?? ''}</strong></td>
+            <td>${r.earned ? '<span class="chip chip-green">✓ Obtenido</span>' : '<span class="chip chip-red">Pendiente</span>'}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">+${r.xpReward ?? r.xp_reward ?? 0}</td>
+            <td><span class="chip ${rarityChip[r.rarity] ?? 'chip-blue'}">${r.rarity ?? ''}</span></td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${r.earned ? fmtDate(r.earnedAt ?? r.earned_at) : '—'}</td>
+          </tr>`).join('')}</tbody></table>`;
+      } catch { body.innerHTML = errorHTML(); }
     }
 
     async function loadHistory() {
