@@ -8,11 +8,11 @@
 		<version>3.5.11</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.tlahtolli.api</groupId>
-	<artifactId>api-tlahtolli-admin-dasboard</artifactId>
+	<groupId>com.tlahtolli</groupId>
+	<artifactId>ar-cs-tlahtolcalli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>api-tlahtolli-admin-dasboard</name>
-	<description>Demo project for Spring Boot</description>
+	<name>ar-cs-tlahtolcalli</name>
+	<description>ar-cs-tlahtolcalli</description>
 	<url/>
 	<licenses>
 		<license/>

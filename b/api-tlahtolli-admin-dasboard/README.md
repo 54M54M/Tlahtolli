@@ -1,55 +1,103 @@
-# API Tlahtolli 
+# ar-cs-tlahtolcalli
 
-## Descripción
+API REST desarrollada con Spring Boot para la gestión de datos de la plataforma de aprendizaje de lenguas indígenas **Tlahtolcalli**. Expone servicios para administrar usuarios, lecciones, niveles, vocabulario, estadísticas y progreso de aprendizaje.
 
-La API Tlahtolli es una aplicación backend desarrollada con Spring Boot que proporciona servicios REST para la gestión de datos relacionados con la plataforma de aprendizaje de lenguas indígenas Tlahtolli. Esta API permite la administración de usuarios, lecciones, niveles, vocabulario, estadísticas y otros elementos del sistema de aprendizaje.
+---
 
-## Tecnologías Utilizadas
+## Nomenclatura del Proyecto
 
-- **Java**: Versión 21
-- **Spring Boot**: 3.5.11
-- **Spring Data JPA**: Para la persistencia de datos
-- **Base de Datos**: SQL Oracle Database
-- **Lombok**: Para reducir código boilerplate
-- **Maven**: Gestión de dependencias y construcción
+El nombre del proyecto sigue la convención estándar del equipo:
+
+```
+{tipo}-{dominio}-{servicio}
+```
+
+| Segmento       | Valor           | Significado                                       |
+|----------------|-----------------|---------------------------------------------------|
+| `ar`           | tipo            | Nomenclatura interna para servicios REST API      |
+| `cs`           | dominio         | Namespace del equipo / área de negocio            |
+| `tlahtolcalli` | servicio        | Nombre del sistema (náhuatl: "casa de la lengua") |
+
+### Convención de prefijos
+
+| Prefijo | Cuándo usarlo                                                                    |
+|---------|----------------------------------------------------------------------------------|
+| `ar`    | Servicio que **expone endpoints REST** para ser consumido por clientes           |
+| `ms`    | Microservicio con **lógica de negocio propia**, colas, workers, schedulers, etc. |
+
+Este proyecto usa el prefijo `ar` porque su responsabilidad es exclusivamente exponer y gestionar datos vía HTTP.
+
+---
+
+## Tecnologías
+
+| Tecnología        | Versión  |
+|-------------------|----------|
+| Java              | 21       |
+| Spring Boot       | 3.5.11   |
+| Spring Data JPA   | —        |
+| PostgreSQL        | —        |
+| Lombok            | —        |
+| Maven             | 3.6+     |
+
+---
 
 ## Requisitos Previos
 
-- Java 21 instalado
+- Java 21
 - Maven 3.6+
-- SQL Oracle Database
-- Conexión a base de datos configurada
+- PostgreSQL corriendo en `localhost:5432`
 
-## Instalación y Ejecución
+---
 
-1. **Clonar el repositorio** (si aplica) o navegar a la carpeta del proyecto.
+## Configuración de Base de Datos
 
-2. **Configurar la base de datos**:
-   - Asegúrate de tener Oracle Database corriendo en `localhost:1521:XE`
-   - Usuario: `System`
-   - Contraseña: `8520`
-   - O modifica `application.yml` para tu configuración.
+Las credenciales están centralizadas en `Constants.java` y son inyectadas programáticamente por `SQLConfig.java`. **No se configuran en `application.properties`**.
 
-3. **Ejecutar la aplicación**:
-   ```bash
-   mvn spring-boot:run
-   ```
-   O usando el wrapper Maven:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+```
+src/main/java/com/tlahtolli/api/config/
+├── Constants.java   ← credenciales hardcodeadas aquí
+└── SQLConfig.java   ← construye el DataSource usando Constants
+```
 
-4. La aplicación estará disponible en `http://localhost:7575`
+Para cambiar la base de datos, edita únicamente `Constants.java`:
 
-## Configuración
+```java
+public static final String DB_URL      = "jdbc:postgresql://localhost:5432/postgres";
+public static final String DB_USERNAME = "postgres";
+public static final String DB_PASSWORD = "12345";
+public static final String DB_DRIVER   = "org.postgresql.Driver";
+```
 
-La configuración principal se encuentra en `src/main/resources/application.yml`:
+---
 
-- **Puerto del servidor**: 7575
-- **Base de datos**: Oracle con Hibernate DDL auto en `validate`
-- **CORS**: Habilitado para todos los orígenes, métodos y headers
+## Configuración Principal (`application.properties`)
 
-Para entornos de desarrollo, puedes usar H2 cambiando la configuración de datasource.
+```properties
+spring.application.name=api-cs-tlahtolcalli
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+server.port=7575
+```
+
+> `application.yml` existe en el proyecto pero **no se usa**. El archivo principal es `application.properties`.
+
+> `ddl-auto=validate` significa que las tablas deben existir previamente en la base de datos. Hibernate no las crea ni modifica.
+
+---
+
+## Ejecución
+
+```bash
+mvn spring-boot:run
+```
+
+La aplicación estará disponible en `http://localhost:7575`
+
+---
 
 ## Estructura del Proyecto
 
@@ -57,138 +105,73 @@ Para entornos de desarrollo, puedes usar H2 cambiando la configuración de datas
 src/
 ├── main/
 │   ├── java/com/tlahtolli/api/
-│   │   ├── ApiTlahtolliAdminDasboardApplication.java  # Clase principal
+│   │   ├── tlahtolli.java                 # Clase principal (@SpringBootApplication)
 │   │   ├── config/
-│   │   │   └── CorsConfig.java                        # Configuración CORS
-│   │   ├── controller/                                # Controladores REST
-│   │   │   ├── AchievementController.java
-│   │   │   ├── ExerciseController.java
-│   │   │   ├── LanguageController.java
-│   │   │   ├── LessonController.java
-│   │   │   ├── LessonHistoryController.java
-│   │   │   ├── LevelController.java
-│   │   │   ├── UnitController.java
-│   │   │   ├── UserController.java
-│   │   │   ├── UserStatsController.java
-│   │   │   └── VocabularyController.java
-│   │   ├── entity/                                    # Entidades JPA
-│   │   │   ├── Achievement.java
-│   │   │   ├── Exercise.java
-│   │   │   ├── Language.java
-│   │   │   ├── Lesson.java
-│   │   │   ├── LessonHistory.java
-│   │   │   ├── Level.java
-│   │   │   ├── Unit.java
-│   │   │   ├── User.java
-│   │   │   ├── UserStats.java
-│   │   │   └── Vocabulary.java
-│   │   └── repository/                                # Repositorios JPA
-│   │       ├── AchievementRepository.java
-│   │       ├── ExerciseRepository.java
-│   │       ├── LanguageRepository.java
-│   │       ├── LessonHistoryRepository.java
-│   │       ├── LessonRepository.java
-│   │       ├── LevelRepository.java
-│   │       ├── UnitRepository.java
-│   │       ├── UserRepository.java
-│   │       ├── UserStatsRepository.java
-│   │       └── VocabularyRepository.java
+│   │   │   ├── Constants.java             # Credenciales de base de datos
+│   │   │   ├── SQLConfig.java             # Configuración del DataSource
+│   │   │   └── CorsConfig.java            # Configuración CORS
+│   │   ├── controller/                    # Controladores REST
+│   │   ├── dto/
+│   │   │   ├── request/                   # DTOs de entrada
+│   │   │   └── response/                  # DTOs de salida
+│   │   ├── entity/                        # Entidades JPA
+│   │   ├── repository/                    # Repositorios JPA
+│   │   └── service/                       # Lógica de negocio
 │   └── resources/
-│       ├── application.properties
-│       ├── application.yml
-│       ├── static/
-│       │   └── Tlahtolli_Database_Script
-│       └── templates/
-│           └── tlahtolli-dashboard.html
+│       ├── application.properties         # Configuración principal ✅
+│       ├── application.yml                # No se usa ❌
+│       └── static/
+│           └── Migracion/                 # Scripts SQL de base de datos
 └── test/
     └── java/com/tlahtolli/api/
-        └── ApiTlahtolliAdminDasboardApplicationTests.java
 ```
 
-## APIs Disponibles
+---
 
-La API expone endpoints REST bajo el prefijo `/api/`. A continuación, un resumen de los principales controladores:
+## Endpoints Disponibles
 
-### Usuarios (`/api/users`)
-- `GET /api/users` - Obtener todos los usuarios
-- `GET /api/users/count` - Contar usuarios
-- `GET /api/users/{id}` - Obtener usuario por ID
-- `POST /api/users` - Crear nuevo usuario
-- `PUT /api/users/{id}` - Actualizar usuario
-- `DELETE /api/users/{id}` - Eliminar usuario
+Todos los endpoints están bajo el prefijo `/api/`.
 
-### Lecciones (`/api/lessons`)
-- Endpoints CRUD para gestión de lecciones
+| Recurso              | Ruta                    |
+|----------------------|-------------------------|
+| Usuarios             | `/api/users`            |
+| Niveles              | `/api/levels`           |
+| Unidades             | `/api/units`            |
+| Lecciones            | `/api/lessons`          |
+| Ejercicios           | `/api/exercises`        |
+| Vocabulario          | `/api/vocabularies`     |
+| Idiomas              | `/api/languages`        |
+| Logros               | `/api/achievements`     |
+| Estadísticas         | `/api/user-stats`       |
+| Historial lecciones  | `/api/lesson-histories` |
 
-### Niveles (`/api/levels`)
-- Gestión de niveles de aprendizaje
+---
 
-### Vocabulario (`/api/vocabularies`)
-- Administración del vocabulario
+## Scripts de Base de Datos
 
-### Estadísticas de Usuario (`/api/user-stats`)
-- Estadísticas y métricas de usuarios
+Ubicados en `src/main/resources/static/Migracion/`, deben ejecutarse en orden:
 
-### Logros (`/api/achievements`)
-- Sistema de logros
+```
+1.-Tlahtolli_Database_Script.sql   ← estructura de tablas
+2.-General_Seed_Data.sql           ← datos base generales
+3.-Nahuatl_Seed_Data.sql           ← datos de náhuatl
+4.-Teenek_Seed_Data.sql            ← datos de teenek
+```
 
-### Ejercicios (`/api/exercises`)
-- Gestión de ejercicios
+---
 
-### Idiomas (`/api/languages`)
-- Configuración de idiomas
+## Build y Despliegue
 
-### Unidades (`/api/units`)
-- Estructura de unidades de aprendizaje
-
-### Historial de Lecciones (`/api/lesson-histories`)
-- Registro del progreso de lecciones
-
-## Modelo de Datos
-
-### Usuario (User)
-- `id`: Identificador único
-- `username`: Nombre de usuario (único)
-- `fullName`: Nombre completo
-- `email`: Correo electrónico (único)
-- `userLevel`: Nivel actual del usuario
-- `xp`: Experiencia actual
-- `totalXp`: Experiencia total acumulada
-- `streak`: Racha de días consecutivos
-- `joinDate`: Fecha de registro
-- `currentLang`: Idioma actual
-
-Otras entidades incluyen Achievement, Exercise, Language, Lesson, Level, Unit, UserStats, Vocabulary, LessonHistory, cada una con sus campos específicos para el dominio de aprendizaje de lenguas.
-
-## Base de Datos
-
-- **Producción**: Oracle Database
-- **Desarrollo**: H2 Database (incluido en dependencias para pruebas)
-- **Script de base de datos**: Disponible en `src/main/resources/static/Tlahtolli_Database_Script`
-
-La configuración JPA está en modo `validate`, lo que significa que las tablas deben existir previamente en la base de datos.
-
-## Pruebas
-
-Ejecutar pruebas con:
 ```bash
-mvn test
+# Compilar y empaquetar
+mvn clean package
+
+# Ejecutar el JAR
+java -jar target/ar-cs-tlahtolcalli-0.0.1-SNAPSHOT.jar
 ```
 
-## Despliegue
-
-Para desplegar en producción:
-1. Configurar variables de entorno para la base de datos Oracle
-2. Construir el JAR: `mvn clean package`
-3. Ejecutar: `java -jar target/api-tlahtolli-admin-dasboard-0.0.1-SNAPSHOT.jar`
-
-## Contribución
-
-Para contribuir al proyecto:
-1. Realizar cambios en una rama separada
-2. Ejecutar pruebas
-3. Asegurar compatibilidad con la base de datos existente
+---
 
 ## Licencia
 
-Este proyecto es parte de la plataforma Tlahtolli para el aprendizaje de lenguas indígenas.
+Este proyecto es parte de la plataforma **Tlahtolcalli** para el aprendizaje de lenguas indígenas.

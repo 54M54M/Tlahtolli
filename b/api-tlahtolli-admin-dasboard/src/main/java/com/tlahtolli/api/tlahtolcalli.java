@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class tlahtolli {
+public class tlahtolcalli {
 
 	public static void main(String[] args) {
-		SpringApplication.run(tlahtolli.class, args);
+		SpringApplication.run(tlahtolcalli.class, args);
 	}
 
 }

@@ -708,7 +708,7 @@
         <span class="nav-label">Contenido</span>
         <button class="nav-btn" onclick="showTab('levels')"><span class="icon">📊</span>Niveles</button>
         <button class="nav-btn" onclick="showTab('units')"><span class="icon">📦</span>Unidades</button>
-        <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button>
+        <!-- <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button> -->
         <button class="nav-btn" onclick="showTab('exercises')"><span class="icon">✏️</span>Ejercicios</button>
       </div>
       <div class="nav-section">
@@ -739,7 +739,7 @@
       <h2 id="page-title">Overview</h2>
       <div class="badge-db">
         <span class="dot"></span>
-        Oracle XE · <span id="db-host">localhost:7575</span>
+        PostgreSQL · <span id="db-host">localhost:7575</span>
       </div>
     </header>
 
@@ -1070,16 +1070,6 @@
                 onclick="testConnection()">Test conexión</button></div>
           </div>
           <p class="config-note" id="conn-detail">→ Apunta al Spring Boot backend (puerto 7575 por defecto)</p>
-        </div>
-        <div class="config-panel">
-          <h3>Base de datos Oracle</h3>
-          <div class="config-row">
-            <div class="form-group"><label>Host</label><input type="text" id="cfg-host" value="localhost" /></div>
-            <div class="form-group"><label>Puerto</label><input type="number" id="cfg-port" value="1521" /></div>
-            <div class="form-group"><label>SID / Service</label><input type="text" id="cfg-sid" value="XE" /></div>
-          </div>
-          <p class="config-note" style="margin-top:8px">Configuración informativa — la conexión real la gestiona Spring
-            Boot</p>
         </div>
       </div>
 
