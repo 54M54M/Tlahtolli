@@ -35,7 +35,7 @@
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Silabas</h3>
 
             <!-- Consonantes básicas -->
-            <div v-for="entry in basicConsonants" :key="entry.letter" class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
+            <div v-for="entry in basicConsonants.filter(e => Object.keys(e.syllables || {}).length > 0)" :key="entry.letter" class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
                 <!-- Sílabas para cada vocal -->
                 <div v-for="vowel in availableVowels" :key="vowel" :class="[
                     'aspect-square rounded-lg border flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl',

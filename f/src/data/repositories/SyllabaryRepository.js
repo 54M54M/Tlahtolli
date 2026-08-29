@@ -55,7 +55,9 @@ export class SyllabaryRepository {
     // Devuelve solo las consonantes simples (type === 'consonant')
     async getConsonants(languageId) {
         const syllabary = await this.getSyllabary(languageId);
-        return syllabary.filter(e => e.type === 'consonant');
+        return syllabary
+            .filter(e => e.type === 'consonant')
+            .map(e => ({ syllables: {}, ...e }));
     }
 
     // Devuelve los digrafos (type === 'digraph')
