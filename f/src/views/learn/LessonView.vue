@@ -4,7 +4,7 @@
         <Header v-if="currentQuestion <= currentExercises.length" variant="lesson" :title="currentUnit.title || ''"
             :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`" :progressCurrent="currentQuestion - 1"
             :progressTotal="currentExercises.length" :backRoute="`/nivel/${currentLevel.id}`"
-            @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick" />
+            @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick"/>
 
         <!-- Loading inicial -->
         <div v-if="dataLoading" class="flex items-center justify-center h-64">
@@ -132,15 +132,15 @@
                         <FeedbackModal :show="showFeedbackModal" :title="feedbackTitle" :message="feedbackMessage"
                             :is-correct="isAnswerCorrect" @continue="continueFromModal" />
                     </Card>
-
-                    <!-- Mensaje de finalización -->
-                    <CompletionMessage v-if="currentQuestion > currentExercises.length" title="¡Lección completada!"
-                        :back-route="`/nivel/${currentLevel.id}`"
-                        :performance="currentExercises.length > 0 ? correctAnswersCount / currentExercises.length : 1"
-                        :lesson-time="lessonTime" :earned-exp="earnedExp" />
                 </div>
             </div>
         </div>
+
+      <!-- Mensaje de finalización -->
+      <CompletionMessage v-if="currentQuestion > currentExercises.length" title="¡Lección completada!"
+             :back-route="`/nivel/${currentLevel.id}`"
+             :performance="currentExercises.length > 0 ? correctAnswersCount / currentExercises.length : 1"
+             :lesson-time="lessonTime" :earned-exp="earnedExp" class="md:mt-[-10%]"/>
 
         <!-- MODALES COMPONENTES -->
         <WarningModal :show="showWarningModal" @close="closeWarningModal" @confirm="endSession" />

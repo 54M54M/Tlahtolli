@@ -1,13 +1,16 @@
 <template>
-    <Card class="text-center md:pt-[5%] md:pb-[6%] md:scale-125">
+    <Card class="text-center md:px-10">
         <!-- Título principal -->
         <h2 class="text-xl font-semibold mb-4">{{ title }}</h2>
+
+        <!-- Imagen de Toch -->
+        <TochImage :performance="performance" :lessonTime="lessonTime" />
 
         <!-- Métricas de desempeño -->
         <div class="grid grid-cols-3 md:grid-cols-3 gap-4 mb-6">
             <!-- EXP TOTALES -->
             <div class="bg-[#ffc704] rounded-xl p-1">
-                <div class="text-sm font-bold text-[#0A2136]">EXP TOTALES</div>
+                <div class="text-[12px] md:text-[16px] font-bold text-[#0A2136]">EXP TOTALES</div>
                 <div class="bg-[#0A2136] rounded-xl p-4">
                     <div class="md:text-2xl font-bold text-[#ffc704] mb-1">{{ totalExp }} EXP</div>
                 </div>
@@ -15,7 +18,7 @@
 
             <!-- PORCENTAJE DE ACIERTOS -->
             <div class="bg-[#93d239] rounded-xl p-1">
-                <div class="text-sm font-bold uppercase text-[#0A2136]">{{ performanceMessage }}</div>
+                <div class="text-[12px] md:text-[16px] font-bold uppercase text-[#0A2136]">{{ performanceMessage }}</div>
                 <div class="bg-[#0A2136] rounded-xl p-4">
                     <div class="md:text-2xl font-bold text-[#93d239] mb-1">{{ Math.round(performance * 100) }}%</div>
                 </div>
@@ -23,7 +26,7 @@
 
             <!-- TIEMPO EN LECCIÓN -->
             <div class="bg-[#46c2f7] rounded-xl p-1">
-                <div class="text-sm font-bold uppercase text-[#0A2136]">{{ timeMessage }}</div>
+                <div class="text-[12px] md:text-[16px] font-bold uppercase text-[#0A2136]">{{ timeMessage }}</div>
                 <div class="bg-[#0A2136] rounded-xl p-4">
                     <div class="md:text-2xl font-bold text-[#46c2f7] mb-1">{{ formattedTime }}</div>
                 </div>
@@ -70,11 +73,13 @@
 
 <script>
 import Card from './Card.vue';
+import TochImage from './TochImage.vue';
 
 export default {
     name: "CompletionMessage",
     components: {
-        Card
+        Card,
+        TochImage
     },
     props: {
         // Propiedades básicas
