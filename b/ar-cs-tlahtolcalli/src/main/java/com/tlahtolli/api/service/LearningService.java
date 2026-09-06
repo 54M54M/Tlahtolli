@@ -13,12 +13,16 @@ import com.tlahtolli.api.repository.UnitRepository;
 import com.tlahtolli.api.repository.UnitVocabRepository;
 import com.tlahtolli.api.repository.UserProgressRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class LearningService {
+
+	private static final Logger log = LoggerFactory.getLogger(LearningService.class);
 
 	private final LevelRepository levelRepo;
 	private final UnitRepository unitRepo;
@@ -40,6 +44,7 @@ public class LearningService {
 	// ── Niveles ───────────────────────────────────────────────────────────────
 
 	public List<Map<String, Object>> getLevelsWithProgress(Integer languageId, Integer userId) {
+		log.debug("Getting levels with progress for languageId={}, userId={}", languageId, userId);
 		return levelRepo.findByLanguageId(languageId).stream().map(level -> {
 			long completed = progressRepo.countCompletedByUserAndLevel(userId, level.getId());
 			boolean locked = isLevelLocked(level, userId);
@@ -62,6 +67,7 @@ public class LearningService {
 	// ── Unidades ──────────────────────────────────────────────────────────────
 
 	public List<Map<String, Object>> getUnitsWithProgress(Integer levelId, Integer userId) {
+		log.debug("Getting units with progress for levelId={}, userId={}", levelId, userId);
 		return unitRepo.findByLevelIdOrderByUnitNum(levelId).stream().map(unit -> {
 			Optional<UserProgress> up = progressRepo.findByUserIdAndUnitId(userId, unit.getId());
 
@@ -88,6 +94,7 @@ public class LearningService {
 	// ── Ejercicios ────────────────────────────────────────────────────────────
 
 	public List<Map<String, Object>> getExercisesForUnit(Integer unitId) {
+		log.debug("Getting exercises for unitId={}", unitId);
 		List<Exercise> exercises = exerciseRepo.findByUnitId(unitId);
 		List<Vocabulary> vocab = unitVocabRepo.findVocabularyByUnitId(unitId);
 		List<String> vocabWords = vocab.stream().map(Vocabulary::getWord).toList();
@@ -96,6 +103,7 @@ public class LearningService {
 	}
 
 	public List<Map<String, Object>> getRandomExercisesForLevel(Integer levelId, int count) {
+		log.debug("Getting {} random exercises for levelId={}", count, levelId);
 		List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
 		List<Map<String, Object>> all = new ArrayList<>();
 		units.forEach(u -> all.addAll(getExercisesForUnit(u.getId())));
@@ -111,6 +119,7 @@ public class LearningService {
 	 * "...", "example": "..." } }
 	 */
 	public Map<String, Object> getVocabularyForUnit(Integer unitId) {
+		log.debug("Getting vocabulary for unitId={}", unitId);
 		List<Vocabulary> vocab = unitVocabRepo.findVocabularyByUnitId(unitId);
 		Map<String, Object> result = new LinkedHashMap<>();
 		for (Vocabulary v : vocab) {
@@ -185,8 +194,7 @@ public class LearningService {
 		try {
 			return mapper.readValue(json, new TypeReference<List<String>>() {});
 		} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-			org.slf4j.LoggerFactory.getLogger(LearningService.class)
-					.warn("Failed to parse JSON list: {}", e.getMessage());
+			log.warn("Failed to parse JSON list: {}", e.getMessage());
 			return new ArrayList<>();
 		}
 	}

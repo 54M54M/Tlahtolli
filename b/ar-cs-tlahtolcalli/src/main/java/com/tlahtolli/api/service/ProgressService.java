@@ -2,6 +2,8 @@ package com.tlahtolli.api.service;
 
 import com.tlahtolli.api.entity.*;
 import com.tlahtolli.api.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import java.util.Map;
 
 @Service
 public class ProgressService {
+
+	private static final Logger log = LoggerFactory.getLogger(ProgressService.class);
 
 	private final UserProgressRepository progressRepo;
 	private final UserStatsRepository statsRepo;
@@ -37,8 +41,10 @@ public class ProgressService {
 	@Transactional
 	public Map<String, Object> completeLesson(Integer userId, Integer unitId, Integer languageId, double performance,
 			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
+		log.info("Completing lesson for userId={}, unitId={}, languageId={}, performance={}", userId, unitId, languageId, performance);
 
 		if (unitId == null || unitId == 0) {
+			log.debug("unitId is null/0, routing to completeQuickLevel for userId={}", userId);
 			return completeQuickLevel(userId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
 		}
 
@@ -92,6 +98,7 @@ public class ProgressService {
 		}
 
 		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
+		log.info("Lesson completed for userId={}, unitId={}: xpEarned={}, newAchievements={}", userId, unitId, earnedExp, newAchievements.size());
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("xpEarned", earnedExp);
@@ -105,6 +112,7 @@ public class ProgressService {
 
 	private Map<String, Object> completeQuickLevel(Integer userId, Integer languageId, double performance,
 			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
+		log.info("Completing quick level for userId={}, languageId={}, performance={}", userId, languageId, performance);
 
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
@@ -112,6 +120,7 @@ public class ProgressService {
 		userRepo.save(user);
 
 		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
+		log.info("Quick level completed for userId={}: xpEarned={}, newAchievements={}", userId, earnedExp, newAchievements.size());
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("xpEarned", earnedExp);
@@ -124,6 +133,7 @@ public class ProgressService {
 	}
 
 	public Map<String, Object> getUserProgress(Integer userId, Integer languageId) {
+		log.debug("Getting progress for userId={}, languageId={}", userId, languageId);
 		List<UserProgress> progressList = progressRepo.findByUserId(userId);
 		UserStats stats = getOrCreateStats(userId, languageId);
 		Map<String, Object> result = new HashMap<>();
@@ -134,6 +144,7 @@ public class ProgressService {
 
 	@Transactional
 	public void initializeProgress(Integer userId, Integer firstUnitId) {
+		log.info("Initializing progress for userId={}, firstUnitId={}", userId, firstUnitId);
 		boolean exists = progressRepo.findByUserIdAndUnitId(userId, firstUnitId).isPresent();
 		if (!exists) {
 			UserProgress first = new UserProgress();
@@ -148,7 +159,10 @@ public class ProgressService {
 
 	private Integer unlockNextUnit(Integer userId, Integer completedUnitId) {
 		Unit completed = unitRepo.findById(completedUnitId).orElse(null);
-		if (completed == null) return null;
+		if (completed == null) {
+			log.warn("Unit not found for unlock: unitId={}", completedUnitId);
+			return null;
+		}
 
 		List<Unit> siblings = unitRepo.findByLevelIdOrderByUnitNum(completed.getLevelId());
 		for (int i = 0; i < siblings.size() - 1; i++) {

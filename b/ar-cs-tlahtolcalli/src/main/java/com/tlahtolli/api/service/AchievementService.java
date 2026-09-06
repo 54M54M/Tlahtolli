@@ -2,6 +2,8 @@ package com.tlahtolli.api.service;
 
 import com.tlahtolli.api.entity.*;
 import com.tlahtolli.api.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.util.Locale;
 
 @Service
 public class AchievementService {
+
+	private static final Logger log = LoggerFactory.getLogger(AchievementService.class);
 
 	private final AchievementRepository achievementRepo;
 	private final UserAchievementRepository userAchievementRepo;
@@ -32,6 +36,7 @@ public class AchievementService {
 	 */
 	@Transactional
 	public List<UserAchievement> checkAndUnlock(Integer userId, Integer languageId) {
+		log.debug("Checking achievements for userId={}, languageId={}", userId, languageId);
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 		UserStats stats = statsRepo.findByUserIdAndLanguageId(userId, languageId).orElse(null);
@@ -45,28 +50,29 @@ public class AchievementService {
 				continue;
 
 			if (isMet(a, stats, user)) {
-				// UserAchievement SÍ tiene @Builder funcional (no tiene getters manuales
-				// duplicados)
 				UserAchievement ua = new UserAchievement();
 				ua.setUserId(userId);
 				ua.setAchieveId(a.getId());
 				ua.setEarnedAt(LocalDate.now());
 				userAchievementRepo.save(ua);
 				newlyUnlocked.add(ua);
+				log.info("Achievement unlocked for userId={}: achievementId={}", userId, a.getId());
 
-				// Dar XP de recompensa
 				if (user != null && a.getXpReward() != null && a.getXpReward() > 0) {
 					user.setXp(user.getXp() + a.getXpReward());
 					user.setTotalXp(user.getTotalXp() + a.getXpReward());
 					userRepo.save(user);
+					log.debug("XP reward granted for userId={}: +{} xp", userId, a.getXpReward());
 				}
 			}
 		}
+		log.debug("Achievement check done for userId={}: {} newly unlocked", userId, newlyUnlocked.size());
 		return newlyUnlocked;
 	}
 
 	/** Devuelve todos los logros con flag de si el usuario los tiene. */
 	public List<AchievementWithStatus> getAllWithStatus(Integer userId) {
+		log.debug("Getting all achievements with status for userId={}", userId);
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 
