@@ -1063,7 +1063,7 @@
           <h3>API Backend</h3>
           <div class="config-row">
             <div class="form-group" style="min-width:260px"><label>Base URL</label><input type="text" id="cfg-api"
-                value="http://localhost:7575/api" /></div>
+                value="https://ar-cs-tlahtolcalli.onrender.com/api" /></div>
             <div class="form-group" style="align-self:flex-end"><button class="btn btn-primary"
                 onclick="saveConfig()">Guardar</button></div>
             <div class="form-group" style="align-self:flex-end"><button class="btn btn-ghost"
@@ -1347,7 +1347,7 @@
 
   <!-- ══ JS ══ -->
   <script>
-    let API = localStorage.getItem('tlahtolli_api') || 'http://localhost:7575/api';
+    let API = localStorage.getItem('tlahtolli_api') || `${window.location.origin}/api`;
     let languagesCache = [];
     let unitsCache = [];
     let usersCache = [];
