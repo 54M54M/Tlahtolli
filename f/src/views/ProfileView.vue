@@ -1,6 +1,6 @@
 <!-- HAY QUE VER SI PUEDO OBTENER LOS PORCENTAJES DE AVANCE DE LOS LOGROS -->
 <template>
-    <div class="bg-[#0A2136] text-white">
+    <div class="bg-[#0A2136] text-white pt-4">
         <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
 
         <main class="container mx-auto py-1 md:py-2 pb-16 md:pb-20">
@@ -143,12 +143,6 @@
                                 Cambiar contraseña
                             </button>
 
-                            <!-- BOTÓN PARA LIMPIAR LOCALSTORAGE -->
-                            <button @click="clearLocalStorage"
-                                class="w-full bg-yellow-600 hover:bg-yellow-700 rounded p-2 transition-colors">
-                                🗑️ Limpiar Datos Locales
-                            </button>
-
                             <button @click="logout" class="w-full bg-red-500 hover:bg-red-600 rounded p-2 md:hidden">
                                 Cerrar sesión
                             </button>
@@ -261,7 +255,7 @@ const loadAchievements = async () => {
     if (!authStore.user?.id) return;
     loading.value = true;
     try {
-        const result = await achievementsApi.getWithStatus(authStore.user.id);
+        const result = await achievementsApi.getWithStatus(authStore.user.id, authStore.selectedLanguage);
         allAchievements.value = Array.isArray(result) ? result : [];
     } catch (err) {
         console.error('[ProfileView] loadAchievements:', err);

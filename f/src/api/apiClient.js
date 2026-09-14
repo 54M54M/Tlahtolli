@@ -3,7 +3,7 @@
 // Toda llamada HTTP de la app pasa por aquí.
 // src/api/apiClient.js
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:7575/api'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://ar-cs-tlahtolcalli.onrender.com'
 
 // ── utilidad interna ────────────────────────────────────────────────────────
 
@@ -93,7 +93,8 @@ export const statsApi = {
 }
 
 export const achievementsApi = {
-    getWithStatus: safe('achievements.getWithStatus', (userId) => api.get(`/user-achievements?userId=${userId}`)),
+    getWithStatus: safe('achievements.getWithStatus', (userId, languageTag) =>
+        api.get(`/user-achievements?userId=${userId}${languageTag ? `&languageTag=${languageTag}` : ''}`)),
     getAll: safe('achievements.getAll', () => api.get('/achievements')),
 }
 
