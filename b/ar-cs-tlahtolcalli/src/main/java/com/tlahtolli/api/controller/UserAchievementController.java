@@ -23,7 +23,9 @@ public class UserAchievementController {
 	 * del frontend.
 	 */
 	@GetMapping
-	public ResponseEntity<List<AchievementWithStatus>> getAll(@RequestParam Integer userId) {
-		return ResponseEntity.ok(achievementService.getAllWithStatus(userId));
+	public ResponseEntity<List<AchievementWithStatus>> getAll(
+			@RequestParam Integer userId,
+			@RequestParam(required = false) String languageTag) {
+		return ResponseEntity.ok(achievementService.getAllWithStatus(userId, languageTag));
 	}
 }

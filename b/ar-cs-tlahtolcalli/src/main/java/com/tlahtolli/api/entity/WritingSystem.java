@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "WRITING_SYSTEMS")
+@Table(name = "CT_WRITING_SYSTEMS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

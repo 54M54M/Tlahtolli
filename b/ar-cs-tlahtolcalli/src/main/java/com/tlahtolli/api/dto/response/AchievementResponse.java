@@ -10,12 +10,14 @@ public record AchievementResponse(
         Integer xpReward,
         String requirement,
         String category,
-        String rarity
+        String rarity,
+        String languageTag
 ) {
     public static AchievementResponse from(Achievement a) {
         return new AchievementResponse(
                 a.getId(), a.getTitle(), a.getDescription(), a.getIcon(),
-                a.getXpReward(), a.getRequirement(), a.getCategory(), a.getRarity()
+                a.getXpReward(), a.getRequirement(), a.getCategory(), a.getRarity(),
+                a.getLanguageTag()
         );
     }
 }

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "LESSON_HISTORY")
+@Table(name = "TA_LESSON_HISTORY")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

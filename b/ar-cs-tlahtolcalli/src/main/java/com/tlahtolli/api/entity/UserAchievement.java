@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "USER_ACHIEVEMENTS")
+@Table(name = "TA_USER_ACHIEVEMENTS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,6 +37,11 @@ public class UserAchievement {
 	// JSON almacenado como String; el frontend lo interpreta
 	@Column(name = "PROGRESS", columnDefinition = "TEXT")
 	private String progress;
+
+	// Idioma en el que el usuario obtuvo este logro (ej. "nhce", "tkoc").
+	// Se setea al momento de desbloquear, no es catálogo estático.
+	@Column(name = "LANGUAGE_TAG", length = 10)
+	private String languageTag;
 
 	public Integer getId() {
 		return id;
@@ -77,4 +82,13 @@ public class UserAchievement {
 	public void setProgress(String progress) {
 		this.progress = progress;
 	}
+
+	public String getLanguageTag() {
+		return languageTag;
+	}
+
+	public void setLanguageTag(String languageTag) {
+		this.languageTag = languageTag;
+	}
+
 }

@@ -10,5 +10,7 @@ public record AchievementRequest(
         Integer xpReward,
         @Size(max = 500) String requirement,
         @Size(max = 100) String category,
-        @Size(max = 50) String rarity
+        @Size(max = 50) String rarity,
+        // JSON array como string, ej: ["nhce","tkoc"]. Null/omitido = logro global.
+        String languageTag
 ) {}

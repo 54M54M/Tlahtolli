@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "UNIT_VOCAB")
+@Table(name = "RL_UNIT_VOCAB")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

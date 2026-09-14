@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "USER_ENERGY")
+@Table(name = "TA_USER_ENERGY")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

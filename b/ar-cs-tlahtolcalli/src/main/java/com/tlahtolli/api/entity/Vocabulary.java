@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "VOCABULARY")
+@Table(name = "CT_VOCABULARY")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

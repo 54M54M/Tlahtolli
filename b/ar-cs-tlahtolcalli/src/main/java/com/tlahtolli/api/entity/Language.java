@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "LANGUAGES")
+@Table(name = "CT_LANGUAGES")
 public class Language {
  
     @Id
@@ -108,6 +108,4 @@ public class Language {
 		this.writingSystem = writingSystem;
 	}
 
-    
-    
 }

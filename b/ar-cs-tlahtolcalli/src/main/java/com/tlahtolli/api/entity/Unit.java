@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "UNITS")
+@Table(name = "CT_UNITS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

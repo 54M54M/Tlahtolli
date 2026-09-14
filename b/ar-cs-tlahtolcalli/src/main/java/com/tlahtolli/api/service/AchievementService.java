@@ -1,5 +1,7 @@
 package com.tlahtolli.api.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tlahtolli.api.entity.*;
 import com.tlahtolli.api.repository.*;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class AchievementService {
@@ -21,22 +24,29 @@ public class AchievementService {
 	private final UserAchievementRepository userAchievementRepo;
 	private final UserStatsRepository statsRepo;
 	private final UserRepository userRepo;
+	private final LanguageRepository languageRepo;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	public AchievementService(AchievementRepository achievementRepo, UserAchievementRepository userAchievementRepo,
-			UserStatsRepository statsRepo, UserRepository userRepo) {
+	                          UserStatsRepository statsRepo, UserRepository userRepo, LanguageRepository languageRepo) {
 		this.achievementRepo = achievementRepo;
 		this.userAchievementRepo = userAchievementRepo;
 		this.statsRepo = statsRepo;
 		this.userRepo = userRepo;
+		this.languageRepo = languageRepo;
 	}
 
 	/**
-	 * Verifica todos los logros pendientes y desbloquea los que corresponda.
+	 * Verifica todos los logros pendientes y desbloquea los que corresponda,
+	 * para el idioma con el que el usuario está trabajando en este momento.
+	 * Un mismo logro se puede ganar una vez por idioma.
 	 * Devuelve la lista de logros recién desbloqueados en esta llamada.
 	 */
 	@Transactional
 	public List<UserAchievement> checkAndUnlock(Integer userId, Integer languageId) {
-		log.debug("Checking achievements for userId={}, languageId={}", userId, languageId);
+		String languageTag = languageRepo.findById(Long.valueOf(languageId)).map(Language::getCode).orElse(null);
+		log.debug("Checking achievements for userId={}, languageId={}, languageTag={}", userId, languageId, languageTag);
+
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 		UserStats stats = statsRepo.findByUserIdAndLanguageId(userId, languageId).orElse(null);
@@ -45,7 +55,8 @@ public class AchievementService {
 		List<UserAchievement> newlyUnlocked = new ArrayList<>();
 
 		for (Achievement a : all) {
-			boolean alreadyEarned = earned.stream().anyMatch(ua -> ua.getAchieveId().equals(a.getId()));
+			boolean alreadyEarned = earned.stream()
+					.anyMatch(ua -> ua.getAchieveId().equals(a.getId()) && Objects.equals(ua.getLanguageTag(), languageTag));
 			if (alreadyEarned)
 				continue;
 
@@ -54,9 +65,10 @@ public class AchievementService {
 				ua.setUserId(userId);
 				ua.setAchieveId(a.getId());
 				ua.setEarnedAt(LocalDate.now());
+				ua.setLanguageTag(languageTag);
 				userAchievementRepo.save(ua);
 				newlyUnlocked.add(ua);
-				log.info("Achievement unlocked for userId={}: achievementId={}", userId, a.getId());
+				log.info("Achievement unlocked for userId={}: achievementId={}, languageTag={}", userId, a.getId(), languageTag);
 
 				if (user != null && a.getXpReward() != null && a.getXpReward() > 0) {
 					user.setXp(user.getXp() + a.getXpReward());
@@ -70,17 +82,36 @@ public class AchievementService {
 		return newlyUnlocked;
 	}
 
-	/** Devuelve todos los logros con flag de si el usuario los tiene. */
-	public List<AchievementWithStatus> getAllWithStatus(Integer userId) {
-		log.debug("Getting all achievements with status for userId={}", userId);
+	/** Devuelve los logros visibles para el idioma actual, con flag de si el usuario los tiene EN ESE IDIOMA. */
+	public List<AchievementWithStatus> getAllWithStatus(Integer userId, String languageTag) {
+		log.debug("Getting achievements for userId={}, languageTag={}", userId, languageTag);
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
 
-		return all.stream().map(a -> {
-			UserAchievement ua = earned.stream().filter(x -> x.getAchieveId().equals(a.getId())).findFirst()
-					.orElse(null);
-			return new AchievementWithStatus(a, ua != null, ua != null ? ua.getEarnedAt() : null);
-		}).toList();
+		return all.stream()
+				.filter(a -> isVisibleForLanguage(a, languageTag))
+				.map(a -> {
+					UserAchievement ua = earned.stream()
+							.filter(x -> x.getAchieveId().equals(a.getId()) && Objects.equals(x.getLanguageTag(), languageTag))
+							.findFirst()
+							.orElse(null);
+					return new AchievementWithStatus(a, ua != null, ua != null ? ua.getEarnedAt() : null);
+				}).toList();
+	}
+
+	/** Visibilidad de CATÁLOGO: para qué idiomas existe/aplica este logro (independiente de si el usuario ya lo ganó). */
+	private boolean isVisibleForLanguage(Achievement a, String languageTag) {
+		String tagJson = a.getLanguageTag();
+		if (tagJson == null || tagJson.isBlank() || languageTag == null) {
+			return true; // logro global, o no se especificó idioma en la request
+		}
+		try {
+			List<String> tags = mapper.readValue(tagJson, new TypeReference<List<String>>() {});
+			return tags.isEmpty() || tags.contains(languageTag);
+		} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+			log.warn("LANGUAGE_TAG mal formado en achievement id={}: {}", a.getId(), e.getMessage());
+			return true; // ante un dato corrupto, no ocultamos el logro
+		}
 	}
 
 	// ── privados ──────────────────────────────────────────────────────────────

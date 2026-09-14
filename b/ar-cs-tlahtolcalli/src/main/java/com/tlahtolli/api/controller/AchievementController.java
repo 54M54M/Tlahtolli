@@ -48,6 +48,7 @@ public class AchievementController {
                 .requirement(dto.requirement())
                 .category(dto.category())
                 .rarity(dto.rarity())
+                .languageTag(dto.languageTag())
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(AchievementResponse.from(repo.save(a)));
     }
@@ -62,6 +63,7 @@ public class AchievementController {
             existing.setRequirement(dto.requirement());
             existing.setCategory(dto.category());
             existing.setRarity(dto.rarity());
+            existing.setLanguageTag(dto.languageTag());
             return ResponseEntity.ok(AchievementResponse.from(repo.save(existing)));
         }).orElse(ResponseEntity.notFound().build());
     }

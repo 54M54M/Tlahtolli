@@ -21,7 +21,9 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
 
 	boolean existsByUserIdAndUnitIdAndCompleted(Integer userId, Integer unitId, Integer completed);
 
-	@Query("SELECT COUNT(up) FROM UserProgress up " + "JOIN Unit u ON u.id = up.unitId "
-			+ "WHERE up.userId = :userId AND u.levelId = :levelId AND up.completed = 1")
+	@Query(value = "SELECT COUNT(*) FROM ta_user_progress up " +
+			"JOIN ct_units u ON u.id = up.unit_id " +
+			"WHERE up.user_id = :userId AND u.level_id = :levelId AND up.completed = 1",
+			nativeQuery = true)
 	long countCompletedByUserAndLevel(@Param("userId") Integer userId, @Param("levelId") Integer levelId);
 }

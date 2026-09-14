@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "ACHIEVEMENTS")
+@Table(name = "CT_ACHIEVEMENTS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,6 +43,9 @@ public class Achievement {
 
 	@Column(name = "RARITY", length = 50)
 	private String rarity;
+
+	@Column(name = "LANGUAGE_TAG", columnDefinition = "TEXT")
+	private String languageTag; // JSON array de tags o null si es global
 
 	public Integer getId() {
 		return id;
@@ -107,5 +110,9 @@ public class Achievement {
 	public void setRarity(String rarity) {
 		this.rarity = rarity;
 	}
+
+	public String getLanguageTag() { return languageTag; }
+
+	public void setLanguageTag(String languageTag) { this.languageTag = languageTag; }
 
 }

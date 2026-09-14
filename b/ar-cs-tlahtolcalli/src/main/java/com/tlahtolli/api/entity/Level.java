@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "LEVELS")
+@Table(name = "CT_LEVELS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
