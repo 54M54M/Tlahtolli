@@ -363,9 +363,10 @@ export default {
                 .reduce((sum, ex) => sum + (ex.points || 15), 0);
 
             try {
-                const result = await progressApi.complete({
+                // Usar endpoint dedicado para completar nivel completo vía QuickLevel
+                await progressApi.completeLevel({
                     userId: this.authStore.user?.id || 1,
-                    unitId: this.quickExercises[0]?.unitId || null,
+                    levelId: Number(this.levelId),
                     languageId: this.authStore.selectedLangId,
                     performance: this.performance,
                     earnedExp: earnedPoints,
@@ -374,9 +375,20 @@ export default {
                     timeSeconds: this.lessonTime,
                 });
 
-                this.unlockedNextLevelUnit = result.nextUnitId != null;
-                this.nextLevelId = Number(this.levelId) + 1;
                 await this.authStore.refreshUser();
+
+                // Leer el estado real del siguiente nivel desde la API
+                const levels = await learningApi.getLevels(
+                    this.authStore.selectedLangId,
+                    this.authStore.user?.id || 1
+                );
+                const currentLevel = levels.find(l => l.id === Number(this.levelId));
+                const nextLevel = currentLevel
+                    ? levels.find(l => l.levelNum === currentLevel.levelNum + 1)
+                    : null;
+
+                this.nextLevelId = nextLevel?.id || null;
+                this.unlockedNextLevelUnit = nextLevel ? !nextLevel.locked : false;
             } catch (err) {
                 console.error('[QuickLevelView] completeQuickLevel:', err);
             }

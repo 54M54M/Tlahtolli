@@ -1,1 +1,0 @@
-export const dialectVariants = ['central', 'oriental', 'occidental', 'all'];

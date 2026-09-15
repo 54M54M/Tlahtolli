@@ -1,13 +1,7 @@
-// src/data/repositories/LearningRepository.js
-// Reemplaza la versión que operaba sobre datos hardcodeados en memoria.
-// Ahora todas las operaciones van a la API del backend.
-
 import { learningApi, progressApi } from '../../api/apiClient.js'
 import { useAuthStore } from '../../stores/auth.js'
 
 export class LearningRepository {
-
-    // ── Niveles ──────────────────────────────────────────────────────────────
 
     async getLevels(languageId) {
         const auth = useAuthStore()
@@ -15,12 +9,9 @@ export class LearningRepository {
         return learningApi.getLevels(languageId, userId)
     }
 
-    // Alias usado en HomeView con chequeo de desbloqueo
     async getLevelsWithUnlockCheck(languageId) {
         return this.getLevels(languageId)
     }
-
-    // ── Unidades ──────────────────────────────────────────────────────────────
 
     async getUnits(languageId, levelId) {
         const auth = useAuthStore()
@@ -33,29 +24,8 @@ export class LearningRepository {
         return units.find(u => u.id === unitId) || null
     }
 
-    // ── Ejercicios ────────────────────────────────────────────────────────────
-
     async getExercisesForUnit(languageId, levelId, unitId) {
         return learningApi.getExercises(unitId)
-    }
-
-    // ── Acciones de progreso ──────────────────────────────────────────────────
-
-    // LessonView y QuickLevelView llaman esto tras completar
-    async completeUnit(languageId, levelId, unitId) {
-        // El progreso se actualiza desde ProgressService vía /user-progress/complete
-        // Este método queda como no-op aquí; la actualización real la hace completeLesson()
-        return true
-    }
-
-    async unlockUnit(languageId, levelId, unitId) {
-        // El backend lo maneja automáticamente en completeLesson()
-        return true
-    }
-
-    async unlockLevel(languageId, levelId) {
-        // El backend lo maneja automáticamente
-        return true
     }
 
     async getNextUnit(languageId, levelId, unitId) {
@@ -64,18 +34,8 @@ export class LearningRepository {
         return idx !== -1 && idx < units.length - 1 ? units[idx + 1] : null
     }
 
-    getLevel(languageId, levelId) {
-        // Versión sync — devuelve null, las vistas deben usar getLevels() async
-        // Se mantiene por compatibilidad con código legado
-        return null
-    }
-
-    getLevels(languageId) {
-        // Versión sync — devuelve [] para compatibilidad; las vistas deben usar await
-        return []
-    }
-
-    getCompletedUnits(languageId) {
-        return []
-    }
+    // no-ops: el backend maneja progreso y desbloqueos automáticamente
+    async completeUnit() { return true }
+    async unlockUnit() { return true }
+    async unlockLevel() { return true }
 }

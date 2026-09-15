@@ -33,43 +33,19 @@ import { useAuthStore } from '../stores/auth.js';
 import Header from '../components/vHeader.vue';
 import Tab from '../components/Tab.vue';
 
-import { Lock, Unlock, Volume2 } from 'lucide-vue-next';
+import { Volume2 } from 'lucide-vue-next';
 
-import DictionaryContent from './glossary/DictionaryContent.vue';
 import WritingContent from './glossary/SyllabaryContent.vue';
-import WordBankContent from './glossary/WordBankContent.vue';
 import { LanguageService } from '../data/services/LanguageService.js';
-import { ProgressService } from '../data/services/ProgressService.js';
-import { getDictionaryRepository, getLearningRepository } from '../data/repositories/RepositoryFactory.js';
 
 const authStore = useAuthStore();
 const languageService = new LanguageService();
-const progressService = new ProgressService();
-const dictionaryRepo = getDictionaryRepository();
-const learningRepo = getLearningRepository();
 
 const searchTerm = ref('');
 const selectedCategory = ref('all');
 const activeTab = ref('writingSystem');
 
-// Obtener el progreso del usuario
-const userProgress = computed(() => {
-    return progressService.getLanguageProgress(1, selectedLanguage.value);
-});
-
-// Verificar progreso específico
-const hasCompletedUnit1 = computed(() => {
-    const units = learningRepo.getUnits(selectedLanguage.value, 1);
-    const unit1 = units.find(unit => unit.id === 1);
-    return unit1?.completed || false;
-});
-
-const hasCompletedLevel1 = computed(() => {
-    const level1 = learningRepo.getLevel(selectedLanguage.value, 1);
-    return level1?.isCompleted() || false;
-});
-
-// Determinar qué tabs están disponibles basado en el progreso
+// Determinar qué tabs disponibles
 const availableTabs = computed(() => {
     const tabs = [];
 
@@ -97,34 +73,7 @@ const adjustActiveTab = () => {
     }
 };
 
-// Mensajes de progreso
-const showProgressMessage = computed(() => {
-    return !hasCompletedLevel1.value;
-});
 
-const progressMessage = computed(() => {
-    if (!hasCompletedUnit1.value) {
-        return {
-            title: 'Completa la Unidad 1',
-            description: 'Termina la primera unidad para desbloquear el Banco de Palabras con el vocabulario que aprendas.'
-        };
-    } else if (!hasCompletedLevel1.value) {
-        return {
-            title: 'Completa el Nivel 1',
-            description: 'Termina todas las unidades del Nivel 1 para desbloquear el Diccionario completo.'
-        };
-    }
-    return {
-        title: '¡Diccionario Desbloqueado!',
-        description: 'Ahora tienes acceso completo al diccionario con todas las palabras disponibles.'
-    };
-});
-
-const hasAccessToDictionary = computed(() => {
-    return hasCompletedLevel1.value;
-});
-
-// Resto del código...
 const writingSystemInfo = computed(() => {
     const languageInfo = languageService.getLanguageInfo(selectedLanguage.value);
     const writingSystemNames = {
@@ -152,29 +101,6 @@ const currentLanguageInfo = computed(() => {
 
 const currentLanguageName = computed(() => currentLanguageInfo.value?.name || 'Náhuatl Central');
 const currentLanguageColor = computed(() => currentLanguageInfo.value?.color || '#58CC02');
-
-const categories = computed(() => {
-    return dictionaryRepo.getCategories(selectedLanguage.value);
-});
-
-const filteredEntries = computed(() => {
-    const term = searchTerm.value.toLowerCase();
-    let entries = dictionaryRepo.getAllEntries(selectedLanguage.value);
-
-    if (term) {
-        entries = dictionaryRepo.searchEntries(term, selectedLanguage.value);
-    }
-
-    if (selectedCategory.value !== 'all') {
-        entries = entries.filter(entry => entry.category === selectedCategory.value);
-    }
-
-    return entries;
-});
-
-const syllabaryEntries = computed(() => {
-    return [];
-});
 
 const speak = (text, language) => {
     if ('speechSynthesis' in window) {

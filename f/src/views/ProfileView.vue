@@ -71,43 +71,9 @@
 
                     <!-- Logros desbloqueados -->
                     <Card class="bg-gray-800 rounded-lg p-3 md:p-4">
-                        <h3 class="font-bold mb-3">Logros desbloqueados</h3>
-
-                        <div v-if="loading" class="text-center py-4">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white mx-auto"></div>
-                        </div>
-
-                        <template v-else-if="earnedAchievements.length > 0">
-                            <div v-for="ach in earnedAchievements" :key="ach.achievement.id"
-                                class="flex items-center gap-3 p-3 bg-gray-700/30 rounded-lg mb-2 transition-transform hover:scale-[1.02]">
-                                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
-                                    :style="{ backgroundColor: getRarityColor(ach.achievement.rarity) + '20', color: getRarityColor(ach.achievement.rarity) }">
-                                    {{ ach.achievement.icon }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="font-medium text-sm">{{ ach.achievement.title }}</h4>
-                                    <p class="text-xs text-gray-400 truncate">{{ ach.achievement.description }}</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="text-xs text-green-400">+{{ ach.achievement.xpReward }} XP</span>
-                                        <span v-if="ach.earnedAt" class="text-xs text-gray-500">
-                                            {{ formatDate(ach.earnedAt) }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <span v-if="ach.achievement.rarity !== 'common'"
-                                    class="text-xs px-2 py-1 rounded-full text-white flex-shrink-0"
-                                    :style="{ backgroundColor: getRarityColor(ach.achievement.rarity) }">
-                                    {{ rarityText(ach.achievement.rarity) }}
-                                </span>
-                            </div>
-                        </template>
-
-                        <div v-else class="text-gray-400 text-sm text-center py-4">
-                            <div class="text-4xl mb-2">🏆</div>
-                            <p>No has desbloqueado logros todavía.</p>
-                            <p class="text-xs mt-1">¡Completa lecciones para desbloquear logros!</p>
-                        </div>
+                        <AchievementsList :achievements="earnedAchievements" :loading="loading" :nested="true" />
                     </Card>
+
                 </div>
 
                 <div v-if="currentTab === 'settings'" class="mt-3 md:mt-4 space-y-3 md:space-y-4">
@@ -164,10 +130,10 @@ import Card from '../components/Card.vue';
 import Tab from '../components/Tab.vue';
 import UserProfile from '../components/UserProfile.vue';
 import SettingsPanel from '../components/SettingsPanel.vue';
+import AchievementsList from '../components/AchievementsList.vue';
 
 import { achievementsApi } from '../api/apiClient.js';
 import { LanguageService } from '../data/services/LanguageService.js';
-import { LocalStorageService } from '../data/storage/LocalStorageService.js';
 
 // ── Estado ──────────────────────────────────────────────────────────────────
 const currentTab = ref('achievements');
@@ -220,36 +186,6 @@ const achievementsWithProgress = computed(() => {
     });
 });
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const RARITY_COLORS = {
-    common: '#58CC02',
-    rare: '#1CB0F6',
-    epic: '#A560E8',
-    legendary: '#FF4B4B',
-};
-
-const getRarityColor = (rarity) => RARITY_COLORS[rarity] || '#58CC02';
-
-const rarityText = (rarity) => ({
-    common: 'Común',
-    rare: 'Raro',
-    epic: 'Épico',
-    legendary: 'Legendario'
-}[rarity] || rarity);
-
-const formatDate = (dateInput) => {
-    if (!dateInput) return '';
-    try {
-        return new Date(dateInput).toLocaleDateString('es-MX', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-    } catch {
-        return '';
-    }
-};
-
 // ── Carga de datos ───────────────────────────────────────────────────────────
 const loadAchievements = async () => {
     if (!authStore.user?.id) return;
@@ -262,17 +198,6 @@ const loadAchievements = async () => {
         allAchievements.value = [];
     } finally {
         loading.value = false;
-    }
-};
-
-// Función para limpiar localStorage
-const clearLocalStorage = () => {
-    if (confirm('¿Estás seguro de que quieres limpiar todos los datos locales? Se perderá tu progreso actual.')) {
-        LocalStorageService.clearAll();
-        alert('✅ Datos locales limpiados correctamente. La página se recargará.');
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
     }
 };
 

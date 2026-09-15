@@ -137,7 +137,7 @@
         </div>
 
       <!-- Mensaje de finalización -->
-      <CompletionMessage v-if="currentQuestion > currentExercises.length" title="¡Lección completada!"
+      <CompletionMessage v-if="!dataLoading && currentQuestion > currentExercises.length" title="¡Lección completada!"
              :back-route="`/nivel/${currentLevel.id}`"
              :performance="currentExercises.length > 0 ? correctAnswersCount / currentExercises.length : 1"
              :lesson-time="lessonTime" :earned-exp="earnedExp" class="md:mt-[-10%]"/>

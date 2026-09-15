@@ -78,6 +78,7 @@ export const progressApi = {
     getByUser: safe('progress.getByUser', (userId) => api.get(`/user-progress?userId=${userId}`)),
     getByUserUnit: safe('progress.getByUserUnit', (userId, unitId) => api.get(`/user-progress/user/${userId}/unit/${unitId}`)),
     complete: safe('progress.complete', (payload) => api.post('/user-progress/complete', payload)),
+    completeLevel: safe('progress.completeLevel', (payload) => api.post('/user-progress/complete-level', payload)),
     init: safe('progress.init', (userId, firstUnitId) => api.post('/user-progress/init', { userId, firstUnitId })),
 }
 
