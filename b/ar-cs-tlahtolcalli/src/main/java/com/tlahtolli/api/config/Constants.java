@@ -11,10 +11,18 @@ public final class Constants {
     public static final String DB_PASSWORD = "12345";
     public static final String DB_DRIVER   = "org.postgresql.Driver";
 */
+
     // DEV
     public static final String DB_URL      = "jdbc:postgresql://ep-jolly-bar-ay6hx1la.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channelBinding=require";
     public static final String DB_USERNAME = "neondb_owner";
     public static final String DB_PASSWORD = "npg_2oI7brxgTvRX";
     public static final String DB_DRIVER   = "org.postgresql.Driver";
 
+/*
+    // LOCAL JOB
+    public static String DB_URL = "jdbc:postgresql://localhost:5432/gestion_personal_cs?currentSchema=sc_myschema";
+    public static String DB_USERNAME = "postgres";
+    public static String DB_PASSWORD = "12345";
+    public static String DB_DRIVER = "org.postgresql.Driver";
+*/
 }
