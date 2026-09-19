@@ -157,6 +157,14 @@ export default {
             }
         )
 
+        const route = router.currentRoute
+        watch(
+            () => route.value.fullPath,
+            (path) => {
+                if (path === '/') loadLevels()
+            }
+        )
+
         onMounted(async () => {
             if (!authStore.selectedLanguage) {
                 router.push('/select-language')

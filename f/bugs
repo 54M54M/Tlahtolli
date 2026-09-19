@@ -1,6 +1,0 @@
-PerfilView
-    - Al obtener el logro este se obtiene con la fecha de un dia atras
-    - En el apartado de "Mis logros" se deben mostrar los siguientes logros a conseguir con una barra de progreso
-
-LevelView -> LessonView
-    Cuando el usuario se mueve de level a lesson se muestra el componente donde se renderiza la imagen de Toch [ NO SE RESOLVIO ]

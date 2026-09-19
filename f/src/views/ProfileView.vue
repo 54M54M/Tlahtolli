@@ -53,10 +53,10 @@
                                 <!-- Barra de progreso -->
                                 <div class="w-full mt-1 bg-gray-600 rounded-full h-1">
                                     <div class="bg-green-500 h-1 rounded-full transition-all duration-300"
-                                        :style="{ width: achievement.progress.percentage + '%' }"></div>
+                                        :style="{ width: (achievement.progressPercentage ?? achievement.progress?.percentage ?? 0) + '%' }"></div>
                                 </div>
                                 <p class="text-[8px] text-gray-400 mt-1">
-                                    {{ Math.round(achievement.progress.percentage) }}%
+                                    {{ Math.round(achievement.progressPercentage ?? achievement.progress?.percentage ?? 0) }}%
                                 </p>
                             </div>
                         </div>
@@ -177,12 +177,9 @@ const earnedAchievements = computed(() =>
 );
 
 const achievementsWithProgress = computed(() => {
-    return allAchievements.value.filter(achievement => {
-        // Mostrar solo logros NO desbloqueados Y con progreso entre 1% y 99%
-        return !achievement.earned &&
-            achievement.progress &&
-            achievement.progress.percentage > 0 &&
-            achievement.progress.percentage < 100;
+    return allAchievements.value.filter(a => {
+        const pct = a.progressPercentage ?? a.progress?.percentage ?? 0;
+        return !a.earned && pct > 0 && pct < 100;
     });
 });
 

@@ -76,7 +76,9 @@ const getRarityColorSafe = (item) => {
 const formatDate = (dateString) => {
     if (!dateString) return '';
     try {
-        return new Date(dateString).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+        // Parsear como fecha local para evitar desfase por zona horaria UTC
+        const [year, month, day] = String(dateString).split('-').map(Number);
+        return new Date(year, month - 1, day).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch { return ''; }
 };
 

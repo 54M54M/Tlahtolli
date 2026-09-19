@@ -364,9 +364,10 @@ export default {
 
             try {
                 // Usar endpoint dedicado para completar nivel completo vía QuickLevel
-                await progressApi.completeLevel({
+                const result = await progressApi.complete({
                     userId: this.authStore.user?.id || 1,
                     levelId: Number(this.levelId),
+                    unitId: null,
                     languageId: this.authStore.selectedLangId,
                     performance: this.performance,
                     earnedExp: earnedPoints,
@@ -388,7 +389,7 @@ export default {
                     : null;
 
                 this.nextLevelId = nextLevel?.id || null;
-                this.unlockedNextLevelUnit = nextLevel ? !nextLevel.locked : false;
+                this.unlockedNextLevelUnit = result?.nextLevelUnlocked === true;
             } catch (err) {
                 console.error('[QuickLevelView] completeQuickLevel:', err);
             }
