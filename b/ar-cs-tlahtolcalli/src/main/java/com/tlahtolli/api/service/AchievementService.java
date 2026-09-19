@@ -87,6 +87,12 @@ public class AchievementService {
 		log.debug("Getting achievements for userId={}, languageTag={}", userId, languageTag);
 		List<Achievement> all = achievementRepo.findAll();
 		List<UserAchievement> earned = userAchievementRepo.findByUserId(userId);
+		UserStats stats = statsRepo.findByUserIdAndLanguageId(userId,
+				languageRepo.findAll().stream()
+						.filter(l -> l.getCode().equals(languageTag))
+						.findFirst().map(l -> l.getId().intValue()).orElse(0))
+				.orElse(null);
+		User user = userRepo.findById(userId).orElse(null);
 
 		return all.stream()
 				.filter(a -> isVisibleForLanguage(a, languageTag))
@@ -95,7 +101,8 @@ public class AchievementService {
 							.filter(x -> x.getAchieveId().equals(a.getId()) && Objects.equals(x.getLanguageTag(), languageTag))
 							.findFirst()
 							.orElse(null);
-					return new AchievementWithStatus(a, ua != null, ua != null ? ua.getEarnedAt() : null);
+					double percentage = ua != null ? 100.0 : calculateProgress(a, stats, user);
+					return new AchievementWithStatus(a, ua != null, ua != null ? ua.getEarnedAt() : null, percentage);
 				}).toList();
 	}
 
@@ -147,7 +154,26 @@ public class AchievementService {
 		return false;
 	}
 
+	private double calculateProgress(Achievement a, UserStats stats, User user) {
+		if (a.getRequirement() == null || stats == null) return 0.0;
+		String req = a.getRequirement().toLowerCase(Locale.ROOT);
+
+		if (req.contains("primera lección") || req.contains("completar 1 lección"))
+			return Math.min(100.0, stats.getLessonsDone() * 100.0);
+		if (req.contains("10 lecciones perfectas"))
+			return Math.min(100.0, stats.getPerfectLess() * 10.0);
+		if (req.contains("50 palabras"))
+			return Math.min(100.0, stats.getWordsLearned() * 2.0);
+		if (req.contains("1000 minutos"))
+			return Math.min(100.0, stats.getTotalMins() / 10.0);
+		if (req.contains("7 días") && user != null)
+			return Math.min(100.0, user.getStreak() / 7.0 * 100.0);
+		if (req.contains("30 días") && user != null)
+			return Math.min(100.0, user.getStreak() / 30.0 * 100.0);
+		return 0.0;
+	}
+
 	// ── DTO interno ───────────────────────────────────────────────────────────
-	public record AchievementWithStatus(Achievement achievement, boolean earned, LocalDate earnedAt) {
+	public record AchievementWithStatus(Achievement achievement, boolean earned, LocalDate earnedAt, double progressPercentage) {
 	}
 }

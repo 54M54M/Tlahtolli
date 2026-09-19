@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProgressService {
@@ -24,17 +25,19 @@ public class ProgressService {
 	private final UserRepository userRepo;
 	private final UnitRepository unitRepo;
 	private final UnitVocabRepository unitVocabRepo;
+	private final LevelRepository levelRepo;
 	private final AchievementService achievementService;
 
 	public ProgressService(UserProgressRepository progressRepo, UserStatsRepository statsRepo,
 			LessonHistoryRepository historyRepo, UserRepository userRepo, UnitRepository unitRepo,
-			UnitVocabRepository unitVocabRepo, AchievementService achievementService) {
+			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo, AchievementService achievementService) {
 		this.progressRepo = progressRepo;
 		this.statsRepo = statsRepo;
 		this.historyRepo = historyRepo;
 		this.userRepo = userRepo;
 		this.unitRepo = unitRepo;
 		this.unitVocabRepo = unitVocabRepo;
+		this.levelRepo = levelRepo;
 		this.achievementService = achievementService;
 	}
 
@@ -45,7 +48,7 @@ public class ProgressService {
 
 		if (unitId == null || unitId == 0) {
 			log.debug("unitId is null/0, routing to completeQuickLevel for userId={}", userId);
-			return completeQuickLevel(userId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
+			return completeQuickLevel(userId, null, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
 		}
 
 		boolean wasAlreadyCompleted = historyRepo.existsByUserIdAndUnitId(userId, unitId);
@@ -110,23 +113,86 @@ public class ProgressService {
 		return result;
 	}
 
-	private Map<String, Object> completeQuickLevel(Integer userId, Integer languageId, double performance,
+	private Map<String, Object> completeQuickLevel(Integer userId, Integer levelId, Integer languageId, double performance,
 			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
-		log.info("Completing quick level for userId={}, languageId={}, performance={}", userId, languageId, performance);
+		return completeQuickLevelPublic(userId, levelId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
+	}
+
+	@Transactional
+	public Map<String, Object> completeQuickLevelPublic(Integer userId, Integer levelId, Integer languageId, double performance,
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
+		log.info("Completing quick level for userId={}, levelId={}, performance={}", userId, levelId, performance);
+
+		boolean nextLevelUnlocked = false;
+
+		if (levelId != null && performance >= 0.8) {
+			// Marcar todas las unidades del nivel actual como completadas y desbloqueadas
+			List<Unit> currentUnits = unitRepo.findByLevelIdOrderByUnitNum(levelId);
+			for (Unit unit : currentUnits) {
+				UserProgress up = progressRepo.findByUserIdAndUnitId(userId, unit.getId()).orElseGet(() -> {
+					UserProgress p = new UserProgress();
+					p.setUserId(userId);
+					p.setUnitId(unit.getId());
+					return p;
+				});
+				up.setIsLocked((short) 0);
+				up.setCompleted((short) 1);
+				progressRepo.save(up);
+			}
+
+			// Desbloquear la primera unidad del siguiente nivel
+			Level currentLevel = levelRepo.findById(levelId).orElse(null);
+			if (currentLevel != null) {
+				List<Level> levels = levelRepo.findByLanguageId(currentLevel.getLanguageId());
+				Optional<Level> nextLevel = levels.stream()
+						.filter(l -> l.getLevelNum() == currentLevel.getLevelNum() + 1)
+						.findFirst();
+				if (nextLevel.isPresent()) {
+					List<Unit> nextUnits = unitRepo.findByLevelIdOrderByUnitNum(nextLevel.get().getId());
+					if (!nextUnits.isEmpty()) {
+						Unit firstUnit = nextUnits.get(0);
+						UserProgress up = progressRepo.findByUserIdAndUnitId(userId, firstUnit.getId()).orElseGet(() -> {
+							UserProgress p = new UserProgress();
+							p.setUserId(userId);
+							p.setUnitId(firstUnit.getId());
+							p.setCompleted((short) 0);
+							return p;
+						});
+						up.setIsLocked((short) 0);
+						up.setIsCurrent((short) 1);
+						progressRepo.save(up);
+						nextLevelUnlocked = true;
+					}
+				}
+			}
+		}
 
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
 		userRepo.save(user);
 
+		if (levelId != null && languageId != null) {
+			List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
+			UserStats stats = getOrCreateStats(userId, languageId);
+			stats.setLessonsDone(stats.getLessonsDone() + units.size());
+			int totalVocab = units.stream().mapToInt(u -> unitVocabRepo.findByUnitId(u.getId()).size()).sum();
+			if (totalVocab > 0) stats.setWordsLearned(stats.getWordsLearned() + totalVocab);
+			if (performance >= 0.9) stats.setPerfectLess(stats.getPerfectLess() + 1);
+			stats.setDaysStudied(stats.getDaysStudied() + 1);
+			stats.setTotalMins(stats.getTotalMins() + (timeSeconds / 60));
+			statsRepo.save(stats);
+		}
+
 		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
-		log.info("Quick level completed for userId={}: xpEarned={}, newAchievements={}", userId, earnedExp, newAchievements.size());
+		log.info("Quick level completed for userId={}: xpEarned={}, nextLevelUnlocked={}", userId, earnedExp, nextLevelUnlocked);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("xpEarned", earnedExp);
 		result.put("wasAlreadyCompleted", false);
 		result.put("perfectLesson", performance >= 0.9);
 		result.put("nextUnitId", null);
+		result.put("nextLevelUnlocked", nextLevelUnlocked);
 		result.put("newAchievements", newAchievements.size());
 		result.put("userXp", user.getXp());
 		return result;

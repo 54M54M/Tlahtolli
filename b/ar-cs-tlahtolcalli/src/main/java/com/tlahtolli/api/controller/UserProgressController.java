@@ -46,12 +46,20 @@ public class UserProgressController {
 	public ResponseEntity<Map<String, Object>> completeLesson(@RequestBody Map<String, Object> body) {
 		Integer userId = toInt(body.get("userId"));
 		Integer unitId = toInt(body.get("unitId"));
+		Integer levelId = body.get("levelId") != null ? toInt(body.get("levelId")) : null;
 		Integer languageId = toInt(body.get("languageId"));
 		double performance = toDouble(body.get("performance"));
 		int earnedExp = toInt(body.get("earnedExp"));
 		int correctAns = toInt(body.get("correctAns"));
 		int totalExerc = toInt(body.get("totalExerc"));
 		int timeSecs = toInt(body.get("timeSeconds"));
+
+		// Si unitId es 0/null pero hay levelId, es un QuickLevel
+		if ((unitId == null || unitId == 0) && levelId != null) {
+			Map<String, Object> result = progressService.completeQuickLevelPublic(userId, levelId, languageId,
+					performance, earnedExp, correctAns, totalExerc, timeSecs);
+			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+		}
 
 		Map<String, Object> result = progressService.completeLesson(userId, unitId, languageId, performance, earnedExp,
 				correctAns, totalExerc, timeSecs);

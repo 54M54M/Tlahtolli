@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property resource="application.properties" />
+
+    <logger name="org.springframework" level="INFO"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>{"log_data":{"fecha":"%d{yyyy-MM-dd HH:mm:ss.SSS, 'America/Mexico_City'}","Level":"%magenta(%-5level)","Mensaje":"%msg","servicios":["%msg"],"TiempoTotal":0}}%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
