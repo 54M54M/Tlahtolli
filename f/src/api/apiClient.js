@@ -3,7 +3,7 @@
 // Toda llamada HTTP de la app pasa por aquí.
 // src/api/apiClient.js
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://ar-cs-tlahtolcalli.onrender.com'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 // ── utilidad interna ────────────────────────────────────────────────────────
 

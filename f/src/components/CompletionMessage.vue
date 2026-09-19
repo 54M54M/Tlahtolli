@@ -42,8 +42,8 @@
         <div v-if="showUnlockSection" class="mb-4">
             <!-- Mensaje de desbloqueo exitoso -->
             <div v-if="unlockedNextLevelUnit && performance >= 0.8" class="p-4 bg-green-900/20 rounded-lg">
-                <h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
-                <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}</p>
+                <!--h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
+                <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}</p-->
                 <div class="mt-2 flex items-center justify-center gap-2">
                     <span class="w-2 h-2 bg-green-400 rounded-full"></span>
                     <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
@@ -51,10 +51,9 @@
             </div>
 
             <!-- Mensaje de nivel insuficiente -->
-            <div v-else-if="performance < 0.8" class="p-4 bg-yellow-900/20 rounded-lg">
+            <div v-else-if="performance < 0.8" class="p-2 bg-yellow-900/20 rounded-lg">
                 <h3 class="font-semibold text-yellow-400 mb-2">Sigue practicando</h3>
                 <p class="text-sm">Necesitas al menos 80% de aciertos para desbloquear el siguiente nivel.</p>
-                <p class="text-sm mt-1">Obtuviste: {{ Math.round(performance * 100) }}%</p>
             </div>
         </div>
 
