@@ -6,6 +6,12 @@
             <p>Cargando idiomas...</p>
         </div>
 
+        <!-- Loader al confirmar selección -->
+        <div v-else-if="isConfirming" class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p>Configurando tu idioma...</p>
+        </div>
+
         <!-- Auto-redirect cuando hay 1 solo idioma -->
         <div v-else-if="isAutoRedirecting" class="text-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -49,7 +55,7 @@
 
             <!-- Botón continuar -->
             <div class="flex-shrink-0 px-4 md:px-8 py-4 border-t border-gray-700">
-                <button @click="confirmSelection" :disabled="!selectedLanguage"
+                <button @click="confirmSelection" :disabled="!selectedLanguage || isConfirming"
                     class="w-full bg-[#58CC02] hover:bg-[#4BB302] text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     CONTINUAR
                 </button>
@@ -82,6 +88,7 @@ const authStore = useAuthStore()
 
 const selectedLanguage = ref(null)
 const isAutoRedirecting = ref(false)
+const isConfirming = ref(false)
 const loadingLanguages = ref(true)
 const apiLanguages = ref([])
 
@@ -158,6 +165,7 @@ onMounted(async () => {
 const confirmSelection = async () => {
     if (!selectedLanguage.value) return
 
+    isConfirming.value = true
     try {
         // Obtener el objeto completo del idioma para pasarlo al padre (con icon/emoji de la BD)
         const langObj = apiLanguages.value.find(
@@ -175,6 +183,7 @@ const confirmSelection = async () => {
         }
     } catch (error) {
         console.error('[VariantSelection] Error al confirmar selección:', error)
+        isConfirming.value = false
     }
 }
 </script>

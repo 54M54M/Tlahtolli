@@ -94,6 +94,7 @@
 <script>
 import { useAuthStore } from '../stores/auth.js'
 import { useEnergyStore } from '../stores/energy.js'
+import { useCacheStore } from '../stores/cache.js'
 import { learningApi } from '../api/apiClient.js'
 import { onMounted, computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -108,6 +109,7 @@ export default {
     setup() {
         const authStore = useAuthStore()
         const energyStore = useEnergyStore()
+        const cacheStore = useCacheStore()
         const router = useRouter()
         const languageService = new LanguageService()
 
@@ -118,19 +120,24 @@ export default {
         const unlockedLevels = computed(() => levels.value.filter(l => !l.locked))
         const lockedLevels = computed(() => levels.value.filter(l => l.locked))
 
-        const loadLevels = async () => {
+        const loadLevels = async (force = false) => {
             if (!authStore.selectedLangId || !authStore.user) {
                 console.warn('[HomeView] loadLevels abortado — selectedLangId:', authStore.selectedLangId)
                 return
             }
 
+            const key = cacheStore.levelsKey(authStore.selectedLangId, authStore.user.id)
+            if (!force) {
+                const cached = cacheStore.get(key)
+                if (cached) { levels.value = cached; return }
+            }
+
             loading.value = true
             error.value = false
             try {
-                levels.value = await learningApi.getLevels(
-                    authStore.selectedLangId,
-                    authStore.user.id
-                )
+                const data = await learningApi.getLevels(authStore.selectedLangId, authStore.user.id)
+                levels.value = data
+                cacheStore.set(key, data)
             } catch (err) {
                 console.error('[HomeView] loadLevels:', err)
                 error.value = true
@@ -142,7 +149,8 @@ export default {
         const goToLanguageSelection = () => router.push('/select-language')
 
         const handleLanguageUpdate = async () => {
-            await loadLevels()
+            cacheStore.invalidatePrefix('levels')
+            await loadLevels(true)
         }
 
         // Watcher: si selectedLangId llega tarde (initialize() async todavía resolviendo),
@@ -194,7 +202,7 @@ export default {
             unlockedLevels, lockedLevels,
             loadLevels, goToLanguageSelection,
             handleLanguageUpdate,
-            authStore, energyStore,
+            authStore, energyStore, cacheStore,
         }
     },
     methods: {

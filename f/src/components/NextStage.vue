@@ -67,6 +67,7 @@
 
 <script>
 import { useAuthStore } from '../stores/auth.js';
+import { useCacheStore } from '../stores/cache.js';
 import { learningApi } from '../api/apiClient.js';
 
 export default {
@@ -84,6 +85,7 @@ export default {
   data() {
     return {
       authStore: useAuthStore(),
+      cacheStore: useCacheStore(),
       nextLevel: null,
       loading: false
     };
@@ -104,25 +106,21 @@ export default {
 
       this.loading = true;
       try {
-        // currentLevelId viene de la ruta (/nivel/:id) => es el ID de la BD,
-        // NO el número de nivel (levelNum). No se pueden mezclar.
         const currentId = Number(this.currentLevelId);
+        const userId = this.authStore.user.id;
+        const langId = this.authStore.selectedLangId;
 
-        const levels = await learningApi.getLevels(
-            this.authStore.selectedLangId,
-            this.authStore.user.id
-        );
+        // Siempre fetch fresco: NextStage se muestra tras completar lección,
+        // momento en que el backend ya actualizó el estado de desbloqueo.
+        const levels = await learningApi.getLevels(langId, userId);
+        this.cacheStore.set(this.cacheStore.levelsKey(langId, userId), levels);
 
-        // 1) Encontrar el nivel actual por su ID real
         const currentLevel = levels.find(level => level.id === currentId);
         if (!currentLevel) {
-          console.warn('[NextStage] No se encontró el nivel actual con id', currentId);
           this.nextLevel = null;
           return;
         }
 
-        // 2) Buscar el siguiente nivel por levelNum (secuencia lógica),
-        // nunca por id (que es solo la PK autoincremental de la tabla).
         this.nextLevel = levels.find(
             level => level.levelNum === currentLevel.levelNum + 1
         ) || null;

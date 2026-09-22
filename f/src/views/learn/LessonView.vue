@@ -105,7 +105,7 @@
                                 <!-- Tipo: Completar espacio -->
                                 <div v-else-if="currentExercise.type === 'fill-blank'" class="md:-ml-7">
                                     <textarea v-model="textAnswer"
-                                        :placeholder="currentExercise.placeholder || 'Escribe tu respuesta...'"
+                                        :placeholder="currentExercise.translation || currentExercise.placeholder || 'Escribe tu respuesta...'"
                                         :readonly="showResult" :class="{
                                             'border-green-500 bg-green-900/20': showResult && isAnswerCorrect,
                                             'border-red-500 bg-red-900/20': showResult && !isAnswerCorrect,
@@ -122,7 +122,7 @@
                         <div class="fixed bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto
                             md:float-right md:left-[38%] md:p-5 md:mt-8 md:max-w-[190px]"
                             :class="{ 'md:hidden': showFeedbackModal }">
-                            <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
+                            <button @click="verifyAnswer" :disabled="isVerifying || (currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
                                 (currentExercise.type === 'fill-blank' && !textAnswer)"
                                 class="w-full bg-[#31771c] hover:bg-[#58cc02] text-white py-5 md:py-3 px-8 rounded-lg disabled:bg-[#37464f] disabled:text-stone-500 text-lg font-medium">
                                 {{ showResult ? 'Continuar' : 'Verificar' }}
@@ -168,6 +168,7 @@ import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
+import { useCacheStore } from '../../stores/cache.js';
 import { loadLessonData, completeLesson } from './lessonApi.js';
 
 export default {
@@ -184,7 +185,8 @@ export default {
     },
     setup() {
         const energyStore = useEnergyStore();
-        return { energyStore };
+        const cacheStore = useCacheStore();
+        return { energyStore, cacheStore };
     },
     data() {
         return {
@@ -213,6 +215,7 @@ export default {
             feedbackMessage: '',
 
             // Métricas
+            isVerifying: false,
             correctAnswersCount: 0,
             screenHeight: 0,
             lessonStartTime: null,
@@ -308,8 +311,12 @@ export default {
         },
 
         async verifyAnswer() {
+            if (this.isVerifying) return;
+            this.isVerifying = true;
+
             if (this.showResult) {
                 this.continueFromModal();
+                this.isVerifying = false;
                 return;
             }
 
@@ -342,6 +349,7 @@ export default {
                     this.currentExercise.explanation || ''
                 );
                 setTimeout(() => this.handleEnergyDepleted(), 100);
+                this.isVerifying = false;
                 return;
             }
 
@@ -353,6 +361,8 @@ export default {
                 this.showFeedback('Inténtalo de nuevo',
                     this.currentExercise.explanation || 'La respuesta no es correcta.');
             }
+
+            this.isVerifying = false;
         },
 
         continueFromModal() {
@@ -392,6 +402,11 @@ export default {
                 });
 
                 this.earnedExp = result.xpEarned ?? earnedPoints;
+
+                // Invalidar caché de levels y units para que NextStage,
+                // LevelView y HomeView reflejen el nuevo estado del backend
+                this.cacheStore.invalidatePrefix('levels')
+                this.cacheStore.invalidatePrefix('units')
 
                 if (result.wasAlreadyCompleted) {
                     this.showFeedback('¡Lección repasada!', 'Fresco como una lechuga!');

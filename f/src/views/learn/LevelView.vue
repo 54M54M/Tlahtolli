@@ -134,6 +134,7 @@ import Badge from '../../components/Badge.vue';
 import NextStage from '../../components/NextStage.vue';
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
+import { useCacheStore } from '../../stores/cache.js';
 import { learningApi } from '../../api/apiClient.js';
 
 export default {
@@ -149,6 +150,7 @@ export default {
         return {
             authStore: useAuthStore(),
             energyStore: useEnergyStore(),
+            cacheStore: useCacheStore(),
             currentLevel: {},
             units: [],
             loading: false,
@@ -177,15 +179,33 @@ export default {
     methods: {
         async loadData() {
             if (!this.authStore.selectedLangId || !this.authStore.user) return;
+
+            const levelId = Number(this.id);
+            const userId = this.authStore.user.id;
+            const levelsKey = this.cacheStore.levelsKey(this.authStore.selectedLangId, userId);
+            const unitsKey = this.cacheStore.unitsKey(levelId, userId);
+
+            const cachedLevels = this.cacheStore.get(levelsKey);
+            const cachedUnits = this.cacheStore.get(unitsKey);
+
+            if (cachedLevels && cachedUnits) {
+                this.currentLevel = cachedLevels.find(l => l.id === levelId) || {};
+                this.units = cachedUnits;
+                return;
+            }
+
             this.loading = true;
             try {
-                const levelId = Number(this.id);
-                const levels = await learningApi.getLevels(
-                    this.authStore.selectedLangId,
-                    this.authStore.user.id
-                );
+                let levels = cachedLevels;
+                if (!levels) {
+                    levels = await learningApi.getLevels(this.authStore.selectedLangId, userId);
+                    this.cacheStore.set(levelsKey, levels);
+                }
                 this.currentLevel = levels.find(l => l.id === levelId) || {};
-                this.units = await learningApi.getUnits(levelId, this.authStore.user.id);
+
+                const units = await learningApi.getUnits(levelId, userId);
+                this.cacheStore.set(unitsKey, units);
+                this.units = units;
             } catch (err) {
                 console.error('[LevelView] loadData:', err);
             } finally {
