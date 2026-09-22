@@ -1122,9 +1122,6 @@
         <div class="form-group"><label>Username</label><input type="text" id="user-username" /></div>
         <div class="form-group"><label>Nombre completo</label><input type="text" id="user-fullname" /></div>
         <div class="form-group full"><label>Email</label><input type="email" id="user-email" /></div>
-        <div class="form-group"><label>Level</label><input type="number" id="user-level" value="1" min="1" /></div>
-        <div class="form-group"><label>XP</label><input type="number" id="user-xp" value="0" min="0" /></div>
-        <div class="form-group"><label>Streak</label><input type="number" id="user-streak" value="0" min="0" /></div>
         <div class="form-group"><label>Idioma actual</label><select class="form-sel" id="user-lang">
             <option value="">— Sin asignar —</option>
           </select></div>
@@ -1175,6 +1172,7 @@
             <option>legendary</option>
           </select></div>
         <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req" /></div>
+        <div class="form-group full"><label>Language Tag (JSON, ej: ["nhce"])</label><input type="text" id="ach-lang-tag" placeholder='null = logro global' /></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost"
@@ -1593,15 +1591,14 @@
     function editUser(r) {
       document.getElementById('user-id').value = r.id; document.getElementById('user-username').value = r.username;
       document.getElementById('user-fullname').value = r.fullName ?? r.full_name ?? ''; document.getElementById('user-email').value = r.email;
-      document.getElementById('user-level').value = r.userLevel ?? r.user_level ?? 1; document.getElementById('user-xp').value = r.xp ?? 0;
-      document.getElementById('user-streak').value = r.streak ?? 0; document.getElementById('user-lang').value = r.currentLang ?? r.current_lang ?? '';
+      document.getElementById('user-lang').value = r.currentLang ?? r.current_lang ?? '';
       document.getElementById('modal-user-title').textContent = 'Editar usuario'; openModal('modal-user');
     }
     async function saveUser() {
       const id = strVal('user-id'); const langVal = selVal('user-lang');
       const payload = {
         username: strVal('user-username'), fullName: strVal('user-fullname'), email: strVal('user-email'),
-        userLevel: numVal('user-level'), xp: numVal('user-xp'), streak: numVal('user-streak'), currentLang: langVal ? +langVal : null
+        currentLang: langVal ? +langVal : null
       };
       try {
         if (id) await apiFetch('/users/' + id, { method: 'PUT', body: JSON.stringify(payload) });
@@ -1674,13 +1671,16 @@
       document.getElementById('ach-desc').value = r.description ?? ''; document.getElementById('ach-icon').value = r.icon ?? '';
       document.getElementById('ach-xp').value = r.xpReward ?? r.xp_reward ?? 0; document.getElementById('ach-cat').value = r.category ?? '';
       document.getElementById('ach-rarity').value = r.rarity ?? 'common'; document.getElementById('ach-req').value = r.requirement ?? '';
+      document.getElementById('ach-lang-tag').value = r.languageTag ?? r.language_tag ?? '';
       document.getElementById('modal-ach-title').textContent = 'Editar logro'; openModal('modal-achievement');
     }
     async function saveAchievement() {
       const id = strVal('ach-id');
+      const langTagRaw = strVal('ach-lang-tag');
       const payload = {
         title: strVal('ach-title'), description: strVal('ach-desc'), icon: strVal('ach-icon'),
-        xpReward: numVal('ach-xp'), category: strVal('ach-cat'), rarity: strVal('ach-rarity'), requirement: strVal('ach-req')
+        xpReward: numVal('ach-xp'), category: strVal('ach-cat'), rarity: strVal('ach-rarity'),
+        requirement: strVal('ach-req'), languageTag: langTagRaw || null
       };
       try {
         if (id) await apiFetch('/achievements/' + id, { method: 'PUT', body: JSON.stringify(payload) });
@@ -2041,7 +2041,7 @@
     function loadConfig() { const saved = localStorage.getItem('tlahtolli_api'); if (saved) document.getElementById('cfg-api').value = saved; }
     function saveConfig() {
       API = document.getElementById('cfg-api').value.trim(); localStorage.setItem('tlahtolli_api', API);
-      document.getElementById('db-host').textContent = document.getElementById('cfg-host').value + ':' + document.getElementById('cfg-port').value;
+      try { document.getElementById('db-host').textContent = new URL(API).host; } catch { document.getElementById('db-host').textContent = API; }
       testConnection();
     }
     async function testConnection() {

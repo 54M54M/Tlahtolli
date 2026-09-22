@@ -55,6 +55,9 @@ public class Exercise {
 	@Column(name = "CHARACTER_REF", length = 100)
 	private String characterRef;
 
+	@Column(name = "PLACEHOLDER", length = 255)
+	private String placeholder;
+
 	public Integer getId() {
 		return id;
 	}
@@ -149,5 +152,13 @@ public class Exercise {
 
 	public void setCharacterRef(String characterRef) {
 		this.characterRef = characterRef;
+	}
+
+	public String getPlaceholder() {
+		return placeholder;
+	}
+
+	public void setPlaceholder(String placeholder) {
+		this.placeholder = placeholder;
 	}
 }

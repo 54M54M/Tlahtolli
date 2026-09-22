@@ -167,7 +167,7 @@ public class LearningService {
 				accepted = List.of(ex.getCorrectAns()); // string simple
 			}
 			m.put("correctAnswer", accepted);
-			m.put("placeholder", ex.getAnswer()); // el texto con el hueco
+			m.put("placeholder", ex.getPlaceholder()); // pista en español
 		}
 
 		return m;
