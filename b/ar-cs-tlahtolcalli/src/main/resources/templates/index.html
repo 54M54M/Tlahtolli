@@ -681,6 +681,59 @@
       color: var(--muted);
       margin-top: 10px;
     }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1024px) {
+      #sidebar {
+        width: 54px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .logo { padding: 14px 0; display: flex; justify-content: center; }
+      .logo h1, .logo p, .nav-label, .nav-text, .sidebar-footer p { display: none !important; }
+      nav { padding: 8px 4px; }
+      .nav-section { margin-bottom: 2px; }
+      .nav-btn { justify-content: center; padding: 9px 0; gap: 0; position: relative; }
+      .nav-btn .icon { width: auto; font-size: 1.15rem; }
+      .sidebar-footer { padding: 10px 0; display: flex; justify-content: center; }
+      .nav-btn::after {
+        content: attr(data-label);
+        position: absolute;
+        left: calc(100% + 6px); top: 50%;
+        transform: translateY(-50%);
+        background: var(--card); border: 1px solid var(--border);
+        color: var(--text); font-size: .72rem;
+        white-space: nowrap; padding: 4px 10px;
+        border-radius: 6px; pointer-events: none;
+        opacity: 0; transition: opacity .12s; z-index: 300;
+      }
+      .nav-btn:hover::after { opacity: 1; }
+      #content { padding: 20px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 540px; }
+    }
+
+    @media (max-width: 600px) {
+      #content { padding: 12px; }
+      header { padding: 11px 14px; }
+      .badge-db { font-size: .58rem; padding: 3px 8px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-card { padding: 11px; }
+      .stat-card .value { font-size: 1.4rem; }
+      table { min-width: 420px; }
+      .filter-bar { flex-direction: column; align-items: stretch; gap: 6px; }
+      .input-search { max-width: 100%; }
+      select.filter-sel { width: 100%; }
+      .filter-bar .btn { width: 100%; text-align: center; }
+      .config-row { flex-direction: column; }
+      .config-row .form-group { min-width: unset; width: 100%; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      .modal { padding: 16px; }
+      .modal-footer { flex-direction: column-reverse; }
+      .modal-footer .btn { width: 100%; text-align: center; }
+    }
   </style>
 </head>
 
@@ -695,37 +748,37 @@
     <nav>
       <div class="nav-section">
         <span class="nav-label">Resumen</span>
-        <button class="nav-btn active" onclick="showTab('overview')"><span class="icon">◈</span>Overview</button>
+        <button class="nav-btn active" data-label="Overview" onclick="showTab('overview')"><span class="icon">◈</span><span class="nav-text">Overview</span></button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Catálogos</span>
-        <button class="nav-btn" onclick="showTab('languages')"><span class="icon">🌐</span>Idiomas</button>
-        <button class="nav-btn" onclick="showTab('users')"><span class="icon">👤</span>Usuarios</button>
-        <button class="nav-btn" onclick="showTab('vocabulary')"><span class="icon">📖</span>Vocabulario</button>
-        <button class="nav-btn" onclick="showTab('achievements')"><span class="icon">🏆</span>Logros</button>
+        <button class="nav-btn" data-label="Idiomas" onclick="showTab('languages')"><span class="icon">🌐</span><span class="nav-text">Idiomas</span></button>
+        <button class="nav-btn" data-label="Usuarios" onclick="showTab('users')"><span class="icon">👤</span><span class="nav-text">Usuarios</span></button>
+        <button class="nav-btn" data-label="Vocabulario" onclick="showTab('vocabulary')"><span class="icon">📖</span><span class="nav-text">Vocabulario</span></button>
+        <button class="nav-btn" data-label="Logros" onclick="showTab('achievements')"><span class="icon">🏆</span><span class="nav-text">Logros</span></button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Contenido</span>
-        <button class="nav-btn" onclick="showTab('levels')"><span class="icon">📊</span>Niveles</button>
-        <button class="nav-btn" onclick="showTab('units')"><span class="icon">📦</span>Unidades</button>
+        <button class="nav-btn" data-label="Niveles" onclick="showTab('levels')"><span class="icon">📊</span><span class="nav-text">Niveles</span></button>
+        <button class="nav-btn" data-label="Unidades" onclick="showTab('units')"><span class="icon">📦</span><span class="nav-text">Unidades</span></button>
         <!-- <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button> -->
-        <button class="nav-btn" onclick="showTab('exercises')"><span class="icon">✏️</span>Ejercicios</button>
+        <button class="nav-btn" data-label="Ejercicios" onclick="showTab('exercises')"><span class="icon">✏️</span><span class="nav-text">Ejercicios</span></button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Actividad</span>
-        <button class="nav-btn" onclick="showTab('lesson_history')"><span class="icon">📋</span>Historial</button>
-        <button class="nav-btn" onclick="showTab('user_stats')"><span class="icon">📈</span>Estadísticas</button>
+        <button class="nav-btn" data-label="Historial" onclick="showTab('lesson_history')"><span class="icon">📋</span><span class="nav-text">Historial</span></button>
+        <button class="nav-btn" data-label="Estadísticas" onclick="showTab('user_stats')"><span class="icon">📈</span><span class="nav-text">Estadísticas</span></button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Jugador</span>
-        <button class="nav-btn" onclick="showTab('user_progress')"><span class="icon">🗺️</span>Progreso</button>
-        <button class="nav-btn" onclick="showTab('user_energy')"><span class="icon">⚡</span>Energía</button>
-        <button class="nav-btn" onclick="showTab('user_achievements')"><span class="icon">🎖️</span>Logros Usuario</button>
-        <button class="nav-btn" onclick="showTab('writing_systems')"><span class="icon">✍️</span>Sist. Escritura</button>
+        <button class="nav-btn" data-label="Progreso" onclick="showTab('user_progress')"><span class="icon">🗺️</span><span class="nav-text">Progreso</span></button>
+        <button class="nav-btn" data-label="Energía" onclick="showTab('user_energy')"><span class="icon">⚡</span><span class="nav-text">Energía</span></button>
+        <button class="nav-btn" data-label="Logros Usuario" onclick="showTab('user_achievements')"><span class="icon">🎖️</span><span class="nav-text">Logros Usuario</span></button>
+        <button class="nav-btn" data-label="Sist. Escritura" onclick="showTab('writing_systems')"><span class="icon">✍️</span><span class="nav-text">Sist. Escritura</span></button>
       </div>
       <div class="nav-section">
         <span class="nav-label">Sistema</span>
-        <button class="nav-btn" onclick="showTab('config')"><span class="icon">⚙️</span>Configuración</button>
+        <button class="nav-btn" data-label="Configuración" onclick="showTab('config')"><span class="icon">⚙️</span><span class="nav-text">Configuración</span></button>
       </div>
     </nav>
     <div class="sidebar-footer">

@@ -51,7 +51,8 @@ public class UserController {
             user.setUsername(dto.username());
             user.setFullName(dto.fullName());
             user.setEmail(dto.email());
-            user.setCurrentLang(Math.toIntExact(dto.currentLang()));
+            user.setPasswordHash(dto.password());
+            if (dto.currentLang() != null) user.setCurrentLang(Math.toIntExact(dto.currentLang()));
             return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(userService.create(user)));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -64,7 +65,7 @@ public class UserController {
         body.setUsername(dto.username());
         body.setFullName(dto.fullName());
         body.setEmail(dto.email());
-        body.setCurrentLang(Math.toIntExact(dto.currentLang()));
+        if (dto.currentLang() != null) body.setCurrentLang(Math.toIntExact(dto.currentLang()));
         return userService.update(id, body).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -4,6 +4,7 @@ import com.tlahtolli.api.entity.User;
 import com.tlahtolli.api.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class UserService {
 
 	private final UserRepository userRepo;
 	private final EnergyService energyService;
+	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	public UserService(UserRepository userRepo, EnergyService energyService) {
 		this.userRepo = userRepo;
@@ -57,6 +59,7 @@ public class UserService {
 		user.setXp(0);
 		user.setTotalXp(0);
 		user.setStreak((short) 0);
+		user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
 		User saved = userRepo.save(user);
 		log.info("User created id={}", saved.getId());
 
@@ -85,6 +88,12 @@ public class UserService {
 		userRepo.deleteById(id);
 		log.info("User deleted id={}", id);
 		return true;
+	}
+
+	/** Verifica credenciales y devuelve el usuario si son correctas. */
+	public Optional<User> login(String username, String password) {
+		log.info("Login attempt for username={}", username);
+		return userRepo.findByUsername(username).filter(u -> passwordEncoder.matches(password, u.getPasswordHash()));
 	}
 
 	/** Cambia el idioma activo del usuario. */

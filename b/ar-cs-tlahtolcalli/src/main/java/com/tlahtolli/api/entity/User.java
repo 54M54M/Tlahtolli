@@ -43,6 +43,9 @@ public class User {
     @Column(name = "CURRENT_LANG")
     private Integer currentLang;
 
+    @Column(name = "PASSWORD_HASH", nullable = false, length = 255)
+    private String passwordHash;
+
 	public Integer getId() {
 		return id;
 	}
@@ -121,6 +124,14 @@ public class User {
 
 	public void setCurrentLang(Integer currentLang) {
 		this.currentLang = currentLang;
+	}
+
+	public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
         
 }
