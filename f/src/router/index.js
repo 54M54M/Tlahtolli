@@ -55,6 +55,12 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/perfil/editar',
+        name: 'EditarPerfil',
+        component: () => import("../views/EditProfileView.vue"),
+        meta: { hideNav: true, requiresAuth: true },
+    },
+    {
         path: '/perfil',
         name: 'Perfil',
         component: () => import("../views/ProfileView.vue"),

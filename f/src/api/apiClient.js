@@ -61,6 +61,10 @@ export const usersApi = {
     switchLanguage: safe('users.switchLanguage', (id, langId) => api.put(`/users/${id}/language`, { languageId: langId })),
 }
 
+export const authApi = {
+    login: safe('auth.login', (username, password) => api.post('/auth/login', { username, password })),
+}
+
 export const languagesApi = {
     getAll: safe('languages.getAll', () => api.get('/languages')),
     getById: safe('languages.getById', (id) => api.get(`/languages/${id}`)),

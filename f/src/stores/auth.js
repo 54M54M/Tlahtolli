@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { usersApi, languagesApi, progressApi, learningApi } from '../api/apiClient.js'
+import { usersApi, authApi, languagesApi, progressApi, learningApi } from '../api/apiClient.js'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -20,14 +20,9 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         // ── Login con credenciales ─────────────────────────────────────────────
         async login(username, password) {
-            const DEMO_PASSWORD = 'demo1234'
-            if (password !== DEMO_PASSWORD) {
-                throw new Error('Contraseña incorrecta.')
-            }
-
-            const user = await usersApi.getByUsername(username)
+            const user = await authApi.login(username, password)
             if (!user) {
-                throw new Error('Usuario no encontrado.')
+                throw new Error('Usuario o contraseña incorrectos.')
             }
 
             this.user = user

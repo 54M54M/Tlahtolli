@@ -3,6 +3,8 @@
     <div class="bg-[#0A2136] text-white pt-4">
         <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
 
+        <EditProfileModal v-if="showEditModal" @close="showEditModal = false" @updated="onProfileUpdated" />
+
         <main class="container mx-auto py-1 md:py-2 pb-16 md:pb-20">
             <div class="md:w-full">
                 <!-- ✅ CORRECCIÓN: Mostrar solo si userData existe -->
@@ -100,8 +102,8 @@
                             </div>
                         </div>
                         <div class="mt-4 space-y-2">
-                            <button
-                                class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2 cursor-no-drop">
+                            <button @click="router.push('/perfil/editar')"
+                                class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2">
                                 Editar perfil
                             </button>
                             <button
@@ -150,7 +152,6 @@ const authStore = useAuthStore();
 const cacheStore = useCacheStore();
 const languageService = new LanguageService();
 const router = useRouter();
-
 // ── Datos del usuario desde el store (ya cargado por auth.initialize) ──────
 const userData = computed(() => {
     if (!authStore.user) return null;
