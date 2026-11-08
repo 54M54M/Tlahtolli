@@ -26,11 +26,10 @@ public class ProgressService {
 	private final UnitRepository unitRepo;
 	private final UnitVocabRepository unitVocabRepo;
 	private final LevelRepository levelRepo;
-	private final AchievementService achievementService;
 
 	public ProgressService(UserProgressRepository progressRepo, UserStatsRepository statsRepo,
 			LessonHistoryRepository historyRepo, UserRepository userRepo, UnitRepository unitRepo,
-			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo, AchievementService achievementService) {
+			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo) {
 		this.progressRepo = progressRepo;
 		this.statsRepo = statsRepo;
 		this.historyRepo = historyRepo;
@@ -38,7 +37,6 @@ public class ProgressService {
 		this.unitRepo = unitRepo;
 		this.unitVocabRepo = unitVocabRepo;
 		this.levelRepo = levelRepo;
-		this.achievementService = achievementService;
 	}
 
 	@Transactional
@@ -100,15 +98,13 @@ public class ProgressService {
 			statsRepo.save(stats);
 		}
 
-		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
-		log.info("Lesson completed for userId={}, unitId={}: xpEarned={}, newAchievements={}", userId, unitId, earnedExp, newAchievements.size());
+		log.info("Lesson completed for userId={}, unitId={}: xpEarned={}", userId, unitId, earnedExp);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("xpEarned", earnedExp);
 		result.put("wasAlreadyCompleted", wasAlreadyCompleted);
 		result.put("perfectLesson", !wasAlreadyCompleted && performance >= 0.9);
 		result.put("nextUnitId", nextUnitId);
-		result.put("newAchievements", newAchievements.size());
 		result.put("userXp", user.getXp());
 		return result;
 	}
@@ -184,7 +180,6 @@ public class ProgressService {
 			statsRepo.save(stats);
 		}
 
-		List<UserAchievement> newAchievements = achievementService.checkAndUnlock(userId, languageId);
 		log.info("Quick level completed for userId={}: xpEarned={}, nextLevelUnlocked={}", userId, earnedExp, nextLevelUnlocked);
 
 		Map<String, Object> result = new HashMap<>();
@@ -193,7 +188,6 @@ public class ProgressService {
 		result.put("perfectLesson", performance >= 0.9);
 		result.put("nextUnitId", null);
 		result.put("nextLevelUnlocked", nextLevelUnlocked);
-		result.put("newAchievements", newAchievements.size());
 		result.put("userXp", user.getXp());
 		return result;
 	}

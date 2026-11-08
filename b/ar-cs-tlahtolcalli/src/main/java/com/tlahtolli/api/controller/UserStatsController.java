@@ -1,8 +1,11 @@
 package com.tlahtolli.api.controller;
 
+import com.tlahtolli.api.dto.request.UpdateUserStatsRequest;
+import com.tlahtolli.api.dto.request.UserStatsRequest;
 import com.tlahtolli.api.dto.response.UserStatsResponse;
 import com.tlahtolli.api.entity.UserStats;
 import com.tlahtolli.api.repository.UserStatsRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,15 +49,29 @@ public class UserStatsController {
     }
 
     @PostMapping
-    public ResponseEntity<UserStatsResponse> create(@RequestBody UserStats s) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserStatsResponse.from(repo.save(s)));
+    public ResponseEntity<UserStatsResponse> create(@Valid @RequestBody UserStatsRequest s) {
+        UserStats entity = new UserStats();
+        entity.setUserId(s.userId());
+        entity.setLanguageId(s.languageId());
+        entity.setWordsLearned(s.wordsLearned() != null ? s.wordsLearned() : 0);
+        entity.setLessonsDone(s.lessonsDone() != null ? s.lessonsDone() : 0);
+        entity.setPerfectLess(s.perfectLess() != null ? s.perfectLess() : 0);
+        entity.setDaysStudied(s.daysStudied() != null ? s.daysStudied() : 0);
+        entity.setBestStreak(s.bestStreak() != null ? s.bestStreak() : 0);
+        entity.setTotalMins(s.totalMins() != null ? s.totalMins() : 0);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserStatsResponse.from(repo.save(entity)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserStatsResponse> update(@PathVariable Integer id, @RequestBody UserStats s) {
+    public ResponseEntity<UserStatsResponse> update(@PathVariable Integer id, @Valid @RequestBody UpdateUserStatsRequest s) {
         return repo.findById(id).map(existing -> {
-            s.setId(existing.getId());
-            return ResponseEntity.ok(UserStatsResponse.from(repo.save(s)));
+            existing.setWordsLearned(s.wordsLearned() != null ? s.wordsLearned() : existing.getWordsLearned());
+            existing.setLessonsDone(s.lessonsDone() != null ? s.lessonsDone() : existing.getLessonsDone());
+            existing.setPerfectLess(s.perfectLess() != null ? s.perfectLess() : existing.getPerfectLess());
+            existing.setDaysStudied(s.daysStudied() != null ? s.daysStudied() : existing.getDaysStudied());
+            existing.setBestStreak(s.bestStreak() != null ? s.bestStreak() : existing.getBestStreak());
+            existing.setTotalMins(s.totalMins() != null ? s.totalMins() : existing.getTotalMins());
+            return ResponseEntity.ok(UserStatsResponse.from(repo.save(existing)));
         }).orElse(ResponseEntity.notFound().build());
     }
 }

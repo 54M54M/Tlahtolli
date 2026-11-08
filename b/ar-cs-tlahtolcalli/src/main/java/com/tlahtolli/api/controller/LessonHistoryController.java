@@ -1,5 +1,6 @@
 package com.tlahtolli.api.controller;
 
+import com.tlahtolli.api.dto.response.LessonHistoryResponse;
 import com.tlahtolli.api.entity.LessonHistory;
 import com.tlahtolli.api.repository.LessonHistoryRepository;
 import org.springframework.http.HttpStatus;
@@ -19,23 +20,18 @@ public class LessonHistoryController {
 		this.repo = repo;
 	}
 
-	/**
-	 * GET /api/lesson-history → todo el historial (dashboard admin) GET
-	 * /api/lesson-history?userId=1 → historial de un usuario GET
-	 * /api/lesson-history?userId=1&unitId=3 → historial usuario+unidad Usado por
-	 * ProgressService para verificar si ya completó una unidad.
-	 */
 	@GetMapping
-	public List<LessonHistory> getAll(@RequestParam(required = false) Integer userId,
+	public List<LessonHistoryResponse> getAll(@RequestParam(required = false) Integer userId,
 			@RequestParam(required = false) Integer unitId) {
-
+		List<LessonHistory> results;
 		if (userId != null && unitId != null) {
-			return repo.findByUserIdAndUnitId(userId, unitId);
+			results = repo.findByUserIdAndUnitId(userId, unitId);
+		} else if (userId != null) {
+			results = repo.findByUserIdOrderByCompletedAtDesc(userId);
+		} else {
+			results = repo.findAllByOrderByCompletedAtDesc();
 		}
-		if (userId != null) {
-			return repo.findByUserIdOrderByCompletedAtDesc(userId);
-		}
-		return repo.findAllByOrderByCompletedAtDesc();
+		return results.stream().map(LessonHistoryResponse::from).toList();
 	}
 
 	@GetMapping("/count")
@@ -44,16 +40,13 @@ public class LessonHistoryController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<LessonHistory> getById(@PathVariable Integer id) {
-		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<LessonHistoryResponse> getById(@PathVariable Integer id) {
+		return repo.findById(id).map(LessonHistoryResponse::from).map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
 
-	/**
-	 * POST /api/lesson-history Permite registrar un intento directamente si el
-	 * frontend lo necesita.
-	 */
 	@PostMapping
-	public ResponseEntity<LessonHistory> create(@RequestBody LessonHistory h) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(h));
+	public ResponseEntity<LessonHistoryResponse> create(@RequestBody LessonHistory h) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(LessonHistoryResponse.from(repo.save(h)));
 	}
 }

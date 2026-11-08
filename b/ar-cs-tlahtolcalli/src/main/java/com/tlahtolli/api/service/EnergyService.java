@@ -66,7 +66,11 @@ public class EnergyService {
 	public UserEnergy setEnergy(Integer userId, int value) {
 		log.info("Setting energy for userId={} to value={}", userId, value);
 		UserEnergy e = getOrCreate(userId);
-		e.setCurrentEnergy((short) Math.max(0, Math.min(e.getMaxEnergy(), value)));
+		if (value > e.getMaxEnergy()) {
+			throw new IllegalArgumentException(
+					"value " + value + " excede maxEnergy (" + e.getMaxEnergy() + ") para userId=" + userId);
+		}
+		e.setCurrentEnergy((short) value);
 		e.setLastUpdate(LocalDateTime.now());
 		return energyRepo.save(e);
 	}

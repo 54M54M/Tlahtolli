@@ -1,6 +1,7 @@
 package com.tlahtolli.api.controller;
 
 import com.tlahtolli.api.dto.request.UserRequest;
+import com.tlahtolli.api.dto.request.SwitchLanguageRequest;
 import com.tlahtolli.api.dto.response.UserResponse;
 import com.tlahtolli.api.entity.User;
 import com.tlahtolli.api.service.UserService;
@@ -71,12 +72,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}/language")
-    public ResponseEntity<?> switchLanguage(@PathVariable Integer id, @RequestBody Map<String, Object> body) {
-        Object raw = body.get("languageId");
-        if (raw == null)
-            return ResponseEntity.badRequest().body(Map.of("error", "languageId es requerido"));
-        Integer languageId = Integer.parseInt(raw.toString());
-        return userService.switchLanguage(id, languageId).map(UserResponse::from).map(ResponseEntity::ok)
+    public ResponseEntity<?> switchLanguage(@PathVariable Integer id,
+            @Valid @RequestBody SwitchLanguageRequest body) {
+        return userService.switchLanguage(id, body.languageId()).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 

@@ -1,7 +1,10 @@
 package com.tlahtolli.api.controller;
 
-import com.tlahtolli.api.entity.UserEnergy;
+import com.tlahtolli.api.dto.request.ConsumeEnergyRequest;
+import com.tlahtolli.api.dto.request.SetEnergyRequest;
+import com.tlahtolli.api.dto.response.EnergyResponse;
 import com.tlahtolli.api.service.EnergyService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,22 +20,20 @@ public class EnergyController {
 		this.energyService = energyService;
 	}
 
-	/** Obtiene (o crea) la energía de un usuario, aplicando recuperación pasiva. */
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<UserEnergy> getEnergy(@PathVariable Integer userId) {
-		return ResponseEntity.ok(energyService.getOrCreate(userId));
+	public ResponseEntity<EnergyResponse> getEnergy(@PathVariable Integer userId) {
+		return ResponseEntity.ok(EnergyResponse.from(energyService.getOrCreate(userId)));
 	}
 
 	@PostMapping("/user/{userId}/consume")
 	public ResponseEntity<Map<String, Object>> consume(@PathVariable Integer userId,
-			@RequestBody Map<String, Object> body) {
-		boolean isCorrect = Boolean.TRUE.equals(body.get("isCorrect"));
-		return ResponseEntity.ok(energyService.consume(userId, isCorrect));
+                                                       @Valid @RequestBody ConsumeEnergyRequest body) {
+		return ResponseEntity.ok(energyService.consume(userId, body.isCorrect()));
 	}
 
 	@PutMapping("/user/{userId}/set")
-	public ResponseEntity<UserEnergy> setEnergy(@PathVariable Integer userId, @RequestBody Map<String, Object> body) {
-		int value = Integer.parseInt(body.get("value").toString());
-		return ResponseEntity.ok(energyService.setEnergy(userId, value));
+	public ResponseEntity<EnergyResponse> setEnergy(@PathVariable Integer userId,
+			@Valid @RequestBody SetEnergyRequest body) {
+		return ResponseEntity.ok(EnergyResponse.from(energyService.setEnergy(userId, body.value())));
 	}
 }
