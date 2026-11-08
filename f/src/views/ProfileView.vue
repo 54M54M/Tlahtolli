@@ -134,9 +134,8 @@ import UserProfile from '../components/UserProfile.vue';
 import SettingsPanel from '../components/SettingsPanel.vue';
 import AchievementsList from '../components/AchievementsList.vue';
 
-import { achievementsApi } from '../api/apiClient.js';
+import { getAchievementsWithStatus } from '../data/achievements.js';
 import { LanguageService } from '../data/services/LanguageService.js';
-import { useCacheStore } from '../stores/cache.js';
 
 // ── Estado ──────────────────────────────────────────────────────────────────
 const currentTab = ref('achievements');
@@ -149,7 +148,6 @@ const allAchievements = ref([]);  // [{achievement: {...}, earned: bool, earnedA
 const selectedAchievement = ref(null);
 
 const authStore = useAuthStore();
-const cacheStore = useCacheStore();
 const languageService = new LanguageService();
 const router = useRouter();
 // ── Datos del usuario desde el store (ya cargado por auth.initialize) ──────
@@ -189,17 +187,9 @@ const achievementsWithProgress = computed(() => {
 // ── Carga de datos ───────────────────────────────────────────────────────────
 const loadAchievements = async () => {
     if (!authStore.user?.id) return;
-
-    const key = cacheStore.achievementsKey(authStore.user.id, authStore.selectedLanguage);
-    const cached = cacheStore.get(key);
-    if (cached) { allAchievements.value = cached; return; }
-
     loading.value = true;
     try {
-        const result = await achievementsApi.getWithStatus(authStore.user.id, authStore.selectedLanguage);
-        const data = Array.isArray(result) ? result : [];
-        allAchievements.value = data;
-        cacheStore.set(key, data);
+        allAchievements.value = await getAchievementsWithStatus(authStore.selectedLanguage);
     } catch (err) {
         console.error('[ProfileView] loadAchievements:', err);
         allAchievements.value = [];

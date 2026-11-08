@@ -168,7 +168,6 @@ import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
-import { useCacheStore } from '../../stores/cache.js';
 import { loadLessonData, completeLesson } from './lessonApi.js';
 
 export default {
@@ -185,8 +184,7 @@ export default {
     },
     setup() {
         const energyStore = useEnergyStore();
-        const cacheStore = useCacheStore();
-        return { energyStore, cacheStore };
+        return { energyStore };
     },
     data() {
         return {
@@ -394,6 +392,7 @@ export default {
             try {
                 const result = await completeLesson({
                     unitId: this.currentUnit.id,
+                    levelId: this.currentLevel.id,
                     performance,
                     earnedExp: earnedPoints,
                     correctAns: this.correctAnswersCount,
@@ -402,11 +401,6 @@ export default {
                 });
 
                 this.earnedExp = result.xpEarned ?? earnedPoints;
-
-                // Invalidar caché de levels y units para que NextStage,
-                // LevelView y HomeView reflejen el nuevo estado del backend
-                this.cacheStore.invalidatePrefix('levels')
-                this.cacheStore.invalidatePrefix('units')
 
                 if (result.wasAlreadyCompleted) {
                     this.showFeedback('¡Lección repasada!', 'Fresco como una lechuga!');

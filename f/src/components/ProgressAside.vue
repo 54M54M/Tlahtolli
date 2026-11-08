@@ -56,8 +56,7 @@
 <script>
 import { computed, ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth.js'
-import { useCacheStore } from '../stores/cache.js'
-import { statsApi } from '../api/apiClient.js'
+import { getStatsByLanguage } from '../data/stats.js'
 import { LanguageService } from '../data/services/LanguageService.js'
 import LearningStats from './LearningStats.vue'
 import DialectProgress from './DialectProgress.vue'
@@ -67,7 +66,6 @@ export default {
     components: { LearningStats, DialectProgress },
     setup() {
         const authStore = useAuthStore()
-        const cacheStore = useCacheStore()
         const languageService = new LanguageService()
         const rawStats = ref(null)
 
@@ -118,15 +116,8 @@ export default {
 
         const loadStats = async () => {
             if (!authStore.user || !authStore.selectedLangId) return
-
-            const key = cacheStore.statsKey(authStore.user.id, authStore.selectedLangId)
-            const cached = cacheStore.get(key)
-            if (cached) { rawStats.value = cached; return }
-
             try {
-                const data = await statsApi.getByUserLang(authStore.user.id, authStore.selectedLangId)
-                rawStats.value = data
-                cacheStore.set(key, data)
+                rawStats.value = await getStatsByLanguage(authStore.selectedLangId)
             } catch (err) {
                 console.warn('[ProgressAside] loadStats:', err.message)
             }

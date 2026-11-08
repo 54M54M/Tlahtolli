@@ -67,8 +67,7 @@
 
 <script>
 import { useAuthStore } from '../stores/auth.js';
-import { useCacheStore } from '../stores/cache.js';
-import { learningApi } from '../api/apiClient.js';
+import { getLevels } from '../data/learning.js';
 
 export default {
   name: 'NextStage',
@@ -85,7 +84,6 @@ export default {
   data() {
     return {
       authStore: useAuthStore(),
-      cacheStore: useCacheStore(),
       nextLevel: null,
       loading: false
     };
@@ -107,23 +105,13 @@ export default {
       this.loading = true;
       try {
         const currentId = Number(this.currentLevelId);
-        const userId = this.authStore.user.id;
-        const langId = this.authStore.selectedLangId;
-
         // Siempre fetch fresco: NextStage se muestra tras completar lección,
-        // momento en que el backend ya actualizó el estado de desbloqueo.
-        const levels = await learningApi.getLevels(langId, userId);
-        this.cacheStore.set(this.cacheStore.levelsKey(langId, userId), levels);
-
+        // momento en que lessonApi ya invalidó la caché de levels.
+        const levels = await getLevels();
         const currentLevel = levels.find(level => level.id === currentId);
-        if (!currentLevel) {
-          this.nextLevel = null;
-          return;
-        }
-
-        this.nextLevel = levels.find(
-            level => level.levelNum === currentLevel.levelNum + 1
-        ) || null;
+        this.nextLevel = currentLevel
+          ? levels.find(level => level.levelNum === currentLevel.levelNum + 1) || null
+          : null;
       } catch (err) {
         console.error('[NextStage] loadNextLevel:', err);
         this.nextLevel = null;

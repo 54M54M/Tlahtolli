@@ -1,60 +1,38 @@
 // src/views/learn/lessonApi.js
-// Mixin/composable con la lógica de carga y completado de lección
-// que usa la API. Se importa en LessonView.vue y QuickLevelView.vue.
-
-import { learningApi, progressApi } from '../../api/apiClient.js'
+import { progressApi } from '../../api/apiClient.js'
 import { useAuthStore } from '../../stores/auth.js'
 import { useEnergyStore } from '../../stores/energy.js'
+import { getExercises, getVocabulary, findUnitWithLevel, invalidateAfterLesson } from '../../data/learning.js'
+import { invalidateStats } from '../../data/stats.js'
+import { invalidateAchievements } from '../../data/achievements.js'
 
 /**
  * Carga los datos de una lección dado el unitId.
  * Devuelve { currentUnit, currentLevel, currentExercises, vocabulary }
  */
 export async function loadLessonData(unitId) {
-    const auth = useAuthStore()
-    const userId = auth.user?.id || 1
-    const langId = auth.selectedLangId
-
-    // 1. Cargar ejercicios de la unidad
-    const exercises = await learningApi.getExercises(unitId)
-
-    // 2. Cargar vocabulario para PronunciationTooltip
-    const vocabulary = await learningApi.getVocabulary(unitId)
-
-    // 3. Buscar la unidad y su nivel recorriendo los niveles del idioma
-    const levels = await learningApi.getLevels(langId, userId)
-    let currentUnit = null
-    let currentLevel = null
-
-    for (const level of levels) {
-        const units = await learningApi.getUnits(level.id, userId)
-        const found = units.find(u => u.id === Number(unitId))
-        if (found) {
-            currentUnit = found
-            currentLevel = level
-            break
-        }
-    }
-
-    return { currentUnit, currentLevel, currentExercises: exercises, vocabulary }
+    const [exercises, vocabulary, { unit, level }] = await Promise.all([
+        getExercises(unitId),
+        getVocabulary(unitId),
+        findUnitWithLevel(unitId),
+    ])
+    return { currentUnit: unit, currentLevel: level, currentExercises: exercises, vocabulary }
 }
 
 /**
- * Registra la lección completada en el backend.
- * Devuelve el resultado con xpEarned, nextUnitId, etc.
+ * Registra la lección completada en el backend e invalida toda la caché
+ * relacionada en un solo lugar.
  */
 export async function completeLesson({
-    unitId, performance, earnedExp,
+    unitId, levelId, performance, earnedExp,
     correctAns, totalExerc, timeSeconds,
 }) {
     const auth = useAuthStore()
-    const userId = auth.user?.id || 1
-    const langId = auth.selectedLangId
 
     const result = await progressApi.complete({
-        userId,
+        userId: auth.user?.id || 1,
         unitId: Number(unitId),
-        languageId: langId,
+        languageId: auth.selectedLangId,
         performance,
         earnedExp,
         correctAns,
@@ -62,16 +40,47 @@ export async function completeLesson({
         timeSeconds,
     })
 
-    // Refrescar XP del usuario en el store
     await auth.refreshUser()
+
+    // Invalidación centralizada: un solo lugar decide qué caché limpiar
+    invalidateAfterLesson(levelId)
+    invalidateStats(auth.selectedLangId)
+    invalidateAchievements(auth.selectedLanguage)
 
     return result
 }
 
 /**
- * Consume energía en el store global y en el backend.
+ * Registra un QuickLevel completado. Misma invalidación que completeLesson:
+ * el nivel actual cambia y el siguiente puede desbloquearse.
  */
+export async function completeQuickLevel({
+    levelId, performance, earnedExp,
+    correctAns, totalExerc, timeSeconds,
+}) {
+    const auth = useAuthStore()
+
+    const result = await progressApi.complete({
+        userId: auth.user?.id || 1,
+        levelId: Number(levelId),
+        unitId: null,
+        languageId: auth.selectedLangId,
+        performance,
+        earnedExp,
+        correctAns,
+        totalExerc,
+        timeSeconds,
+    })
+
+    await auth.refreshUser()
+
+    invalidateAfterLesson(levelId)
+    invalidateStats(auth.selectedLangId)
+    invalidateAchievements(auth.selectedLanguage)
+
+    return result
+}
+
 export async function consumeEnergy(isCorrect) {
-    const energy = useEnergyStore()
-    return energy.consumeForExercise(isCorrect)
+    return useEnergyStore().consumeForExercise(isCorrect)
 }

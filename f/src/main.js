@@ -5,6 +5,10 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import { preventReload } from './utils/preventReload.js'
+import { warmUpBackend } from './api/apiClient.js'
+
+// Despertar el backend antes de que el usuario haga login
+warmUpBackend()
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)

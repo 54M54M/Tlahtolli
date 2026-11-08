@@ -94,11 +94,10 @@
 <script>
 import { useAuthStore } from '../stores/auth.js'
 import { useEnergyStore } from '../stores/energy.js'
-import { useCacheStore } from '../stores/cache.js'
-import { learningApi } from '../api/apiClient.js'
 import { onMounted, computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { LanguageService } from '../data/services/LanguageService.js'
+import { getLevels } from '../data/learning.js'
 import Header from '../components/vHeader.vue'
 import Badge from '../components/Badge.vue'
 import Card from '../components/Card.vue'
@@ -109,7 +108,6 @@ export default {
     setup() {
         const authStore = useAuthStore()
         const energyStore = useEnergyStore()
-        const cacheStore = useCacheStore()
         const router = useRouter()
         const languageService = new LanguageService()
 
@@ -126,18 +124,10 @@ export default {
                 return
             }
 
-            const key = cacheStore.levelsKey(authStore.selectedLangId, authStore.user.id)
-            if (!force) {
-                const cached = cacheStore.get(key)
-                if (cached) { levels.value = cached; return }
-            }
-
             loading.value = true
             error.value = false
             try {
-                const data = await learningApi.getLevels(authStore.selectedLangId, authStore.user.id)
-                levels.value = data
-                cacheStore.set(key, data)
+                levels.value = await getLevels(force)
             } catch (err) {
                 console.error('[HomeView] loadLevels:', err)
                 error.value = true
@@ -149,7 +139,6 @@ export default {
         const goToLanguageSelection = () => router.push('/select-language')
 
         const handleLanguageUpdate = async () => {
-            cacheStore.invalidatePrefix('levels')
             await loadLevels(true)
         }
 
@@ -202,7 +191,7 @@ export default {
             unlockedLevels, lockedLevels,
             loadLevels, goToLanguageSelection,
             handleLanguageUpdate,
-            authStore, energyStore, cacheStore,
+            authStore, energyStore,
         }
     },
     methods: {

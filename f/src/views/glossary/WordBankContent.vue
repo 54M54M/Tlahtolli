@@ -42,9 +42,8 @@ import { computed } from 'vue';
 
 import { BookOpen, Volume2 } from 'lucide-vue-next';
 
-import { getLearningRepository } from '../../data/repositories/RepositoryFactory.js';
-import { ProgressService } from '../../data/services/ProgressService.js';
-import Badge from '../../components/Badge.vue';
+// TODO: reimplementar con data/learning.js cuando se desarrolle esta vista
+// import { getLevels, getUnits } from '../../data/learning.js';
 
 const props = defineProps({
     language: String,
@@ -52,43 +51,7 @@ const props = defineProps({
     currentLanguageColor: String
 });
 
-const learningRepo = getLearningRepository();
-const progressService = new ProgressService();
-
-// Obtener todas las unidades completadas
-const completedUnits = computed(() => {
-    const allUnits = [];
-
-    // Obtener unidades completadas de todos los niveles
-    const levels = learningRepo.getLevels(props.language);
-    levels.forEach(level => {
-        const units = learningRepo.getUnits(props.language, level.id);
-        const completedLevelUnits = units.filter(unit => unit.completed);
-        allUnits.push(...completedLevelUnits);
-    });
-
-    return allUnits;
-});
-
-// Estadísticas
-const completedUnitsCount = computed(() => completedUnits.value.length);
-const totalWordsCount = computed(() => {
-    return completedUnits.value.reduce((total, unit) => total + unit.vocabulary.length, 0);
-});
-const completedLevelsCount = computed(() => {
-    const levels = learningRepo.getLevels(props.language);
-    return levels.filter(level => level.isCompleted()).length;
-});
-const progressPercentage = computed(() => {
-    const levels = learningRepo.getLevels(props.language);
-    const totalUnits = levels.reduce((total, level) => total + level.units, 0);
-    const completedUnits = levels.reduce((total, level) => total + level.completedUnits, 0);
-    return totalUnits > 0 ? Math.round((completedUnits / totalUnits) * 100) : 0;
-});
-const hasCompletedLevel1 = computed(() => {
-    const level1 = learningRepo.getLevel(props.language, 1);
-    return level1?.isCompleted() || false;
-});
+const completedUnits = computed(() => []);
 
 const speakWord = (word) => {
     if ('speechSynthesis' in window) {

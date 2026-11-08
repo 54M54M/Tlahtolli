@@ -165,7 +165,8 @@ import CompletionMessage from '../../components/CompletionMessage.vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
-import { learningApi, progressApi } from '../../api/apiClient.js';
+import { getLevels, getUnits, getQuickExercises, getVocabulary } from '../../data/learning.js';
+import { completeQuickLevel } from './lessonApi.js';
 
 export default {
     name: "QuickLevel",
@@ -267,10 +268,10 @@ export default {
             this.dataLoading = true;
             try {
                 const levelId = Number(this.levelId);
-                const exercises = await learningApi.getQuick(levelId, 6);
+                const exercises = await getQuickExercises(levelId, 6);
                 this.quickExercises = this.shuffleExerciseOptions(exercises);
-                const units = await learningApi.getUnits(levelId, this.authStore.user?.id || 1);
-                const vocabRequests = units.map(u => learningApi.getVocabulary(u.id).catch(() => ({})));
+                const units = await getUnits(levelId);
+                const vocabRequests = units.map(u => getVocabulary(u.id).catch(() => ({})));
                 const vocabResults = await Promise.all(vocabRequests);
                 const combined = {};
                 vocabResults.forEach(obj => Object.assign(combined, obj));
@@ -364,11 +365,8 @@ export default {
 
             try {
                 // Usar endpoint dedicado para completar nivel completo vía QuickLevel
-                const result = await progressApi.complete({
-                    userId: this.authStore.user?.id || 1,
-                    levelId: Number(this.levelId),
-                    unitId: null,
-                    languageId: this.authStore.selectedLangId,
+                const result = await completeQuickLevel({
+                    levelId: this.levelId,
                     performance: this.performance,
                     earnedExp: earnedPoints,
                     correctAns: this.correctAnswersCount,
@@ -376,13 +374,8 @@ export default {
                     timeSeconds: this.lessonTime,
                 });
 
-                await this.authStore.refreshUser();
-
-                // Leer el estado real del siguiente nivel desde la API
-                const levels = await learningApi.getLevels(
-                    this.authStore.selectedLangId,
-                    this.authStore.user?.id || 1
-                );
+                // Caché ya invalidada en completeQuickLevel → lectura fresca
+                const levels = await getLevels(true);
                 const currentLevel = levels.find(l => l.id === Number(this.levelId));
                 const nextLevel = currentLevel
                     ? levels.find(l => l.levelNum === currentLevel.levelNum + 1)

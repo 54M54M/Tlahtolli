@@ -34,7 +34,13 @@ export const useAuthStore = defineStore('auth', {
 
             localStorage.removeItem('selectedLanguage')
 
-            console.log('[auth] Login exitoso:', user.username, '(ID:', user.id, ')')
+            // Usuario existente → restaurar el último idioma guardado en BD (currentLang)
+            if (user.currentLang) {
+                await this._restoreLanguage(user.currentLang)
+            }
+
+            console.log('[auth] Login exitoso:', user.username, '(ID:', user.id, ')',
+                this.selectedLanguage ? `→ idioma ${this.selectedLanguage}` : '→ sin idioma')
         },
 
         // ── Inicialización silenciosa (al recargar con sesión persistida) ──────
@@ -127,6 +133,29 @@ export const useAuthStore = defineStore('auth', {
         },
 
         // ── Privados ───────────────────────────────────────────────────────────
+
+        // Restaura el idioma a partir de su ID sin volver a llamar a switchLanguage
+        // ni a _initProgress: el usuario ya tiene ese idioma y su progreso en BD.
+        // Si el idioma ya no existe o falla la consulta, se queda sin idioma y el
+        // router lo manda al selector.
+        async _restoreLanguage(languageId) {
+            try {
+                const langs = await languagesApi.getAll()
+                const lang = langs?.find(l => l.id === languageId)
+                if (!lang) {
+                    console.warn('[auth] currentLang sin idioma válido:', languageId)
+                    return
+                }
+                this.selectedLanguage = lang.code
+                this.selectedLangId = lang.id
+                this.selectedLangObj = lang
+                this.isNewUser = false
+                localStorage.setItem('selectedLanguage', lang.code)
+            } catch (err) {
+                console.warn('[auth] _restoreLanguage:', err.message)
+            }
+        },
+
         async _initProgress(languageId) {
             try {
                 const levels = await learningApi.getLevels(languageId, this.user.id)

@@ -41,11 +41,11 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/auth';
-import { getSyllabaryRepository } from '../../data/repositories/RepositoryFactory.js';
+import { SyllabaryRepository } from '../../data/repositories/SyllabaryRepository.js';
 import WritingSystem from '../../components/WritingSystem.vue';
 
 const authStore = useAuthStore();
-const syllabaryRepo = getSyllabaryRepository();
+const syllabaryRepo = new SyllabaryRepository();
 
 const selectedSyllableInfo = ref(null);
 const selectedAlphabetLetterData = ref(null);

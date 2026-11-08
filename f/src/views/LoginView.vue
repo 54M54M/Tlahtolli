@@ -187,7 +187,8 @@ const login = async () => {
     errorMsg.value = ''
     try {
         await authStore.login(username.value, password.value)
-        router.push('/select-language')
+        // Usuario con idioma previo → home; sin idioma (nuevo) → selector
+        router.push(authStore.selectedLanguage ? '/' : '/select-language')
     } catch (err) {
         errorMsg.value = err.message || 'Usuario o contraseña incorrectos.'
     } finally {

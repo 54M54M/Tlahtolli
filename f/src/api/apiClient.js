@@ -111,3 +111,10 @@ export const writingApi = {
     getByLanguage: safe('writing.getByLanguage', (languageId) => api.get(`/writing-systems?languageId=${languageId}`)),
     getByType: safe('writing.getByType', (languageId, type) => api.get(`/writing-systems?languageId=${languageId}&type=${type}`)),
 }
+// ── warm-up ─────────────────────────────────────────────────────────────────
+// Despierta el backend (Render free) en cuanto carga la app.
+// Fire-and-forget: no bloquea la UI ni muestra errores.
+export function warmUpBackend() {
+    fetch(`${BASE_URL}/health`, { method: 'GET', cache: 'no-store' })
+        .catch(() => { /* backend despertando o caído: el monitor se encarga */ })
+}

@@ -18,11 +18,9 @@ import { useAuthStore } from '../stores/auth';
 import Card from './Card.vue';
 import ProgressBar from './ProgressBar.vue';
 import { LanguageService } from '../data/services/LanguageService.js';
-import { getStatsRepository } from '../data/repositories/RepositoryFactory.js';
 
 const authStore = useAuthStore();
 const languageService = new LanguageService();
-const statsRepo = getStatsRepository();
 
 const props = defineProps({
     dialects: {
