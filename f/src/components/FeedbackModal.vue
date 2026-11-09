@@ -7,7 +7,7 @@
             <p class="text-gray-300 mb-4 md:text-xl">{{ message }}</p>
             <div class="flex justify-end p-[4px]">
                 <button @click="handleContinue"
-                    :class="[isCorrect ? 'bg-[#31771c] hover:bg-[#58cc02]' : 'bg-red-700 hover:bg-red-600']"
+                    :class="[isCorrect ? 'bg-turquesa-deep hover:bg-turquesa-deeper' : 'bg-error-deep hover:bg-error-deep/90']"
                     class="w-full md:w-auto md:float-right py-5 md:py-3 px-8 rounded-lg text-lg font-medium">
                     Entendido
                 </button>
@@ -39,7 +39,7 @@ export default {
     },
     computed: {
         titleClass() {
-            return this.isCorrect ? 'text-green-400' : 'text-red-400';
+            return this.isCorrect ? 'text-green-400' : 'text-error';
         }
     },
     methods: {

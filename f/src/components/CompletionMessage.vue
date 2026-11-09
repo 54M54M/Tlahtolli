@@ -9,26 +9,26 @@
         <!-- Métricas de desempeño -->
         <div class="grid grid-cols-3 md:grid-cols-3 gap-4 mb-6">
             <!-- EXP TOTALES -->
-            <div class="bg-[#ffc704] rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold text-[#0A2136]">EXP TOTALES</div>
-                <div class="bg-[#0A2136] rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-[#ffc704] mb-1">{{ totalExp }} EXP</div>
+            <div class="bg-cempasuchil rounded-xl p-1">
+                <div class="text-[12px] md:text-[16px] font-bold text-surface-0">EXP TOTALES</div>
+                <div class="bg-surface-0 rounded-xl p-4">
+                    <div class="md:text-2xl font-bold text-cempasuchil mb-1">{{ totalExp }} EXP</div>
                 </div>
             </div>
 
             <!-- PORCENTAJE DE ACIERTOS -->
-            <div class="bg-[#93d239] rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold uppercase text-[#0A2136]">{{ performanceMessage }}</div>
-                <div class="bg-[#0A2136] rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-[#93d239] mb-1">{{ Math.round(performance * 100) }}%</div>
+            <div class="bg-turquesa rounded-xl p-1">
+                <div class="text-[12px] md:text-[16px] font-bold uppercase text-surface-0">{{ performanceMessage }}</div>
+                <div class="bg-surface-0 rounded-xl p-4">
+                    <div class="md:text-2xl font-bold text-turquesa mb-1">{{ Math.round(performance * 100) }}%</div>
                 </div>
             </div>
 
             <!-- TIEMPO EN LECCIÓN -->
-            <div class="bg-[#46c2f7] rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold uppercase text-[#0A2136]">{{ timeMessage }}</div>
-                <div class="bg-[#0A2136] rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-[#46c2f7] mb-1">{{ formattedTime }}</div>
+            <div class="bg-azul-maya rounded-xl p-1">
+                <div class="text-[12px] md:text-[16px] font-bold uppercase text-surface-0">{{ timeMessage }}</div>
+                <div class="bg-surface-0 rounded-xl p-4">
+                    <div class="md:text-2xl font-bold text-azul-maya mb-1">{{ formattedTime }}</div>
                 </div>
             </div>
         </div>
@@ -58,10 +58,10 @@
         </div>
 
         <!-- Botón de acción -->
-        <div class="flex flex-col fixed bottom-0 left-0 right-0 p-4 bg-[#0A2136] md:static md:p-0 md:bg-transparent">
+        <div class="flex flex-col fixed bottom-0 left-0 right-0 p-4 bg-surface-0 md:static md:p-0 md:bg-transparent">
             <router-link :to="backRoute" class="w-full">
                 <button
-                    class="bg-[#31771c] hover:bg-[#58cc02] text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
+                    class="bg-turquesa-deep hover:bg-turquesa-deeper text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
                     {{ buttonText }}
                 </button>
             </router-link>

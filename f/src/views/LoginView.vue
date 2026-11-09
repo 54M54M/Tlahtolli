@@ -1,16 +1,19 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-[#0A2136] text-white p-4">
-        <div class="w-full max-w-md bg-[#123456] rounded-lg p-8 shadow-lg">
+    <div class="flex flex-col items-center justify-center min-h-screen bg-surface-0 text-white p-4">
+        <header class="w-full max-w-md mb-3 text-center">
+            <h1 class="text-4xl font-bold text-ink">Tlahtolcalli</h1>
+         </header>
+        <div class="w-full max-w-md bg-surface-6 rounded-lg p-8 shadow-lg">
 
             <!-- Tabs -->
-            <div class="flex mb-6 bg-[#0A2136] rounded-lg p-1">
+            <div class="flex mb-6 bg-surface-0 rounded-lg p-1">
                 <button @click="activeTab = 'login'"
-                    :class="activeTab === 'login' ? 'bg-[#58CC02] text-white' : 'text-gray-400 hover:text-white'"
+                    :class="activeTab === 'login' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
                     class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Iniciar sesión
                 </button>
                 <button @click="activeTab = 'register'"
-                    :class="activeTab === 'register' ? 'bg-[#58CC02] text-white' : 'text-gray-400 hover:text-white'"
+                    :class="activeTab === 'register' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
                     class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Registrarse
                 </button>
@@ -18,17 +21,20 @@
 
             <!-- Login -->
             <div v-if="activeTab === 'login'" class="space-y-4">
+                <div class="flex justify-center">
+                    <UserAvatar :name="username" :size="72" />
+                </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-300">Usuario</label>
                     <input v-model="username" type="text" placeholder="mi_usuario"
-                        class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                        class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                         @keyup.enter="login" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-300">Contraseña</label>
                     <div class="relative">
                         <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••"
-                            class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                            class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                             @keyup.enter="login" />
                         <button type="button" @click="showPassword = !showPassword"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
@@ -38,20 +44,20 @@
                     </div>
                 </div>
 
-                <div v-if="errorMsg" class="p-3 bg-red-900/40 border border-red-600 rounded-lg text-red-300 text-sm">
+                <div v-if="errorMsg" class="p-3 bg-error-soft/40 border border-error rounded-lg text-error text-sm">
                     {{ errorMsg }}
                 </div>
 
                 <button @click="login" :disabled="loading"
-                    class="w-full bg-[#58CC02] hover:bg-[#4BB302] disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
                     {{ loading ? 'Entrando...' : 'Iniciar sesión' }}
                 </button>
 
-                <!-- Credenciales demo -->
-                <div class="p-4 bg-[#0A2136] rounded-lg border border-gray-700">
+                <!-- Credenciales demo
+                <div class="p-4 bg-surface-0 rounded-lg border border-gray-700">
                     <p class="text-xs text-gray-400 font-semibold mb-2 uppercase tracking-wide">Cuenta de demostración</p>
                     <div class="flex items-center gap-3">
-                        <img :src="placeholder" alt="Avatar" class="w-10 h-10 rounded-lg bg-gray-700 flex-shrink-0">
+                        <UserAvatar name="tetecuhtli" :size="40" />
                         <div class="flex-1">
                             <p class="text-sm font-bold text-white">UserDemo</p>
                             <p class="text-xs text-gray-400">Usuario: <span class="text-gray-300">tetecuhtli</span></p>
@@ -63,41 +69,48 @@
                         </button>
                     </div>
                 </div>
+                -->
             </div>
 
             <!-- Register -->
             <div v-else class="space-y-4">
+                <div class="flex flex-col items-center gap-2">
+                    <UserAvatar :name="newUsername" :size="72" />
+                    <p class="text-xs text-gray-400">
+                        {{ newUsername.trim() ? 'Este será tu avatar' : 'Escribe tu usuario para ver tu avatar' }}
+                    </p>
+                </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1 text-gray-300">Usuario <span class="text-red-400">*</span></label>
+                    <label class="block text-sm font-medium mb-1 text-gray-300">Usuario <span class="text-error">*</span></label>
                     <input v-model="newUsername" type="text" placeholder="mi_usuario"
-                        class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                        class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                         @keyup.enter="register" />
                 </div>
                 <div class="flex gap-3">
                     <div class="flex-1">
-                        <label class="block text-sm font-medium mb-1 text-gray-300">Nombre(s) <span class="text-red-400">*</span></label>
+                        <label class="block text-sm font-medium mb-1 text-gray-300">Nombre(s) <span class="text-error">*</span></label>
                         <input v-model="newFirstName" type="text" placeholder="Jose"
-                            class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                            class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                             @keyup.enter="register" />
                     </div>
                     <div class="flex-1">
-                        <label class="block text-sm font-medium mb-1 text-gray-300">Apellido(s) <span class="text-red-400">*</span></label>
+                        <label class="block text-sm font-medium mb-1 text-gray-300">Apellido(s) <span class="text-error">*</span></label>
                         <input v-model="newLastName" type="text" placeholder="Pérez"
-                            class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                            class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                             @keyup.enter="register" />
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1 text-gray-300">Correo electrónico <span class="text-red-400">*</span></label>
+                    <label class="block text-sm font-medium mb-1 text-gray-300">Correo electrónico <span class="text-error">*</span></label>
                     <input v-model="newEmail" type="email" placeholder="correo@ejemplo.com"
-                        class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                        class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                         @keyup.enter="register" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1 text-gray-300">Contraseña <span class="text-red-400">*</span></label>
+                    <label class="block text-sm font-medium mb-1 text-gray-300">Contraseña <span class="text-error">*</span></label>
                     <div class="relative">
                         <input v-model="newPassword" :type="showNewPassword ? 'text' : 'password'" placeholder="••••••••"
-                            class="w-full bg-[#0A2136] border border-gray-600 rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-[#58CC02] transition-colors"
+                            class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
                             @keyup.enter="register" />
                         <button type="button" @click="showNewPassword = !showNewPassword"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
@@ -105,14 +118,14 @@
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.163-3.592M6.53 6.533A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.357 2.56M6.53 6.533L3 3m3.53 3.533l11.94 11.934M15.47 15.47A3 3 0 019.17 9.17" /></svg>
                         </button>
                     </div>
-                    <p v-if="newPassword && newPassword.length < 6" class="mt-1 text-xs text-red-400">Mínimo 6 caracteres</p>
+                    <p v-if="newPassword && newPassword.length < 6" class="mt-1 text-xs text-error">Mínimo 6 caracteres</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1 text-gray-300">Confirmar contraseña <span class="text-red-400">*</span></label>
+                    <label class="block text-sm font-medium mb-1 text-gray-300">Confirmar contraseña <span class="text-error">*</span></label>
                     <div class="relative">
                         <input v-model="confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="••••••••"
-                            :class="confirmPassword ? (passwordMatch ? 'border-[#58CC02]' : 'border-red-500') : 'border-gray-600'"
-                            class="w-full bg-[#0A2136] border rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none transition-colors"
+                            :class="confirmPassword ? (passwordMatch ? 'border-turquesa' : 'border-error') : 'border-gray-600'"
+                            class="w-full bg-surface-0 border rounded-lg px-4 py-3 pr-11 text-white placeholder-gray-500 focus:outline-none transition-colors"
                             @keyup.enter="register" />
                         <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
@@ -120,20 +133,23 @@
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.163-3.592M6.53 6.533A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.357 2.56M6.53 6.533L3 3m3.53 3.533l11.94 11.934M15.47 15.47A3 3 0 019.17 9.17" /></svg>
                         </button>
                     </div>
-                    <p v-if="confirmPassword && !passwordMatch" class="mt-1 text-xs text-red-400">Las contraseñas no coinciden</p>
-                    <p v-if="confirmPassword && passwordMatch" class="mt-1 text-xs text-[#58CC02]">Las contraseñas coinciden</p>
+                    <p v-if="confirmPassword && !passwordMatch" class="mt-1 text-xs text-error">Las contraseñas no coinciden</p>
+                    <p v-if="confirmPassword && passwordMatch" class="mt-1 text-xs text-turquesa">Las contraseñas coinciden</p>
                 </div>
 
-                <div v-if="errorMsg" class="p-3 bg-red-900/40 border border-red-600 rounded-lg text-red-300 text-sm">
+                <div v-if="errorMsg" class="p-3 bg-error-soft/40 border border-error rounded-lg text-error text-sm">
                     {{ errorMsg }}
                 </div>
 
                 <button @click="register" :disabled="loading"
-                    class="w-full bg-[#58CC02] hover:bg-[#4BB302] disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
                     {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
                 </button>
             </div>
         </div>
+      <p class="mt-3 text-sm text-ink-muted">
+        Aprende lenguas originarias de México, con lecciones cortas y gratuitas.
+      </p>
     </div>
 </template>
 
@@ -142,7 +158,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { usersApi } from '../api/apiClient'
 import { useRouter } from 'vue-router'
-import placeholder from '../assets/300x300.png'
+import UserAvatar from '../components/UserAvatar.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()

@@ -41,11 +41,11 @@
                                         <!-- Pico -->
                                         <div class="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 
                                             border-t-[15px] border-t-transparent
-                                            border-r-[25px] bg-[#0a2136] border border-[#37464f]
+                                            border-r-[25px] bg-surface-0 border border-line
                                             border-b-[15px] border-b-transparent z-10"></div>
                                         <!-- Div principal -->
                                         <div
-                                            class="relative text-white bg-[#0a2136] border border-[#37464f] py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
+                                            class="relative text-white bg-surface-0 border border-line py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
                                             <p class="text-lg font-medium">
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"
@@ -65,11 +65,11 @@
                                         <!-- Pico -->
                                         <div class="absolute top-1/2 -translate-y-1/4 -left-3 w-0 h-0 
                                             border-t-[15px] border-t-transparent
-                                            border-r-[25px] bg-[#0a2136] border border-[#37464f]
+                                            border-r-[25px] bg-surface-0 border border-line
                                             border-b-[15px] border-b-transparent z-10"></div>
                                         <!-- Div principal -->
                                         <div
-                                            class="relative text-white bg-[#0a2136] border border-[#37464f] py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
+                                            class="relative text-white bg-surface-0 border border-line py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
                                             <p class="text-xl font-medium md:-ml-2">
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"
@@ -86,12 +86,12 @@
                                     <div v-for="(option, index) in currentExercise.options" :key="index"
                                         class="relative">
                                         <button @click="selectAnswer(index)" :class="{
-                                            'border border-[#3f85a7] text-[#3f85a7] bg-gray-800': selectedAnswer === index,
+                                            'border border-azul-maya text-azul-maya bg-gray-800': selectedAnswer === index,
                                             'bg-gray-700 text-white': selectedAnswer !== index,
                                             'border border-green-600 text-green-600': showResult && index === currentExercise.correctAnswer,
-                                            'border border-red-600 text-red-600': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer,
+                                            'border border-error text-error': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer,
                                             'border-2 border-green-500 text-green-500': showResult && index === currentExercise.correctAnswer,
-                                            'border-2 border-red-500 text-red-500': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
+                                            'border-2 border-error text-error': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
                                         }"
                                             class="md:h-[58px] h-[65px] p-3 rounded-lg hover:bg-gray-600 font-semibold tracking-wider transition-colors flex items-center justify-center text-center break-words w-full">
                                             <span class="text-sm md:text-base">{{ option }}</span>
@@ -105,7 +105,7 @@
                                         :placeholder="currentExercise.placeholder || 'Escribe tu respuesta...'"
                                         :readonly="showResult" :class="{
                                             'border-green-500 bg-green-900/20': showResult && isAnswerCorrect,
-                                            'border-red-500 bg-red-900/20': showResult && !isAnswerCorrect,
+                                            'border-error bg-error-soft/20': showResult && !isAnswerCorrect,
                                             'border-gray-600': !showResult,
                                             'cursor-not-allowed': showResult,
                                             'cursor-text': !showResult
@@ -121,7 +121,7 @@
                             :class="{ 'md:hidden': showFeedbackModal }">
                             <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
                                 (currentExercise.type === 'fill-blank' && !textAnswer)"
-                                class="w-full bg-[#31771c] hover:bg-[#58cc02] text-white py-5 md:py-3 px-8 rounded-lg disabled:bg-[#37464f] disabled:text-stone-500 text-lg font-medium">
+                                class="w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white py-5 md:py-3 px-8 rounded-lg disabled:bg-line disabled:text-stone-500 text-lg font-medium">
                                 {{ showResult ? 'Continuar' : 'Verificar' }}
                             </button>
                         </div>

@@ -93,7 +93,7 @@ export const preventReload = {
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: #ff4444;
+                background: #ff6b5b;
                 color: white;
                 padding: 12px 20px;
                 border-radius: 8px;

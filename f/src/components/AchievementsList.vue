@@ -11,7 +11,7 @@
                 <div class="p-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
-                            :style="{ backgroundColor: getRarityColorSafe(item) + '20', color: getRarityColorSafe(item) }">
+                            :style="{ backgroundColor: getRarityColorSafe(item, 0.125), color: getRarityColorSafe(item) }">
                             {{ getAch(item).icon }}
                         </div>
                         <div class="flex-1">
@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+import { rarityColor } from '../utils/palette.js';
 import Card from './Card.vue';
 
 const props = defineProps({
@@ -65,13 +66,7 @@ const props = defineProps({
 const getAch = (item) => props.nested ? item.achievement : item;
 const getDate = (item) => props.nested ? item.earnedAt : item.date;
 
-const RARITY_COLORS = { common: '#58CC02', rare: '#1CB0F6', epic: '#A560E8', legendary: '#FF4B4B' };
-
-const getRarityColorSafe = (item) => {
-    const ach = getAch(item);
-    if (typeof ach.getRarityColor === 'function') return ach.getRarityColor();
-    return RARITY_COLORS[ach.rarity] || '#58CC02';
-};
+const getRarityColorSafe = (item, alpha = 1) => rarityColor(getAch(item)?.rarity, alpha);
 
 const formatDate = (dateString) => {
     if (!dateString) return '';

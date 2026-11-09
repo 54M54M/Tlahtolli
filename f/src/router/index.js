@@ -73,6 +73,26 @@ const router = createRouter({
     routes
 })
 
+// Título de la pestaña por ruta (lo leen Google y el historial del navegador)
+const APP_NAME = 'Tlahtolcalli'
+const ROUTE_TITLES = {
+    LanguageSelection: 'Elige tu idioma',
+    Inicio: 'Inicio',
+    Nivel: 'Nivel',
+    Leccion: 'Lección',
+    NivelRapido: 'Nivel rápido',
+    Glosario: 'Glosario',
+    'Estadísticas': 'Estadísticas',
+    EditarPerfil: 'Editar perfil',
+    Perfil: 'Perfil',
+}
+router.afterEach((to) => {
+    const title = ROUTE_TITLES[to.name]
+    document.title = title
+        ? `${title} · ${APP_NAME}`
+        : `${APP_NAME} · Aprende náhuatl y tének`
+})
+
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
 

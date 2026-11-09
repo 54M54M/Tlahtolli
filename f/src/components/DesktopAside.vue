@@ -1,12 +1,12 @@
 <template>
     <aside
-        class="hidden md:block md:w-52 bg-[#0A2136] text-white p-4 border-r border-gray-800 fixed left-0 top-0 h-full">
+        class="hidden md:block md:w-52 bg-surface-0 text-white p-4 border-r border-gray-800 fixed left-0 top-0 h-full">
 
         <div class="pt-12">
             <div class="mt-auto mb-4">
                 <div class="flex items-center space-x-3 p-3 rounded-lg bg-gray-800 mb-4">
-                    <!-- <img :src="authStore.user?.profileImage" class="w-10 h-10 rounded-full" /> -->
-                    <div>
+                    <UserAvatar :name="authStore.user?.username" :size="40" />
+                    <div class="min-w-0">
                         <p class="font-medium">{{ authStore.user?.name }}</p>
                         <p class="text-xs text-gray-400">@{{ authStore.user?.username }}</p>
                     </div>
@@ -63,7 +63,7 @@
                 <div class="flex items-center space-x-3 p-3 mb-4">
                 </div>
                 <button @click="logout"
-                    class="w-full flex items-center space-x-2 p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors">
+                    class="w-full flex items-center space-x-2 p-3 rounded-lg bg-error-deep hover:bg-error-deep/90 text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -78,11 +78,13 @@
 </template>
 
 <script>
+import UserAvatar from './UserAvatar.vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 
 export default {
     name: 'DesktopAside',
+    components: { UserAvatar },
     setup() {
         const authStore = useAuthStore()
         const router = useRouter()

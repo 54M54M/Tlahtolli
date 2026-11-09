@@ -25,7 +25,7 @@
         <div class="space-y-2 md:space-y-3 mb-4">
             <div v-if="paginatedEntries.length > 0">
                 <Card v-for="(entry, index) in paginatedEntries" :key="index"
-                    class="border border-gray-700 bg-[#1f2937] mb-2 md:mb-4">
+                    class="border border-gray-700 bg-surface-2 mb-2 md:mb-4">
                     <div class="flex justify-between items-start p-3 md:p-4">
                         <div class="flex-1 min-w-0 mr-2">
                             <h3 class="text-base md:text-lg font-bold text-white truncate">{{ entry.spanish }}
@@ -55,7 +55,7 @@
                                 <span class="font-medium">Ejemplo:</span> {{ entry.example }}
                             </p>
                         </div>
-                        <Badge class="bg-[#2b4a2c] text-[#48cc11] flex-shrink-0 text-xs md:text-sm px-2 py-1">{{
+                        <Badge class="bg-turquesa-soft text-turquesa flex-shrink-0 text-xs md:text-sm px-2 py-1">{{
                             entry.category }}
                         </Badge>
                     </div>
@@ -81,7 +81,7 @@
             <button v-if="showFirstPage" @click="goToPage(1)" :class="[
                 'rounded border transition-colors',
                 1 === currentPage
-                    ? 'text-sm px-[13px] py-[5px] bg-blue-500 border-blue-500 text-white'
+                    ? 'text-sm px-[13px] py-[5px] bg-azul-maya border-azul-maya text-ink-on-color'
                     : 'text-xs px-3 py-1 bg-gray-700 border-gray-600 text-white hover:bg-gray-600'
             ]">
                 1
@@ -94,7 +94,7 @@
             <button v-for="page in middlePages" :key="page" @click="goToPage(page)" :class="[
                 'rounded border transition-colors',
                 page === currentPage
-                    ? 'text-sm px-[13px] py-[5px] bg-blue-500 border-blue-500 text-white'
+                    ? 'text-sm px-[13px] py-[5px] bg-azul-maya border-azul-maya text-ink-on-color'
                     : 'text-xs px-3 py-1 bg-gray-700 border-gray-600 text-white hover:bg-gray-600'
             ]">
                 {{ page }}
@@ -107,7 +107,7 @@
             <button v-if="showLastPage" @click="goToPage(totalPages)" :class="[
                 'rounded border transition-colors',
                 totalPages === currentPage
-                    ? 'text-sm px-[13px] py-[5px] bg-blue-500 border-blue-500 text-white'
+                    ? 'text-sm px-[13px] py-[5px] bg-azul-maya border-azul-maya text-ink-on-color'
                     : 'text-xs px-3 py-1 bg-gray-700 border-gray-600 text-white hover:bg-gray-600'
             ]">
                 {{ totalPages }}

@@ -1,13 +1,15 @@
+import { token } from '../../utils/palette.js';
+
 export const LANGUAGE_FAMILIES = {
     UTO_AZTEC: {
         id: "uto-aztec",
         name: "Uto-azteca",
-        color: "#58CC02"
+        color: token("turquesa")
     },
     MAYA: {
         id: "maya",
         name: "Maya",
-        color: "#9C27B0"
+        color: token("azul-maya")
     }
 };
 
@@ -20,7 +22,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Nāhuatlahtōlli",
         family: "uto-aztec",
         parent: "nahuatl",
-        color: "#58CC02",
+        color: token("turquesa"),
         description: "Variante clásica del náhuatl, recomendada para principiantes",
         flag: "🌽",
         difficulty: "easy",
@@ -34,7 +36,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Nāhuatlahtōlli Central",
         family: "uto-aztec",
         parent: "nahuatl",
-        color: "#58CC02",
+        color: token("turquesa"),
         description: "Variante central del náhuatl hablado en el Valle de México",
         flag: "🌽",
         difficulty: "intermediate",
@@ -47,7 +49,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Nāhuatlahtōlli Huastecah",
         family: "uto-aztec",
         parent: "nahuatl",
-        color: "#4CAF50",
+        color: token("turquesa"),
         description: "Variante hablada en la región huasteca",
         flag: "🏞️",
         difficulty: "intermediate",
@@ -60,7 +62,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Nāhuatlahtōlli Sierra Puebla",
         family: "uto-aztec",
         parent: "nahuatl",
-        color: "#388E3C",
+        color: token("turquesa"),
         description: "Variante de la Sierra Norte de Puebla",
         flag: "⛰️",
         difficulty: "intermediate",
@@ -73,7 +75,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Nāhuatlahtōlli Guerrero",
         family: "uto-aztec",
         parent: "nahuatl",
-        color: "#2E7D32",
+        color: token("turquesa"),
         description: "Variante del estado de Guerrero",
         flag: "🌵",
         difficulty: "intermediate",
@@ -88,7 +90,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Teenek",
         family: "maya",
         parent: "maya-family",
-        color: "#9C27B0",
+        color: token("azul-maya"),
         description: "Idioma huasteco de la familia maya",
         flag: "🏞️",
         difficulty: "advanced",
@@ -102,7 +104,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Maaya t'aan",
         family: "maya",
         parent: "maya-family",
-        color: "#7B1FA2",
+        color: token("azul-maya"),
         description: "Variante maya de Yucatán",
         flag: "🏛️",
         difficulty: "intermediate",
@@ -115,7 +117,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Bats'i k'op",
         family: "maya",
         parent: "maya-family",
-        color: "#6A1B9A",
+        color: token("azul-maya"),
         description: "Lengua maya de Chiapas",
         flag: "⛰️",
         difficulty: "advanced",
@@ -128,7 +130,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Bats'il k'op",
         family: "maya",
         parent: "maya-family",
-        color: "#4A148C",
+        color: token("azul-maya"),
         description: "Lengua maya de los Altos de Chiapas",
         flag: "🌄",
         difficulty: "advanced",
@@ -141,7 +143,7 @@ export const SUPPORTED_LANGUAGES = {
         nativeName: "Qyool Mam",
         family: "maya",
         parent: "maya-family",
-        color: "#38006B",
+        color: token("azul-maya"),
         description: "Lengua maya de Guatemala y Chiapas",
         flag: "🌋",
         difficulty: "advanced",
@@ -154,7 +156,7 @@ export const LANGUAGE_GROUPS = {
     nahuatl: {
         name: "Náhuatl",
         description: "Familia lingüística uto-azteca",
-        color: "#58CC02",
+        color: token("turquesa"),
         variants: ["NHCE"]
         // variants: ["NHCL", "NHCE", "NHHU", "NHSP", "NHGR"]
     },
@@ -163,7 +165,7 @@ export const LANGUAGE_GROUPS = {
     // "maya-family": {
     //     name: "Maya",
     //     description: "Familia lingüística maya",
-    //     color: "#9C27B0",
+    //     color: token("azul-maya"),
     //     variants: ["TKOC", "MAYU", "TZOT", "TZEL", "MAMM"]
     // }
 };

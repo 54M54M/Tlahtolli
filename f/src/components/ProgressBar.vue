@@ -3,7 +3,7 @@
         <div class="w-full bg-gray-300 h-2 rounded-full overflow-hidden">
             <div class="h-2 rounded-full transition-all duration-300" :style="{
                 width: progressPercentage + '%',
-                backgroundColor: color || '#58CC02'
+                backgroundColor: color || 'rgb(var(--turquesa))'
             }">
             </div>
         </div>

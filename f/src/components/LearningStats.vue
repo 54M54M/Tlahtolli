@@ -37,7 +37,7 @@ const getStatValue = (value) => {
 
 const getStatColor = (label) => {
     const colorMap = {
-        'Lecciones perfectas': 'text-[#ffb900]',
+        'Lecciones perfectas': 'text-cempasuchil',
         'Días estudiados': 'text-orange-400',
     };
     return colorMap[label] || 'text-white';

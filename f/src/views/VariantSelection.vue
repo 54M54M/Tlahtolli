@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed inset-0 flex items-center justify-center bg-[#0A2136] text-white md:p-4 z-50">
+    <div class="fixed inset-0 flex items-center justify-center bg-surface-0 text-white md:p-4 z-50">
         <!-- Loading inicial -->
         <div v-if="loadingLanguages" class="text-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
@@ -20,13 +20,13 @@
 
         <!-- Selector -->
         <div v-else
-            class="w-full shadow-lg flex flex-col h-full md:max-w-md md:max-h-[90vh] md:rounded-lg md:mx-auto md:h-auto md:bg-[#123456]">
+            class="w-full shadow-lg flex flex-col h-full md:max-w-md md:max-h-[90vh] md:rounded-lg md:mx-auto md:h-auto md:bg-surface-1">
 
             <!-- Header -->
             <div class="flex-shrink-0 p-4 md:p-6 md:pb-1 border-b border-gray-700">
                 <div class="flex items-center justify-between mb-4 md:mb-6">
                     <button @click="goBack"
-                        class="transition-colors flex items-center text-xl font-bold text-gray-300 hover:text-[#cc0202] md:hidden">
+                        class="transition-colors flex items-center text-xl font-bold text-gray-300 hover:text-error md:hidden">
                         <svg height="20px" width="20px" viewBox="0 0 460.775 460.775" fill="currentColor">
                             <path
                                 d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z" />
@@ -38,7 +38,7 @@
                     </h1>
 
                     <button @click="goBack"
-                        class="transition-colors hidden md:flex items-center text-xl font-bold text-gray-300 hover:text-[#cc0202]">
+                        class="transition-colors hidden md:flex items-center text-xl font-bold text-gray-300 hover:text-error">
                         <svg height="20px" width="20px" viewBox="0 0 460.775 460.775" fill="currentColor">
                             <path
                                 d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z" />
@@ -56,7 +56,7 @@
             <!-- Botón continuar -->
             <div class="flex-shrink-0 px-4 md:px-8 py-4 border-t border-gray-700">
                 <button @click="confirmSelection" :disabled="!selectedLanguage || isConfirming"
-                    class="w-full bg-[#58CC02] hover:bg-[#4BB302] text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     CONTINUAR
                 </button>
             </div>

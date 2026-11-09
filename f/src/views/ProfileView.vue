@@ -1,6 +1,6 @@
 <!-- HAY QUE VER SI PUEDO OBTENER LOS PORCENTAJES DE AVANCE DE LOS LOGROS -->
 <template>
-    <div class="bg-[#0A2136] text-white pt-4">
+    <div class="bg-surface-0 text-white pt-4">
         <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
 
         <EditProfileModal v-if="showEditModal" @close="showEditModal = false" @updated="onProfileUpdated" />
@@ -111,7 +111,7 @@
                                 Cambiar contraseña
                             </button>
 
-                            <button @click="logout" class="w-full bg-red-500 hover:bg-red-600 rounded p-2 md:hidden">
+                            <button @click="logout" class="w-full bg-error-deep hover:bg-error-deep/90 rounded p-2 md:hidden">
                                 Cerrar sesión
                             </button>
                         </div>

@@ -18,7 +18,7 @@
                     {{ closeButtonText }}
                 </button>
                 <button @click="handleConfirm"
-                    class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors">
+                    class="bg-error-deep hover:bg-error-deep/90 text-white py-2 px-4 rounded-lg transition-colors">
                     {{ confirmButtonText }}
                 </button>
             </div>

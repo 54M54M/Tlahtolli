@@ -1,5 +1,5 @@
 <!-- <template>
-    <div class="min-h-screen bg-[#0A2136] text-white">
+    <div class="min-h-screen bg-surface-0 text-white">
         <Header variant="simple" title="Mapa Dialectal" />
 
         <main class="container mx-auto px-4 py-6 md:py-10">
@@ -50,14 +50,14 @@
 
                             <!-- Common Words -->
                             <!-- <div class="mb-2 md:mb-3">
-                                <h4 class="font-medium text-[#58CC02] text-xs md:text-sm mb-1">Palabras comunes:</h4>
+                                <h4 class="font-medium text-turquesa text-xs md:text-sm mb-1">Palabras comunes:</h4>
                                 <div class="space-y-1">
                                     <div v-for="word in region.words" :key="word.spanish"
                                         class="flex items-center justify-between bg-gray-700 rounded p-1.5 md:p-2">
                                         <span class="text-xs md:text-sm truncate">{{ word.spanish }}:</span>
                                         <div class="flex items-center gap-1 md:gap-2">
                                             <span class="text-xs md:text-sm italic truncate">{{ word.nahuatl }}</span>
-                                            <button class="text-[#58CC02] hover:text-[#4bb102] focus:outline-none"
+                                            <button class="text-turquesa hover:text-turquesa focus:outline-none"
                                                 @click="speak(word.nahuatl, region.id)"
                                                 :aria-label="`Pronunciar ${word.nahuatl}`">
                                                 <Volume2 class="h-3 w-3 md:h-3.5 md:w-3.5" />
@@ -69,7 +69,7 @@
 
                             <!-- Main Communities -->
                             <!-- <div>
-                                <h4 class="font-medium text-[#58CC02] text-xs md:text-sm mb-1">Comunidades principales:
+                                <h4 class="font-medium text-turquesa text-xs md:text-sm mb-1">Comunidades principales:
                                 </h4>
                                 <ul class="list-disc pl-4 md:pl-5 text-gray-300 text-xs md:text-sm space-y-0.5">
                                     <li v-for="community in region.communities" :key="community">

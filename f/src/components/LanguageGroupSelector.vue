@@ -12,7 +12,7 @@
 
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-                            :style="{ backgroundColor: group.color }">
+                            :style="{ backgroundColor: $languageColor(group.languages[0]) }">
                             {{ getGroupFlag(group.languages) }}
                         </div>
                         <div class="text-left">
@@ -32,13 +32,13 @@
                     <div class="p-3 space-y-2">
                         <div v-for="lang in group.languages" :key="lang.code" @click="selectVariant(lang.code)"
                             class="p-3 rounded-lg flex items-center cursor-pointer hover:bg-gray-800 transition-colors"
-                            :style="{ backgroundColor: selectedLanguage === lang.code ? `${lang.color}33` : 'transparent' }">
+                            :style="{ backgroundColor: selectedLanguage === lang.code ? $languageColor(lang, 0.2) : 'transparent' }">
 
                             <div class="mr-3 flex-shrink-0">
                                 <div class="w-6 h-6 rounded border-2 flex items-center justify-center transition-all"
                                     :style="{
-                                        borderColor: lang.color,
-                                        backgroundColor: selectedLanguage === lang.code ? lang.color : 'transparent'
+                                        borderColor: $languageColor(lang),
+                                        backgroundColor: selectedLanguage === lang.code ? $languageColor(lang) : 'transparent'
                                     }">
                                     <svg v-if="selectedLanguage === lang.code" width="14" height="14"
                                         viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
@@ -53,7 +53,7 @@
                             </div>
 
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-white ml-2"
-                                :style="{ backgroundColor: lang.color }">
+                                :style="{ backgroundColor: $languageColor(lang) }">
                                 {{ lang.flag }}
                             </div>
                         </div>
@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+import { languageColor } from '../utils/palette.js'
 import { ref, computed, watch } from 'vue'
 import { LanguageService } from '../data/services/LanguageService'
 
@@ -95,7 +96,7 @@ const transformLanguages = (langs) => {
         name: lang.langName || lang.lang_name || lang.name,
         nativeName: lang.nativeName || lang.native_name || '',
         flag: lang.flag || '🌐',
-        color: lang.color || '#58CC02',
+        color: languageColor(lang),
         family: lang.family || lang.langName || lang.lang_name || 'Otros'
     }))
 }
@@ -127,7 +128,7 @@ const groupedLanguages = computed(() => {
                 id: familyKey,
                 name: familyKey,
                 description: `Idiomas ${familyKey}`,
-                color: lang.color || '#58CC02',
+                color: languageColor(lang),
                 languages: []
             })
         }
@@ -189,7 +190,7 @@ watch(() => props.initialLanguage, (newLang) => {
 }
 
 .bg-gray-750 {
-    background-color: #374151;
+    background-color: #1f2d32;
 }
 
 /* Estilos para el checkbox personalizado */
@@ -199,7 +200,7 @@ watch(() => props.initialLanguage, (newLang) => {
 
 /* Estilo para el hover en las opciones de idioma */
 .hover\:bg-gray-800:hover {
-    background-color: rgba(31, 41, 55, 0.8);
+    background-color: rgba(31, 45, 50, 0.8);
 }
 
 /* Animación para la flecha */

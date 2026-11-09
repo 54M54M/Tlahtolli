@@ -1,11 +1,11 @@
 <template>
-  <div class="md:mt-8 mt-4 px-6 pt-3 pb-3 mb-[65px] md:mb-[0px] rounded-xl border border-[#374151] shadow-sm">
+  <div class="md:mt-8 mt-4 px-6 pt-3 pb-3 mb-[65px] md:mb-[0px] rounded-xl border border-line shadow-sm">
     <div class="text-center">
       <!-- Información del siguiente nivel -->
       <div v-if="nextLevel" class="mb-1 pb-4 px-4 shadow-sm">
         <div class="flex flex-col items-center justify-center text-center">
           <!-- Título -->
-          <div class="bg-[#374151] border border-[#374151] rounded-lg mb-4 mt-0">
+          <div class="bg-surface-2 border border-line rounded-lg mb-4 mt-0">
             <h3 class="text-xs font-bold text-neutral-400 py-2 px-4">¿QUÉ SIGUE DESPUÉS?</h3>
           </div>
 
@@ -56,8 +56,8 @@
       <div class="flex flex-col gap-3">
         <!-- Botón para nivel bloqueado o desbloqueado -->
         <button v-if="nextLevel" @click="handleLevelAction"
-                class="text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:opacity-90"
-                :style="{ backgroundColor: nextLevel.color || '#4bb101' }">
+                class="text-ink-on-color font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:opacity-90"
+                :style="{ backgroundColor: $levelColor(nextLevel.levelNum) }">
           {{ nextLevel.locked ? 'PRACTICAR RÁPIDO' : 'CONTINUAR' }}
         </button>
       </div>

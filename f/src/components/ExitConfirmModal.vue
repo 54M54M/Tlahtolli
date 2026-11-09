@@ -7,7 +7,7 @@
             <p class="text-gray-300 mb-6">Si sales ahora, perderás el progreso de esta lección. ¿Estás seguro?</p>
             <div class="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 sm:justify-end">
                 <button @click="handleClose"
-                    class="bg-[#31771c] hover:bg-[#58cc02] text-white py-2 px-4 rounded-lg transition-colors">
+                    class="bg-turquesa-deep hover:bg-turquesa-deeper text-white py-2 px-4 rounded-lg transition-colors">
                     Continuar lección
                 </button>
                 <button @click="handleConfirm"

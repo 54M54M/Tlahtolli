@@ -2,9 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Sistema visual Tlahtolcalli ─────────────────────────────────────────────
+   Tokens del tema Obsidiana (oscuro), en canales RGB para usarse como
+   rgb(var(--token)) o, desde Tailwind, con opacidad: bg-turquesa/20.
+   Fuente de verdad: el sistema de diseño Tlahtolcalli. */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #0a2136;
+  --surface-0: 10 33 54;        /* #0a2136 azul marino */
+  --surface-1: 22 33 37;        /* #162125 navegación, inputs */
+  --surface-2: 31 45 50;        /* #1f2d32 tarjetas */
+
+  --surface-3: 14 21 23;        /* #0e1517 obsidiana */
+  --surface-4: 55 65 81;        /* #374151 */
+  --surface-5: 31 41 55;        /* #1f2937 */
+
+  --surface-6: 18 52 86;        /* #1f2937 */
+
+  --line: 46 63 69;             /* #2e3f45 bordes */
+  --ink: 255 255 255;           /* #ffffff texto principal */
+  --ink-muted: 163 163 163;     /* #a3a3a3 texto secundario */
+  --ink-on-color: 255 255 255;  /* #ffffff texto sobre rellenos de color */
+
+  --turquesa: 43 181 154;       /* #2bb59a marca */
+  --turquesa-soft: 23 59 53;    /* #173b35 */
+  --turquesa-deep: 20 107 91;   /* #146b5b botón principal con texto blanco */
+  --turquesa-deeper: 15 90 76;  /* #0f5a4c hover del botón principal */
+
+  --cempasuchil: 242 165 22;    /* #f2a516 XP, racha */
+  --cempasuchil-soft: 58 46 20; /* #3a2e14 */
+
+  --grana: 236 111 128;         /* #ec6f80 energía */
+  --grana-soft: 59 30 37;       /* #3b1e25 */
+
+  --azul-maya: 90 169 204;      /* #5aa9cc información, audio */
+
+  --barro: 201 138 75;          /* #c98a4b glosario */
+
+  --tezontle: 212 115 90;       /* #d4735a nivel 6 */
+
+  --error: 255 107 91;          /* #ff6b5b texto y bordes de error (legible sobre fondo oscuro) */
+  --error-deep: 125 39 31;      /* #7d271f fondo de botones de error, con texto blanco */
+  --error-soft: 122 26 44;      /* #7a1a2c fondo translúcido de respuestas incorrectas */
+
+  font-family: Figtree, "Segoe UI", system-ui, sans-serif;
+  color: rgb(var(--ink));
+  background-color: rgb(var(--surface-0));
+  color-scheme: dark;
 
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -23,6 +65,11 @@ body {
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Títulos con la fuente display */
+h1, h2, h3 {
+  font-family: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
 }
 
 /* Permitir selección en inputs y textareas */

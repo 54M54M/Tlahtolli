@@ -1,10 +1,59 @@
 <!doctype html>
-<html lang="en" translate="no">
+<html lang="es" translate="no">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>Tlahtolcalli · Aprende náhuatl y tének</title>
+  <meta name="description"
+    content="Tlahtolcalli es una app gratuita para aprender lenguas originarias de México, como el náhuatl y el tének, con lecciones cortas, vocabulario, pronunciación y práctica diaria." />
+  <meta name="keywords"
+    content="aprender náhuatl, curso de náhuatl gratis, tének, huasteco, lenguas originarias de México, lenguas indígenas, Tlahtolcalli" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://tlahtolcalli.netlify.app/" />
+  <!-- Verificación de Google Search Console: pega aquí la etiqueta que te dé Google -->
+  <!-- <meta name="google-site-verification" content="TU_CODIGO" /> -->
+
+  <!-- Vista previa al compartir (WhatsApp, Facebook, X) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tlahtolcalli" />
+  <meta property="og:locale" content="es_MX" />
+  <meta property="og:url" content="https://tlahtolcalli.netlify.app/" />
+  <meta property="og:title" content="Tlahtolcalli · Aprende náhuatl y tének" />
+  <meta property="og:description"
+    content="Lecciones cortas y gratuitas para aprender lenguas originarias de México." />
+  <meta property="og:image" content="https://tlahtolcalli.netlify.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Tlahtolcalli, lenguas originarias palabra por palabra" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Tlahtolcalli · Aprende náhuatl y tének" />
+  <meta name="twitter:description"
+    content="Lecciones cortas y gratuitas para aprender lenguas originarias de México." />
+  <meta name="twitter:image" content="https://tlahtolcalli.netlify.app/og-image.png" />
+
+  <!-- Datos estructurados para Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tlahtolcalli",
+    "url": "https://tlahtolcalli.netlify.app/",
+    "description": "App gratuita para aprender lenguas originarias de México, como el náhuatl y el tének.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "es-MX",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "MXN" },
+    "about": [
+      { "@type": "Language", "name": "Náhuatl" },
+      { "@type": "Language", "name": "Tének" }
+    ]
+  }
+  </script>
 
   <!-- Iconos -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -12,15 +61,23 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <!-- Colores del tema -->
-  <meta name="theme-color" content="#0a2136" />
-  <meta name="msapplication-TileColor" content="#0a2136" />
+  <!-- Colores del tema (obsidiana) -->
+  <meta name="theme-color" content="#0e1517" />
+  <meta name="msapplication-TileColor" content="#0e1517" />
 
-  <title>Tlahtolcalli</title>
+  <!-- Fuentes: Bricolage Grotesque (títulos) y Figtree (interfaz), con soporte para macrones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
 </head>
 
 <body>
   <div id="app"></div>
+  <noscript>
+    <h1>Tlahtolcalli</h1>
+    <p>Aprende náhuatl y tének, lenguas originarias de México, con lecciones cortas y gratuitas. Activa JavaScript para usar la app.</p>
+  </noscript>
   <script type="module" src="/src/main.js"></script>
 </body>
 

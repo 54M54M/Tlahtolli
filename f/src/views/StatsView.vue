@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-[#0A2136]">
+    <div class="bg-surface-0">
         <Header variant="simple" :title="'Estadisticas'" class="md:hidden pt-6 md:pt-5" />
         <!-- ProgressAside adaptado para móvil -->
         <ProgressAside :class="statsClasses" />

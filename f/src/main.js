@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import { preventReload } from './utils/preventReload.js'
 import { warmUpBackend } from './api/apiClient.js'
+import { palettePlugin } from './utils/palette.js'
 
 // Despertar el backend antes de que el usuario haga login
 warmUpBackend()
@@ -20,5 +21,6 @@ app.mixin(preventReload)
 
 app
     .use(pinia)
+    .use(palettePlugin)
     .use(router)
     .mount('#app')

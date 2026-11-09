@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import { languageColor } from '../utils/palette.js';
 import { computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import Card from './Card.vue';
@@ -37,7 +38,7 @@ const selectedLanguageData = computed(() => {
         return {
             id: 'none',
             name: 'Selecciona un idioma',
-            color: '#666',
+            color: languageColor(null),
             progress: 0
         };
     }
@@ -55,7 +56,7 @@ const selectedLanguageData = computed(() => {
     return {
         id: languageInfo?.id || selectedLanguage,
         name: languageInfo?.name || 'Idioma actual',
-        color: languageInfo?.color || '#666',
+        color: languageColor(selectedLanguage),
         progress: formattedProgress
     };
 });

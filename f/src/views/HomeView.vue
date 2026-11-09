@@ -10,7 +10,7 @@
         </div>
 
         <!-- Error -->
-        <div v-else-if="error" class="w-full mt-8 text-center text-red-400">
+        <div v-else-if="error" class="w-full mt-8 text-center text-error">
             <p>No se pudo conectar con el servidor.</p>
             <button @click="loadLevels" class="mt-3 px-4 py-2 bg-gray-700 rounded-lg text-sm">
                 Reintentar
@@ -25,11 +25,11 @@
                 <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/nivel/' + level.id"
                     class="w-full block">
                     <Card
-                        class="rounded-xl text-white overflow-hidden shadow-lg transition-transform transform hover:scale-105"
-                        :style="{ backgroundColor: level.color }">
+                        class="rounded-xl text-ink-on-color overflow-hidden shadow-lg transition-transform transform hover:scale-105"
+                        :style="{ backgroundColor: $levelColor(level.levelNum) }">
                         <div class="relative p-4 cursor-pointer">
                             <div
-                                class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
+                                class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-surface-0/20 flex items-center justify-center">
                                 <span class="text-2xl font-bold">{{ level.levelNum }}</span>
                             </div>
                             <div class="-mt-3 text-center">
@@ -38,8 +38,8 @@
                                 <p class="text-sm mt-2">{{ level.description }}</p>
                             </div>
                             <div class="mt-6">
-                                <div class="h-2 bg-white/30 rounded-full overflow-hidden">
-                                    <div class="h-2 bg-white"
+                                <div class="h-2 bg-surface-0/30 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-surface-0/80"
                                         :style="{ width: `${(level.completedUnits / level.totalUnits) * 100}%` }"></div>
                                 </div>
                                 <p class="text-xs text-center mt-2">
@@ -52,15 +52,15 @@
 
                 <!-- Niveles bloqueados -->
                 <div v-for="level in lockedLevels" :key="level.id" class="w-full block">
-                    <Card class="rounded-xl text-white overflow-hidden shadow-lg opacity-60 cursor-pointer"
-                        :style="{ backgroundColor: level.color }">
+                    <Card class="rounded-xl text-ink-on-color overflow-hidden shadow-lg opacity-60 cursor-pointer"
+                        :style="{ backgroundColor: $levelColor(level.levelNum) }">
                         <div class="relative p-4">
                             <div
-                                class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
+                                class="absolute -left-7 -top-7 w-16 h-16 rounded-full bg-surface-0/20 flex items-center justify-center">
                                 <span class="text-2xl font-bold">{{ level.levelNum }}</span>
                             </div>
                             <div class="absolute top-2 right-2">
-                                <svg class="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-6 h-6 text-ink-on-color/80" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
                                         clip-rule="evenodd" />
@@ -70,15 +70,15 @@
                                 <h2 class="text-sm font-semibold">{{ level.title }}</h2>
                                 <h1 class="text-xl font-bold mt-1">{{ level.titleNative }}</h1>
                                 <div class="mt-3 p-2 bg-black/20 rounded-lg">
-                                    <p class="text-xs text-white/80">🔒 {{ level.unlockReq }}</p>
+                                    <p class="text-xs text-ink-on-color/80">🔒 {{ level.unlockReq }}</p>
                                 </div>
                             </div>
                             <div class="mt-6">
-                                <div class="h-2 bg-white/20 rounded-full overflow-hidden">
-                                    <div class="h-2 bg-white/40"
+                                <div class="h-2 bg-surface-0/20 rounded-full overflow-hidden">
+                                    <div class="h-2 bg-surface-0/40"
                                         :style="{ width: `${(level.completedUnits / level.totalUnits) * 100}%` }"></div>
                                 </div>
-                                <p class="text-xs text-center mt-2 text-white/70">
+                                <p class="text-xs text-center mt-2 text-ink-on-color/70">
                                     {{ level.completedUnits }}/{{ level.totalUnits }} unidades
                                 </p>
                             </div>

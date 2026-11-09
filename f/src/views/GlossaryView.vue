@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-[#0A2136] text-white">
+    <div class="min-h-screen bg-surface-0 text-white">
         <!-- Top header -->
         <Header variant="simple" :title="currentTabTitle" backRoute="/" class="pt-6 md:pt-5" />
 
@@ -28,6 +28,7 @@
 </template>
 
 <script setup>
+import { languageColor } from '../utils/palette.js';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth.js';
 import Header from '../components/vHeader.vue';
@@ -96,11 +97,11 @@ const selectedLanguage = computed(() => {
 });
 
 const currentLanguageInfo = computed(() => {
-    return languageService.getLanguageInfo(selectedLanguage.value) || { name: 'Náhuatl Central', color: '#58CC02' };
+    return languageService.getLanguageInfo(selectedLanguage.value) || { name: 'Náhuatl Central' };
 });
 
 const currentLanguageName = computed(() => currentLanguageInfo.value?.name || 'Náhuatl Central');
-const currentLanguageColor = computed(() => currentLanguageInfo.value?.color || '#58CC02');
+const currentLanguageColor = computed(() => languageColor(selectedLanguage.value));
 
 const speak = (text, language) => {
     if ('speechSynthesis' in window) {

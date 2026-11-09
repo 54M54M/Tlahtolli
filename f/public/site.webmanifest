@@ -1,6 +1,10 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Tlahtolcalli",
+    "short_name": "Tlahtolcalli",
+    "description": "Aprende náhuatl y tének, lenguas originarias de México.",
+    "lang": "es-MX",
+    "start_url": "/",
+    "scope": "/",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +17,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#0a2136",
-    "background_color": "#0a2136",
+    "theme_color": "#0e1517",
+    "background_color": "#0e1517",
     "display": "standalone"
 }
