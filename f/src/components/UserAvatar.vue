@@ -1,9 +1,6 @@
 <template>
-    <img v-if="src" :src="src" :alt="alt" :width="size" :height="size" draggable="false"
+    <img :src="src" :alt="alt" :width="size" :height="size" draggable="false"
         class="shrink-0 rounded-full select-none" :style="{ width: `${size}px`, height: `${size}px` }" />
-    <!-- Sin nombre todavía (registro vacío): círculo vacío del mismo tamaño -->
-    <div v-else aria-hidden="true" class="shrink-0 rounded-full border-2 border-dashed border-line bg-surface-2"
-        :style="{ width: `${size}px`, height: `${size}px` }"></div>
 </template>
 
 <script setup>
@@ -12,6 +9,9 @@
 // que no se guarda ninguna imagen ni se llama a ningún servidor.
 import { computed } from 'vue'
 import { blobatarUri } from 'blobatar/uri'
+
+/** Semilla del avatar por defecto, mientras todavía no hay usuario (registro vacío). */
+const DEFAULT_SEED = 'tlahtolcalli'
 
 const props = defineProps({
     /** Nombre de usuario del que sale el avatar. */
@@ -26,13 +26,13 @@ const props = defineProps({
     background: { type: [String, Boolean], default: false },
 })
 
-const seed = computed(() => (props.name || '').trim())
+const name = computed(() => (props.name || '').trim())
+const seed = computed(() => name.value || DEFAULT_SEED)
 
 const backdrop = computed(() =>
     ['circle', 'squircle', 'square'].includes(props.background) ? props.background : false)
 
-const src = computed(() =>
-    seed.value ? blobatarUri(seed.value, { background: backdrop.value }) : '')
+const src = computed(() => blobatarUri(seed.value, { background: backdrop.value }))
 
-const alt = computed(() => (seed.value ? `Avatar de ${seed.value}` : ''))
+const alt = computed(() => (name.value ? `Avatar de ${name.value}` : 'Avatar'))
 </script>

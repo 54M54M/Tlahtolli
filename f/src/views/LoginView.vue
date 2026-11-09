@@ -22,7 +22,7 @@
             <!-- Login -->
             <div v-if="activeTab === 'login'" class="space-y-4">
                 <div class="flex justify-center">
-                    <UserAvatar :name="username" :size="72" />
+                    <AvatarStage :name="username" :size="72" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-300">Usuario</label>
@@ -75,7 +75,7 @@
             <!-- Register -->
             <div v-else class="space-y-4">
                 <div class="flex flex-col items-center gap-2">
-                    <UserAvatar :name="newUsername" :size="72" />
+                    <AvatarStage :name="newUsername" :size="72" />
                     <p class="text-xs text-gray-400">
                         {{ newUsername.trim() ? 'Este será tu avatar' : 'Escribe tu usuario para ver tu avatar' }}
                     </p>
@@ -159,6 +159,7 @@ import { useAuthStore } from '../stores/auth'
 import { usersApi } from '../api/apiClient'
 import { useRouter } from 'vue-router'
 import UserAvatar from '../components/UserAvatar.vue'
+import AvatarStage from '../components/AvatarStage.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
