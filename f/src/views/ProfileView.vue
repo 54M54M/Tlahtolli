@@ -1,3 +1,4 @@
+<!-- HAY QUE VER SI PUEDO OBTENER LOS PORCENTAJES DE AVANCE DE LOS LOGROS -->
 <template>
   <div class="bg-surface-0 text-white pt-4">
     <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
@@ -134,7 +135,6 @@ import SettingsPanel from '../components/SettingsPanel.vue';
 import AchievementsList from '../components/AchievementsList.vue';
 
 import { getAchievementsWithStatus } from '../data/achievements.js';
-import { LanguageService } from '../data/services/LanguageService.js';
 
 // ── Estado ──────────────────────────────────────────────────────────────────
 const currentTab = ref('achievements');
@@ -147,7 +147,6 @@ const allAchievements = ref([]);  // [{achievement: {...}, earned: bool, earnedA
 const selectedAchievement = ref(null);
 
 const authStore = useAuthStore();
-const languageService = new LanguageService();
 const router = useRouter();
 // ── Datos del usuario desde el store (ya cargado por auth.initialize) ──────
 const userData = computed(() => {
@@ -168,7 +167,7 @@ const userData = computed(() => {
 
 const currentLanguageName = computed(() => {
   if (!authStore.selectedLanguage) return 'No seleccionado';
-  return languageService.getLanguageInfo(authStore.selectedLanguage)?.name || 'Idioma no encontrado';
+  return authStore.currentLanguage?.name || 'Sin idioma';
 });
 
 // ── Logros computados desde la API ───────────────────────────────────────────

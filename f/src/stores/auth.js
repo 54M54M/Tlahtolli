@@ -4,7 +4,7 @@ import { usersApi, authApi, languagesApi, progressApi, learningApi } from '../ap
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
-        selectedLanguage: null,     // código string: 'nhce', 'tkoc'…
+        selectedLanguage: null,     // código string: 'nhn'…
         selectedLangId: null,       // ID numérico en la BD
         selectedLangObj: null,      // objeto completo del idioma (con icon/emoji/color de la BD)
         isNewUser: true,
@@ -15,6 +15,21 @@ export const useAuthStore = defineStore('auth', {
         isAuthenticated: (state) => !!state.user,
         hasSelectedLanguage: (state) => !!state.selectedLanguage,
         isLanguageReady: (state) => state.isInitialized && !!state.selectedLanguage,
+
+        /** Idioma actual normalizado desde ct_languages (null si no hay idioma). */
+        currentLanguage: (state) => {
+            const l = state.selectedLangObj
+            if (!l) return null
+            return {
+                id: l.id,
+                code: l.code,
+                name: l.langName ?? l.lang_name ?? l.name ?? l.code,
+                nativeName: l.nativeName ?? l.native_name ?? '',
+                flag: l.flag || '🌐',
+                family: l.family ?? null,
+                writingSystem: l.writingSystem ?? l.writing_system ?? null,
+            }
+        },
     },
 
     actions: {
@@ -87,7 +102,7 @@ export const useAuthStore = defineStore('auth', {
             localStorage.removeItem('selectedLanguage')
         },
 
-        // ── Cambio de idioma (recibe código string: 'nhce', 'tkoc'…) ──────────
+        // ── Cambio de idioma (recibe código string: 'nhn'…) ──────────
         async setLanguage(languageCode) {
             try {
                 const langs = await languagesApi.getAll()

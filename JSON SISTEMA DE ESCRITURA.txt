@@ -1,52 +1,125 @@
-JSON SISTEMA DE ESCRITURA
+Así funciona hoy: la base acepta 4 tipos (el `check` de `system_type` solo permite `syllabary`, `alphabet`, `logogram` y `abugida`), pero `WritingSystem.vue` solo tiene vista para silabario y alfabeto. Un idioma con `logogram` o `abugida` muestra el glosario sin letras, solo con las notas.
+
+### Qué muestra cada tipo
+
+| Sección en pantalla | `syllabary` (silabario) | `alphabet` (alfabeto) | `logogram` | `abugida` |
+|---|---|---|---|---|
+| Vocales | Cuadros con las entradas `vowel` (máx. 4 columnas) | Cuadros con las entradas `vowel` (5 columnas) | — | — |
+| Consonantes | Cuadros con las `consonant` sin "glotalizada" en `notes` | Cuadros con todas las `consonant` | — | — |
+| Tabla de sílabas | Consonante × vocal con `syllables` (texto + pronunciación entre paréntesis) | — | — | — |
+| Dígrafos | Tabla de sílabas de las entradas `digraph` (vocales a–u) | — No se muestran | — | — |
+| Glotalizadas | — No se muestran | "Sonidos Eyectivos": `letter` + `pronunciation` de las `ejective` | — | — |
+| Vocales largas | Cuadros de las `longVowel` (solo ā ē ī ō); pronunciación calculada como vocal doble | Cuadros de las `longVowel` (cualquier letra) con su `pronunciation` | — | — |
+| Notas (`notes`, `description`, `system_name`) | Sí | Sí | Sí | Sí |
+
+### Qué campos del JSON usa cada tipo
+
+| Campo | `syllabary` | `alphabet` |
+|---|---|---|
+| `type` | `vowel`, `consonant`, `digraph`, `longVowel` | `vowel`, `consonant`, `ejective`, `longVowel` |
+| `letter` | Sí | Sí |
+| `pronunciation` | Solo dentro de `syllables` | Solo en `ejective` y `longVowel` (en vocales y consonantes se guarda pero no se ve) |
+| `syllables` | Sí, es la tabla principal | Se guarda pero no se usa |
+| `notes` (por entrada) | Solo para excluir glotalizadas | No se usa |
+| `example` | No se usa | No se usa |
+
+
 [
     {
         "type": "vowel",
         "letter": "a",
         "pronunciation": "a",
-        "syllables": { "a": "a", "e": null, "i": null, "o": null, "u": null }
+        "syllables": {
+            "a": "a",
+            "e": null,
+            "i": null,
+            "o": null
+        },
+        "example": "Ajmo"
     },
     {
         "type": "vowel",
         "letter": "e",
         "pronunciation": "e",
-        "syllables": { "a": null, "e": "e", "i": null, "o": null, "u": null }
+        "syllables": {
+            "a": null,
+            "e": "e",
+            "i": null,
+            "o": null
+        },
+        "example": "Etl"
     },
     {
         "type": "vowel",
         "letter": "i",
         "pronunciation": "i",
-        "syllables": { "a": null, "e": null, "i": "i", "o": null, "u": null }
+        "syllables": {
+            "a": null,
+            "e": null,
+            "i": "i",
+            "o": null
+        },
+        "example": "Inin"
     },
     {
         "type": "vowel",
         "letter": "o",
         "pronunciation": "o",
-        "syllables": { "a": null, "e": null, "i": null, "o": "o", "u": null }
-    },
-    {
-        "type": "consonant",
-        "letter": "c",
-        "pronunciation": "k, s",
         "syllables": {
-            "a": "ca (ka)",
-            "e": "ce (se)",
-            "i": "ci (si)",
-            "o": "co (ko)",
-            "u": null
-        }
-    },
-    {
-        "type": "consonant",
-        "letter": "h",
-        "pronunciation": "j",
-        "syllables": {
-            "a": "ha (ja)",
-            "e": "he (je)",
+            "a": null,
+            "e": null,
             "i": null,
-            "o": "ho (jo)",
-            "u": null
-        }
+            "o": "o"
+        },
+        "example": "Oksēppa"
+    },
+    {
+        "type": "consonant",
+        "letter": "ch",
+        "pronunciation": "ch",
+        "syllables": {
+            "a": "cha",
+            "e": "che",
+            "i": "chi",
+            "o": "cho"
+        },
+        "example": "Chikāwak"
+    },
+    {
+        "type": "consonant",
+        "letter": "j",
+        "pronunciation": "saltillo (corte de voz), al final de sílaba",
+        "syllables": {
+            "a": "ja",
+            "e": "je",
+            "i": null,
+            "o": "'"
+        },
+        "example": "Tlasojkāmati"
+    },
+    {
+        "type": "consonant",
+        "letter": "k",
+        "pronunciation": "k",
+        "syllables": {
+            "a": "ka",
+            "e": "ke",
+            "i": "ki",
+            "o": "ko"
+        },
+        "example": "Kēn"
+    },
+    {
+        "type": "consonant",
+        "letter": "kw",
+        "pronunciation": "kw",
+        "syllables": {
+            "a": "kwa",
+            "e": "kwe",
+            "i": "kwi",
+            "o": "kwo"
+        },
+        "example": "Kwalli"
     },
     {
         "type": "consonant",
@@ -56,9 +129,9 @@ JSON SISTEMA DE ESCRITURA
             "a": "la",
             "e": "le",
             "i": "li",
-            "o": "lo",
-            "u": null
-        }
+            "o": "lo"
+        },
+        "example": "Ximopanōlti"
     },
     {
         "type": "consonant",
@@ -68,9 +141,9 @@ JSON SISTEMA DE ESCRITURA
             "a": "ma",
             "e": "me",
             "i": "mi",
-            "o": "mo",
-            "u": null
-        }
+            "o": "mo"
+        },
+        "example": "Mostla"
     },
     {
         "type": "consonant",
@@ -80,9 +153,9 @@ JSON SISTEMA DE ESCRITURA
             "a": "na",
             "e": "ne",
             "i": "ni",
-            "o": "no",
-            "u": null
-        }
+            "o": "no"
+        },
+        "example": "Notōka"
     },
     {
         "type": "consonant",
@@ -92,9 +165,21 @@ JSON SISTEMA DE ESCRITURA
             "a": "pa",
             "e": "pe",
             "i": "pi",
-            "o": "po",
-            "u": null
-        }
+            "o": "po"
+        },
+        "example": "Ximopanōlti"
+    },
+    {
+        "type": "consonant",
+        "letter": "s",
+        "pronunciation": "s",
+        "syllables": {
+            "a": "sa",
+            "e": "se",
+            "i": "si",
+            "o": "so"
+        },
+        "example": "Siawi"
     },
     {
         "type": "consonant",
@@ -104,9 +189,45 @@ JSON SISTEMA DE ESCRITURA
             "a": "ta",
             "e": "te",
             "i": "ti",
-            "o": "to",
-            "u": null
-        }
+            "o": "to"
+        },
+        "example": "Timoittaske"
+    },
+    {
+        "type": "consonant",
+        "letter": "tl",
+        "pronunciation": "tl (un solo sonido)",
+        "syllables": {
+            "a": "tla",
+            "e": "tle",
+            "i": "tli",
+            "o": "tlo"
+        },
+        "example": "Tlasojkāmati"
+    },
+    {
+        "type": "consonant",
+        "letter": "ts",
+        "pronunciation": "ts",
+        "syllables": {
+            "a": "tsa",
+            "e": "tse",
+            "i": "tsi",
+            "o": "tso"
+        },
+        "example": "Nimitsitta"
+    },
+    {
+        "type": "consonant",
+        "letter": "w",
+        "pronunciation": "w",
+        "syllables": {
+            "a": "wa",
+            "e": "we",
+            "i": "wi",
+            "o": "wo"
+        },
+        "example": "Wēy"
     },
     {
         "type": "consonant",
@@ -116,9 +237,9 @@ JSON SISTEMA DE ESCRITURA
             "a": "xa (sha)",
             "e": "xe (she)",
             "i": "xi (shi)",
-            "o": "xo (sho)",
-            "u": null
-        }
+            "o": "xo (sho)"
+        },
+        "example": "Ximopanōlti"
     },
     {
         "type": "consonant",
@@ -128,116 +249,44 @@ JSON SISTEMA DE ESCRITURA
             "a": "ya",
             "e": "ye",
             "i": "yi",
-            "o": "yo",
-            "u": null
-        }
-    },
-    {
-        "type": "consonant",
-        "letter": "z",
-        "pronunciation": "s",
-        "syllables": {
-            "a": "za (sa)",
-            "e": "ze (se)",
-            "i": null,
-            "o": "zo (so)",
-            "u": null
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "cu",
-        "pronunciation": "kw",
-        "syllables": {
-            "a": "cua (kwa)",
-            "e": "cue (kwe)",
-            "i": "cui (kwi)",
-            "o": "cuo (kwo)",
-            "u": null
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "ch",
-        "pronunciation": "ch",
-        "syllables": {
-            "a": "cha",
-            "e": "che",
-            "i": "chi",
-            "o": "cho",
-            "u": "chu"
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "hu",
-        "pronunciation": "w",
-        "syllables": {
-            "a": "hua (wa)",
-            "e": "hue (we)",
-            "i": "hui (wi)",
-            "o": null,
-            "u": null
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "qu",
-        "pronunciation": "k",
-        "syllables": {
-            "a": null,
-            "e": "que (ke)",
-            "i": "qui (ki)",
-            "o": null,
-            "u": null
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "tl",
-        "pronunciation": "tl",
-        "syllables": {
-            "a": "tla",
-            "e": "tle",
-            "i": "tli",
-            "o": "tlo",
-            "u": null
-        }
-    },
-    {
-        "type": "digraph",
-        "letter": "tz",
-        "pronunciation": "ts",
-        "syllables": {
-            "a": "tza (tsa)",
-            "e": "tze (tse)",
-            "i": "tzi (tsi)",
-            "o": "tzo (tso)",
-            "u": "tzu (tsu)"
-        }
+            "o": "yo"
+        },
+        "example": "Yewātl"
     },
     {
         "type": "longVowel",
         "letter": "ā",
         "pronunciation": "aa",
-        "syllables": { "a": "ā (aa)" }
+        "syllables": {
+            "a": "ā (aa)"
+        },
+        "example": "Newātl"
     },
     {
         "type": "longVowel",
         "letter": "ē",
         "pronunciation": "ee",
-        "syllables": { "e": "ē (ee)" }
+        "syllables": {
+            "e": "ē (ee)"
+        },
+        "example": "Kēn"
     },
     {
         "type": "longVowel",
         "letter": "ī",
         "pronunciation": "ii",
-        "syllables": { "i": "ī (ii)" }
+        "syllables": {
+            "i": "ī (ii)"
+        },
+        "example": "Ītōka"
     },
     {
         "type": "longVowel",
         "letter": "ō",
         "pronunciation": "oo",
-        "syllables": { "o": "ō (oo)" }
+        "syllables": {
+            "o": "ō (oo)"
+        },
+        "example": "Ximopanōlti"
     }
 ]

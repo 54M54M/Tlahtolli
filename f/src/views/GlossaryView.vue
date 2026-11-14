@@ -37,10 +37,8 @@ import Tab from '../components/Tab.vue';
 import { Volume2 } from 'lucide-vue-next';
 
 import WritingContent from './glossary/SyllabaryContent.vue';
-import { LanguageService } from '../data/services/LanguageService.js';
 
 const authStore = useAuthStore();
-const languageService = new LanguageService();
 
 const searchTerm = ref('');
 const selectedCategory = ref('all');
@@ -75,15 +73,17 @@ const adjustActiveTab = () => {
 };
 
 
+// Nombre del tab según el TIPO de escritura del idioma (ct_languages.writing_system).
+// Los tipos son un conjunto cerrado (check en la tabla); no depende de cuántos idiomas haya.
+const WRITING_TYPE_LABELS = {
+  alphabet: 'Alfabeto',
+  syllabary: 'Silabario',
+  abugida: 'Abugida',
+  logogram: 'Logogramas',
+};
 const writingSystemInfo = computed(() => {
-  const languageInfo = selectedLanguage.value ? languageService.getLanguageInfo(selectedLanguage.value) : null;
-  const writingSystemNames = {
-    'nhn': 'Alfabeto',
-  };
-  return {
-    name: writingSystemNames[selectedLanguage.value] || 'Sistema de Escritura',
-    type: languageInfo?.writingSystem || 'syllabary'
-  };
+  const type = authStore.currentLanguage?.writingSystem ?? null;   // ct_languages.writing_system
+  return { name: WRITING_TYPE_LABELS[type] || 'Sistema de escritura', type };
 });
 
 const currentTabTitle = computed(() => {
@@ -96,9 +96,7 @@ const selectedLanguage = computed(() => {
   return authStore.selectedLanguage;
 });
 
-const currentLanguageInfo = computed(() => {
-  return selectedLanguage.value ? languageService.getLanguageInfo(selectedLanguage.value) : null;
-});
+const currentLanguageInfo = computed(() => authStore.currentLanguage);
 
 const currentLanguageName = computed(() => currentLanguageInfo.value?.name || '');
 const currentLanguageColor = computed(() => languageColor(selectedLanguage.value));
@@ -108,18 +106,10 @@ const speak = (text, language) => {
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
 
-    switch (language) {
-      case 'nhn':
-        utterance.lang = 'es-MX';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        break;
-      default:
-        utterance.lang = 'es-MX';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        break;
-    }
+    // Voz en español de México para todos los idiomas, un poco más lenta
+    utterance.lang = 'es-MX';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.0;
 
     speechSynthesis.speak(utterance);
   } else {
@@ -129,9 +119,7 @@ const speak = (text, language) => {
 
 // Watchers
 watch(availableTabs, adjustActiveTab);
-watch(selectedLanguage, () => {
-  adjustActiveTab();
-});
+watch(selectedLanguage, adjustActiveTab);
 
 onMounted(() => {
   adjustActiveTab();
