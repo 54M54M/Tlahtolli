@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tlahtolcalli · Admin</title>
+  <title>Tlahtolcalli · Admin</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"
-    rel="stylesheet" />
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"
+          rel="stylesheet" />
   <style>
     :root {
       --jade: #00C896;
@@ -205,6 +205,23 @@
       border-radius: 99px;
       padding: 4px 12px;
     }
+
+    .svc-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .svc-pill { display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: .65rem;
+      border-radius: 99px; padding: 4px 12px; border: 1px solid var(--border); background: var(--ink); color: var(--muted); cursor: pointer; }
+    .svc-pill .dot { background: var(--muted); animation: none; }
+    .svc-pill.up { color: var(--jade); } .svc-pill.up .dot { background: var(--jade); animation: pulse 2.5s infinite; }
+    .svc-pill.down { color: var(--coral); } .svc-pill.down .dot { background: var(--coral); }
+    .svc-pill.waking { color: var(--amber); } .svc-pill.waking .dot { background: var(--amber); animation: pulse 1s infinite; }
+    .uptime-badge { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
+    .uptime-badge img { height: 20px; }
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding: 16px 18px; }
+    .svc-grid .k { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+    .svc-grid .v { font-family: 'IBM Plex Mono', monospace; font-size: .85rem; word-break: break-all; }
+    .u-cell { display: flex; align-items: center; gap: 8px; }
+    .u-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; background: var(--border); display: inline-flex;
+      align-items: center; justify-content: center; font-size: .6rem; font-weight: 700; color: var(--muted); }
+    img.u-av { background: transparent; }
 
     .dot {
       width: 6px;
@@ -718,6 +735,7 @@
       #content { padding: 12px; }
       header { padding: 11px 14px; }
       .badge-db { font-size: .58rem; padding: 3px 8px; }
+      .uptime-badge, .badge-db { display: none; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat-card { padding: 11px; }
       .stat-card .value { font-size: 1.4rem; }
@@ -739,853 +757,994 @@
 
 <body>
 
-  <!-- ══ SIDEBAR ══ -->
-  <aside id="sidebar">
-    <div class="logo">
-      <h1>tlahtolcalli<span>·</span></h1>
-      <p>Admin Dashboard</p>
+<!-- ══ SIDEBAR ══ -->
+<aside id="sidebar">
+  <div class="logo">
+    <h1>tlahtolcalli<span>·</span></h1>
+    <p>Admin Dashboard</p>
+  </div>
+  <nav>
+    <div class="nav-section">
+      <span class="nav-label">Resumen</span>
+      <button class="nav-btn active" data-label="Overview" onclick="showTab('overview')"><span class="icon">◈</span><span class="nav-text">Overview</span></button>
     </div>
-    <nav>
-      <div class="nav-section">
-        <span class="nav-label">Resumen</span>
-        <button class="nav-btn active" data-label="Overview" onclick="showTab('overview')"><span class="icon">◈</span><span class="nav-text">Overview</span></button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Catálogos</span>
-        <button class="nav-btn" data-label="Idiomas" onclick="showTab('languages')"><span class="icon">🌐</span><span class="nav-text">Idiomas</span></button>
-        <button class="nav-btn" data-label="Usuarios" onclick="showTab('users')"><span class="icon">👤</span><span class="nav-text">Usuarios</span></button>
-        <button class="nav-btn" data-label="Vocabulario" onclick="showTab('vocabulary')"><span class="icon">📖</span><span class="nav-text">Vocabulario</span></button>
-        <button class="nav-btn" data-label="Logros" onclick="showTab('achievements')"><span class="icon">🏆</span><span class="nav-text">Logros</span></button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Contenido</span>
-        <button class="nav-btn" data-label="Niveles" onclick="showTab('levels')"><span class="icon">📊</span><span class="nav-text">Niveles</span></button>
-        <button class="nav-btn" data-label="Unidades" onclick="showTab('units')"><span class="icon">📦</span><span class="nav-text">Unidades</span></button>
-        <!-- <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button> -->
-        <button class="nav-btn" data-label="Ejercicios" onclick="showTab('exercises')"><span class="icon">✏️</span><span class="nav-text">Ejercicios</span></button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Actividad</span>
-        <button class="nav-btn" data-label="Historial" onclick="showTab('lesson_history')"><span class="icon">📋</span><span class="nav-text">Historial</span></button>
-        <button class="nav-btn" data-label="Estadísticas" onclick="showTab('user_stats')"><span class="icon">📈</span><span class="nav-text">Estadísticas</span></button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Jugador</span>
-        <button class="nav-btn" data-label="Progreso" onclick="showTab('user_progress')"><span class="icon">🗺️</span><span class="nav-text">Progreso</span></button>
-        <button class="nav-btn" data-label="Energía" onclick="showTab('user_energy')"><span class="icon">⚡</span><span class="nav-text">Energía</span></button>
-        <button class="nav-btn" data-label="Logros Usuario" onclick="showTab('user_achievements')"><span class="icon">🎖️</span><span class="nav-text">Logros Usuario</span></button>
-        <button class="nav-btn" data-label="Sist. Escritura" onclick="showTab('writing_systems')"><span class="icon">✍️</span><span class="nav-text">Sist. Escritura</span></button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Sistema</span>
-        <button class="nav-btn" data-label="Configuración" onclick="showTab('config')"><span class="icon">⚙️</span><span class="nav-text">Configuración</span></button>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <p id="conn-status" onclick="showTab('config')">● Desconectado</p>
+    <div class="nav-section">
+      <span class="nav-label">Catálogos</span>
+      <button class="nav-btn" data-label="Idiomas" onclick="showTab('languages')"><span class="icon">🌐</span><span class="nav-text">Idiomas</span></button>
+      <button class="nav-btn" data-label="Usuarios" onclick="showTab('users')"><span class="icon">👤</span><span class="nav-text">Usuarios</span></button>
+      <button class="nav-btn" data-label="Vocabulario" onclick="showTab('vocabulary')"><span class="icon">📖</span><span class="nav-text">Vocabulario</span></button>
+      <button class="nav-btn" data-label="Logros" onclick="showTab('achievements')"><span class="icon">🏆</span><span class="nav-text">Logros</span></button>
     </div>
-  </aside>
+    <div class="nav-section">
+      <span class="nav-label">Contenido</span>
+      <button class="nav-btn" data-label="Niveles" onclick="showTab('levels')"><span class="icon">📊</span><span class="nav-text">Niveles</span></button>
+      <button class="nav-btn" data-label="Unidades" onclick="showTab('units')"><span class="icon">📦</span><span class="nav-text">Unidades</span></button>
+      <!-- <button class="nav-btn" onclick="showTab('lessons')"><span class="icon">📚</span>Lecciones</button> -->
+      <button class="nav-btn" data-label="Ejercicios" onclick="showTab('exercises')"><span class="icon">✏️</span><span class="nav-text">Ejercicios</span></button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Actividad</span>
+      <button class="nav-btn" data-label="Historial" onclick="showTab('lesson_history')"><span class="icon">📋</span><span class="nav-text">Historial</span></button>
+      <button class="nav-btn" data-label="Estadísticas" onclick="showTab('user_stats')"><span class="icon">📈</span><span class="nav-text">Estadísticas</span></button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Jugador</span>
+      <button class="nav-btn" data-label="Progreso" onclick="showTab('user_progress')"><span class="icon">🗺️</span><span class="nav-text">Progreso</span></button>
+      <button class="nav-btn" data-label="Energía" onclick="showTab('user_energy')"><span class="icon">⚡</span><span class="nav-text">Energía</span></button>
+      <button class="nav-btn" data-label="Logros Usuario" onclick="showTab('user_achievements')"><span class="icon">🎖️</span><span class="nav-text">Logros Usuario</span></button>
+      <button class="nav-btn" data-label="Sist. Escritura" onclick="showTab('writing_systems')"><span class="icon">✍️</span><span class="nav-text">Sist. Escritura</span></button>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Sistema</span>
+      <button class="nav-btn" data-label="Configuración" onclick="showTab('config')"><span class="icon">⚙️</span><span class="nav-text">Configuración</span></button>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <p id="conn-status" onclick="showTab('config')">● Desconectado</p>
+  </div>
+</aside>
 
-  <!-- ══ MAIN ══ -->
-  <div id="main">
-    <header>
-      <h2 id="page-title">Overview</h2>
-      <div class="badge-db">
-        <span class="dot"></span>
-        PostgreSQL · <span id="db-host">localhost:7575</span>
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <header>
+    <h2 id="page-title">Overview</h2>
+    <div class="svc-bar">
+      <div class="badge-db" title="Backend al que se conecta este panel">
+        API · <span id="db-host">—</span>
       </div>
-    </header>
+      <span class="svc-pill" id="svc-pill" onclick="checkHealth(true)" title="GET /api/health · clic para revisar">
+          <span class="dot"></span><span id="svc-pill-text">Revisando…</span>
+        </span>
+      <a class="uptime-badge" href="https://stats.uptimerobot.com/iG8x8aeb43?utm_source=status_badge&utm_medium=referral"
+         target="_blank" rel="noopener" title="Página de estado (UptimeRobot)">
+        <img src="https://badge.uptimerobot.com/psp/637355e694476be4e90904f07614a3f3.svg?style=logo&theme=light"
+             alt="ar-cs-tlahtolcalli">
+      </a>
+    </div>
+  </header>
 
-    <div id="content">
+  <div id="content">
 
-      <!-- OVERVIEW -->
-      <div class="tab-pane active" id="tab-overview">
-        <div class="stats-grid">
-          <div class="stat-card" style="--accent:var(--jade)">
-            <p class="label">Usuarios</p>
-            <p class="value" id="stat-users">—</p>
-            <p class="sub">Registrados</p>
-          </div>
-          <div class="stat-card" style="--accent:var(--amber)">
-            <p class="label">Idiomas</p>
-            <p class="value" id="stat-langs">—</p>
-            <p class="sub">Disponibles</p>
-          </div>
-          <div class="stat-card" style="--accent:#7EB3FF">
-            <p class="label">Ejercicios</p>
-            <p class="value" id="stat-exercises">—</p>
-            <p class="sub">En biblioteca</p>
-          </div>
-          <div class="stat-card" style="--accent:var(--coral)">
-            <p class="label">Vocabulario</p>
-            <p class="value" id="stat-vocab">—</p>
-            <p class="sub">Palabras totales</p>
-          </div>
-          <div class="stat-card" style="--accent:#C07EFF">
-            <p class="label">Logros</p>
-            <p class="value" id="stat-ach">—</p>
-            <p class="sub">Disponibles</p>
-          </div>
-          <div class="stat-card" style="--accent:#26CCC0">
-            <p class="label">Progreso</p>
-            <p class="value" id="stat-progress">—</p>
-            <p class="sub">Registros avance</p>
-          </div>
-          <div class="stat-card" style="--accent:#FFC10A">
-            <p class="label">Energía</p>
-            <p class="value" id="stat-energy">—</p>
-            <p class="sub">Registros energía</p>
-          </div>
-          <div class="stat-card" style="--accent:#9C27B0">
-            <p class="label">Sist. Escritura</p>
-            <p class="value" id="stat-ws">—</p>
-            <p class="sub">Alfabetos / Silabarios</p>
-          </div>
-          <div class="stat-card" style="--accent:#FF8A65">
-            <p class="label">Lecciones</p>
-            <p class="value" id="stat-lessons">—</p>
-            <p class="sub">En catálogo</p>
-          </div>
-          <div class="stat-card" style="--accent:#4DB6AC">
-            <p class="label">Historial</p>
-            <p class="value" id="stat-history">—</p>
-            <p class="sub">Lecciones completadas</p>
-          </div>
+    <!-- OVERVIEW -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent:var(--jade)">
+          <p class="label">Usuarios</p>
+          <p class="value" id="stat-users">—</p>
+          <p class="sub">Registrados</p>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Últimas lecciones completadas</h3>
-            <button class="btn btn-ghost btn-sm" onclick="showTab('lesson_history')">Ver todas →</button>
-          </div>
-          <div id="recent-lessons-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div class="stat-card" style="--accent:var(--amber)">
+          <p class="label">Idiomas</p>
+          <p class="value" id="stat-langs">—</p>
+          <p class="sub">Disponibles</p>
         </div>
-      </div>
-
-      <!-- IDIOMAS -->
-      <div class="tab-pane" id="tab-languages">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar idioma…"
-            oninput="filterTable('languages-table',this.value)" />
-          <button class="btn btn-primary" onclick="openModal('modal-language')">+ Nuevo idioma</button>
+        <div class="stat-card" style="--accent:#7EB3FF">
+          <p class="label">Ejercicios</p>
+          <p class="value" id="stat-exercises">—</p>
+          <p class="sub">En biblioteca</p>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Idiomas</h3>
-          </div>
-          <div id="languages-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div class="stat-card" style="--accent:var(--coral)">
+          <p class="label">Vocabulario</p>
+          <p class="value" id="stat-vocab">—</p>
+          <p class="sub">Palabras totales</p>
         </div>
-      </div>
-
-      <!-- USUARIOS -->
-      <div class="tab-pane" id="tab-users">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar usuario…"
-            oninput="filterTable('users-table',this.value)" />
-          <button class="btn btn-primary" onclick="openModalUser()">+ Nuevo usuario</button>
+        <div class="stat-card" style="--accent:#C07EFF">
+          <p class="label">Logros</p>
+          <p class="value" id="stat-ach">—</p>
+          <p class="sub">Disponibles</p>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Usuarios</h3>
-          </div>
-          <div id="users-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div class="stat-card" style="--accent:#26CCC0">
+          <p class="label">Progreso</p>
+          <p class="value" id="stat-progress">—</p>
+          <p class="sub">Registros avance</p>
+        </div>
+        <div class="stat-card" style="--accent:#FFC10A">
+          <p class="label">Energía</p>
+          <p class="value" id="stat-energy">—</p>
+          <p class="sub">Registros energía</p>
+        </div>
+        <div class="stat-card" style="--accent:#9C27B0">
+          <p class="label">Sist. Escritura</p>
+          <p class="value" id="stat-ws">—</p>
+          <p class="sub">Alfabetos / Silabarios</p>
+        </div>
+        <div class="stat-card" style="--accent:#FF8A65">
+          <p class="label">Lecciones</p>
+          <p class="value" id="stat-lessons">—</p>
+          <p class="sub">En catálogo</p>
+        </div>
+        <div class="stat-card" style="--accent:#4DB6AC">
+          <p class="label">Historial</p>
+          <p class="value" id="stat-history">—</p>
+          <p class="sub">Lecciones completadas</p>
         </div>
       </div>
-
-      <!-- VOCABULARIO -->
-      <div class="tab-pane" id="tab-vocabulary">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar palabra…"
-            oninput="filterTable('vocab-table',this.value)" />
-          <select class="filter-sel" id="vocab-lang-filter" onchange="loadVocabulary()">
-            <option value="">Todos los idiomas</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModalVocab()">+ Nueva palabra</button>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Estado del servicio</h3>
+          <a class="btn btn-ghost btn-sm" href="https://stats.uptimerobot.com/iG8x8aeb43" target="_blank" rel="noopener">Página de estado →</a>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Vocabulario</h3>
-          </div>
-          <div id="vocab-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div class="svc-grid">
+          <div><p class="k">Health check</p><p class="v" id="svc-status">—</p></div>
+          <div><p class="k">Latencia</p><p class="v" id="svc-latency">—</p></div>
+          <div><p class="k">Hora del servidor</p><p class="v" id="svc-time">—</p></div>
+          <div><p class="k">Última revisión</p><p class="v" id="svc-checked">—</p></div>
+          <div><p class="k">Endpoint</p><p class="v" id="svc-endpoint">—</p></div>
+          <div><p class="k">Monitor externo</p>
+            <a class="uptime-badge" style="display:inline-flex" href="https://stats.uptimerobot.com/iG8x8aeb43?utm_source=status_badge&utm_medium=referral" target="_blank" rel="noopener">
+              <img src="https://badge.uptimerobot.com/psp/637355e694476be4e90904f07614a3f3.svg?style=logo&theme=light" alt="Estado en UptimeRobot"></a></div>
         </div>
       </div>
-
-      <!-- LOGROS -->
-      <div class="tab-pane" id="tab-achievements">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar logro…"
-            oninput="filterTable('ach-table',this.value)" />
-          <button class="btn btn-primary" onclick="openModalAch()">+ Nuevo logro</button>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Contenido por idioma</h3>
+          <button class="btn btn-ghost btn-sm" onclick="loadContentByLanguage()">Actualizar</button>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Logros</h3>
-          </div>
-          <div id="achievements-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="content-lang-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
-
-      <!-- NIVELES -->
-      <div class="tab-pane" id="tab-levels">
-        <div class="filter-bar">
-          <select class="filter-sel" id="levels-lang-filter" onchange="loadLevels()">
-            <option value="">Todos los idiomas</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModalLevel()">+ Nuevo nivel</button>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Últimas lecciones completadas</h3>
+          <button class="btn btn-ghost btn-sm" onclick="showTab('lesson_history')">Ver todas →</button>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Niveles</h3>
-          </div>
-          <div id="levels-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="recent-lessons-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- UNIDADES -->
-      <div class="tab-pane" id="tab-units">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar unidad…"
-            oninput="filterTable('units-table',this.value)" />
-          <button class="btn btn-primary" onclick="openModalUnit()">+ Nueva unidad</button>
+    <!-- IDIOMAS -->
+    <div class="tab-pane" id="tab-languages">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar idioma…"
+               oninput="filterTable('languages-table',this.value)" />
+        <button class="btn btn-primary" onclick="openModal('modal-language')">+ Nuevo idioma</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Idiomas</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Unidades</h3>
-          </div>
-          <div id="units-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="languages-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- LECCIONES -->
-      <div class="tab-pane" id="tab-lessons">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar lección…"
-            oninput="filterTable('lessons-table',this.value)" />
-          <select class="filter-sel" id="lessons-unit-filter" onchange="loadLessons()">
-            <option value="">Todas las unidades</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModalLesson()">+ Nueva lección</button>
+    <!-- USUARIOS -->
+    <div class="tab-pane" id="tab-users">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar usuario…"
+               oninput="filterTable('users-table',this.value)" />
+        <button class="btn btn-primary" onclick="openModalUser()">+ Nuevo usuario</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Usuarios</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header"><h3>Lecciones</h3></div>
-          <div id="lessons-body"><div class="loading"><span class="spinner"></span>Cargando…</div></div>
+        <div id="users-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- EJERCICIOS — FK: UNIT_ID (LANGUAGES → LEVELS → UNITS → EXERCISES) -->
-      <div class="tab-pane" id="tab-exercises">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar ejercicio…"
-            oninput="filterTable('ex-table',this.value)" />
-          <select class="filter-sel" id="ex-unit-filter" onchange="loadExercises()">
-            <option value="">Todas las unidades</option>
-          </select>
-          <select class="filter-sel" id="ex-type-filter" onchange="loadExercises()">
-            <option value="">Todos los tipos</option>
-            <option>multiple-choice</option>
-            <option>fill-blank</option>
-            <option>translation</option>
-            <option>listening</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModalEx()">+ Nuevo ejercicio</button>
+    <!-- VOCABULARIO -->
+    <div class="tab-pane" id="tab-vocabulary">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar palabra…"
+               oninput="filterTable('vocab-table',this.value)" />
+        <select class="filter-sel" id="vocab-lang-filter" onchange="loadVocabulary()">
+          <option value="">Todos los idiomas</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalVocab()">+ Nueva palabra</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Vocabulario</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Ejercicios</h3>
-          </div>
-          <div id="exercises-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="vocab-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- HISTORIAL -->
-      <div class="tab-pane" id="tab-lesson_history">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar por usuario o unidad…"
-            oninput="filterTable('hist-table',this.value)" />
+    <!-- LOGROS -->
+    <div class="tab-pane" id="tab-achievements">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar logro…"
+               oninput="filterTable('ach-table',this.value)" />
+        <button class="btn btn-primary" onclick="openModalAch()">+ Nuevo logro</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Logros</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Historial de lecciones</h3>
-          </div>
-          <div id="lesson_history-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="achievements-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- ESTADÍSTICAS -->
-      <div class="tab-pane" id="tab-user_stats">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar usuario…"
-            oninput="filterTable('stats-table',this.value)" />
+    <!-- NIVELES -->
+    <div class="tab-pane" id="tab-levels">
+      <div class="filter-bar">
+        <select class="filter-sel" id="levels-lang-filter" onchange="loadLevels()">
+          <option value="">Todos los idiomas</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalLevel()">+ Nuevo nivel</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Niveles</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Estadísticas por usuario</h3>
-          </div>
-          <div id="user_stats-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="levels-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- PROGRESO -->
-      <div class="tab-pane" id="tab-user_progress">
-        <div class="filter-bar">
-          <select class="filter-sel" id="progress-user-filter" onchange="loadUserProgress()">
-            <option value="">Todos los usuarios</option>
-          </select>
-          <input class="input-search" type="text" placeholder="Buscar…"
-            oninput="filterTable('progress-table',this.value)" />
+    <!-- UNIDADES -->
+    <div class="tab-pane" id="tab-units">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar unidad…"
+               oninput="filterTable('units-table',this.value)" />
+        <select class="filter-sel" id="units-lang-filter" onchange="loadUnits()">
+          <option value="">Todos los idiomas</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalUnit()">+ Nueva unidad</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Unidades</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Progreso por unidad</h3>
-          </div>
-          <div id="user_progress-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="units-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- ENERGÍA -->
-      <div class="tab-pane" id="tab-user_energy">
-        <div class="filter-bar">
-          <input class="input-search" type="text" placeholder="Buscar usuario…"
-            oninput="filterTable('energy-table',this.value)" />
+    <!-- LECCIONES -->
+    <div class="tab-pane" id="tab-lessons">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar lección…"
+               oninput="filterTable('lessons-table',this.value)" />
+        <select class="filter-sel" id="lessons-unit-filter" onchange="loadLessons()">
+          <option value="">Todas las unidades</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalLesson()">+ Nueva lección</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Lecciones</h3></div>
+        <div id="lessons-body"><div class="loading"><span class="spinner"></span>Cargando…</div></div>
+      </div>
+    </div>
+
+    <!-- EJERCICIOS — FK: UNIT_ID (LANGUAGES → LEVELS → UNITS → EXERCISES) -->
+    <div class="tab-pane" id="tab-exercises">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar ejercicio…"
+               oninput="filterTable('ex-table',this.value)" />
+        <select class="filter-sel" id="ex-unit-filter" onchange="loadExercises()">
+          <option value="">Todas las unidades</option>
+        </select>
+        <select class="filter-sel" id="ex-type-filter" onchange="loadExercises()">
+          <option value="">Todos los tipos</option>
+          <option>multiple-choice</option>
+          <option>fill-blank</option>
+          <option>translation</option>
+          <option>listening</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalEx()">+ Nuevo ejercicio</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Ejercicios</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Energía por usuario</h3>
-          </div>
-          <div id="user_energy-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="exercises-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- LOGROS DE USUARIO -->
-      <div class="tab-pane" id="tab-user_achievements">
-        <div class="filter-bar">
-          <select class="filter-sel" id="ua-user-filter" onchange="loadUserAchievements()">
-            <option value="">— Selecciona usuario —</option>
-          </select>
+    <!-- HISTORIAL -->
+    <div class="tab-pane" id="tab-lesson_history">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar por usuario o unidad…"
+               oninput="filterTable('hist-table',this.value)" />
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Historial de lecciones</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header"><h3>Logros por usuario</h3></div>
-          <div id="user_achievements-body"><div class="empty"><p>Selecciona un usuario para ver sus logros</p></div></div>
+        <div id="lesson_history-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- SISTEMAS DE ESCRITURA -->
-      <div class="tab-pane" id="tab-writing_systems">
-        <div class="filter-bar">
-          <select class="filter-sel" id="ws-lang-filter" onchange="loadWritingSystems()">
-            <option value="">Todos los idiomas</option>
-          </select>
-          <button class="btn btn-primary" onclick="openModalWS()">+ Nuevo sistema</button>
+    <!-- ESTADÍSTICAS -->
+    <div class="tab-pane" id="tab-user_stats">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar usuario…"
+               oninput="filterTable('stats-table',this.value)" />
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Estadísticas por usuario</h3>
         </div>
-        <div class="table-wrap">
-          <div class="table-header">
-            <h3>Sistemas de escritura</h3>
-          </div>
-          <div id="writing_systems-body">
-            <div class="loading"><span class="spinner"></span>Cargando…</div>
-          </div>
+        <div id="user_stats-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
-      <!-- CONFIG -->
-      <div class="tab-pane" id="tab-config">
-        <div class="config-panel">
-          <h3>API Backend</h3>
-          <div class="config-row">
-            <div class="form-group" style="min-width:260px"><label>Base URL</label><input type="text" id="cfg-api"
-                value="https://ar-cs-tlahtolcalli.onrender.com/api" /></div>
-            <div class="form-group" style="align-self:flex-end"><button class="btn btn-primary"
-                onclick="saveConfig()">Guardar</button></div>
-            <div class="form-group" style="align-self:flex-end"><button class="btn btn-ghost"
-                onclick="testConnection()">Test conexión</button></div>
-          </div>
-          <p class="config-note" id="conn-detail">→ Apunta al Spring Boot backend (puerto 7575 por defecto)</p>
+    <!-- PROGRESO -->
+    <div class="tab-pane" id="tab-user_progress">
+      <div class="filter-bar">
+        <select class="filter-sel" id="progress-user-filter" onchange="loadUserProgress()">
+          <option value="">Todos los usuarios</option>
+        </select>
+        <input class="input-search" type="text" placeholder="Buscar…"
+               oninput="filterTable('progress-table',this.value)" />
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Progreso por unidad</h3>
+        </div>
+        <div id="user_progress-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
         </div>
       </div>
+    </div>
 
+    <!-- ENERGÍA -->
+    <div class="tab-pane" id="tab-user_energy">
+      <div class="filter-bar">
+        <input class="input-search" type="text" placeholder="Buscar usuario…"
+               oninput="filterTable('energy-table',this.value)" />
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Energía por usuario</h3>
+        </div>
+        <div id="user_energy-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGROS DE USUARIO -->
+    <div class="tab-pane" id="tab-user_achievements">
+      <div class="filter-bar">
+        <select class="filter-sel" id="ua-user-filter" onchange="loadUserAchievements()">
+          <option value="">— Selecciona usuario —</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Logros por usuario</h3></div>
+        <div id="user_achievements-body"><div class="empty"><p>Selecciona un usuario para ver sus logros</p></div></div>
+      </div>
+    </div>
+
+    <!-- SISTEMAS DE ESCRITURA -->
+    <div class="tab-pane" id="tab-writing_systems">
+      <div class="filter-bar">
+        <select class="filter-sel" id="ws-lang-filter" onchange="loadWritingSystems()">
+          <option value="">Todos los idiomas</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModalWS()">+ Nuevo sistema</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Sistemas de escritura</h3>
+        </div>
+        <div id="writing_systems-body">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="tab-pane" id="tab-config">
+      <div class="config-panel">
+        <h3>API Backend</h3>
+        <div class="config-row">
+          <div class="form-group" style="min-width:260px"><label>Base URL</label><input type="text" id="cfg-api"
+                                                                                        value="https://ar-cs-tlahtolcalli.onrender.com/api" /></div>
+          <div class="form-group" style="align-self:flex-end"><button class="btn btn-primary"
+                                                                      onclick="saveConfig()">Guardar</button></div>
+          <div class="form-group" style="align-self:flex-end"><button class="btn btn-ghost"
+                                                                      onclick="testConnection()">Test conexión</button></div>
+        </div>
+        <p class="config-note" id="conn-detail">→ Apunta al Spring Boot backend (puerto 7575 por defecto)</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODALES ══ -->
+
+<!-- Language -->
+<div class="modal-overlay" id="modal-language">
+  <div class="modal">
+    <p class="modal-title" id="modal-language-title">Nuevo idioma</p>
+    <input type="hidden" id="lang-id" />
+    <div class="form-grid">
+      <div class="form-group"><label>Código</label><input type="text" id="lang-code" placeholder="nhce"
+                                                          maxlength="10" /></div>
+      <div class="form-group"><label>Nombre</label><input type="text" id="lang-name" placeholder="Náhuatl Central" />
+      </div>
+      <div class="form-group"><label>Nombre nativo</label><input type="text" id="lang-native" /></div>
+      <div class="form-group"><label>Color (hex)</label><input type="text" id="lang-color" placeholder="#00C896" />
+      </div>
+      <div class="form-group"><label>Bandera (emoji)</label><input type="text" id="lang-flag" placeholder="🌽" />
+      </div>
+      <div class="form-group"><label>Familia</label><input type="text" id="lang-family" placeholder="Uto-Aztecan" />
+      </div>
+      <div class="form-group full">
+        <label>Sistema de escritura</label>
+        <select class="form-sel" id="lang-ws">
+          <option value="alphabet">alphabet</option>
+          <option value="syllabary">syllabary</option>
+          <option value="logogram">logogram</option>
+          <option value="abugida">abugida</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost"
+              onclick="closeModal('modal-language');resetModal('modal-language')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLanguage()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- ══ MODALES ══ -->
-
-  <!-- Language -->
-  <div class="modal-overlay" id="modal-language">
-    <div class="modal">
-      <p class="modal-title" id="modal-language-title">Nuevo idioma</p>
-      <input type="hidden" id="lang-id" />
-      <div class="form-grid">
-        <div class="form-group"><label>Código</label><input type="text" id="lang-code" placeholder="nhce"
-            maxlength="10" /></div>
-        <div class="form-group"><label>Nombre</label><input type="text" id="lang-name" placeholder="Náhuatl Central" />
-        </div>
-        <div class="form-group"><label>Nombre nativo</label><input type="text" id="lang-native" /></div>
-        <div class="form-group"><label>Color (hex)</label><input type="text" id="lang-color" placeholder="#00C896" />
-        </div>
-        <div class="form-group"><label>Bandera (emoji)</label><input type="text" id="lang-flag" placeholder="🌽" />
-        </div>
-        <div class="form-group"><label>Familia</label><input type="text" id="lang-family" placeholder="Uto-Aztecan" />
-        </div>
-        <div class="form-group full">
-          <label>Sistema de escritura</label>
-          <select class="form-sel" id="lang-ws">
-            <option value="alphabet">alphabet</option>
-            <option value="syllabary">syllabary</option>
-            <option value="logogram">logogram</option>
-            <option value="abugida">abugida</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost"
-          onclick="closeModal('modal-language');resetModal('modal-language')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveLanguage()">Guardar</button>
-      </div>
+<!-- User -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <p class="modal-title" id="modal-user-title">Nuevo usuario</p>
+    <input type="hidden" id="user-id" />
+    <div class="form-grid">
+      <div class="form-group"><label>Username</label><input type="text" id="user-username" /></div>
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="user-fullname" /></div>
+      <div class="form-group full"><label>Email</label><input type="email" id="user-email" /></div>
+      <div class="form-group"><label>Idioma actual</label><select class="form-sel" id="user-lang">
+        <option value="">— Sin asignar —</option>
+      </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-user');resetModal('modal-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUser()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- User -->
-  <div class="modal-overlay" id="modal-user">
-    <div class="modal">
-      <p class="modal-title" id="modal-user-title">Nuevo usuario</p>
-      <input type="hidden" id="user-id" />
-      <div class="form-grid">
-        <div class="form-group"><label>Username</label><input type="text" id="user-username" /></div>
-        <div class="form-group"><label>Nombre completo</label><input type="text" id="user-fullname" /></div>
-        <div class="form-group full"><label>Email</label><input type="email" id="user-email" /></div>
-        <div class="form-group"><label>Idioma actual</label><select class="form-sel" id="user-lang">
-            <option value="">— Sin asignar —</option>
-          </select></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-user');resetModal('modal-user')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveUser()">Guardar</button>
-      </div>
+<!-- Vocabulary -->
+<div class="modal-overlay" id="modal-vocab">
+  <div class="modal">
+    <p class="modal-title" id="modal-vocab-title">Nueva palabra</p>
+    <input type="hidden" id="vocab-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Idioma</label><select class="form-sel" id="vocab-lang-id">
+        <option value="">— Selecciona —</option>
+      </select></div>
+      <div class="form-group"><label>Palabra</label><input type="text" id="vocab-word" /></div>
+      <div class="form-group"><label>Traducción</label><input type="text" id="vocab-translation" /></div>
+      <div class="form-group"><label>Pronunciación</label><input type="text" id="vocab-pron" /></div>
+      <div class="form-group full"><label>Ejemplo</label><input type="text" id="vocab-example" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-vocab');resetModal('modal-vocab')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveVocabulary()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Vocabulary -->
-  <div class="modal-overlay" id="modal-vocab">
-    <div class="modal">
-      <p class="modal-title" id="modal-vocab-title">Nueva palabra</p>
-      <input type="hidden" id="vocab-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Idioma</label><select class="form-sel" id="vocab-lang-id">
-            <option value="">— Selecciona —</option>
-          </select></div>
-        <div class="form-group"><label>Palabra</label><input type="text" id="vocab-word" /></div>
-        <div class="form-group"><label>Traducción</label><input type="text" id="vocab-translation" /></div>
-        <div class="form-group"><label>Pronunciación</label><input type="text" id="vocab-pron" /></div>
-        <div class="form-group full"><label>Ejemplo</label><input type="text" id="vocab-example" /></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-vocab');resetModal('modal-vocab')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveVocabulary()">Guardar</button>
-      </div>
+<!-- Achievement -->
+<div class="modal-overlay" id="modal-achievement">
+  <div class="modal">
+    <p class="modal-title" id="modal-ach-title">Nuevo logro</p>
+    <input type="hidden" id="ach-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Título</label><input type="text" id="ach-title" /></div>
+      <div class="form-group full"><label>Descripción</label><input type="text" id="ach-desc" /></div>
+      <div class="form-group"><label>Icono</label><input type="text" id="ach-icon" placeholder="🏆" /></div>
+      <div class="form-group"><label>XP Recompensa</label><input type="number" id="ach-xp" value="0" min="0" /></div>
+      <div class="form-group"><label>Categoría</label><input type="text" id="ach-cat" /></div>
+      <div class="form-group"><label>Rareza</label><select class="form-sel" id="ach-rarity">
+        <option>common</option>
+        <option>rare</option>
+        <option>epic</option>
+        <option>legendary</option>
+      </select></div>
+      <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req" /></div>
+      <div class="form-group full"><label>Language Tag (JSON, ej: ["nhce"])</label><input type="text" id="ach-lang-tag" placeholder='null = logro global' /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost"
+              onclick="closeModal('modal-achievement');resetModal('modal-achievement')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAchievement()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Achievement -->
-  <div class="modal-overlay" id="modal-achievement">
-    <div class="modal">
-      <p class="modal-title" id="modal-ach-title">Nuevo logro</p>
-      <input type="hidden" id="ach-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Título</label><input type="text" id="ach-title" /></div>
-        <div class="form-group full"><label>Descripción</label><input type="text" id="ach-desc" /></div>
-        <div class="form-group"><label>Icono</label><input type="text" id="ach-icon" placeholder="🏆" /></div>
-        <div class="form-group"><label>XP Recompensa</label><input type="number" id="ach-xp" value="0" min="0" /></div>
-        <div class="form-group"><label>Categoría</label><input type="text" id="ach-cat" /></div>
-        <div class="form-group"><label>Rareza</label><select class="form-sel" id="ach-rarity">
-            <option>common</option>
-            <option>rare</option>
-            <option>epic</option>
-            <option>legendary</option>
-          </select></div>
-        <div class="form-group full"><label>Requisito</label><input type="text" id="ach-req" /></div>
-        <div class="form-group full"><label>Language Tag (JSON, ej: ["nhce"])</label><input type="text" id="ach-lang-tag" placeholder='null = logro global' /></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost"
-          onclick="closeModal('modal-achievement');resetModal('modal-achievement')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveAchievement()">Guardar</button>
-      </div>
+<!-- Level -->
+<div class="modal-overlay" id="modal-level">
+  <div class="modal">
+    <p class="modal-title" id="modal-level-title">Nuevo nivel</p>
+    <input type="hidden" id="level-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Idioma</label><select class="form-sel" id="level-lang-id">
+        <option value="">— Selecciona —</option>
+      </select></div>
+      <div class="form-group"><label>Número</label><input type="number" id="level-num" min="1" /></div>
+      <div class="form-group"><label>Color</label><input type="text" id="level-color" placeholder="#00C896" /></div>
+      <div class="form-group"><label>Título</label><input type="text" id="level-title" /></div>
+      <div class="form-group"><label>Título nativo</label><input type="text" id="level-native" /></div>
+      <div class="form-group"><label>Gratuito</label><select class="form-sel" id="level-free">
+        <option value="1">Sí</option>
+        <option value="0">No</option>
+      </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-level');resetModal('modal-level')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLevel()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Level -->
-  <div class="modal-overlay" id="modal-level">
-    <div class="modal">
-      <p class="modal-title" id="modal-level-title">Nuevo nivel</p>
-      <input type="hidden" id="level-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Idioma</label><select class="form-sel" id="level-lang-id">
-            <option value="">— Selecciona —</option>
-          </select></div>
-        <div class="form-group"><label>Número</label><input type="number" id="level-num" min="1" /></div>
-        <div class="form-group"><label>Color</label><input type="text" id="level-color" placeholder="#00C896" /></div>
-        <div class="form-group"><label>Título</label><input type="text" id="level-title" /></div>
-        <div class="form-group"><label>Título nativo</label><input type="text" id="level-native" /></div>
-        <div class="form-group"><label>Gratuito</label><select class="form-sel" id="level-free">
-            <option value="1">Sí</option>
-            <option value="0">No</option>
-          </select></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-level');resetModal('modal-level')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveLevel()">Guardar</button>
-      </div>
+<!-- Unit -->
+<div class="modal-overlay" id="modal-unit">
+  <div class="modal">
+    <p class="modal-title" id="modal-unit-title">Nueva unidad</p>
+    <input type="hidden" id="unit-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Nivel</label><select class="form-sel" id="unit-level-id">
+        <option value="">— Selecciona —</option>
+      </select></div>
+      <div class="form-group"><label>Número</label><input type="number" id="unit-num" min="1" /></div>
+      <div class="form-group"><label>Color</label><input type="text" id="unit-color" placeholder="#F5A623" /></div>
+      <div class="form-group full"><label>Título</label><input type="text" id="unit-title" /></div>
+      <div class="form-group full"><label>Objetivo</label><input type="text" id="unit-obj" /></div>
+      <div class="form-group full"><label>Gramática</label><input type="text" id="unit-grammar" /></div>
+      <div class="form-group"><label>Gratuita</label><select class="form-sel" id="unit-free">
+        <option value="1">Sí</option>
+        <option value="0">No</option>
+      </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-unit');resetModal('modal-unit')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUnit()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Unit -->
-  <div class="modal-overlay" id="modal-unit">
-    <div class="modal">
-      <p class="modal-title" id="modal-unit-title">Nueva unidad</p>
-      <input type="hidden" id="unit-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Nivel</label><select class="form-sel" id="unit-level-id">
-            <option value="">— Selecciona —</option>
-          </select></div>
-        <div class="form-group"><label>Número</label><input type="number" id="unit-num" min="1" /></div>
-        <div class="form-group"><label>Color</label><input type="text" id="unit-color" placeholder="#F5A623" /></div>
-        <div class="form-group full"><label>Título</label><input type="text" id="unit-title" /></div>
-        <div class="form-group full"><label>Objetivo</label><input type="text" id="unit-obj" /></div>
-        <div class="form-group full"><label>Gramática</label><input type="text" id="unit-grammar" /></div>
-        <div class="form-group"><label>Gratuita</label><select class="form-sel" id="unit-free">
-            <option value="1">Sí</option>
-            <option value="0">No</option>
-          </select></div>
+<!-- Exercise — unitId es la FK directa (UNITS → EXERCISES) -->
+<div class="modal-overlay" id="modal-exercise">
+  <div class="modal modal-lg">
+    <p class="modal-title" id="modal-ex-title">Nuevo ejercicio</p>
+    <input type="hidden" id="ex-id" />
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Unidad</label>
+        <select class="form-sel" id="ex-unit-id">
+          <option value="">— Selecciona —</option>
+        </select>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-unit');resetModal('modal-unit')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveUnit()">Guardar</button>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select class="form-sel" id="ex-type">
+          <option value="multiple-choice">multiple-choice</option>
+          <option value="fill-blank">fill-blank</option>
+          <option value="translation">translation</option>
+          <option value="listening">listening</option>
+        </select>
       </div>
+      <div class="form-group">
+        <label>Dificultad</label>
+        <select class="form-sel" id="ex-diff">
+          <option>easy</option>
+          <option>medium</option>
+          <option>hard</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Puntos</label><input type="number" id="ex-pts" value="15" min="0" /></div>
+      <div class="form-group"><label>Personaje</label><input type="text" id="ex-char" placeholder="citlali" /></div>
+      <div class="form-group full"><label>Pregunta</label><input type="text" id="ex-question" /></div>
+      <div class="form-group full"><label>Respuesta (answer / texto con hueco)</label><input type="text"
+                                                                                             id="ex-answer" /></div>
+      <div class="form-group full"><label>Respuesta correcta (correctAns — puede ser JSON:
+        ["op1","op2"])</label><input type="text" id="ex-correct" /></div>
+      <div class="form-group full"><label>Opciones (OPTIONS — JSON: ["a","b","c","d"])</label><input type="text"
+                                                                                                     id="ex-options" /></div>
+      <div class="form-group full"><label>Explicación</label><input type="text" id="ex-explanation" /></div>
+      <div class="form-group full"><label>Placeholder</label><input type="text" id="ex-placeholder" placeholder="Texto guía del campo de respuesta" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost"
+              onclick="closeModal('modal-exercise');resetModal('modal-exercise')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveExercise()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Exercise — unitId es la FK directa (UNITS → EXERCISES) -->
-  <div class="modal-overlay" id="modal-exercise">
-    <div class="modal modal-lg">
-      <p class="modal-title" id="modal-ex-title">Nuevo ejercicio</p>
-      <input type="hidden" id="ex-id" />
-      <div class="form-grid">
-        <div class="form-group full">
-          <label>Unidad</label>
-          <select class="form-sel" id="ex-unit-id">
-            <option value="">— Selecciona —</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tipo</label>
-          <select class="form-sel" id="ex-type">
-            <option value="multiple-choice">multiple-choice</option>
-            <option value="fill-blank">fill-blank</option>
-            <option value="translation">translation</option>
-            <option value="listening">listening</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Dificultad</label>
-          <select class="form-sel" id="ex-diff">
-            <option>easy</option>
-            <option>medium</option>
-            <option>hard</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Puntos</label><input type="number" id="ex-pts" value="15" min="0" /></div>
-        <div class="form-group"><label>Personaje</label><input type="text" id="ex-char" placeholder="citlali" /></div>
-        <div class="form-group full"><label>Pregunta</label><input type="text" id="ex-question" /></div>
-        <div class="form-group full"><label>Respuesta (answer / texto con hueco)</label><input type="text"
-            id="ex-answer" /></div>
-        <div class="form-group full"><label>Respuesta correcta (correctAns — puede ser JSON:
-            ["op1","op2"])</label><input type="text" id="ex-correct" /></div>
-        <div class="form-group full"><label>Opciones (OPTIONS — JSON: ["a","b","c","d"])</label><input type="text"
-            id="ex-options" /></div>
-        <div class="form-group full"><label>Explicación</label><input type="text" id="ex-explanation" /></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost"
-          onclick="closeModal('modal-exercise');resetModal('modal-exercise')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveExercise()">Guardar</button>
-      </div>
+<!-- Lesson -->
+<div class="modal-overlay" id="modal-lesson">
+  <div class="modal">
+    <p class="modal-title" id="modal-lesson-title">Nueva lección</p>
+    <input type="hidden" id="lesson-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Unidad</label><select class="form-sel" id="lesson-unit-id">
+        <option value="">— Selecciona —</option>
+      </select></div>
+      <div class="form-group"><label>Número</label><input type="number" id="lesson-num" min="1" /></div>
+      <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" min="0" /></div>
+      <div class="form-group full"><label>Título</label><input type="text" id="lesson-title" /></div>
+      <div class="form-group full"><label>Descripción</label><textarea class="form-ta" id="lesson-desc"></textarea></div>
+      <div class="form-group"><label>Gratuita</label><select class="form-sel" id="lesson-free">
+        <option value="1">Sí</option>
+        <option value="0">No</option>
+      </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-lesson');resetModal('modal-lesson')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLesson()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Lesson -->
-  <div class="modal-overlay" id="modal-lesson">
-    <div class="modal">
-      <p class="modal-title" id="modal-lesson-title">Nueva lección</p>
-      <input type="hidden" id="lesson-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Unidad</label><select class="form-sel" id="lesson-unit-id">
-            <option value="">— Selecciona —</option>
-          </select></div>
-        <div class="form-group"><label>Número</label><input type="number" id="lesson-num" min="1" /></div>
-        <div class="form-group"><label>XP Recompensa</label><input type="number" id="lesson-xp" value="10" min="0" /></div>
-        <div class="form-group full"><label>Título</label><input type="text" id="lesson-title" /></div>
-        <div class="form-group full"><label>Descripción</label><textarea class="form-ta" id="lesson-desc"></textarea></div>
-        <div class="form-group"><label>Gratuita</label><select class="form-sel" id="lesson-free">
-            <option value="1">Sí</option>
-            <option value="0">No</option>
-          </select></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-lesson');resetModal('modal-lesson')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveLesson()">Guardar</button>
-      </div>
+<!-- Writing System -->
+<div class="modal-overlay" id="modal-writing-system">
+  <div class="modal modal-lg">
+    <p class="modal-title" id="modal-ws-title">Nuevo Sistema de Escritura</p>
+    <input type="hidden" id="ws-id" />
+    <div class="form-grid">
+      <div class="form-group full"><label>Idioma</label><select class="form-sel" id="ws-lang-id">
+        <option value="">— Selecciona —</option>
+      </select></div>
+      <div class="form-group"><label>Tipo</label><select class="form-sel" id="ws-type">
+        <option value="alphabet">Alfabeto</option>
+        <option value="syllabary">Silabario</option>
+        <option value="logogram">Logograma</option>
+        <option value="abugida">Abugida</option>
+      </select></div>
+      <div class="form-group"><label>Nombre</label><input type="text" id="ws-name"
+                                                          placeholder="Alfabeto Náhuatl INALI" /></div>
+      <div class="form-group full"><label>Descripción</label><input type="text" id="ws-desc" /></div>
+    </div>
+    <div class="form-group full" style="margin-top:12px">
+      <label>📋 Datos del Alfabeto/Silabario (JSON)</label>
+      <textarea id="ws-characters" class="form-ta" rows="12" style="font-family:monospace;font-size:.75rem"
+                placeholder="Pega aquí la estructura JSON del alfabeto..."></textarea>
+    </div>
+    <div class="form-group full" style="margin-top:12px">
+      <label>Notas (JSON array)</label>
+      <textarea id="ws-notes" class="form-ta" rows="3" placeholder='["Nota 1", "Nota 2"]'></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-writing-system')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveWritingSystem()">Guardar</button>
     </div>
   </div>
+</div>
 
-  <!-- Writing System -->
-  <div class="modal-overlay" id="modal-writing-system">
-    <div class="modal modal-lg">
-      <p class="modal-title" id="modal-ws-title">Nuevo Sistema de Escritura</p>
-      <input type="hidden" id="ws-id" />
-      <div class="form-grid">
-        <div class="form-group full"><label>Idioma</label><select class="form-sel" id="ws-lang-id">
-            <option value="">— Selecciona —</option>
-          </select></div>
-        <div class="form-group"><label>Tipo</label><select class="form-sel" id="ws-type">
-            <option value="alphabet">Alfabeto</option>
-            <option value="syllabary">Silabario</option>
-            <option value="logogram">Logograma</option>
-            <option value="abugida">Abugida</option>
-          </select></div>
-        <div class="form-group"><label>Nombre</label><input type="text" id="ws-name"
-            placeholder="Alfabeto Náhuatl INALI" /></div>
-        <div class="form-group full"><label>Descripción</label><input type="text" id="ws-desc" /></div>
-      </div>
-      <div class="form-group full" style="margin-top:12px">
-        <label>📋 Datos del Alfabeto/Silabario (JSON)</label>
-        <textarea id="ws-characters" class="form-ta" rows="12" style="font-family:monospace;font-size:.75rem"
-          placeholder="Pega aquí la estructura JSON del alfabeto..."></textarea>
-      </div>
-      <div class="form-group full" style="margin-top:12px">
-        <label>Notas (JSON array)</label>
-        <textarea id="ws-notes" class="form-ta" rows="3" placeholder='["Nota 1", "Nota 2"]'></textarea>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-writing-system')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveWritingSystem()">Guardar</button>
-      </div>
-    </div>
-  </div>
+<div id="toast"></div>
 
-  <div id="toast"></div>
+<!-- ══ JS ══ -->
+<script>
+  let API = localStorage.getItem('tlahtolli_api') || `${window.location.origin}/api`;
+  let languagesCache = [];
+  let unitsCache = [];
+  let usersCache = [];
+  let levelsCache = [];
+  const HEALTH_EVERY_MS = 60000;
 
-  <!-- ══ JS ══ -->
-  <script>
-    let API = localStorage.getItem('tlahtolli_api') || `${window.location.origin}/api`;
-    let languagesCache = [];
-    let unitsCache = [];
-    let usersCache = [];
+  // Avatares Blobatar (mismo generador que la app). Si el CDN falla, se muestran iniciales.
+  let blobatarUri = null;
+  import('https://cdn.jsdelivr.net/npm/blobatar@2.7.0/dist/uri.js')
+          .then(m => { blobatarUri = m.blobatarUri; if (document.getElementById('users-table')) loadUsers(); })
+          .catch(() => { });
+  function avatarHTML(username) {
+    const name = username || 'tlahtolcalli';
+    if (blobatarUri) { try { return `<img class="u-av" src="${blobatarUri(name)}" alt="">`; } catch { } }
+    return `<span class="u-av">${esc(name.slice(0, 2).toUpperCase())}</span>`;
+  }
+  function esc(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function userName(id) { const u = usersCache.find(x => x.id === id || x.id === +id); return u ? u.username : `#${id ?? '?'}`; }
+  function userCell(id) { const n = userName(id); return `<div class="u-cell">${avatarHTML(n.startsWith('#') ? null : n)}<span>${esc(n)}</span></div>`; }
+  function levelOf(id) { return levelsCache.find(l => l.id === id || l.id === +id); }
+  function unitOf(id) { return unitsCache.find(u => u.id === id || u.id === +id); }
+  function unitLabel(id) {
+    const u = unitOf(id); if (!u) return id ?? '—';
+    const lv = levelOf(u.levelId ?? u.level_id);
+    const lang = lv ? getLangCode(lv.languageId ?? lv.language_id) : '?';
+    return `${lang} · L${lv ? (lv.levelNum ?? lv.level_num) : '?'} · U${u.unitNum ?? u.unit_num}`;
+  }
+  function unitLangId(u) { const lv = levelOf(u.levelId ?? u.level_id); return lv ? (lv.languageId ?? lv.language_id) : null; }
+  function apiHost() { try { return new URL(API).host; } catch { return API; } }
 
-    async function apiFetch(path, opts = {}) {
-      try {
-        const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.status === 204 ? null : res.json();
-      } catch (e) { toast('Error: ' + e.message, true); throw e; }
+  /* ══ ESTADO DEL SERVICIO (GET /api/health) ══ */
+  async function checkHealth(manual = false) {
+    const pill = document.getElementById('svc-pill'), txt = document.getElementById('svc-pill-text');
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('svc-endpoint', API + '/health');
+    const t0 = performance.now();
+    // Render free duerme tras 15 min: si tarda más de 3 s, se está despertando
+    const slow = setTimeout(() => { pill.className = 'svc-pill waking'; txt.textContent = 'Despertando…'; }, 3000);
+    try {
+      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 60000);
+      const res = await fetch(API + '/health', { signal: ctrl.signal, cache: 'no-store' });
+      clearTimeout(to);
+      const ms = Math.round(performance.now() - t0);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const d = await res.json().catch(() => ({}));
+      const up = String(d.status ?? 'UP').toUpperCase() === 'UP';
+      pill.className = 'svc-pill ' + (up ? 'up' : 'down');
+      txt.textContent = `${up ? 'UP' : (d.status ?? 'DOWN')} · ${ms} ms`;
+      set('svc-status', d.status ?? 'UP'); set('svc-latency', ms + ' ms');
+      set('svc-time', d.timestamp ? fmtDate(d.timestamp) : '—');
+      setConn(true);
+      if (manual) toast(`Backend ${up ? 'activo' : 'con problemas'} · ${ms} ms`, !up);
+    } catch (e) {
+      pill.className = 'svc-pill down'; txt.textContent = 'DOWN';
+      set('svc-status', 'Sin respuesta (' + (e.name === 'AbortError' ? 'timeout' : e.message) + ')');
+      set('svc-latency', '—'); set('svc-time', '—');
+      setConn(false);
+      if (manual) toast('El backend no responde', true);
+    } finally {
+      clearTimeout(slow);
+      set('svc-checked', new Date().toLocaleTimeString('es-MX'));
     }
+  }
+  function setConn(ok) {
+    const el = document.getElementById('conn-status'); if (!el) return;
+    el.textContent = ok ? '● Conectado' : '● Desconectado'; el.style.color = ok ? 'var(--jade)' : 'var(--coral)';
+  }
 
-    function toast(msg, isError = false) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.background = isError ? 'var(--coral)' : 'var(--jade)';
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2800);
-    }
+  /* ══ CONTENIDO POR IDIOMA (calculado en el cliente) ══ */
+  async function loadContentByLanguage() {
+    const body = document.getElementById('content-lang-body'); body.innerHTML = loadingHTML();
+    try {
+      const [langs, levels, units, vocab, exercises, lessons] = await Promise.all([
+        apiFetch('/languages'), apiFetch('/levels'), apiFetch('/units'),
+        apiFetch('/vocabulary'), apiFetch('/exercises'), apiFetch('/lessons').catch(() => [])
+      ]);
+      const L = langs?.content ?? langs ?? [], LV = levels?.content ?? levels ?? [], U = units?.content ?? units ?? [];
+      const V = vocab?.content ?? vocab ?? [], E = exercises?.content ?? exercises ?? [], LS = lessons?.content ?? lessons ?? [];
+      languagesCache = L; levelsCache = LV; unitsCache = U;
+      if (!L.length) { body.innerHTML = emptyHTML(); return; }
+      const langOfUnit = {}; U.forEach(u => langOfUnit[u.id] = unitLangId(u));
+      const users = usersCache.length ? usersCache : [];
+      const rows = L.map(l => {
+        const lv = LV.filter(x => (x.languageId ?? x.language_id) === l.id);
+        const un = U.filter(u => langOfUnit[u.id] === l.id);
+        const ex = E.filter(e => langOfUnit[e.unitId ?? e.unit_id] === l.id);
+        const ls = LS.filter(x => langOfUnit[x.unitId ?? x.unit_id] === l.id);
+        const vo = V.filter(v => (v.languageId ?? v.language_id) === l.id);
+        const learners = users.filter(u => (u.currentLang ?? u.current_lang) === l.id).length;
+        const freeLv = lv.filter(x => x.isFree ?? x.is_free).length;
+        return { l, lv: lv.length, freeLv, un: un.length, ls: ls.length, ex: ex.length, vo: vo.length, learners };
+      });
+      const n = v => `<td style="font-family:'IBM Plex Mono',monospace">${v}</td>`;
+      body.innerHTML = `<table id="content-lang-table">
+          <thead><tr><th>Idioma</th><th>Niveles</th><th>Unidades</th><th>Lecciones</th><th>Ejercicios</th><th>Vocabulario</th><th>Usuarios activos</th></tr></thead>
+          <tbody>${rows.map(r => `<tr>
+            <td><span class="chip chip-green">${esc(r.l.code)}</span> <strong>${esc(r.l.langName ?? r.l.lang_name)}</strong></td>
+            ${n(`${r.lv}${r.freeLv && r.freeLv !== r.lv ? ` <span style="color:var(--muted)">(${r.freeLv} gratis)</span>` : ''}`)}
+            ${n(r.un)}${n(r.ls)}${n(r.ex)}${n(r.vo)}${n(r.learners)}
+          </tr>`).join('')}</tbody></table>
+          <p style="padding:10px 18px;font-size:.7rem;color:var(--muted)">Usuarios activos = usuarios cuyo idioma actual es ese idioma.</p>`;
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(o => {
-      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-    });
-    function resetModal(id) {
-      const modal = document.getElementById(id);
-      modal.querySelectorAll('input:not([type=hidden]),textarea').forEach(el => el.value = '');
-      modal.querySelectorAll('input[type=hidden]').forEach(el => el.value = '');
-      const defaults = {
-        'modal-language': 'Nuevo idioma', 'modal-user': 'Nuevo usuario', 'modal-vocab': 'Nueva palabra',
-        'modal-achievement': 'Nuevo logro', 'modal-level': 'Nuevo nivel', 'modal-unit': 'Nueva unidad',
-        'modal-lesson': 'Nueva lección', 'modal-exercise': 'Nuevo ejercicio', 'modal-writing-system': 'Nuevo Sistema de Escritura'
-      };
-      const titleEl = modal.querySelector('.modal-title');
-      if (titleEl && defaults[id]) titleEl.textContent = defaults[id];
-    }
+  async function apiFetch(path, opts = {}) {
+    try {
+      const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.status === 204 ? null : res.json();
+    } catch (e) { toast('Error: ' + e.message, true); throw e; }
+  }
 
-    function filterTable(tableId, query) {
-      const tbl = document.getElementById(tableId);
-      if (!tbl) return;
-      const q = query.toLowerCase();
-      tbl.querySelectorAll('tbody tr').forEach(tr => { tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'; });
-    }
+  function toast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isError ? 'var(--coral)' : 'var(--jade)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
 
-    function getLangCode(id) { const l = languagesCache.find(x => x.id === id || x.id === +id); return l ? l.code : (id ?? '?'); }
-    function pct(v) { if (!v && v !== 0) return 'chip-red'; if (v >= .8) return 'chip-green'; if (v >= .5) return 'chip-amber'; return 'chip-red'; }
-    function diffChip(d) { if (d === 'easy') return 'chip-green'; if (d === 'medium') return 'chip-amber'; if (d === 'hard') return 'chip-red'; return 'chip-blue'; }
-    function fmtDate(d) { if (!d) return '—'; try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit' }); } catch { return d; } }
-    function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
-    function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Verifica que Spring Boot esté corriendo.</small></p></div>`; }
-    function loadingHTML() { return `<div class="loading"><span class="spinner"></span>Cargando…</div>`; }
-    function numVal(id) { return +document.getElementById(id).value || 0; }
-    function strVal(id) { return document.getElementById(id).value.trim(); }
-    function selVal(id) { const v = document.getElementById(id).value; return v || null; }
-
-    /* TAB ROUTING */
-    const TAB_TITLES = {
-      overview: 'Overview', languages: 'Idiomas', users: 'Usuarios', vocabulary: 'Vocabulario',
-      achievements: 'Logros', levels: 'Niveles', units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
-      lesson_history: 'Historial', user_stats: 'Estadísticas', user_progress: 'Progreso de Usuario',
-      user_energy: 'Energía', user_achievements: 'Logros de Usuario', writing_systems: 'Sistemas de Escritura', config: 'Configuración'
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+  });
+  function resetModal(id) {
+    const modal = document.getElementById(id);
+    modal.querySelectorAll('input:not([type=hidden]),textarea').forEach(el => el.value = '');
+    modal.querySelectorAll('input[type=hidden]').forEach(el => el.value = '');
+    const defaults = {
+      'modal-language': 'Nuevo idioma', 'modal-user': 'Nuevo usuario', 'modal-vocab': 'Nueva palabra',
+      'modal-achievement': 'Nuevo logro', 'modal-level': 'Nuevo nivel', 'modal-unit': 'Nueva unidad',
+      'modal-lesson': 'Nueva lección', 'modal-exercise': 'Nuevo ejercicio', 'modal-writing-system': 'Nuevo Sistema de Escritura'
     };
-    const TAB_LOADERS = {
-      overview: loadOverview, languages: loadLanguages, users: loadUsers, vocabulary: loadVocabulary,
-      achievements: loadAchievements, levels: loadLevels, units: loadUnits, lessons: loadLessons, exercises: loadExercises,
-      lesson_history: loadHistory, user_stats: loadStats, user_progress: loadUserProgress,
-      user_energy: loadUserEnergy, user_achievements: loadUserAchievements, writing_systems: loadWritingSystems, config: loadConfig
-    };
+    const titleEl = modal.querySelector('.modal-title');
+    if (titleEl && defaults[id]) titleEl.textContent = defaults[id];
+  }
 
-    function showTab(name) {
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const pane = document.getElementById('tab-' + name);
-      if (pane) pane.classList.add('active');
-      const btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick')?.includes(`'${name}'`));
-      if (btn) btn.classList.add('active');
-      document.getElementById('page-title').textContent = TAB_TITLES[name] || name;
-      if (TAB_LOADERS[name]) TAB_LOADERS[name]();
-    }
+  function filterTable(tableId, query) {
+    const tbl = document.getElementById(tableId);
+    if (!tbl) return;
+    const q = query.toLowerCase();
+    tbl.querySelectorAll('tbody tr').forEach(tr => { tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+  }
 
-    /* DROPDOWNS */
-    function refreshLangDropdowns() {
-      const base = '<option value="">— Selecciona —</option>';
-      const opts = base + languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      ['vocab-lang-id', 'level-lang-id', 'ws-lang-id'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
-      const userLangEl = document.getElementById('user-lang');
-      if (userLangEl) userLangEl.innerHTML = '<option value="">— Sin asignar —</option>' +
-        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      const allOpts = '<option value="">Todos los idiomas</option>' +
-        languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
-      ['vocab-lang-filter', 'levels-lang-filter', 'ws-lang-filter'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = allOpts; });
-    }
+  function getLangCode(id) { const l = languagesCache.find(x => x.id === id || x.id === +id); return l ? l.code : (id ?? '?'); }
+  function pct(v) { if (!v && v !== 0) return 'chip-red'; if (v >= .8) return 'chip-green'; if (v >= .5) return 'chip-amber'; return 'chip-red'; }
+  function diffChip(d) { if (d === 'easy') return 'chip-green'; if (d === 'medium') return 'chip-amber'; if (d === 'hard') return 'chip-red'; return 'chip-blue'; }
+  function fmtDate(d) { if (!d) return '—'; try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit' }); } catch { return d; } }
+  function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
+  function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Verifica que Spring Boot esté corriendo.</small></p></div>`; }
+  function loadingHTML() { return `<div class="loading"><span class="spinner"></span>Cargando…</div>`; }
+  function numVal(id) { return +document.getElementById(id).value || 0; }
+  function strVal(id) { return document.getElementById(id).value.trim(); }
+  function selVal(id) { const v = document.getElementById(id).value; return v || null; }
 
-    async function refreshDropdowns() {
-      // Niveles → dropdown de unidades
-      try {
-        const data = await apiFetch('/levels');
-        const rows = data?.content ?? data ?? [];
-        const opts = '<option value="">— Selecciona nivel —</option>' +
-          rows.map(l => `<option value="${l.id}">Lv${l.levelNum ?? l.level_num} · ${l.title}</option>`).join('');
-        const el = document.getElementById('unit-level-id'); if (el) el.innerHTML = opts;
-      } catch { }
+  /* TAB ROUTING */
+  const TAB_TITLES = {
+    overview: 'Overview', languages: 'Idiomas', users: 'Usuarios', vocabulary: 'Vocabulario',
+    achievements: 'Logros', levels: 'Niveles', units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
+    lesson_history: 'Historial', user_stats: 'Estadísticas', user_progress: 'Progreso de Usuario',
+    user_energy: 'Energía', user_achievements: 'Logros de Usuario', writing_systems: 'Sistemas de Escritura', config: 'Configuración'
+  };
+  const TAB_LOADERS = {
+    overview: loadOverview, languages: loadLanguages, users: loadUsers, vocabulary: loadVocabulary,
+    achievements: loadAchievements, levels: loadLevels, units: loadUnits, lessons: loadLessons, exercises: loadExercises,
+    lesson_history: loadHistory, user_stats: loadStats, user_progress: loadUserProgress,
+    user_energy: loadUserEnergy, user_achievements: loadUserAchievements, writing_systems: loadWritingSystems, config: loadConfig
+  };
 
-      // Unidades → dropdown de ejercicios + lecciones + filtros de tab
-      try {
-        const data = await apiFetch('/units');
-        unitsCache = data?.content ?? data ?? [];
-        const unitOpts = '<option value="">— Selecciona unidad —</option>' +
-          unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-        ['ex-unit-id', 'lesson-unit-id'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitOpts; });
-        const unitFilterOpts = '<option value="">Todas las unidades</option>' +
-          unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-        ['ex-unit-filter', 'lessons-unit-filter'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitFilterOpts; });
-      } catch { }
+  function showTab(name) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const pane = document.getElementById('tab-' + name);
+    if (pane) pane.classList.add('active');
+    const btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick')?.includes(`'${name}'`));
+    if (btn) btn.classList.add('active');
+    document.getElementById('page-title').textContent = TAB_TITLES[name] || name;
+    if (TAB_LOADERS[name]) TAB_LOADERS[name]();
+  }
 
-      // Usuarios → filtros de progreso y logros
-      try {
-        const data = await apiFetch('/users');
-        usersCache = data?.content ?? data ?? [];
-        const userOpts = usersCache.map(u => `<option value="${u.id}">${u.id} · ${u.username}</option>`).join('');
-        const sel = document.getElementById('progress-user-filter');
-        if (sel) sel.innerHTML = '<option value="">Todos los usuarios</option>' + userOpts;
-        const uaSel = document.getElementById('ua-user-filter');
-        if (uaSel) uaSel.innerHTML = '<option value="">— Selecciona usuario —</option>' + userOpts;
-      } catch { }
-    }
+  /* DROPDOWNS */
+  function refreshLangDropdowns() {
+    const base = '<option value="">— Selecciona —</option>';
+    const opts = base + languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+    ['vocab-lang-id', 'level-lang-id', 'ws-lang-id'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+    const userLangEl = document.getElementById('user-lang');
+    if (userLangEl) userLangEl.innerHTML = '<option value="">— Sin asignar —</option>' +
+            languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+    const allOpts = '<option value="">Todos los idiomas</option>' +
+            languagesCache.map(l => `<option value="${l.id}">${l.code} · ${l.langName ?? l.lang_name}</option>`).join('');
+    ['vocab-lang-filter', 'levels-lang-filter', 'ws-lang-filter', 'units-lang-filter'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = allOpts; });
+  }
 
-    async function deleteRecord(entity, id, reloadFn) {
-      if (!confirm(`¿Eliminar registro #${id} de ${entity}?`)) return;
-      try { await apiFetch(`/${entity}/${id}`, { method: 'DELETE' }); toast('Eliminado ✓'); if (window[reloadFn]) window[reloadFn](); } catch { }
-    }
+  async function refreshDropdowns() {
+    // Niveles → dropdown de unidades
+    try {
+      const data = await apiFetch('/levels');
+      const rows = data?.content ?? data ?? []; levelsCache = rows;
+      const opts = '<option value="">— Selecciona nivel —</option>' +
+              rows.map(l => `<option value="${l.id}">${getLangCode(l.languageId ?? l.language_id)} · Lv${l.levelNum ?? l.level_num} · ${l.title}</option>`).join('');
+      const el = document.getElementById('unit-level-id'); if (el) el.innerHTML = opts;
+    } catch { }
 
-    /* ══ LOADERS ══ */
+    // Unidades → dropdown de ejercicios + lecciones + filtros de tab
+    try {
+      const data = await apiFetch('/units');
+      unitsCache = data?.content ?? data ?? [];
+      const unitOpts = '<option value="">— Selecciona unidad —</option>' +
+              unitsCache.map(u => `<option value="${u.id}">${unitLabel(u.id)} · ${u.title}</option>`).join('');
+      ['ex-unit-id', 'lesson-unit-id'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitOpts; });
+      const unitFilterOpts = '<option value="">Todas las unidades</option>' +
+              unitsCache.map(u => `<option value="${u.id}">${unitLabel(u.id)} · ${u.title}</option>`).join('');
+      ['ex-unit-filter', 'lessons-unit-filter'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = unitFilterOpts; });
+    } catch { }
 
-    async function loadOverview() {
-      try {
-        const [users, langs, exercises, vocab, ach, lessons, history] = await Promise.all([
-          apiFetch('/users/count'), apiFetch('/languages/count'), apiFetch('/exercises/count'),
-          apiFetch('/vocabulary/count'), apiFetch('/achievements/count'),
-          apiFetch('/lessons/count'), apiFetch('/lesson-history/count')
-        ]);
-        document.getElementById('stat-users').textContent = users?.count ?? '—';
-        document.getElementById('stat-langs').textContent = langs?.count ?? '—';
-        document.getElementById('stat-exercises').textContent = exercises?.count ?? '—';
-        document.getElementById('stat-vocab').textContent = vocab?.count ?? '—';
-        document.getElementById('stat-ach').textContent = ach?.count ?? '—';
-        document.getElementById('stat-lessons').textContent = lessons?.count ?? '—';
-        document.getElementById('stat-history').textContent = history?.count ?? '—';
-      } catch { }
-      try {
-        const [progress, ws, energyUsers] = await Promise.all([
-          apiFetch('/user-progress').catch(() => []),
-          apiFetch('/writing-systems').catch(() => []),
-          apiFetch('/users').catch(() => [])
-        ]);
-        document.getElementById('stat-progress').textContent = (progress?.content ?? progress ?? []).length;
-        document.getElementById('stat-ws').textContent = (ws?.content ?? ws ?? []).length;
-        // Contar registros de energía existentes
-        const uList = energyUsers?.content ?? energyUsers ?? [];
-        const energyResults = await Promise.allSettled(uList.map(u => apiFetch(`/energy/user/${u.id}`)));
-        document.getElementById('stat-energy').textContent = energyResults.filter(r => r.status === 'fulfilled').length;
-      } catch { }
-      try {
-        const data = await apiFetch('/lesson-history');
-        const rows = (data?.content ?? data ?? []).slice(0, 8);
-        const body = document.getElementById('recent-lessons-body');
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="rec-table">
+    // Usuarios → filtros de progreso y logros
+    try {
+      const data = await apiFetch('/users');
+      usersCache = data?.content ?? data ?? [];
+      const userOpts = usersCache.map(u => `<option value="${u.id}">${u.id} · ${u.username}</option>`).join('');
+      const sel = document.getElementById('progress-user-filter');
+      if (sel) sel.innerHTML = '<option value="">Todos los usuarios</option>' + userOpts;
+      const uaSel = document.getElementById('ua-user-filter');
+      if (uaSel) uaSel.innerHTML = '<option value="">— Selecciona usuario —</option>' + userOpts;
+    } catch { }
+  }
+
+  async function deleteRecord(entity, id, reloadFn) {
+    if (!confirm(`¿Eliminar registro #${id} de ${entity}?`)) return;
+    try { await apiFetch(`/${entity}/${id}`, { method: 'DELETE' }); toast('Eliminado ✓'); if (window[reloadFn]) window[reloadFn](); } catch { }
+  }
+
+  /* ══ LOADERS ══ */
+
+  async function loadOverview() {
+    try {
+      const [users, langs, exercises, vocab, ach, lessons, history] = await Promise.all([
+        apiFetch('/users/count'), apiFetch('/languages/count'), apiFetch('/exercises/count'),
+        apiFetch('/vocabulary/count'), apiFetch('/achievements/count'),
+        apiFetch('/lessons/count'), apiFetch('/lesson-history/count')
+      ]);
+      document.getElementById('stat-users').textContent = users?.count ?? '—';
+      document.getElementById('stat-langs').textContent = langs?.count ?? '—';
+      document.getElementById('stat-exercises').textContent = exercises?.count ?? '—';
+      document.getElementById('stat-vocab').textContent = vocab?.count ?? '—';
+      document.getElementById('stat-ach').textContent = ach?.count ?? '—';
+      document.getElementById('stat-lessons').textContent = lessons?.count ?? '—';
+      document.getElementById('stat-history').textContent = history?.count ?? '—';
+    } catch { }
+    try {
+      const [progress, ws, energyUsers] = await Promise.all([
+        apiFetch('/user-progress').catch(() => []),
+        apiFetch('/writing-systems').catch(() => []),
+        apiFetch('/users').catch(() => [])
+      ]);
+      document.getElementById('stat-progress').textContent = (progress?.content ?? progress ?? []).length;
+      document.getElementById('stat-ws').textContent = (ws?.content ?? ws ?? []).length;
+      // Contar registros de energía existentes
+      const uList = energyUsers?.content ?? energyUsers ?? [];
+      const energyResults = await Promise.allSettled(uList.map(u => apiFetch(`/energy/user/${u.id}`)));
+      document.getElementById('stat-energy').textContent = energyResults.filter(r => r.status === 'fulfilled').length;
+    } catch { }
+    try {
+      const data = await apiFetch('/lesson-history');
+      const rows = [...(data?.content ?? data ?? [])]
+              .sort((a, b) => new Date(b.completedAt ?? b.completed_at ?? 0) - new Date(a.completedAt ?? a.completed_at ?? 0)).slice(0, 8);
+      const body = document.getElementById('recent-lessons-body');
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="rec-table">
           <thead><tr><th>#</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>XP</th><th>Fecha</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td>${r.userId ?? r.user_id}</td><td>${r.unitId ?? r.unit_id}</td>
+            <td>${userCell(r.userId ?? r.user_id)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.75rem">${unitLabel(r.unitId ?? r.unit_id)}</td>
             <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
             <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
           </tr>`).join('')}</tbody></table>`;
-      } catch { document.getElementById('recent-lessons-body').innerHTML = errorHTML(); }
-    }
+    } catch { document.getElementById('recent-lessons-body').innerHTML = errorHTML(); }
+    loadContentByLanguage();
+  }
 
-    async function loadLanguages() {
-      const body = document.getElementById('languages-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/languages'); const rows = data?.content ?? data ?? [];
-        languagesCache = rows; refreshLangDropdowns();
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="languages-table">
+  async function loadLanguages() {
+    const body = document.getElementById('languages-body'); body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch('/languages'); const rows = data?.content ?? data ?? [];
+      languagesCache = rows; refreshLangDropdowns();
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="languages-table">
           <thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Nativo</th><th>Familia</th><th>Escritura</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
@@ -1598,76 +1757,78 @@
               <button class="btn btn-ghost btn-sm" onclick='editLanguage(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('languages',${r.id},'loadLanguages')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function editLanguage(r) {
-      document.getElementById('lang-id').value = r.id; document.getElementById('lang-code').value = r.code;
-      document.getElementById('lang-name').value = r.langName ?? r.lang_name ?? ''; document.getElementById('lang-native').value = r.nativeName ?? r.native_name ?? '';
-      document.getElementById('lang-color').value = r.color ?? ''; document.getElementById('lang-flag').value = r.flag ?? '';
-      document.getElementById('lang-family').value = r.family ?? ''; document.getElementById('lang-ws').value = r.writingSystem ?? r.writing_system ?? 'alphabet';
-      document.getElementById('modal-language-title').textContent = 'Editar idioma'; openModal('modal-language');
-    }
-    async function saveLanguage() {
-      const id = strVal('lang-id');
-      const payload = {
-        code: strVal('lang-code'), langName: strVal('lang-name'), nativeName: strVal('lang-native'),
-        color: strVal('lang-color'), flag: strVal('lang-flag'), family: strVal('lang-family'), writingSystem: strVal('lang-ws')
-      };
-      try {
-        if (id) await apiFetch('/languages/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/languages', { method: 'POST', body: JSON.stringify(payload) });
-        toast(id ? 'Idioma actualizado ✓' : 'Idioma creado ✓'); closeModal('modal-language'); resetModal('modal-language'); loadLanguages();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function editLanguage(r) {
+    document.getElementById('lang-id').value = r.id; document.getElementById('lang-code').value = r.code;
+    document.getElementById('lang-name').value = r.langName ?? r.lang_name ?? ''; document.getElementById('lang-native').value = r.nativeName ?? r.native_name ?? '';
+    document.getElementById('lang-color').value = r.color ?? ''; document.getElementById('lang-flag').value = r.flag ?? '';
+    document.getElementById('lang-family').value = r.family ?? ''; document.getElementById('lang-ws').value = r.writingSystem ?? r.writing_system ?? 'alphabet';
+    document.getElementById('modal-language-title').textContent = 'Editar idioma'; openModal('modal-language');
+  }
+  async function saveLanguage() {
+    const id = strVal('lang-id');
+    const payload = {
+      code: strVal('lang-code'), langName: strVal('lang-name'), nativeName: strVal('lang-native'),
+      color: strVal('lang-color'), flag: strVal('lang-flag'), family: strVal('lang-family'), writingSystem: strVal('lang-ws')
+    };
+    try {
+      if (id) await apiFetch('/languages/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/languages', { method: 'POST', body: JSON.stringify(payload) });
+      toast(id ? 'Idioma actualizado ✓' : 'Idioma creado ✓'); closeModal('modal-language'); resetModal('modal-language'); loadLanguages();
+    } catch { }
+  }
 
-    async function loadUsers() {
-      const body = document.getElementById('users-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/users'); const rows = data?.content ?? data ?? []; usersCache = rows;
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="users-table">
-          <thead><tr><th>ID</th><th>Username</th><th>Nombre</th><th>Email</th><th>Level</th><th>XP</th><th>Streak</th><th>Acciones</th></tr></thead>
+  async function loadUsers() {
+    const body = document.getElementById('users-body'); body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch('/users'); const rows = data?.content ?? data ?? []; usersCache = rows;
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="users-table">
+          <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Email</th><th>Idioma</th><th>Level</th><th>XP / Total</th><th>Streak</th><th>Alta</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td><strong>${r.username}</strong></td><td>${r.fullName ?? r.full_name}</td>
-            <td style="color:var(--muted);font-size:.78rem">${r.email}</td>
+            <td><div class="u-cell">${avatarHTML(r.username)}<strong>${esc(r.username)}</strong></div></td><td>${esc(r.fullName ?? r.full_name ?? '')}</td>
+            <td style="color:var(--muted);font-size:.78rem">${esc(r.email)}</td>
+            <td>${(r.currentLang ?? r.current_lang) ? `<span class="chip chip-green">${getLangCode(r.currentLang ?? r.current_lang)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
             <td><span class="chip chip-blue">Lv ${r.userLevel ?? r.user_level ?? 1}</span></td>
-            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">${(r.xp || 0).toLocaleString()}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">${(r.xp || 0).toLocaleString()} <span style="color:var(--muted)">/ ${(r.totalXp ?? r.total_xp ?? 0).toLocaleString()}</span></td>
             <td>${r.streak ?? 0} 🔥</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.joinDate ?? r.join_date)}</td>
             <td><div style="display:flex;gap:6px">
               <button class="btn btn-ghost btn-sm" onclick='editUser(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('users',${r.id},'loadUsers')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalUser() { resetModal('modal-user'); openModal('modal-user'); }
-    function editUser(r) {
-      document.getElementById('user-id').value = r.id; document.getElementById('user-username').value = r.username;
-      document.getElementById('user-fullname').value = r.fullName ?? r.full_name ?? ''; document.getElementById('user-email').value = r.email;
-      document.getElementById('user-lang').value = r.currentLang ?? r.current_lang ?? '';
-      document.getElementById('modal-user-title').textContent = 'Editar usuario'; openModal('modal-user');
-    }
-    async function saveUser() {
-      const id = strVal('user-id'); const langVal = selVal('user-lang');
-      const payload = {
-        username: strVal('user-username'), fullName: strVal('user-fullname'), email: strVal('user-email'),
-        currentLang: langVal ? +langVal : null
-      };
-      try {
-        if (id) await apiFetch('/users/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/users', { method: 'POST', body: JSON.stringify(payload) });
-        toast(id ? 'Usuario actualizado ✓' : 'Usuario creado ✓'); closeModal('modal-user'); resetModal('modal-user'); loadUsers();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalUser() { resetModal('modal-user'); openModal('modal-user'); }
+  function editUser(r) {
+    document.getElementById('user-id').value = r.id; document.getElementById('user-username').value = r.username;
+    document.getElementById('user-fullname').value = r.fullName ?? r.full_name ?? ''; document.getElementById('user-email').value = r.email;
+    document.getElementById('user-lang').value = r.currentLang ?? r.current_lang ?? '';
+    document.getElementById('modal-user-title').textContent = 'Editar usuario'; openModal('modal-user');
+  }
+  async function saveUser() {
+    const id = strVal('user-id'); const langVal = selVal('user-lang');
+    const payload = {
+      username: strVal('user-username'), fullName: strVal('user-fullname'), email: strVal('user-email'),
+      currentLang: langVal ? +langVal : null
+    };
+    try {
+      if (id) await apiFetch('/users/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/users', { method: 'POST', body: JSON.stringify(payload) });
+      toast(id ? 'Usuario actualizado ✓' : 'Usuario creado ✓'); closeModal('modal-user'); resetModal('modal-user'); loadUsers();
+    } catch { }
+  }
 
-    async function loadVocabulary() {
-      const body = document.getElementById('vocab-body'); body.innerHTML = loadingHTML();
-      const langId = document.getElementById('vocab-lang-filter')?.value || '';
-      try {
-        const data = await apiFetch(langId ? `/vocabulary?languageId=${langId}` : '/vocabulary');
-        const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="vocab-table">
+  async function loadVocabulary() {
+    const body = document.getElementById('vocab-body'); body.innerHTML = loadingHTML();
+    const langId = document.getElementById('vocab-lang-filter')?.value || '';
+    try {
+      const data = await apiFetch(langId ? `/vocabulary?languageId=${langId}` : '/vocabulary');
+      const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="vocab-table">
           <thead><tr><th>ID</th><th>Idioma</th><th>Palabra</th><th>Traducción</th><th>Pronunciación</th><th>Ejemplo</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
@@ -1679,32 +1840,32 @@
               <button class="btn btn-ghost btn-sm" onclick='editVocab(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('vocabulary',${r.id},'loadVocabulary')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalVocab() { resetModal('modal-vocab'); openModal('modal-vocab'); }
-    function editVocab(r) {
-      document.getElementById('vocab-id').value = r.id; document.getElementById('vocab-lang-id').value = r.languageId ?? r.language_id ?? '';
-      document.getElementById('vocab-word').value = r.word; document.getElementById('vocab-translation').value = r.translation ?? '';
-      document.getElementById('vocab-pron').value = r.pronunciation ?? ''; document.getElementById('vocab-example').value = r.example ?? '';
-      document.getElementById('modal-vocab-title').textContent = 'Editar palabra'; openModal('modal-vocab');
-    }
-    async function saveVocabulary() {
-      const id = strVal('vocab-id');
-      const payload = { languageId: numVal('vocab-lang-id'), word: strVal('vocab-word'), translation: strVal('vocab-translation'), pronunciation: strVal('vocab-pron'), example: strVal('vocab-example') };
-      try {
-        if (id) await apiFetch('/vocabulary/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/vocabulary', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Vocabulario guardado ✓'); closeModal('modal-vocab'); resetModal('modal-vocab'); loadVocabulary();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalVocab() { resetModal('modal-vocab'); openModal('modal-vocab'); }
+  function editVocab(r) {
+    document.getElementById('vocab-id').value = r.id; document.getElementById('vocab-lang-id').value = r.languageId ?? r.language_id ?? '';
+    document.getElementById('vocab-word').value = r.word; document.getElementById('vocab-translation').value = r.translation ?? '';
+    document.getElementById('vocab-pron').value = r.pronunciation ?? ''; document.getElementById('vocab-example').value = r.example ?? '';
+    document.getElementById('modal-vocab-title').textContent = 'Editar palabra'; openModal('modal-vocab');
+  }
+  async function saveVocabulary() {
+    const id = strVal('vocab-id');
+    const payload = { languageId: numVal('vocab-lang-id'), word: strVal('vocab-word'), translation: strVal('vocab-translation'), pronunciation: strVal('vocab-pron'), example: strVal('vocab-example') };
+    try {
+      if (id) await apiFetch('/vocabulary/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/vocabulary', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Vocabulario guardado ✓'); closeModal('modal-vocab'); resetModal('modal-vocab'); loadVocabulary();
+    } catch { }
+  }
 
-    const rarityChip = { common: 'chip-blue', rare: 'chip-amber', epic: 'chip-purple', legendary: 'chip-red' };
-    async function loadAchievements() {
-      const body = document.getElementById('achievements-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/achievements'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="ach-table">
+  const rarityChip = { common: 'chip-blue', rare: 'chip-amber', epic: 'chip-purple', legendary: 'chip-red' };
+  async function loadAchievements() {
+    const body = document.getElementById('achievements-body'); body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch('/achievements'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="ach-table">
           <thead><tr><th>ID</th><th>Título</th><th>Categoría</th><th>XP</th><th>Rareza</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
@@ -1716,39 +1877,39 @@
               <button class="btn btn-ghost btn-sm" onclick='editAchievement(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('achievements',${r.id},'loadAchievements')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalAch() { resetModal('modal-achievement'); openModal('modal-achievement'); }
-    function editAchievement(r) {
-      document.getElementById('ach-id').value = r.id; document.getElementById('ach-title').value = r.title;
-      document.getElementById('ach-desc').value = r.description ?? ''; document.getElementById('ach-icon').value = r.icon ?? '';
-      document.getElementById('ach-xp').value = r.xpReward ?? r.xp_reward ?? 0; document.getElementById('ach-cat').value = r.category ?? '';
-      document.getElementById('ach-rarity').value = r.rarity ?? 'common'; document.getElementById('ach-req').value = r.requirement ?? '';
-      document.getElementById('ach-lang-tag').value = r.languageTag ?? r.language_tag ?? '';
-      document.getElementById('modal-ach-title').textContent = 'Editar logro'; openModal('modal-achievement');
-    }
-    async function saveAchievement() {
-      const id = strVal('ach-id');
-      const langTagRaw = strVal('ach-lang-tag');
-      const payload = {
-        title: strVal('ach-title'), description: strVal('ach-desc'), icon: strVal('ach-icon'),
-        xpReward: numVal('ach-xp'), category: strVal('ach-cat'), rarity: strVal('ach-rarity'),
-        requirement: strVal('ach-req'), languageTag: langTagRaw || null
-      };
-      try {
-        if (id) await apiFetch('/achievements/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/achievements', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Logro guardado ✓'); closeModal('modal-achievement'); resetModal('modal-achievement'); loadAchievements();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalAch() { resetModal('modal-achievement'); openModal('modal-achievement'); }
+  function editAchievement(r) {
+    document.getElementById('ach-id').value = r.id; document.getElementById('ach-title').value = r.title;
+    document.getElementById('ach-desc').value = r.description ?? ''; document.getElementById('ach-icon').value = r.icon ?? '';
+    document.getElementById('ach-xp').value = r.xpReward ?? r.xp_reward ?? 0; document.getElementById('ach-cat').value = r.category ?? '';
+    document.getElementById('ach-rarity').value = r.rarity ?? 'common'; document.getElementById('ach-req').value = r.requirement ?? '';
+    document.getElementById('ach-lang-tag').value = r.languageTag ?? r.language_tag ?? '';
+    document.getElementById('modal-ach-title').textContent = 'Editar logro'; openModal('modal-achievement');
+  }
+  async function saveAchievement() {
+    const id = strVal('ach-id');
+    const langTagRaw = strVal('ach-lang-tag');
+    const payload = {
+      title: strVal('ach-title'), description: strVal('ach-desc'), icon: strVal('ach-icon'),
+      xpReward: numVal('ach-xp'), category: strVal('ach-cat'), rarity: strVal('ach-rarity'),
+      requirement: strVal('ach-req'), languageTag: langTagRaw || null
+    };
+    try {
+      if (id) await apiFetch('/achievements/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/achievements', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Logro guardado ✓'); closeModal('modal-achievement'); resetModal('modal-achievement'); loadAchievements();
+    } catch { }
+  }
 
-    async function loadLevels() {
-      const body = document.getElementById('levels-body'); body.innerHTML = loadingHTML();
-      const langId = document.getElementById('levels-lang-filter')?.value || '';
-      try {
-        const data = await apiFetch(langId ? `/levels?languageId=${langId}` : '/levels'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="levels-table">
+  async function loadLevels() {
+    const body = document.getElementById('levels-body'); body.innerHTML = loadingHTML();
+    const langId = document.getElementById('levels-lang-filter')?.value || '';
+    try {
+      const data = await apiFetch(langId ? `/levels?languageId=${langId}` : '/levels'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="levels-table">
           <thead><tr><th>ID</th><th>Idioma</th><th>#</th><th>Título</th><th>Nativo</th><th>Gratuito</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
@@ -1760,39 +1921,42 @@
               <button class="btn btn-ghost btn-sm" onclick='editLevel(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('levels',${r.id},'loadLevels')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalLevel() { resetModal('modal-level'); openModal('modal-level'); }
-    function editLevel(r) {
-      document.getElementById('level-id').value = r.id; document.getElementById('level-lang-id').value = r.languageId ?? r.language_id;
-      document.getElementById('level-num').value = r.levelNum ?? r.level_num; document.getElementById('level-color').value = r.color ?? '';
-      document.getElementById('level-title').value = r.title; document.getElementById('level-native').value = r.titleNative ?? r.title_native ?? '';
-      document.getElementById('level-free').value = r.isFree ?? r.is_free ?? 0;
-      document.getElementById('modal-level-title').textContent = 'Editar nivel'; openModal('modal-level');
-    }
-    async function saveLevel() {
-      const id = strVal('level-id');
-      const payload = {
-        languageId: numVal('level-lang-id'), levelNum: numVal('level-num'), color: strVal('level-color'),
-        title: strVal('level-title'), titleNative: strVal('level-native'), isFree: numVal('level-free')
-      };
-      try {
-        if (id) await apiFetch('/levels/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/levels', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Nivel guardado ✓'); closeModal('modal-level'); resetModal('modal-level'); loadLevels();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalLevel() { resetModal('modal-level'); openModal('modal-level'); }
+  function editLevel(r) {
+    document.getElementById('level-id').value = r.id; document.getElementById('level-lang-id').value = r.languageId ?? r.language_id;
+    document.getElementById('level-num').value = r.levelNum ?? r.level_num; document.getElementById('level-color').value = r.color ?? '';
+    document.getElementById('level-title').value = r.title; document.getElementById('level-native').value = r.titleNative ?? r.title_native ?? '';
+    document.getElementById('level-free').value = r.isFree ?? r.is_free ?? 0;
+    document.getElementById('modal-level-title').textContent = 'Editar nivel'; openModal('modal-level');
+  }
+  async function saveLevel() {
+    const id = strVal('level-id');
+    const payload = {
+      languageId: numVal('level-lang-id'), levelNum: numVal('level-num'), color: strVal('level-color'),
+      title: strVal('level-title'), titleNative: strVal('level-native'), isFree: numVal('level-free')
+    };
+    try {
+      if (id) await apiFetch('/levels/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/levels', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Nivel guardado ✓'); closeModal('modal-level'); resetModal('modal-level'); loadLevels();
+    } catch { }
+  }
 
-    async function loadUnits() {
-      const body = document.getElementById('units-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/units'); const rows = data?.content ?? data ?? []; unitsCache = rows;
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="units-table">
-          <thead><tr><th>ID</th><th>Nivel</th><th>#</th><th>Título</th><th>Objetivo</th><th>Gratuita</th><th>Acciones</th></tr></thead>
+  async function loadUnits() {
+    const body = document.getElementById('units-body'); body.innerHTML = loadingHTML();
+    try {
+      if (!levelsCache.length) { const lv = await apiFetch('/levels').catch(() => []); levelsCache = lv?.content ?? lv ?? []; }
+      const data = await apiFetch('/units'); const all = data?.content ?? data ?? []; unitsCache = all;
+      const langId = document.getElementById('units-lang-filter')?.value || '';
+      const rows = langId ? all.filter(u => unitLangId(u) === +langId) : all;
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="units-table">
+          <thead><tr><th>ID</th><th>Idioma · Nivel</th><th>#</th><th>Título</th><th>Objetivo</th><th>Gratuita</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td style="font-family:'IBM Plex Mono',monospace">${r.levelId ?? r.level_id}</td>
+            <td><span class="chip chip-green">${getLangCode(unitLangId(r))}</span> <span style="font-family:'IBM Plex Mono',monospace">L${levelOf(r.levelId ?? r.level_id)?.levelNum ?? levelOf(r.levelId ?? r.level_id)?.level_num ?? '?'}</span></td>
             <td style="font-family:'IBM Plex Mono',monospace">${r.unitNum ?? r.unit_num}</td>
             <td><strong>${r.title}</strong></td>
             <td style="color:var(--muted);font-size:.78rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.objective ?? ''}</td>
@@ -1801,44 +1965,45 @@
               <button class="btn btn-ghost btn-sm" onclick='editUnit(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('units',${r.id},'loadUnits')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalUnit() { resetModal('modal-unit'); openModal('modal-unit'); }
-    function editUnit(r) {
-      document.getElementById('unit-id').value = r.id; document.getElementById('unit-level-id').value = r.levelId ?? r.level_id;
-      document.getElementById('unit-num').value = r.unitNum ?? r.unit_num; document.getElementById('unit-color').value = r.color ?? '';
-      document.getElementById('unit-title').value = r.title; document.getElementById('unit-obj').value = r.objective ?? '';
-      document.getElementById('unit-grammar').value = r.grammar ?? ''; document.getElementById('unit-free').value = r.isFree ?? r.is_free ?? 0;
-      document.getElementById('modal-unit-title').textContent = 'Editar unidad'; openModal('modal-unit');
-    }
-    async function saveUnit() {
-      const id = strVal('unit-id');
-      const payload = {
-        levelId: numVal('unit-level-id'), unitNum: numVal('unit-num'), color: strVal('unit-color'),
-        title: strVal('unit-title'), objective: strVal('unit-obj'), grammar: strVal('unit-grammar'), isFree: numVal('unit-free')
-      };
-      try {
-        if (id) await apiFetch('/units/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/units', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Unidad guardada ✓'); closeModal('modal-unit'); resetModal('modal-unit'); loadUnits();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalUnit() { resetModal('modal-unit'); openModal('modal-unit'); }
+  function editUnit(r) {
+    document.getElementById('unit-id').value = r.id; document.getElementById('unit-level-id').value = r.levelId ?? r.level_id;
+    document.getElementById('unit-num').value = r.unitNum ?? r.unit_num; document.getElementById('unit-color').value = r.color ?? '';
+    document.getElementById('unit-title').value = r.title; document.getElementById('unit-obj').value = r.objective ?? '';
+    document.getElementById('unit-grammar').value = r.grammar ?? ''; document.getElementById('unit-free').value = r.isFree ?? r.is_free ?? 0;
+    document.getElementById('modal-unit-title').textContent = 'Editar unidad'; openModal('modal-unit');
+  }
+  async function saveUnit() {
+    const id = strVal('unit-id');
+    const payload = {
+      levelId: numVal('unit-level-id'), unitNum: numVal('unit-num'), color: strVal('unit-color'),
+      title: strVal('unit-title'), objective: strVal('unit-obj'), grammar: strVal('unit-grammar'), isFree: numVal('unit-free')
+    };
+    try {
+      if (id) await apiFetch('/units/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/units', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Unidad guardada ✓'); closeModal('modal-unit'); resetModal('modal-unit'); loadUnits();
+    } catch { }
+  }
 
-    /* EXERCISES — unitId es la FK directa según schema real */
-    async function loadExercises() {
-      const body = document.getElementById('exercises-body'); body.innerHTML = loadingHTML();
-      const type = document.getElementById('ex-type-filter')?.value || '';
-      const unitId = document.getElementById('ex-unit-filter')?.value || '';
-      const params = []; if (type) params.push(`type=${encodeURIComponent(type)}`); if (unitId) params.push(`unitId=${unitId}`);
-      const url = '/exercises' + (params.length ? '?' + params.join('&') : '');
-      try {
-        const data = await apiFetch(url); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="ex-table">
+  /* EXERCISES — unitId es la FK directa según schema real */
+  async function loadExercises() {
+    const body = document.getElementById('exercises-body'); body.innerHTML = loadingHTML();
+    const type = document.getElementById('ex-type-filter')?.value || '';
+    const unitId = document.getElementById('ex-unit-filter')?.value || '';
+    // GET /api/exercises solo filtra por type; la unidad se filtra aquí
+    const url = '/exercises' + (type ? `?type=${encodeURIComponent(type)}` : '');
+    try {
+      const data = await apiFetch(url); const all = data?.content ?? data ?? [];
+      const rows = unitId ? all.filter(r => (r.unitId ?? r.unit_id) === +unitId) : all;
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="ex-table">
           <thead><tr><th>ID</th><th>Unidad</th><th>Tipo</th><th>Pregunta</th><th>Dificultad</th><th>Pts</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td style="font-family:'IBM Plex Mono',monospace">${r.unitId ?? r.unit_id ?? '—'}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.75rem">${unitLabel(r.unitId ?? r.unit_id)}</td>
             <td><span class="chip chip-blue">${r.exerciseType ?? r.exercise_type}</span></td>
             <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.question ?? ''}</td>
             <td><span class="chip ${diffChip(r.difficulty)}">${r.difficulty ?? ''}</span></td>
@@ -1847,41 +2012,41 @@
               <button class="btn btn-ghost btn-sm" onclick='editExercise(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('exercises',${r.id},'loadExercises')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalEx() { resetModal('modal-exercise'); openModal('modal-exercise'); }
-    function editExercise(r) {
-      document.getElementById('ex-id').value = r.id; document.getElementById('ex-unit-id').value = r.unitId ?? r.unit_id ?? '';
-      document.getElementById('ex-type').value = r.exerciseType ?? r.exercise_type ?? 'multiple-choice';
-      document.getElementById('ex-diff').value = r.difficulty ?? 'easy'; document.getElementById('ex-pts').value = r.points ?? 15;
-      document.getElementById('ex-char').value = r.characterRef ?? r.character_ref ?? '';
-      document.getElementById('ex-question').value = r.question ?? ''; document.getElementById('ex-answer').value = r.answer ?? '';
-      document.getElementById('ex-correct').value = r.correctAns ?? r.correct_ans ?? '';
-      document.getElementById('ex-options').value = r.options ?? ''; document.getElementById('ex-explanation').value = r.explanation ?? '';
-      document.getElementById('modal-ex-title').textContent = 'Editar ejercicio'; openModal('modal-exercise');
-    }
-    async function saveExercise() {
-      const id = strVal('ex-id');
-      const payload = {
-        unitId: numVal('ex-unit-id') || null, exerciseType: strVal('ex-type'), difficulty: strVal('ex-diff'),
-        points: numVal('ex-pts'), characterRef: strVal('ex-char'), question: strVal('ex-question'),
-        answer: strVal('ex-answer'), correctAns: strVal('ex-correct') || null, options: strVal('ex-options') || null,
-        explanation: strVal('ex-explanation')
-      };
-      try {
-        if (id) await apiFetch('/exercises/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/exercises', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Ejercicio guardado ✓'); closeModal('modal-exercise'); resetModal('modal-exercise'); loadExercises();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalEx() { resetModal('modal-exercise'); openModal('modal-exercise'); }
+  function editExercise(r) {
+    document.getElementById('ex-id').value = r.id; document.getElementById('ex-unit-id').value = r.unitId ?? r.unit_id ?? '';
+    document.getElementById('ex-type').value = r.exerciseType ?? r.exercise_type ?? 'multiple-choice';
+    document.getElementById('ex-diff').value = r.difficulty ?? 'easy'; document.getElementById('ex-pts').value = r.points ?? 15;
+    document.getElementById('ex-char').value = r.characterRef ?? r.character_ref ?? '';
+    document.getElementById('ex-question').value = r.question ?? ''; document.getElementById('ex-answer').value = r.answer ?? '';
+    document.getElementById('ex-correct').value = r.correctAns ?? r.correct_ans ?? '';
+    document.getElementById('ex-options').value = r.options ?? ''; document.getElementById('ex-explanation').value = r.explanation ?? ''; document.getElementById('ex-placeholder').value = r.placeholder ?? '';
+    document.getElementById('modal-ex-title').textContent = 'Editar ejercicio'; openModal('modal-exercise');
+  }
+  async function saveExercise() {
+    const id = strVal('ex-id');
+    const payload = {
+      unitId: numVal('ex-unit-id') || null, exerciseType: strVal('ex-type'), difficulty: strVal('ex-diff'),
+      points: numVal('ex-pts'), characterRef: strVal('ex-char'), question: strVal('ex-question'),
+      answer: strVal('ex-answer'), correctAns: strVal('ex-correct') || null, options: strVal('ex-options') || null,
+      explanation: strVal('ex-explanation'), placeholder: strVal('ex-placeholder') || null
+    };
+    try {
+      if (id) await apiFetch('/exercises/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/exercises', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Ejercicio guardado ✓'); closeModal('modal-exercise'); resetModal('modal-exercise'); loadExercises();
+    } catch { }
+  }
 
-    async function loadLessons() {
-      const body = document.getElementById('lessons-body'); body.innerHTML = loadingHTML();
-      const unitId = document.getElementById('lessons-unit-filter')?.value || '';
-      try {
-        const data = await apiFetch(unitId ? `/lessons?unitId=${unitId}` : '/lessons'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="lessons-table">
+  async function loadLessons() {
+    const body = document.getElementById('lessons-body'); body.innerHTML = loadingHTML();
+    const unitId = document.getElementById('lessons-unit-filter')?.value || '';
+    try {
+      const data = await apiFetch(unitId ? `/lessons?unitId=${unitId}` : '/lessons'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="lessons-table">
           <thead><tr><th>ID</th><th>Unidad</th><th>#</th><th>Título</th><th>Descripción</th><th>XP</th><th>Gratuita</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
@@ -1895,229 +2060,239 @@
               <button class="btn btn-ghost btn-sm" onclick='editLesson(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('lessons',${r.id},'loadLessons')">Eliminar</button>
             </div></td></tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    async function openModalLesson() {
-      if (!unitsCache.length) await refreshDropdowns();
-      resetModal('modal-lesson');
-      const sel = document.getElementById('lesson-unit-id');
-      if (sel) sel.innerHTML = '<option value="">— Selecciona unidad —</option>' +
-        unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
-      openModal('modal-lesson');
-    }
-    function editLesson(r) {
-      document.getElementById('lesson-id').value = r.id;
-      document.getElementById('lesson-unit-id').value = r.unitId ?? r.unit_id ?? '';
-      document.getElementById('lesson-num').value = r.lessonNum ?? r.lesson_num ?? '';
-      document.getElementById('lesson-xp').value = r.xpReward ?? r.xp_reward ?? 10;
-      document.getElementById('lesson-title').value = r.title ?? '';
-      document.getElementById('lesson-desc').value = r.description ?? '';
-      document.getElementById('lesson-free').value = r.isFree ?? r.is_free ?? 0;
-      document.getElementById('modal-lesson-title').textContent = 'Editar lección'; openModal('modal-lesson');
-    }
-    async function saveLesson() {
-      const id = strVal('lesson-id');
-      const unitId = selVal('lesson-unit-id');
-      const lessonNum = numVal('lesson-num');
-      const title = strVal('lesson-title');
-      if (!unitId) { toast('Selecciona una unidad', true); return; }
-      if (!lessonNum) { toast('El número de lección es requerido', true); return; }
-      if (!title) { toast('El título es requerido', true); return; }
-      const payload = {
-        unitId: +unitId, lessonNum: lessonNum, xpReward: numVal('lesson-xp'),
-        title, description: strVal('lesson-desc'), isFree: numVal('lesson-free')
-      };
-      try {
-        if (id) await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/lessons', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Lección guardada ✓'); closeModal('modal-lesson'); resetModal('modal-lesson'); loadLessons();
-      } catch { }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  async function openModalLesson() {
+    if (!unitsCache.length) await refreshDropdowns();
+    resetModal('modal-lesson');
+    const sel = document.getElementById('lesson-unit-id');
+    if (sel) sel.innerHTML = '<option value="">— Selecciona unidad —</option>' +
+            unitsCache.map(u => `<option value="${u.id}">U${u.unitNum ?? u.unit_num} · ${u.title}</option>`).join('');
+    openModal('modal-lesson');
+  }
+  function editLesson(r) {
+    document.getElementById('lesson-id').value = r.id;
+    document.getElementById('lesson-unit-id').value = r.unitId ?? r.unit_id ?? '';
+    document.getElementById('lesson-num').value = r.lessonNum ?? r.lesson_num ?? '';
+    document.getElementById('lesson-xp').value = r.xpReward ?? r.xp_reward ?? 10;
+    document.getElementById('lesson-title').value = r.title ?? '';
+    document.getElementById('lesson-desc').value = r.description ?? '';
+    document.getElementById('lesson-free').value = r.isFree ?? r.is_free ?? 0;
+    document.getElementById('modal-lesson-title').textContent = 'Editar lección'; openModal('modal-lesson');
+  }
+  async function saveLesson() {
+    const id = strVal('lesson-id');
+    const unitId = selVal('lesson-unit-id');
+    const lessonNum = numVal('lesson-num');
+    const title = strVal('lesson-title');
+    if (!unitId) { toast('Selecciona una unidad', true); return; }
+    if (!lessonNum) { toast('El número de lección es requerido', true); return; }
+    if (!title) { toast('El título es requerido', true); return; }
+    const payload = {
+      unitId: +unitId, lessonNum: lessonNum, xpReward: numVal('lesson-xp'),
+      title, description: strVal('lesson-desc'), isFree: numVal('lesson-free')
+    };
+    try {
+      if (id) await apiFetch('/lessons/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/lessons', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Lección guardada ✓'); closeModal('modal-lesson'); resetModal('modal-lesson'); loadLessons();
+    } catch { }
+  }
 
-    async function loadUserAchievements() {
-      const body = document.getElementById('user_achievements-body');
-      const userId = document.getElementById('ua-user-filter')?.value || '';
-      if (!userId) { body.innerHTML = '<div class="empty"><p>Selecciona un usuario para ver sus logros</p></div>'; return; }
-      body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch(`/user-achievements?userId=${userId}`); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="ua-table">
-          <thead><tr><th>Logro</th><th>Estado</th><th>XP</th><th>Rareza</th><th>Fecha obtenido</th></tr></thead>
-          <tbody>${rows.map(r => `<tr>
-            <td><span style="margin-right:5px">${r.icon ?? '🏆'}</span><strong>${r.title ?? r.achievementTitle ?? ''}</strong></td>
-            <td>${r.earned ? '<span class="chip chip-green">✓ Obtenido</span>' : '<span class="chip chip-red">Pendiente</span>'}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">+${r.xpReward ?? r.xp_reward ?? 0}</td>
-            <td><span class="chip ${rarityChip[r.rarity] ?? 'chip-blue'}">${r.rarity ?? ''}</span></td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${r.earned ? fmtDate(r.earnedAt ?? r.earned_at) : '—'}</td>
-          </tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
+  async function loadUserAchievements() {
+    const body = document.getElementById('user_achievements-body');
+    const userId = document.getElementById('ua-user-filter')?.value || '';
+    if (!userId) { body.innerHTML = '<div class="empty"><p>Selecciona un usuario para ver sus logros</p></div>'; return; }
+    body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch(`/user-achievements?userId=${userId}`); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="ua-table">
+          <thead><tr><th>Logro</th><th>Estado</th><th>Progreso</th><th>XP</th><th>Rareza</th><th>Fecha obtenido</th></tr></thead>
+          <tbody>${rows.map(row => {
+        // La API devuelve { achievement: {...}, earned, earnedAt, progressPercentage }
+        const a = row.achievement ?? row;
+        const p = Math.round(row.progressPercentage ?? (row.earned ? 100 : 0));
+        return `<tr>
+            <td><span style="margin-right:5px">${a.icon || '🏆'}</span><strong>${esc(a.title ?? '')}</strong>
+              <div style="font-size:.72rem;color:var(--muted)">${esc(a.description ?? '')}</div></td>
+            <td>${row.earned ? '<span class="chip chip-green">✓ Obtenido</span>' : '<span class="chip chip-red">Pendiente</span>'}</td>
+            <td><div class="ebar"><div class="ebar-track"><div class="ebar-fill" style="width:${p}%;background:${row.earned ? 'var(--jade)' : 'var(--amber)'}"></div></div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${p}%</span></div></td>
+            <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">+${a.xpReward ?? a.xp_reward ?? 0}</td>
+            <td><span class="chip ${rarityChip[a.rarity] ?? 'chip-blue'}">${a.rarity ?? '—'}</span></td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${row.earned ? fmtDate(row.earnedAt ?? row.earned_at) : '—'}</td>
+          </tr>`;
+      }).join('')}</tbody></table>`;
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    async function loadHistory() {
-      const body = document.getElementById('lesson_history-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/lesson-history'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="hist-table">
-          <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>Tiempo</th><th>XP</th><th>Perfecto</th><th>Fecha</th></tr></thead>
+  async function loadHistory() {
+    const body = document.getElementById('lesson_history-body'); body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch('/lesson-history'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="hist-table">
+          <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Performance</th><th>Aciertos</th><th>XP</th><th>Perfecto</th><th>Fecha</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td>${r.userId ?? r.user_id}</td><td>${r.unitId ?? r.unit_id}</td>
+            <td>${userCell(r.userId ?? r.user_id)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.75rem">${unitLabel(r.unitId ?? r.unit_id)}</td>
             <td><span class="chip ${pct(r.performance)}">${((r.performance || 0) * 100).toFixed(0)}%</span></td>
-            <td style="font-family:'IBM Plex Mono',monospace">${r.timeSeconds ?? r.time_seconds ?? 0}s</td>
+            <td style="font-family:'IBM Plex Mono',monospace">${r.correctAns ?? r.correct_ans ?? 0}/${r.totalExerc ?? r.total_exerc ?? 0}</td>
             <td style="color:var(--amber);font-family:'IBM Plex Mono',monospace">+${r.earnedExp ?? r.earned_exp ?? 0}</td>
             <td>${(r.wasPerfect ?? r.was_perfect) ? '⭐' : '—'}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
           </tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    async function loadStats() {
-      const body = document.getElementById('user_stats-body'); body.innerHTML = loadingHTML();
-      try {
-        const data = await apiFetch('/user-stats'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="stats-table">
-          <thead><tr><th>ID</th><th>Usuario</th><th>Idioma</th><th>Palabras</th><th>Lecciones</th><th>Días</th><th>Mejor racha</th><th>Minutos</th></tr></thead>
+  async function loadStats() {
+    const body = document.getElementById('user_stats-body'); body.innerHTML = loadingHTML();
+    try {
+      const data = await apiFetch('/user-stats'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="stats-table">
+          <thead><tr><th>ID</th><th>Usuario</th><th>Idioma</th><th>Palabras</th><th>Lecciones</th><th>Perfectas</th><th>Días</th><th>Mejor racha</th><th>Minutos</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td>${r.userId ?? r.user_id}</td>
+            <td>${userCell(r.userId ?? r.user_id)}</td>
             <td><span class="chip chip-green">${getLangCode(r.languageId ?? r.language_id)}</span></td>
             <td style="font-family:'IBM Plex Mono',monospace">${r.wordsLearned ?? r.words_learned ?? 0}</td>
             <td style="font-family:'IBM Plex Mono',monospace">${r.lessonsDone ?? r.lessons_done ?? 0}</td>
+            <td style="font-family:'IBM Plex Mono',monospace">${r.perfectLess ?? r.perfect_less ?? 0}</td>
             <td style="font-family:'IBM Plex Mono',monospace">${r.daysStudied ?? r.days_studied ?? 0}</td>
             <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">${r.bestStreak ?? r.best_streak ?? 0} 🔥</td>
             <td style="font-family:'IBM Plex Mono',monospace">${r.totalMins ?? r.total_mins ?? 0}</td>
           </tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    async function loadUserProgress() {
-      const body = document.getElementById('user_progress-body'); body.innerHTML = loadingHTML();
-      const userId = document.getElementById('progress-user-filter')?.value || '';
-      try {
-        const data = await apiFetch(userId ? `/user-progress?userId=${userId}` : '/user-progress'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="progress-table">
+  async function loadUserProgress() {
+    const body = document.getElementById('user_progress-body'); body.innerHTML = loadingHTML();
+    const userId = document.getElementById('progress-user-filter')?.value || '';
+    try {
+      const data = await apiFetch(userId ? `/user-progress?userId=${userId}` : '/user-progress'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="progress-table">
           <thead><tr><th>ID</th><th>Usuario</th><th>Unidad</th><th>Completado</th><th>Actual</th><th>Bloqueado</th><th>Fecha</th></tr></thead>
           <tbody>${rows.map(r => `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
-            <td style="font-family:'IBM Plex Mono',monospace">${r.userId ?? r.user_id}</td>
-            <td style="font-family:'IBM Plex Mono',monospace">${r.unitId ?? r.unit_id}</td>
+            <td>${userCell(r.userId ?? r.user_id)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:.75rem">${unitLabel(r.unitId ?? r.unit_id)}</td>
             <td>${(r.completed ?? 0) == 1 ? '<span class="chip chip-green">✓ Sí</span>' : '<span class="chip chip-red">No</span>'}</td>
             <td>${(r.isCurrent ?? r.is_current ?? 0) == 1 ? '<span class="chip chip-amber">▶</span>' : '—'}</td>
             <td>${(r.isLocked ?? r.is_locked ?? 1) == 1 ? '<span class="chip chip-red">🔒</span>' : '<span class="chip chip-green">🔓</span>'}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.completedAt ?? r.completed_at)}</td>
           </tr>`).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    async function loadUserEnergy() {
-      const body = document.getElementById('user_energy-body'); body.innerHTML = loadingHTML();
-      try {
-        const users = await apiFetch('/users'); const uList = users?.content ?? users ?? [];
-        if (!uList.length) { body.innerHTML = emptyHTML(); return; }
-        const energyList = await Promise.all(uList.map(u => apiFetch(`/energy/user/${u.id}`).then(e => ({ ...e, _username: u.username })).catch(() => null)));
-        const rows = energyList.filter(Boolean);
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="energy-table">
-          <thead><tr><th>Usuario</th><th>Energía</th><th>Máx</th><th>Racha</th><th>Uso diario</th><th>Última actualización</th></tr></thead>
+  async function loadUserEnergy() {
+    const body = document.getElementById('user_energy-body'); body.innerHTML = loadingHTML();
+    try {
+      const users = await apiFetch('/users'); const uList = users?.content ?? users ?? [];
+      if (!uList.length) { body.innerHTML = emptyHTML(); return; }
+      const energyList = await Promise.all(uList.map(u => apiFetch(`/energy/user/${u.id}`).then(e => ({ ...e, _username: u.username })).catch(() => null)));
+      const rows = energyList.filter(Boolean);
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="energy-table">
+          <thead><tr><th>Usuario</th><th>Energía</th><th>Máx</th><th>Racha</th></tr></thead>
           <tbody>${rows.map(r => {
-          const cur = r.currentEnergy ?? r.current_enrg ?? 0, max = r.maxEnergy ?? r.max_energy ?? 15;
-          const p = Math.round((cur / max) * 100), col = p >= 60 ? 'var(--jade)' : p >= 30 ? 'var(--amber)' : 'var(--coral)';
-          return `<tr>
-              <td style="font-family:'IBM Plex Mono',monospace">${r._username}</td>
+        const cur = r.currentEnergy ?? r.current_enrg ?? 0, max = r.maxEnergy ?? r.max_energy ?? 15;
+        const p = Math.round((cur / max) * 100), col = p >= 60 ? 'var(--jade)' : p >= 30 ? 'var(--amber)' : 'var(--coral)';
+        return `<tr>
+              <td><div class="u-cell">${avatarHTML(r._username)}<span>${esc(r._username)}</span></div></td>
               <td><div class="ebar"><div class="ebar-track"><div class="ebar-fill" style="width:${p}%;background:${col}"></div></div>
                 <span style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:${col}">${cur}/${max}</span></div></td>
               <td style="font-family:'IBM Plex Mono',monospace">${max}</td>
               <td style="color:var(--amber)">${r.streakCount ?? r.streak_count ?? 0} 🔥</td>
-              <td style="font-family:'IBM Plex Mono',monospace">${r.dailyUsage ?? r.daily_usage ?? 0}</td>
-              <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${fmtDate(r.lastUpdate ?? r.last_update)}</td>
             </tr>`;
-        }).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
+      }).join('')}</tbody></table>`;
+    } catch { body.innerHTML = errorHTML(); }
+  }
 
-    async function loadWritingSystems() {
-      const body = document.getElementById('writing_systems-body'); body.innerHTML = loadingHTML();
-      const langId = document.getElementById('ws-lang-filter')?.value || '';
-      try {
-        const data = await apiFetch(langId ? `/writing-systems?languageId=${langId}` : '/writing-systems'); const rows = data?.content ?? data ?? [];
-        if (!rows.length) { body.innerHTML = emptyHTML(); return; }
-        body.innerHTML = `<table id="ws-table">
+  async function loadWritingSystems() {
+    const body = document.getElementById('writing_systems-body'); body.innerHTML = loadingHTML();
+    const langId = document.getElementById('ws-lang-filter')?.value || '';
+    try {
+      const data = await apiFetch(langId ? `/writing-systems?languageId=${langId}` : '/writing-systems'); const rows = data?.content ?? data ?? [];
+      if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      body.innerHTML = `<table id="ws-table">
           <thead><tr><th>ID</th><th>Idioma</th><th>Tipo</th><th>Nombre</th><th>Caracteres</th><th>Acciones</th></tr></thead>
           <tbody>${rows.map(r => {
-          let c = 0; if (r.characters) { try { c = JSON.parse(r.characters).length } catch { } }
-          return `<tr>
+        let c = 0, label = 'caracteres';
+        if (r.characters) { try { c = JSON.parse(r.characters).length } catch { } }
+        else if (r.notes) { try { const n = JSON.parse(r.notes); c = Array.isArray(n) ? n.length : Object.keys(n).length; label = 'notas'; } catch { } }
+        return `<tr>
               <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
               <td><span class="chip chip-green">${getLangCode(r.languageId)}</span></td>
               <td><span class="chip chip-blue">${r.systemType}</span></td>
               <td><strong>${r.systemName || '—'}</strong></td>
-              <td style="font-family:'IBM Plex Mono',monospace">${c} caracteres</td>
+              <td style="font-family:'IBM Plex Mono',monospace">${c} ${label}</td>
               <td><div style="display:flex;gap:6px">
                 <button class="btn btn-ghost btn-sm" onclick='editWritingSystem(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteRecord('writing-systems',${r.id},'loadWritingSystems')">Eliminar</button>
               </div></td></tr>`;
-        }).join('')}</tbody></table>`;
-      } catch { body.innerHTML = errorHTML(); }
-    }
-    function openModalWS() {
-      ['ws-id', 'ws-name', 'ws-desc', 'ws-characters', 'ws-notes'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('ws-lang-id').value = ''; document.getElementById('ws-type').value = 'alphabet';
-      document.getElementById('modal-ws-title').textContent = 'Nuevo Sistema de Escritura'; openModal('modal-writing-system');
-    }
-    function editWritingSystem(r) {
-      document.getElementById('ws-id').value = r.id; document.getElementById('ws-lang-id').value = r.languageId ?? r.language_id ?? '';
-      document.getElementById('ws-type').value = r.systemType ?? r.system_type ?? 'alphabet';
-      document.getElementById('ws-name').value = r.systemName ?? r.system_name ?? ''; document.getElementById('ws-desc').value = r.description ?? '';
-      document.getElementById('ws-characters').value = r.characters ?? ''; document.getElementById('ws-notes').value = r.notes ?? '';
-      document.getElementById('modal-ws-title').textContent = 'Editar Sistema de Escritura'; openModal('modal-writing-system');
-    }
-    async function saveWritingSystem() {
-      const id = document.getElementById('ws-id').value;
-      const languageId = parseInt(document.getElementById('ws-lang-id').value);
-      if (!languageId) { toast('Selecciona un idioma', true); return; }
-      const payload = {
-        languageId, systemType: document.getElementById('ws-type').value,
-        systemName: document.getElementById('ws-name').value, description: document.getElementById('ws-desc').value,
-        characters: document.getElementById('ws-characters').value.trim() || null,
-        notes: document.getElementById('ws-notes').value.trim() || null
-      };
-      try {
-        if (id) await apiFetch('/writing-systems/' + id, { method: 'PUT', body: JSON.stringify(payload) });
-        else await apiFetch('/writing-systems', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Sistema guardado ✓'); closeModal('modal-writing-system'); loadWritingSystems();
-      } catch { }
-    }
+      }).join('')}</tbody></table>`;
+    } catch { body.innerHTML = errorHTML(); }
+  }
+  function openModalWS() {
+    ['ws-id', 'ws-name', 'ws-desc', 'ws-characters', 'ws-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ws-lang-id').value = ''; document.getElementById('ws-type').value = 'alphabet';
+    document.getElementById('modal-ws-title').textContent = 'Nuevo Sistema de Escritura'; openModal('modal-writing-system');
+  }
+  function editWritingSystem(r) {
+    document.getElementById('ws-id').value = r.id; document.getElementById('ws-lang-id').value = r.languageId ?? r.language_id ?? '';
+    document.getElementById('ws-type').value = r.systemType ?? r.system_type ?? 'alphabet';
+    document.getElementById('ws-name').value = r.systemName ?? r.system_name ?? ''; document.getElementById('ws-desc').value = r.description ?? '';
+    document.getElementById('ws-characters').value = r.characters ?? ''; document.getElementById('ws-notes').value = r.notes ?? '';
+    document.getElementById('modal-ws-title').textContent = 'Editar Sistema de Escritura'; openModal('modal-writing-system');
+  }
+  async function saveWritingSystem() {
+    const id = document.getElementById('ws-id').value;
+    const languageId = parseInt(document.getElementById('ws-lang-id').value);
+    if (!languageId) { toast('Selecciona un idioma', true); return; }
+    const payload = {
+      languageId, systemType: document.getElementById('ws-type').value,
+      systemName: document.getElementById('ws-name').value, description: document.getElementById('ws-desc').value,
+      characters: document.getElementById('ws-characters').value.trim() || null,
+      notes: document.getElementById('ws-notes').value.trim() || null
+    };
+    try {
+      if (id) await apiFetch('/writing-systems/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+      else await apiFetch('/writing-systems', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Sistema guardado ✓'); closeModal('modal-writing-system'); loadWritingSystems();
+    } catch { }
+  }
 
-    function loadConfig() { const saved = localStorage.getItem('tlahtolli_api'); if (saved) document.getElementById('cfg-api').value = saved; }
-    function saveConfig() {
-      API = document.getElementById('cfg-api').value.trim(); localStorage.setItem('tlahtolli_api', API);
-      try { document.getElementById('db-host').textContent = new URL(API).host; } catch { document.getElementById('db-host').textContent = API; }
-      testConnection();
+  function loadConfig() { const saved = localStorage.getItem('tlahtolli_api'); if (saved) document.getElementById('cfg-api').value = saved; }
+  function saveConfig() {
+    API = document.getElementById('cfg-api').value.trim(); localStorage.setItem('tlahtolli_api', API);
+    document.getElementById('db-host').textContent = apiHost();
+    testConnection();
+  }
+  async function testConnection() {
+    try {
+      await apiFetch('/health');
+      document.getElementById('conn-status').textContent = '● Conectado'; document.getElementById('conn-status').style.color = 'var(--jade)';
+      document.getElementById('conn-detail').textContent = '→ Conexión exitosa ✓'; toast('Conexión exitosa ✓');
+    } catch {
+      document.getElementById('conn-status').textContent = '● Error'; document.getElementById('conn-status').style.color = 'var(--coral)';
+      document.getElementById('conn-detail').textContent = '→ No se pudo conectar. Verifica que Spring Boot esté corriendo.';
     }
-    async function testConnection() {
-      try {
-        await apiFetch('/languages/count');
-        document.getElementById('conn-status').textContent = '● Conectado'; document.getElementById('conn-status').style.color = 'var(--jade)';
-        document.getElementById('conn-detail').textContent = '→ Conexión exitosa ✓'; toast('Conexión exitosa ✓');
-      } catch {
-        document.getElementById('conn-status').textContent = '● Error'; document.getElementById('conn-status').style.color = 'var(--coral)';
-        document.getElementById('conn-detail').textContent = '→ No se pudo conectar. Verifica que Spring Boot esté corriendo.';
-      }
-    }
+  }
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      const saved = localStorage.getItem('tlahtolli_api'); if (saved) API = saved;
-      try { const d = await apiFetch('/languages'); languagesCache = d?.content ?? d ?? []; refreshLangDropdowns(); } catch { }
-      refreshDropdowns();
-      loadOverview();
-      apiFetch('/languages/count')
-        .then(() => { document.getElementById('conn-status').textContent = '● Conectado'; document.getElementById('conn-status').style.color = 'var(--jade)'; })
-        .catch(() => { document.getElementById('conn-status').textContent = '● Desconectado'; document.getElementById('conn-status').style.color = 'var(--coral)'; });
-    });
-  </script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    const saved = localStorage.getItem('tlahtolli_api'); if (saved) API = saved;
+    document.getElementById('db-host').textContent = apiHost();
+    await checkHealth();
+    setInterval(checkHealth, HEALTH_EVERY_MS);
+    try { const d = await apiFetch('/languages'); languagesCache = d?.content ?? d ?? []; refreshLangDropdowns(); } catch { }
+    await refreshDropdowns();
+    loadOverview();
+  });
+</script>
 </body>
 
 </html>

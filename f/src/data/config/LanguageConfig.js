@@ -29,18 +29,19 @@ export const SUPPORTED_LANGUAGES = {
         speakers: "~1,500,000",
         isRecommended: true
     },
-    NHCE: {
-        id: "nhce",
-        code: "nhce",
+    NHN: {
+        id: "nhn",
+        code: "nhn",
         name: "Náhuatl central",
-        nativeName: "Nāhuatlahtōlli Central",
+        nativeName: "Nahuatlahtolli",
         family: "uto-aztec",
         parent: "nahuatl",
         color: token("turquesa"),
-        description: "Variante central del náhuatl hablado en el Valle de México",
+        description: "Variante central del náhuatl (ISO 639-3: nhn)",
         flag: "🌽",
         difficulty: "intermediate",
         speakers: "~1,500,000",
+        isRecommended: true
     },
     NHHU: {
         id: "nhhu",
@@ -94,8 +95,7 @@ export const SUPPORTED_LANGUAGES = {
         description: "Idioma huasteco de la familia maya",
         flag: "🏞️",
         difficulty: "advanced",
-        speakers: "~120,000",
-        isRecommended: true
+        speakers: "~120,000"
     },
     MAYU: {
         id: "mayu",
@@ -157,8 +157,8 @@ export const LANGUAGE_GROUPS = {
         name: "Náhuatl",
         description: "Familia lingüística uto-azteca",
         color: token("turquesa"),
-        variants: ["NHCE"]
-        // variants: ["NHCL", "NHCE", "NHHU", "NHSP", "NHGR"]
+        variants: ["NHN"]
+        // variants: ["NHCL", "NHN", "NHHU", "NHSP", "NHGR"]
     },
 
     // Grupo Maya
@@ -169,8 +169,6 @@ export const LANGUAGE_GROUPS = {
     //     variants: ["TKOC", "MAYU", "TZOT", "TZEL", "MAMM"]
     // }
 };
-
-// export const DEFAULT_LANGUAGE = "nhcl";
 
 export const EXERCISE_TYPES = {
     MULTIPLE_CHOICE: "multiple-choice",

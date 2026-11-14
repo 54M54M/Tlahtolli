@@ -90,7 +90,7 @@ router.afterEach((to) => {
     const title = ROUTE_TITLES[to.name]
     document.title = title
         ? `${title} · ${APP_NAME}`
-        : `${APP_NAME} · Aprende náhuatl y tének`
+        : `${APP_NAME} · Aprende lenguas originarias de México.`
 })
 
 router.beforeEach(async (to, from, next) => {
