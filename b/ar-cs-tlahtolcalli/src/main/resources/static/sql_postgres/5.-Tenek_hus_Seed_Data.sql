@@ -1,32 +1,39 @@
 -- ============================================================
---  seed data — náhuatl central (nhn)
+--  seed data — tének / huasteco (hus)
 --  tlahtolcalli  [postgresql]
 --
---  variante: náhuatl central (iso 639-3: nhn; grupo nah)
+--  variante base: tének de san luis potosí (iso 639-3: hus)
 --  ejecutar después de:
 --    1. tlahtolli_database_script.sql
 --    2. general_seed_data.sql   (usuario demo y logros)
 --
---  contenido (curso completo, mismos temas que nhce):
---    6 niveles · 36 unidades · 195 palabras y frases · 254 asociaciones · 216 ejercicios
+--  contenido (curso completo, mismos niveles que nhn):
+--    6 niveles · 36 unidades · 175 palabras y frases · 225 asociaciones · 216 ejercicios
 --    ct_languages → ct_levels → ct_units → ct_vocabulary → rl_unit_vocab
 --    → ct_exercises → ct_writing_systems → ta_user_progress → ta_user_stats
+--
+--  fuentes:
+--    · inali, norma de escritura de la lengua tének
+--      (junkudh tsalap abal ki dhucha' an tének kawintaláb)
+--    · inali, prontuario de tének (saludos y cortesía)
+--    · vocabulario huasteco-español de pueblosoriginarios.com, pasado a la
+--      norma inali (ā → á, sh → x, th → dh)
+--  las frases son las que aparecen tal cual en esas fuentes; no se armaron
+--  frases nuevas por analogía.
 --
 --  borrador para revisión con hablantes: todas las palabras, traducciones
 --  y pronunciaciones deben validarse antes de publicarse.
 --
---  norma ortográfica (una sola, en todo el contenido):
---    · ortografía práctica de base clásica: c/qu (k), cu/uc (kw), hu/uh (w),
---      tz (ts), tl, ch, x (sh), z y c+e,i (s)
---    · h = saltillo (corte de voz): tlazohcamati, quemah, ahmo
---    · sin macrones: la vocal larga no se marca en ninguna palabra
---    · sin acentos del español
---    · sílabas: tl, tz, ch, qu, cu, hu son un solo sonido; la tl final se
---      queda en la sílaba anterior (xo-chitl, ne-huatl)
---  guía de pronunciación (generada con la misma regla para todo):
---    k, kw, w, s, sh, ts; ' = saltillo; sílabas separadas con guion
+--  norma ortográfica (inali, una sola en todo el contenido):
+--    · vocal con acento = vocal larga: atáj, búk, kalám
+--    · ' sola = saltillo (corte de voz): ja', bó', kó'ol
+--    · ch, dh, kw, ts, tx y las glotalizadas b', ch', k', k'w, t', ts', y'
+--      son un solo sonido y no se separan al silabear
+--    · plural de san luis potosí con -chik: tatá'chik, jajáchik
+--  guía de pronunciación: sílabas separadas con guion según la norma
+--  (utsun → u-tsun, bat'aw → ba-t'aw).
 --
---  re-ejecutable: borra primero todo lo de 'nhn'.
+--  re-ejecutable: borra primero todo lo de 'hus'.
 -- ============================================================
 
 begin;
@@ -35,10 +42,11 @@ begin;
 --  0. limpieza (re-ejecución)
 -- ─────────────────────────────────────────────
 update ta_users set current_lang = null
-where current_lang = (select id from ct_languages where code = 'nhn');
+ where current_lang = (select id from ct_languages where code = 'hus');
 delete from ta_user_stats
-where language_id = (select id from ct_languages where code = 'nhn');
-delete from ct_languages where code = 'nhn';   -- en cascada: niveles, unidades, vocabulario, ejercicios, progreso
+ where language_id = (select id from ct_languages where code = 'hus');
+delete from ta_user_achievements where language_tag = 'hus';
+delete from ct_languages where code = 'hus';   -- en cascada: niveles, unidades, vocabulario, ejercicios, progreso
 
 alter table ct_exercises add column if not exists placeholder varchar(255);
 
@@ -46,79 +54,79 @@ alter table ct_exercises add column if not exists placeholder varchar(255);
 --  1. idioma
 -- ─────────────────────────────────────────────
 insert into ct_languages (code, lang_name, native_name, color, flag, family, writing_system)
-values ('nhn', 'Náhuatl central', 'Nahuatlahtolli', null, '🌽', 'uto-aztec', 'alphabet');
+values ('hus', 'Tének', 'Tének kawintaláb', null, '🌿', 'maya', 'alphabet');
 
 -- ─────────────────────────────────────────────
---  2. niveles (título en náhuatl: frase corta del propio curso)
+--  2. niveles (título en tének: palabras del propio curso)
 -- ─────────────────────────────────────────────
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 1, 'Saluda y preséntate', 'Quen tinemi?', null, 6, 'Ninguno - Nivel inicial', 1
-from ct_languages where code = 'nhn';
+select id, 1, 'Saluda y preséntate', 'Tajk''anenek', null, 6, 'Ninguno - Nivel inicial', 1
+from ct_languages where code = 'hus';
 
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 2, 'Descríbete y describe a tu familia', 'Nonan ihuan notah', null, 6, 'Completar Nivel 1', 0
-from ct_languages where code = 'nhn';
+select id, 2, 'Descríbete y describe a tu familia', 'Táta'' ani mím', null, 6, 'Completar Nivel 1', 0
+from ct_languages where code = 'hus';
 
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 3, 'Pide y da información', 'Tlen, aquin, canin?', null, 6, 'Completar Nivel 2', 0
-from ct_languages where code = 'nhn';
+select id, 3, 'Pide y da información', '¿Jantom, juta?', null, 6, 'Completar Nivel 2', 0
+from ct_languages where code = 'hus';
 
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 4, 'Habla en tiempos (ayer/hoy/mañana)', 'Yalhua, axcan, moztla', null, 6, 'Completar Nivel 3', 0
-from ct_languages where code = 'nhn';
+select id, 4, 'Habla en tiempos (ayer/hoy/mañana)', 'We''él, xowé'', kalám', null, 6, 'Completar Nivel 3', 0
+from ct_languages where code = 'hus';
 
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 5, 'Describe un día normal', 'Tlaneci, tlayohua', null, 6, 'Completar Nivel 4', 0
-from ct_languages where code = 'nhn';
+select id, 5, 'Describe un día normal', 'Bakan ani tsanak''w', null, 6, 'Completar Nivel 4', 0
+from ct_languages where code = 'hus';
 
 insert into ct_levels (language_id, level_num, title, title_native, color, total_units, unlock_req, is_free)
-select id, 6, 'Describe y expresa preferencias', 'Tlen mitzpactia?', null, 6, 'Completar Nivel 5', 0
-from ct_languages where code = 'nhn';
+select id, 6, 'Describe y expresa preferencias', 'Koy ani pik''o''', null, 6, 'Completar Nivel 5', 0
+from ct_languages where code = 'hus';
 
 -- ─────────────────────────────────────────────
 --  3.1 unidades — nivel 1: saluda y preséntate
 -- ─────────────────────────────────────────────
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 1, 'Saludos', null,
-       'Saludar y preguntar cómo está la otra persona',
-       'Quen tinemi? / Cualli ninemi: el verbo nemi (vivir, andar) con ni- (yo) y ti- (tú)', 1, null
+       'Saludar según la hora del día y dar la bienvenida',
+       'Los saludos cambian con la hora: tajk''anenek (mañana), waklenenek (tarde), dhamk''unenek (noche)', 1, null
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 2, 'Despedidas', null,
-       'Despedirse y quedar de verse',
-       'Timoittazque (nos vemos) y palabras de tiempo: moztla, occeppa', 0, 'Completar Unidad 1'
+       'Despedirse y desear que le vaya bien a la otra persona',
+       'Tayej ku tsu''uxinej (nos vemos) y kit k''alej alwa'' (que te vaya bien); alwa'' = bien, bueno', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 3, 'Cómo te llamas', null,
-       'Preguntar y decir el nombre',
-       'Posesivos no- (mi), mo- (tu), i- (su) con toca (nombre); pronombres nehuatl, tehuatl, yehuatl', 0, 'Completar Unidad 2'
+       'Decir tu nombre y conocer los pronombres',
+       'Naná'' (yo), tatá'' (tú), jajá'' (él, ella); u bij = mi nombre, a bij = tu nombre', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 4, 'Agradecer y responder', null,
-       'Dar las gracias, responder y decir sí o no',
-       'Tlazohcamati, miac tlazohcamati, ahmo tlen; quemah / ahmo', 0, 'Completar Unidad 3'
+       'Dar las gracias y responder sí o no',
+       'K''ak''námal (gracias, SLP); yán = mucho; yab niega el verbo', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Cómo me siento', null,
-       'Decir cómo te sientes y preguntar a otros',
-       'Prefijos de sujeto: ni- (yo), ti- (tú), sin prefijo (él/ella): niyolpaqui, tiyolpaqui, yolpaqui', 0, 'Completar Unidad 4'
+select l.id, 5, 'Cortesía', null,
+       'Pedir permiso y desear buen provecho',
+       'Pakwlanchij yán (con permiso); kit k''apúts alwa'' (buen provecho)', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 6, 'Conversación básica', null,
-       'Unir saludo, nombre, estado y despedida en una conversación',
-       'Ihuan (y), tlen (qué) y repaso de la unidad 1 a la 5', 0, 'Completar Unidad 5'
+       'Unir saludo, nombre, agradecimiento y despedida',
+       'Tének es el nombre del pueblo y de la lengua; kawintaláb = lengua, palabra', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1;
+where la.code = 'hus' and l.level_num = 1;
 
 -- ─────────────────────────────────────────────
 --  3.2 unidades — nivel 2: descríbete y describe a tu familia
@@ -126,44 +134,44 @@ where la.code = 'nhn' and l.level_num = 1;
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 1, 'Pronombres personales', null,
        'Conocer los pronombres en singular y plural',
-       'Nehuatl, tehuatl, yehuatl (singular) y tehuan, amehuan, yehuan (plural)', 0, 'Completar Nivel 1'
+       'Plural con -chik en SLP: tatá''chik (ustedes), jajáchik (ellos), inikchik (hombres)', 0, 'Completar Nivel 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 2, 'La familia', null,
-       'Nombrar a los miembros de la familia',
-       'Posesivo no- (mi) con nombres de parentesco: nonan, notah, noconeuh; inin (este, esta)', 0, 'Completar Unidad 1'
+       'Nombrar a la familia cercana',
+       'Táta'' (papá), mím (mamá); ani = y', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 3, 'Cómo es mi familia', null,
-       'Describir a la familia con adjetivos',
-       'Adjetivo después del nombre: notah chicahuac (mi papá es fuerte)', 0, 'Completar Unidad 2'
+select l.id, 3, 'Los abuelos y los tíos', null,
+       'Nombrar a los abuelos, tíos y hermanos',
+       'Mám (abuelo, anciano), ách (abuela); itsán (tío), tsanub (tía); epchal (hermano)', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 4, 'Hermanos y amigos', null,
-       'Hablar de hermanos y amigos',
-       'Nocniuh (mi amigo), noachcauh (mi hermano mayor), noiccauh (mi hermano menor)', 0, 'Completar Unidad 3'
+select l.id, 4, 'Cómo es', null,
+       'Describir con adjetivos',
+       'Adjetivos de tamaño y cualidad: púlik, tsakam, ít, alabél, kidhab, nakat', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Los abuelos', null,
-       'Hablar de los abuelos y de las personas mayores',
-       'Nocol (mi abuelo), nocih (mi abuela); huehue, ilamatl, tlamatini', 0, 'Completar Unidad 4'
+select l.id, 5, 'Los colores', null,
+       'Nombrar los colores básicos',
+       'Colores: tsakni'', dhakni'', t''unu'', yaxu'', manu''', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 6, 'Mi familia completa', null,
-       'Describir tu familia con oraciones completas',
-       'Nicpia (tengo) y los números ce (uno) y ome (dos); plural posesivo -huan: noconehuan', 0, 'Completar Unidad 5'
+select l.id, 6, 'Contar del uno al cinco', null,
+       'Contar del uno al cinco y hablar de amigos',
+       'Números: jún, tsáb, óx, ché'', bó''', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2;
+where la.code = 'hus' and l.level_num = 2;
 
 -- ─────────────────────────────────────────────
 --  3.3 unidades — nivel 3: pide y da información
@@ -171,609 +179,568 @@ where la.code = 'nhn' and l.level_num = 2;
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 1, 'Palabras para preguntar', null,
        'Conocer las palabras para hacer preguntas',
-       'Tlen (qué), aquin (quién), canin (dónde), quemman (cuándo), tleica (por qué), quen (cómo)', 0, 'Completar Nivel 2'
+       'Jantom (qué), jantij (cómo), juta (dónde), jay (cuánto); jachan pregunta "¿es…?"', 0, 'Completar Nivel 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 2, 'Preguntas personales', null,
-       'Preguntar y responder sobre uno mismo',
-       'Aquin tehuatl?, Canin tichaneh?, Tlen ticchihua?: la pregunta va al inicio', 0, 'Completar Unidad 1'
+select l.id, 2, 'Mi casa y mi comunidad', null,
+       'Hablar de la casa y la comunidad',
+       'Posesivos: nu (mi), na (tu): nu kwentsál, na k''imá''; la vocal puede alargarse al poseer', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 3, 'Preguntas sobre otros', null,
-       'Preguntar por otras personas',
-       'Sin prefijo para él o ella: tequiti (trabaja), momachtia (estudia), chaneh (vive)', 0, 'Completar Unidad 2'
+select l.id, 3, 'Contar del seis al diez', null,
+       'Contar del seis al diez y hasta veinte',
+       'Números: akak, búk, waxik, beléw, laju''; veinte = jún inik (lit. un hombre)', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 4, 'Dónde está y qué necesito', null,
-       'Preguntar por lugares y necesidades',
-       'Nican (aquí), ompa (allá); nicnequi (quiero), monequi (se necesita)', 0, 'Completar Unidad 3'
+select l.id, 4, 'Lugares y cosas', null,
+       'Nombrar lugares y objetos cotidianos',
+       'Sustantivos de lugar y objetos: alté'', mom, ja'', tumín, úw, takab', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Respuestas completas', null,
-       'Responder con oraciones completas',
-       'Nican ca (aquí está), nicnequi atl (quiero agua), ahmo nicmati (no sé)', 0, 'Completar Unidad 4'
+select l.id, 5, 'Cerca y lejos', null,
+       'Ubicar las cosas',
+       'Utat (cerca), ów (lejos), alal (abajo); ok''ox (primero), putat (entero)', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 6, 'Cuántos', null,
-       'Preguntar cantidades y contar del uno al cinco',
-       'Quezqui (cuántos) y los números ce, ome, eyi, nahui, macuilli', 0, 'Completar Unidad 5'
+select l.id, 6, 'Preguntas útiles', null,
+       'Preguntar por la lengua y la comunidad',
+       'El artículo an (el, la): an kawnal; in bij = su nombre', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3;
+where la.code = 'hus' and l.level_num = 3;
 
 -- ─────────────────────────────────────────────
 --  3.4 unidades — nivel 4: habla en tiempos (ayer/hoy/mañana)
 -- ─────────────────────────────────────────────
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
 select l.id, 1, 'Hoy, ayer y mañana', null,
-       'Ubicar las acciones en el tiempo',
-       'Axcan (hoy, ahora), yalhua (ayer), moztla (mañana), huiptla (pasado mañana)', 0, 'Completar Nivel 3'
+       'Decir cuándo pasa algo',
+       'Xowé'' (hoy), we''él (ayer), kalám (mañana); k''icháj (día, sol) y akal (noche)', 0, 'Completar Nivel 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 2, 'Pasado y futuro', null,
-       'Conjugar en pasado y futuro',
-       'Pasado con o- al inicio: onitequit (trabajé); futuro con -z al final: nitequitiz (trabajaré)', 0, 'Completar Unidad 1'
+select l.id, 2, 'La naturaleza', null,
+       'Nombrar elementos de la naturaleza',
+       'Its'' (luna, mes) no es lo mismo que its (chile): el saltillo cambia la palabra', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 3, 'Ver y verse', null,
-       'Usar un verbo con objeto en distintos tiempos',
-       'Niquitta (lo veo), oniquittac (lo vi), niquittaz (lo veré); nimitzitta (te veo)', 0, 'Completar Unidad 2'
+select l.id, 3, 'Lo que hago', null,
+       'Decir acciones en primera persona',
+       'In + verbo intransitivo (yo): in atsim, in kalel; naná'' im belal (in → im antes de b)', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 4, 'Comer, beber e ir', null,
-       'Hablar de actividades diarias en tres tiempos',
-       'Nitlacua (como), onitlacuah (comí), nitlacuaz (comeré); niyauh (voy), oniya (fui)', 0, 'Completar Unidad 3'
+select l.id, 4, 'Lo que pasó', null,
+       'Hablar del pasado',
+       'U + verbo transitivo (yo): u lejkiy an bakan (preparé la tortilla); tey = también', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Cuándo y dónde', null,
-       'Combinar tiempo y lugar en una oración',
-       'Primero el tiempo, luego el verbo y al final el lugar: yalhua oniya ompa', 0, 'Completar Unidad 4'
+select l.id, 5, 'Ahora y después', null,
+       'Decir lo que estamos haciendo y lo que haremos',
+       'Exom (estamos) + tu (nosotros) + verbo; ne''ets ku (iremos a / vamos a)', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 6, 'Contar lo que pasó', null,
-       'Contar una secuencia de acciones',
-       'Achto (primero), zatepan (después), niman (luego)', 0, 'Completar Unidad 5'
+select l.id, 6, 'Repaso del tiempo', null,
+       'Contar qué pasó ayer y qué pasará mañana',
+       'Ulits (llegar), ach''a'' (escuchar) y repaso de hoy, ayer y mañana', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4;
+where la.code = 'hus' and l.level_num = 4;
 
 -- ─────────────────────────────────────────────
 --  3.5 unidades — nivel 5: describe un día normal
 -- ─────────────────────────────────────────────
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 1, 'Por la mañana', null,
-       'Describir cómo empieza el día',
-       'Verbos reflexivos con ni- + mo/no: nimaltia (me baño); nimehua (me levanto)', 0, 'Completar Nivel 4'
+select l.id, 1, 'La comida', null,
+       'Nombrar la comida de todos los días',
+       'Alimentos básicos: idhidh (maíz), ajan (elote), tsanak''w (frijol), its (chile)', 0, 'Completar Nivel 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 2, 'Dormir y comer', null,
-       'Hablar de la comida y el descanso',
-       'Niccua (lo como) lleva objeto: niccua tlaxcalli; nitlacua (como) no lo lleva', 0, 'Completar Unidad 1'
+select l.id, 2, 'Frutas y plantas', null,
+       'Nombrar frutas y plantas',
+       'Préstamo integrado: lanáx (naranja)', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 3, 'Con otras personas', null,
-       'Decir qué haces con otras personas',
-       'Plural nosotros: ti- ... -h: titlacuah (comemos), titequitih (trabajamos); nohuan (conmigo), mohuan (contigo)', 0, 'Completar Unidad 2'
+select l.id, 3, 'En la cocina', null,
+       'Nombrar bebidas y objetos de cocina',
+       'Préstamos integrados: kapéj (café), kuchil (cuchillo), mexa (mesa)', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 4, 'Mañana, tarde y noche', null,
-       'Ubicar la rutina en las partes del día',
-       'Teotlac (tarde), yohualli (noche), tlayohua (anochece)', 0, 'Completar Unidad 3'
+select l.id, 4, 'Acciones del día', null,
+       'Conocer verbos de todos los días',
+       'Verbos en su forma base: k''apul, uts''ál, wayal, met''ál, pidhál, belal', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Rutinas en plural', null,
-       'Describir lo que hacen varias personas',
-       'Plural ellos: sin prefijo y con -h al final: cochih (duermen), tlacuah (comen)', 0, 'Completar Unidad 4'
+select l.id, 5, 'Trabajos de la casa', null,
+       'Decir los trabajos de la casa',
+       'U + verbo (yo): u nujuwal, u kitnál; ¡ka …! da una orden: ¡ka k''wetoy!', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 6, 'Mi día completo', null,
-       'Describir un día de principio a fin',
-       'Repaso de rutina, tiempo y orden: tlaneci, nimehua, achto, zatepan, niman', 0, 'Completar Unidad 5'
+select l.id, 6, 'Caliente y frío', null,
+       'Describir la comida y las cosas',
+       'Adjetivos: k''ak'' (caliente), chamay (frío), ts''a''ik (amargo), t''apay (pegajoso), tolow (grueso)', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5;
+where la.code = 'hus' and l.level_num = 5;
 
 -- ─────────────────────────────────────────────
 --  3.6 unidades — nivel 6: describe y expresa preferencias
 -- ─────────────────────────────────────────────
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 1, 'Lo que me gusta', null,
-       'Decir qué te gusta y qué no',
-       'Nechpactia (me gusta, lit. me alegra), mitzpactia (te gusta); ahmo nechpactia (no me gusta)', 0, 'Completar Nivel 5'
+select l.id, 1, 'Animales del monte', null,
+       'Nombrar animales del monte',
+       'Koy es el conejo: el mismo animal de la mascota de la app', 0, 'Completar Nivel 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 2, 'Lo que quiero', null,
-       'Expresar deseos y necesidades',
-       'Nicnequi + verbo en futuro: nicnequi nitlacuaz (quiero comer); quinequi (él o ella quiere)', 0, 'Completar Unidad 1'
+select l.id, 2, 'Animales de la casa', null,
+       'Nombrar animales cercanos y decir "mi perro"',
+       'Poseer cambia la palabra: pik''o'' (perro) → nu pik''oil (mi perro)', 0, 'Completar Unidad 1'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 3, 'Pedir y ordenar', null,
-       'Pedir algo con respeto y dar indicaciones',
-       'Imperativo con xi-: xitlacua (come), xihualla (ven); nimitztlatlauhtia (por favor, te lo pido)', 0, 'Completar Unidad 2'
+select l.id, 3, 'El cuerpo', null,
+       'Nombrar las partes del cuerpo',
+       'Partes del cuerpo: ok'', k''ubak, akan, wal, wi'', okob, txukul', 0, 'Completar Unidad 2'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 4, 'Más y menos', null,
-       'Comparar y valorar',
-       'Oc achi (más), cenca cualli (muy bueno), ahmo cualli (no es bueno)', 0, 'Completar Unidad 3'
+select l.id, 4, 'Lo que quiero y lo que tengo', null,
+       'Hablar de querer y tener',
+       'Verbos en su forma base: le'' (querer), kó''ol (tener)', 0, 'Completar Unidad 3'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 5, 'Mis gustos', null,
-       'Hablar de tus gustos con comida y bebida',
-       'Nechpactia + nombre: nechpactia atl (me gusta el agua)', 0, 'Completar Unidad 4'
+select l.id, 5, 'Expresiones', null,
+       'Expresar gusto y nombrar lugares',
+       '¡Abél…! expresa admiración; nombres tének de lugares: Tampots''ots'', Labtóm', 0, 'Completar Unidad 4'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 insert into ct_units (level_id, unit_num, title, color, objective, grammar, is_free, unlock_req)
-select l.id, 6, 'Expresión completa', null,
-       'Conversar sobre gustos, deseos y peticiones',
-       'Repaso del nivel: preguntas con tlen, gustos con nechpactia y deseos con nicnequi', 0, 'Completar Unidad 5'
+select l.id, 6, 'Conversación final', null,
+       'Unir todo lo aprendido en una conversación',
+       'Repaso: saludo, nombre, familia, comida, animales y despedida', 0, 'Completar Unidad 5'
 from ct_levels l join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6;
+where la.code = 'hus' and l.level_num = 6;
 
 -- ─────────────────────────────────────────────
 --  4. vocabulario
 -- ─────────────────────────────────────────────
 -- nivel 1 · unidad 1: saludos
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quen tinemi?', '¿cómo estás? (lit. ¿cómo vives?)', 'ken ti-ne-mi', null from ct_languages where code = 'nhn';
+select id, 'Tajk''anenek', 'buenos días', 'taj-k''a-ne-nek', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cualli ninemi', 'estoy bien (lit. vivo bien)', 'kwal-li ni-ne-mi', null from ct_languages where code = 'nhn';
+select id, 'Waklenenek', 'buenas tardes', 'wak-le-ne-nek', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ihuan tehuatl?', '¿y tú?', 'i-wan te-watl', null from ct_languages where code = 'nhn';
+select id, 'Dhamk''unenek', 'buenas noches', 'dham-k''u-ne-nek', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ximopanolti', 'pase / bienvenido(a)', 'shi-mo-pa-nol-ti', null from ct_languages where code = 'nhn';
+select id, 'Alwa'' bats''udh', 'bienvenido(a)', 'al-wa'' ba-ts''udh', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cualli', 'bien / bueno', 'kwal-li', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quen', 'cómo', 'ken', null from ct_languages where code = 'nhn';
+select id, 'Kit wat''ey', 'pasa / adelante', 'kit wa-t''ey', null from ct_languages where code = 'hus';
 -- nivel 1 · unidad 2: despedidas
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Timoittazque', 'nos vemos', 'ti-mo-it-tas-ke', null from ct_languages where code = 'nhn';
+select id, 'Tayej ku tsu''uxinej', 'hasta luego / nos vemos', 'ta-yej ku tsu-''u-xi-nej', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Moztla', 'mañana', 'mos-tla', null from ct_languages where code = 'nhn';
+select id, 'Kit k''alej alwa''', 'que te vaya bien', 'kit k''a-lej al-wa''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Occeppa', 'otra vez', 'ok-sep-pa', null from ct_languages where code = 'nhn';
+select id, 'Alwa''', 'bien / bueno', 'al-wa''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Timoittazque moztla', 'nos vemos mañana', 'ti-mo-it-tas-ke mos-tla', null from ct_languages where code = 'nhn';
+select id, 'Kalám', 'mañana', 'ka-lám', null from ct_languages where code = 'hus';
 -- nivel 1 · unidad 3: cómo te llamas
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quen motoca?', '¿cómo te llamas? (lit. ¿cómo es tu nombre?)', 'ken mo-to-ka', null from ct_languages where code = 'nhn';
+select id, 'Naná''', 'yo', 'na-ná''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Notoca', 'mi nombre / me llamo', 'no-to-ka', null from ct_languages where code = 'nhn';
+select id, 'Tatá''', 'tú', 'ta-tá''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Motoca', 'tu nombre', 'mo-to-ka', null from ct_languages where code = 'nhn';
+select id, 'Jajá''', 'él / ella', 'ja-já''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Itoca', 'su nombre (de él o ella)', 'i-to-ka', null from ct_languages where code = 'nhn';
+select id, 'Bij', 'nombre', 'bij', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nehuatl', 'yo', 'ne-watl', null from ct_languages where code = 'nhn';
+select id, 'Naná'' u bij', 'yo me llamo (lit. yo, mi nombre)', 'na-ná'' u bij', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tehuatl', 'tú', 'te-watl', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yehuatl', 'él / ella', 'ye-watl', null from ct_languages where code = 'nhn';
+select id, '¿Jantij a bij?', '¿cómo te llamas?', 'jan-tij a bij', null from ct_languages where code = 'hus';
 -- nivel 1 · unidad 4: agradecer y responder
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlazohcamati', 'gracias', 'tla-so''-ka-ma-ti', null from ct_languages where code = 'nhn';
+select id, 'K''ak''námal', 'gracias', 'k''ak''-ná-mal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Miac tlazohcamati', 'muchas gracias', 'mi-ak tla-so''-ka-ma-ti', null from ct_languages where code = 'nhn';
+select id, 'Lej k''ak''námal yán', 'muchas gracias', 'lej k''ak''-ná-mal yán', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Miac', 'mucho', 'mi-ak', null from ct_languages where code = 'nhn';
+select id, 'Yán', 'mucho', 'yán', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo tlen', 'de nada (lit. no es nada)', 'a''-mo tlen', null from ct_languages where code = 'nhn';
+select id, 'Antsaná''', 'sí / así es', 'an-tsa-ná''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo', 'no', 'a''-mo', null from ct_languages where code = 'nhn';
+select id, 'Yab', 'no', 'yab', null from ct_languages where code = 'hus';
+-- nivel 1 · unidad 5: cortesía
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quemah', 'sí', 'ke-ma''', null from ct_languages where code = 'nhn';
--- nivel 1 · unidad 5: cómo me siento
+select id, 'Pakwlanchij yán', 'con permiso / disculpa', 'pakw-lan-chij yán', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niyolpaqui', 'estoy contento(a)', 'ni-yol-pa-ki', null from ct_languages where code = 'nhn';
+select id, 'Kit k''apúts alwa''', 'buen provecho', 'kit k''a-púts al-wa''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tiyolpaqui', 'estás contento(a)', 'ti-yol-pa-ki', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yolpaqui', 'está contento(a)', 'yol-pa-ki', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niciahui', 'estoy cansado(a)', 'ni-si-a-wi', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ticiahui', 'estás cansado(a)', 'ti-si-a-wi', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ciahui', 'está cansado(a)', 'si-a-wi', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ninococoa', 'estoy enfermo(a)', 'ni-no-ko-ko-a', null from ct_languages where code = 'nhn';
+select id, 'Wanaj ku t''ojon kulbél', 'disfrutemos este encuentro', 'wa-naj ku t''o-jon kul-bél', null from ct_languages where code = 'hus';
 -- nivel 1 · unidad 6: conversación básica
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ihuan', 'y', 'i-wan', null from ct_languages where code = 'nhn';
+select id, 'Tének', 'tének (pueblo y lengua)', 'té-nek', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlen', 'qué', 'tlen', null from ct_languages where code = 'nhn';
+select id, 'Kawintaláb', 'lengua / palabra', 'ka-win-ta-láb', null from ct_languages where code = 'hus';
+insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
+select id, '¿Jantom kawintaláb an kawnal?', '¿qué lengua hablas?', 'jan-tom ka-win-ta-láb an kaw-nal', null from ct_languages where code = 'hus';
 -- nivel 2 · unidad 1: pronombres personales
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tehuan', 'nosotros', 'te-wan', null from ct_languages where code = 'nhn';
+select id, 'Wawá''', 'nosotros(as)', 'wa-wá''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Amehuan', 'ustedes', 'a-me-wan', null from ct_languages where code = 'nhn';
+select id, 'Tatá''chik', 'ustedes', 'ta-tá''-chik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yehuan', 'ellos / ellas', 'ye-wan', null from ct_languages where code = 'nhn';
+select id, 'Jajáchik', 'ellos / ellas', 'ja-já-chik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nehuatl niyolpaqui', 'yo estoy contento(a)', 'ne-watl ni-yol-pa-ki', null from ct_languages where code = 'nhn';
+select id, 'Inik', 'hombre', 'i-nik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tehuatl ticiahui', 'tú estás cansado(a)', 'te-watl ti-si-a-wi', null from ct_languages where code = 'nhn';
+select id, 'Uxum', 'mujer', 'u-xum', null from ct_languages where code = 'hus';
+insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
+select id, 'Inikchik', 'hombres', 'i-nik-chik', null from ct_languages where code = 'hus';
 -- nivel 2 · unidad 2: la familia
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nonan', 'mi mamá', 'no-nan', null from ct_languages where code = 'nhn';
+select id, 'Táta''', 'papá', 'tá-ta''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Notah', 'mi papá', 'no-ta''', null from ct_languages where code = 'nhn';
+select id, 'Mím', 'mamá', 'mím', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Noconeuh', 'mi hijo(a)', 'no-ko-new', null from ct_languages where code = 'nhn';
+select id, 'Kwitól', 'niño(a)', 'kwi-tól', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nochan', 'mi casa', 'no-chan', null from ct_languages where code = 'nhn';
+select id, 'Ani', 'y', 'a-ni', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Inin', 'este / esta', 'i-nin', null from ct_languages where code = 'nhn';
+select id, 'Ixám', 'esposa', 'i-xám', null from ct_languages where code = 'hus';
+-- nivel 2 · unidad 3: los abuelos y los tíos
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Inin nonan', 'esta es mi mamá', 'i-nin no-nan', null from ct_languages where code = 'nhn';
+select id, 'Mám', 'abuelo / anciano', 'mám', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Inin notah', 'este es mi papá', 'i-nin no-ta''', null from ct_languages where code = 'nhn';
--- nivel 2 · unidad 3: cómo es mi familia
+select id, 'Ách', 'abuela', 'ách', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Chicahuac', 'fuerte', 'chi-ka-wak', null from ct_languages where code = 'nhn';
+select id, 'Itsán', 'tío', 'i-tsán', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Huey', 'grande', 'wey', null from ct_languages where code = 'nhn';
+select id, 'Tsanub', 'tía', 'tsa-nub', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tepiton', 'pequeño(a)', 'te-pi-ton', null from ct_languages where code = 'nhn';
+select id, 'Epchal', 'hermano', 'ep-chal', null from ct_languages where code = 'hus';
+-- nivel 2 · unidad 4: cómo es
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yancuic', 'nuevo(a)', 'yan-kwik', null from ct_languages where code = 'nhn';
+select id, 'Púlik', 'grande', 'pú-lik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Notah chicahuac', 'mi papá es fuerte', 'no-ta'' chi-ka-wak', null from ct_languages where code = 'nhn';
+select id, 'Tsakam', 'pequeño(a)', 'tsa-kam', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nonan cualli', 'mi mamá es buena', 'no-nan kwal-li', null from ct_languages where code = 'nhn';
--- nivel 2 · unidad 4: hermanos y amigos
+select id, 'Ít', 'nuevo(a)', 'ít', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nocniuh', 'mi amigo(a)', 'nok-niw', null from ct_languages where code = 'nhn';
+select id, 'Alabél', 'bonito(a)', 'a-la-bél', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Noachcauh', 'mi hermano mayor', 'no-ach-kaw', null from ct_languages where code = 'nhn';
+select id, 'Kidhab', 'malo(a)', 'ki-dhab', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Noiccauh', 'mi hermano menor', 'no-ik-kaw', null from ct_languages where code = 'nhn';
+select id, 'Nakat', 'largo(a)', 'na-kat', null from ct_languages where code = 'hus';
+-- nivel 2 · unidad 5: los colores
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Telpochtli', 'muchacho / joven', 'tel-poch-tli', null from ct_languages where code = 'nhn';
+select id, 'Tsakni''', 'rojo', 'tsak-ni''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ichpochtli', 'muchacha / joven', 'ich-poch-tli', null from ct_languages where code = 'nhn';
+select id, 'Dhakni''', 'blanco', 'dhak-ni''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Inin nocniuh', 'este es mi amigo', 'i-nin nok-niw', null from ct_languages where code = 'nhn';
--- nivel 2 · unidad 5: los abuelos
+select id, 'T''unu''', 'negro', 't''u-nu''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nocol', 'mi abuelo', 'no-kol', null from ct_languages where code = 'nhn';
+select id, 'Yaxu''', 'verde', 'ya-xu''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nocih', 'mi abuela', 'no-si''', null from ct_languages where code = 'nhn';
+select id, 'Manu''', 'amarillo', 'ma-nu''', null from ct_languages where code = 'hus';
+-- nivel 2 · unidad 6: contar del uno al cinco
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Huehue', 'anciano', 'we-we', null from ct_languages where code = 'nhn';
+select id, 'Jún', 'uno', 'jún', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ilamatl', 'anciana', 'i-la-matl', null from ct_languages where code = 'nhn';
+select id, 'Tsáb', 'dos', 'tsáb', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlamatini', 'sabio(a)', 'tla-ma-ti-ni', null from ct_languages where code = 'nhn';
+select id, 'Óx', 'tres', 'óx', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nocih tlamatini', 'mi abuela es sabia', 'no-si'' tla-ma-ti-ni', null from ct_languages where code = 'nhn';
+select id, 'Ché''', 'cuatro', 'ché''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nocol huehue', 'mi abuelo es anciano', 'no-kol we-we', null from ct_languages where code = 'nhn';
--- nivel 2 · unidad 6: mi familia completa
+select id, 'Bó''', 'cinco', 'bó''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicpia', 'tengo', 'nik-pi-a', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ce', 'uno', 'se', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ome', 'dos', 'o-me', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Noconehuan', 'mis hijos', 'no-ko-ne-wan', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicpia ce nocniuh', 'tengo un amigo', 'nik-pi-a se nok-niw', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicpia ome noconehuan', 'tengo dos hijos', 'nik-pi-a o-me no-ko-ne-wan', null from ct_languages where code = 'nhn';
+select id, 'Ja''úb', 'amigo(a)', 'ja-''úb', null from ct_languages where code = 'hus';
 -- nivel 3 · unidad 1: palabras para preguntar
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Aquin', 'quién', 'a-kin', null from ct_languages where code = 'nhn';
+select id, 'Jantom', 'qué', 'jan-tom', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Canin', 'dónde', 'ka-nin', null from ct_languages where code = 'nhn';
+select id, 'Jantij', 'cómo', 'jan-tij', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quemman', 'cuándo', 'kem-man', null from ct_languages where code = 'nhn';
+select id, 'Juta', 'dónde', 'ju-ta', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tleica', 'por qué', 'tle-i-ka', null from ct_languages where code = 'nhn';
+select id, 'Jay', 'cuánto', 'jay', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quezqui', 'cuántos(as)', 'kes-ki', null from ct_languages where code = 'nhn';
--- nivel 3 · unidad 2: preguntas personales
+select id, 'Jachan', '¿es…? (pregunta)', 'ja-chan', null from ct_languages where code = 'hus';
+-- nivel 3 · unidad 2: mi casa y mi comunidad
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Aquin tehuatl?', '¿quién eres tú?', 'a-kin te-watl', null from ct_languages where code = 'nhn';
+select id, 'Atáj', 'casa', 'a-táj', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Canin tichaneh?', '¿dónde vives?', 'ka-nin ti-cha-ne''', null from ct_languages where code = 'nhn';
+select id, 'Kwentsal', 'comunidad', 'kwen-tsal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nichaneh Tlaxcallan', 'vivo en Tlaxcala', 'ni-cha-ne'' tlash-kal-lan', null from ct_languages where code = 'nhn';
+select id, 'Nu kwentsál', 'mi comunidad', 'nu kwen-tsál', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlen ticchihua?', '¿qué haces?', 'tlen tik-chi-wa', null from ct_languages where code = 'nhn';
+select id, 'Na k''imá''', 'tu casa', 'na k''i-má''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nitequiti', 'trabajo', 'ni-te-ki-ti', null from ct_languages where code = 'nhn';
+select id, '¿Jachana k''imá?', '¿es tu casa?', 'ja-cha-na k''i-má', null from ct_languages where code = 'hus';
+-- nivel 3 · unidad 3: contar del seis al diez
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimomachtia', 'estudio', 'ni-mo-mach-ti-a', null from ct_languages where code = 'nhn';
--- nivel 3 · unidad 3: preguntas sobre otros
+select id, 'Akak', 'seis', 'a-kak', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Aquin yehuatl?', '¿quién es él / ella?', 'a-kin ye-watl', null from ct_languages where code = 'nhn';
+select id, 'Búk', 'siete', 'búk', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlen quichihua?', '¿qué hace él / ella?', 'tlen ki-chi-wa', null from ct_languages where code = 'nhn';
+select id, 'Waxik', 'ocho', 'wa-xik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Canin chaneh?', '¿dónde vive él / ella?', 'ka-nin cha-ne''', null from ct_languages where code = 'nhn';
+select id, 'Beléw', 'nueve', 'be-léw', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tequiti', 'trabaja', 'te-ki-ti', null from ct_languages where code = 'nhn';
+select id, 'Laju''', 'diez', 'la-ju''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Momachtia', 'estudia', 'mo-mach-ti-a', null from ct_languages where code = 'nhn';
--- nivel 3 · unidad 4: dónde está y qué necesito
+select id, 'Jún inik', 'veinte', 'jún i-nik', null from ct_languages where code = 'hus';
+-- nivel 3 · unidad 4: lugares y cosas
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nican', 'aquí', 'ni-kan', null from ct_languages where code = 'nhn';
+select id, 'Alté''', 'monte', 'al-té''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ompa', 'allá', 'om-pa', null from ct_languages where code = 'nhn';
+select id, 'Mom', 'pozo', 'mom', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Canin ca?', '¿dónde está?', 'ka-nin ka', null from ct_languages where code = 'nhn';
+select id, 'Ja''', 'agua', 'ja''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicnequi', 'quiero / necesito', 'nik-ne-ki', null from ct_languages where code = 'nhn';
+select id, 'Tumín', 'dinero', 'tu-mín', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Monequi', 'se necesita', 'mo-ne-ki', null from ct_languages where code = 'nhn';
+select id, 'Úw', 'papel', 'úw', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Atl', 'agua', 'atl', null from ct_languages where code = 'nhn';
+select id, 'Takab', 'comal', 'ta-kab', null from ct_languages where code = 'hus';
+-- nivel 3 · unidad 5: cerca y lejos
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlen ticnequi?', '¿qué quieres?', 'tlen tik-ne-ki', null from ct_languages where code = 'nhn';
--- nivel 3 · unidad 5: respuestas completas
+select id, 'Utat', 'cerca', 'u-tat', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nican ca', 'aquí está', 'ni-kan ka', null from ct_languages where code = 'nhn';
+select id, 'Ów', 'lejos', 'ów', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ompa ca', 'allá está', 'om-pa ka', null from ct_languages where code = 'nhn';
+select id, 'Alal', 'abajo', 'a-lal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicnequi atl', 'quiero agua', 'nik-ne-ki atl', null from ct_languages where code = 'nhn';
+select id, 'Ok''ox', 'primero', 'o-k''ox', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo nicnequi', 'no quiero', 'a''-mo nik-ne-ki', null from ct_languages where code = 'nhn';
+select id, 'Putat', 'entero', 'pu-tat', null from ct_languages where code = 'hus';
+-- nivel 3 · unidad 6: preguntas útiles
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicmati', 'sé / lo sé', 'nik-ma-ti', null from ct_languages where code = 'nhn';
+select id, 'An', 'el / la', 'an', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo nicmati', 'no sé', 'a''-mo nik-ma-ti', null from ct_languages where code = 'nhn';
--- nivel 3 · unidad 6: cuántos
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Eyi', 'tres', 'e-yi', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nahui', 'cuatro', 'na-wi', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Macuilli', 'cinco', 'ma-kwil-li', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quezqui ticnequi?', '¿cuántos quieres?', 'kes-ki tik-ne-ki', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicnequi ome', 'quiero dos', 'nik-ne-ki o-me', null from ct_languages where code = 'nhn';
+select id, '¿Jantij in bij na kwentsalíl?', '¿cómo se llama tu comunidad?', 'jan-tij in bij na kwen-tsa-líl', null from ct_languages where code = 'hus';
 -- nivel 4 · unidad 1: hoy, ayer y mañana
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Axcan', 'hoy / ahora', 'ash-kan', null from ct_languages where code = 'nhn';
+select id, 'Xowé''', 'hoy', 'xo-wé''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yalhua', 'ayer', 'yal-wa', null from ct_languages where code = 'nhn';
+select id, 'We''él', 'ayer', 'we-''él', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Huiptla', 'pasado mañana', 'wip-tla', null from ct_languages where code = 'nhn';
+select id, 'K''icháj', 'día / sol', 'k''i-cháj', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tonalli', 'día / sol', 'to-nal-li', null from ct_languages where code = 'nhn';
+select id, 'Akal', 'noche', 'a-kal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yohualli', 'noche', 'yo-wal-li', null from ct_languages where code = 'nhn';
+select id, 'K''ij', 'tiempo', 'k''ij', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Axcan nitequiti', 'hoy trabajo', 'ash-kan ni-te-ki-ti', null from ct_languages where code = 'nhn';
--- nivel 4 · unidad 2: pasado y futuro
+select id, 'Tamub', 'año', 'ta-mub', null from ct_languages where code = 'hus';
+-- nivel 4 · unidad 2: la naturaleza
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Onitequit', 'trabajé', 'o-ni-te-kit', null from ct_languages where code = 'nhn';
+select id, 'Its''', 'luna / mes', 'its''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nitequitiz', 'trabajaré', 'ni-te-ki-tis', null from ct_languages where code = 'nhn';
+select id, 'Ik''', 'aire / viento', 'ik''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Otitequit', 'trabajaste', 'o-ti-te-kit', null from ct_languages where code = 'nhn';
+select id, 'Lem', 'mariposa', 'lem', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Titequitiz', 'trabajarás', 'ti-te-ki-tis', null from ct_languages where code = 'nhn';
+select id, 'Tsunun', 'colibrí', 'tsu-nun', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Onicochic', 'dormí', 'o-ni-ko-chik', null from ct_languages where code = 'nhn';
+select id, 'Ts''itsin', 'pájaro', 'ts''i-tsin', null from ct_languages where code = 'hus';
+-- nivel 4 · unidad 3: lo que hago
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicochiz', 'dormiré', 'ni-ko-chis', null from ct_languages where code = 'nhn';
--- nivel 4 · unidad 3: ver y verse
+select id, 'In atsim', 'me baño', 'in a-tsim', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niquitta', 'lo / la veo', 'ni-kit-ta', null from ct_languages where code = 'nhn';
+select id, 'In kalel', 'salgo', 'in ka-lel', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Oniquittac', 'lo / la vi', 'o-ni-kit-tak', null from ct_languages where code = 'nhn';
+select id, 'Naná'' im belal', 'yo camino', 'na-ná'' im be-lal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niquittaz', 'lo / la veré', 'ni-kit-tas', null from ct_languages where code = 'nhn';
+select id, 'Ne''ech ban nu kwentsál', 'voy a mi comunidad', 'ne-''ech ban nu kwen-tsál', null from ct_languages where code = 'hus';
+-- nivel 4 · unidad 4: lo que pasó
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimitzitta', 'te veo', 'ni-mi-tsit-ta', null from ct_languages where code = 'nhn';
+select id, 'U lejkiy an bakan', 'preparé la tortilla', 'u lej-kiy an ba-kan', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Onimitzittac', 'te vi', 'o-ni-mi-tsit-tak', null from ct_languages where code = 'nhn';
+select id, 'Bakan', 'tortilla', 'ba-kan', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yalhua onimitzittac', 'ayer te vi', 'yal-wa o-ni-mi-tsit-tak', null from ct_languages where code = 'nhn';
--- nivel 4 · unidad 4: comer, beber e ir
+select id, 'Tatá'' tey i t''ojon', 'tú también trabajaste', 'ta-tá'' tey i t''o-jon', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nitlacua', 'como', 'ni-tla-kwa', null from ct_languages where code = 'nhn';
+select id, 'Tsekets an bichim', 'el caballo se cansó', 'tse-kets an bi-chim', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Onitlacuah', 'comí', 'o-ni-tla-kwa''', null from ct_languages where code = 'nhn';
+select id, 'Bichim', 'caballo', 'bi-chim', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nitlacuaz', 'comeré', 'ni-tla-kwas', null from ct_languages where code = 'nhn';
+select id, 'Wat''ey', 'pasó', 'wa-t''ey', null from ct_languages where code = 'hus';
+-- nivel 4 · unidad 5: ahora y después
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niatli', 'bebo', 'ni-a-tli', null from ct_languages where code = 'nhn';
+select id, 'Exom tu dhuchum', 'estamos escribiendo', 'e-xom tu dhu-chum', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niyauh', 'voy', 'ni-yaw', null from ct_languages where code = 'nhn';
+select id, 'Dhuchum', 'escribir', 'dhu-chum', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Oniya', 'fui', 'o-ni-ya', null from ct_languages where code = 'nhn';
+select id, 'Ne''ets ku ayin', 'regresaremos a casa', 'ne-''ets ku a-yin', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niyaz', 'iré', 'ni-yas', null from ct_languages where code = 'nhn';
--- nivel 4 · unidad 5: cuándo y dónde
+select id, 'T''ojnal', 'trabajar', 't''oj-nal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yalhua oniya ompa', 'ayer fui allá', 'yal-wa o-ni-ya om-pa', null from ct_languages where code = 'nhn';
+select id, 'T''ojlab', 'trabajo', 't''oj-lab', null from ct_languages where code = 'hus';
+-- nivel 4 · unidad 6: repaso del tiempo
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Moztla niyaz', 'mañana iré', 'mos-tla ni-yas', null from ct_languages where code = 'nhn';
+select id, 'Ulits', 'llegar', 'u-lits', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Axcan nican nicah', 'hoy estoy aquí', 'ash-kan ni-kan ni-ka''', null from ct_languages where code = 'nhn';
+select id, 'Ach''a''', 'escuchar', 'a-ch''a''', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 1: la comida
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicah', 'estoy', 'ni-ka''', null from ct_languages where code = 'nhn';
+select id, 'Idhidh', 'maíz', 'i-dhidh', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ticah', 'estás', 'ti-ka''', null from ct_languages where code = 'nhn';
--- nivel 4 · unidad 6: contar lo que pasó
+select id, 'Ajan', 'elote', 'a-jan', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Achto', 'primero', 'ach-to', null from ct_languages where code = 'nhn';
+select id, 'Tsanak''w', 'frijol', 'tsa-nak''w', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Zatepan', 'después', 'sa-te-pan', null from ct_languages where code = 'nhn';
+select id, 'Its', 'chile', 'its', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niman', 'luego / enseguida', 'ni-man', null from ct_languages where code = 'nhn';
+select id, 'K''apnél', 'comida', 'k''ap-nél', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 2: frutas y plantas
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Achto nitlacua', 'primero como', 'ach-to ni-tla-kwa', null from ct_languages where code = 'nhn';
+select id, 'Lanáx', 'naranja', 'la-náx', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Zatepan nitequiti', 'después trabajo', 'sa-te-pan ni-te-ki-ti', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 1: por la mañana
+select id, 'Uj', 'aguacate', 'uj', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimehua', 'me levanto', 'ni-me-wa', null from ct_languages where code = 'nhn';
+select id, 'Utsun', 'papaya', 'u-tsun', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimaltia', 'me baño', 'ni-mal-ti-a', null from ct_languages where code = 'nhn';
+select id, 'Pakab', 'caña', 'pa-kab', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niquiza', 'salgo', 'ni-ki-sa', null from ct_languages where code = 'nhn';
+select id, 'Pak''ak''', 'nopal', 'pa-k''ak''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nihuallauh', 'vengo', 'ni-wal-law', null from ct_languages where code = 'nhn';
+select id, 'Way''', 'mazorca', 'way''', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 3: en la cocina
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cualcan', 'temprano', 'kwal-kan', null from ct_languages where code = 'nhn';
+select id, 'Kapéj', 'café', 'ka-péj', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlaneci', 'amanece', 'tla-ne-si', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 2: dormir y comer
+select id, 'Tay''', 'cal', 'tay''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicochi', 'duermo', 'ni-ko-chi', null from ct_languages where code = 'nhn';
+select id, 'Kuchil', 'cuchillo', 'ku-chil', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlaxcalli', 'tortilla', 'tlash-kal-li', null from ct_languages where code = 'nhn';
+select id, 'Mexa', 'mesa', 'me-xa', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 4: acciones del día
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Etl', 'frijol', 'etl', null from ct_languages where code = 'nhn';
+select id, 'K''apul', 'comer', 'k''a-pul', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Chilli', 'chile', 'chil-li', null from ct_languages where code = 'nhn';
+select id, 'Uts''ál', 'beber', 'u-ts''ál', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niccua tlaxcalli', 'como tortilla', 'nik-kwa tlash-kal-li', null from ct_languages where code = 'nhn';
+select id, 'Wayal', 'dormir', 'wa-yal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niccua etl', 'como frijol', 'nik-kwa etl', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 3: con otras personas
+select id, 'Met''ál', 'ver', 'me-t''ál', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Titlacuah', 'comemos', 'ti-tla-kwa''', null from ct_languages where code = 'nhn';
+select id, 'Pidhál', 'dar', 'pi-dhál', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Titequitih', 'trabajamos', 'ti-te-ki-ti''', null from ct_languages where code = 'nhn';
+select id, 'Belal', 'caminar', 'be-lal', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 5: trabajos de la casa
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nohuan', 'conmigo', 'no-wan', null from ct_languages where code = 'nhn';
+select id, 'U nujuwal an lanax', 'vendo naranjas', 'u nu-ju-wal an la-nax', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Mohuan', 'contigo', 'mo-wan', null from ct_languages where code = 'nhn';
+select id, 'U kitnál an dhi''', 'cargo la leña', 'u kit-nál an dhi''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nitlacua mohuan', 'como contigo', 'ni-tla-kwa mo-wan', null from ct_languages where code = 'nhn';
+select id, 'Dhi''', 'leña', 'dhi''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nonan ihuan nehuatl titlacuah', 'mi mamá y yo comemos', 'no-nan i-wan ne-watl ti-tla-kwa''', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 4: mañana, tarde y noche
+select id, '¡Ka k''wetoy na k''imá''!', '¡barre tu casa!', 'ka k''we-toy na k''i-má''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Teotlac', 'tarde', 'te-o-tlak', null from ct_languages where code = 'nhn';
+select id, 'K''wet', 'escoba', 'k''wet', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlayohua', 'anochece', 'tla-yo-wa', null from ct_languages where code = 'nhn';
+select id, 'Xabún', 'jabón', 'xa-bún', null from ct_languages where code = 'hus';
+-- nivel 5 · unidad 6: caliente y frío
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Teotlac nitequiti', 'en la tarde trabajo', 'te-o-tlak ni-te-ki-ti', null from ct_languages where code = 'nhn';
+select id, 'K''ak''', 'caliente', 'k''ak''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yohualli nicochi', 'en la noche duermo', 'yo-wal-li ni-ko-chi', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 5: rutinas en plural
+select id, 'Chamay', 'frío(a)', 'cha-may', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ticochih', 'dormimos', 'ti-ko-chi''', null from ct_languages where code = 'nhn';
+select id, 'Ts''a''ik', 'amargo(a)', 'ts''a-''ik', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cochih', 'duermen', 'ko-chi''', null from ct_languages where code = 'nhn';
+select id, 'T''apay', 'pegajoso(a)', 't''a-pay', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlacuah', 'comen', 'tla-kwa''', null from ct_languages where code = 'nhn';
+select id, 'Tolow', 'grueso(a)', 'to-low', null from ct_languages where code = 'hus';
+-- nivel 6 · unidad 1: animales del monte
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tequitih', 'trabajan', 'te-ki-ti''', null from ct_languages where code = 'nhn';
+select id, 'Koy', 'conejo', 'koy', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tehuan ticochih', 'nosotros dormimos', 'te-wan ti-ko-chi''', null from ct_languages where code = 'nhn';
+select id, 'Chuch', 'coyote', 'chuch', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Yehuan tlacuah', 'ellos comen', 'ye-wan tla-kwa''', null from ct_languages where code = 'nhn';
--- nivel 5 · unidad 6: mi día completo
+select id, 'Itxamal', 'venado', 'i-txa-mal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlaneci nimehua', 'amanece y me levanto', 'tla-ne-si ni-me-wa', null from ct_languages where code = 'nhn';
+select id, 'Edhem', 'mapache', 'e-dhem', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Niman niquiza', 'luego salgo', 'ni-man ni-ki-sa', null from ct_languages where code = 'nhn';
+select id, 'Ot''el', 'ardilla', 'o-t''el', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cualcan nimaltia', 'temprano me baño', 'kwal-kan ni-mal-ti-a', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 1: lo que me gusta
+select id, 'Bat''aw', 'armadillo', 'ba-t''aw', null from ct_languages where code = 'hus';
+-- nivel 6 · unidad 2: animales de la casa
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nechpactia', 'me gusta', 'nech-pak-ti-a', null from ct_languages where code = 'nhn';
+select id, 'Pik''o''', 'perro', 'pi-k''o''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo nechpactia', 'no me gusta', 'a''-mo nech-pak-ti-a', null from ct_languages where code = 'nhn';
+select id, 'Mitsu''', 'gato', 'mi-tsu''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Mitzpactia?', '¿te gusta?', 'mits-pak-ti-a', null from ct_languages where code = 'nhn';
+select id, 'Koxol', 'gallo', 'ko-xol', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cenca', 'mucho / muy', 'sen-ka', null from ct_languages where code = 'nhn';
+select id, 'Ch''uri''', 'burro', 'ch''u-ri''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Achi', 'un poco', 'a-chi', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 2: lo que quiero
+select id, 'Nu pik''oil', 'mi perro', 'nu pi-k''o-il', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ticnequi', 'quieres', 'tik-ne-ki', null from ct_languages where code = 'nhn';
+select id, 'Yaxk''wa''', 'rana', 'yax-k''wa''', null from ct_languages where code = 'hus';
+-- nivel 6 · unidad 3: el cuerpo
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Quinequi', 'quiere', 'ki-ne-ki', null from ct_languages where code = 'nhn';
+select id, 'Ok''', 'cabeza', 'ok''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicnequi nitlacuaz', 'quiero comer', 'nik-ne-ki ni-tla-kwas', null from ct_languages where code = 'nhn';
+select id, 'K''ubak', 'mano', 'k''u-bak', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nicnequi nicochiz', 'quiero dormir', 'nik-ne-ki ni-ko-chis', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 3: pedir y ordenar
+select id, 'Akan', 'pie', 'a-kan', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Xitlacua', 'come (tú)', 'shi-tla-kwa', null from ct_languages where code = 'nhn';
+select id, 'Wal', 'ojo / cara', 'wal', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Xicochi', 'duerme (tú)', 'shi-ko-chi', null from ct_languages where code = 'nhn';
+select id, 'Wi''', 'boca', 'wi''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Xihualla', 'ven (tú)', 'shi-wal-la', null from ct_languages where code = 'nhn';
+select id, 'Okob', 'brazo', 'o-kob', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ximotlali', 'siéntate', 'shi-mo-tla-li', null from ct_languages where code = 'nhn';
+select id, 'Txukul', 'panza', 'txu-kul', null from ct_languages where code = 'hus';
+-- nivel 6 · unidad 4: lo que quiero y lo que tengo
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimitztlatlauhtia', 'por favor (lit. te lo pido)', 'ni-mits-tla-tlaw-ti-a', null from ct_languages where code = 'nhn';
+select id, 'Le''', 'querer', 'le''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nimitztlatlauhtia, xihualla', 'por favor, ven', 'ni-mits-tla-tlaw-ti-a shi-wal-la', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 4: más y menos
+select id, 'Kó''ol', 'tener', 'kó-''ol', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Oc achi', 'más', 'ok a-chi', null from ct_languages where code = 'nhn';
+select id, 'Xumpelel', 'sombrero', 'xum-pe-lel', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Oc achi cualli', 'mejor', 'ok a-chi kwal-li', null from ct_languages where code = 'nhn';
+select id, 'Belal atáj', 'carro (lit. casa que camina)', 'be-lal a-táj', null from ct_languages where code = 'hus';
+-- nivel 6 · unidad 5: expresiones
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Cenca cualli', 'muy bueno', 'sen-ka kwal-li', null from ct_languages where code = 'nhn';
+select id, '¡Abél junt''aj xu bixnél!', '¡qué bonita danza!', 'a-bél jun-t''aj xu bix-nél', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo cualli', 'no es bueno', 'a''-mo kwal-li', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 5: mis gustos
+select id, 'Tének Tsabál', 'región tének', 'té-nek tsa-bál', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nechpactia atl', 'me gusta el agua', 'nech-pak-ti-a atl', null from ct_languages where code = 'nhn';
+select id, 'Tampots''ots''', 'San Luis Potosí', 'tam-po-ts''ots''', null from ct_languages where code = 'hus';
 insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nechpactia tlaxcalli', 'me gusta la tortilla', 'nech-pak-ti-a tlash-kal-li', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Ahmo nechpactia chilli', 'no me gusta el chile', 'a''-mo nech-pak-ti-a chil-li', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Mitzpactia etl?', '¿te gusta el frijol?', 'mits-pak-ti-a etl', null from ct_languages where code = 'nhn';
--- nivel 6 · unidad 6: expresión completa
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Tlen mitzpactia?', '¿qué te gusta?', 'tlen mits-pak-ti-a', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nahuatlahtolli', 'idioma náhuatl', 'na-wa-tla''-tol-li', null from ct_languages where code = 'nhn';
-insert into ct_vocabulary (language_id, word, translation, pronunciation, example)
-select id, 'Nechpactia nahuatlahtolli', 'me gusta el náhuatl', 'nech-pak-ti-a na-wa-tla''-tol-li', null from ct_languages where code = 'nhn';
+select id, 'Labtóm', 'México', 'lab-tóm', null from ct_languages where code = 'hus';
 
 -- ─────────────────────────────────────────────
 --  5. rl_unit_vocab — vocabulario por unidad (nuevo + repaso)
@@ -781,326 +748,326 @@ select id, 'Nechpactia nahuatlahtolli', 'me gusta el náhuatl', 'nech-pak-ti-a n
 -- nivel 1 · unidad 1: saludos
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1
-  and v.word in ('Quen tinemi?', 'Cualli ninemi', 'Ihuan tehuatl?', 'Ximopanolti', 'Cualli', 'Quen');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1
+and v.word in ('Tajk''anenek', 'Waklenenek', 'Dhamk''unenek', 'Alwa'' bats''udh', 'Kit wat''ey');
 
 -- nivel 1 · unidad 2: despedidas
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2
-  and v.word in ('Timoittazque', 'Moztla', 'Occeppa', 'Timoittazque moztla', 'Cualli');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2
+and v.word in ('Tayej ku tsu''uxinej', 'Kit k''alej alwa''', 'Alwa''', 'Kalám');
 
 -- nivel 1 · unidad 3: cómo te llamas
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3
-  and v.word in ('Quen motoca?', 'Notoca', 'Motoca', 'Itoca', 'Nehuatl', 'Tehuatl', 'Yehuatl');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3
+and v.word in ('Naná''', 'Tatá''', 'Jajá''', 'Bij', 'Naná'' u bij', '¿Jantij a bij?');
 
 -- nivel 1 · unidad 4: agradecer y responder
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4
-  and v.word in ('Tlazohcamati', 'Miac tlazohcamati', 'Miac', 'Ahmo tlen', 'Ahmo', 'Quemah');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4
+and v.word in ('K''ak''námal', 'Lej k''ak''námal yán', 'Yán', 'Antsaná''', 'Yab');
 
--- nivel 1 · unidad 5: cómo me siento
+-- nivel 1 · unidad 5: cortesía
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5
-  and v.word in ('Niyolpaqui', 'Tiyolpaqui', 'Yolpaqui', 'Niciahui', 'Ticiahui', 'Ciahui', 'Ninococoa', 'Quen tinemi?');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5
+and v.word in ('Pakwlanchij yán', 'Kit k''apúts alwa''', 'Wanaj ku t''ojon kulbél', 'Kit wat''ey');
 
 -- nivel 1 · unidad 6: conversación básica
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6
-  and v.word in ('Ihuan', 'Tlen', 'Quen tinemi?', 'Cualli ninemi', 'Ihuan tehuatl?', 'Quen motoca?', 'Notoca', 'Tlazohcamati', 'Timoittazque', 'Niyolpaqui');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6
+and v.word in ('Tének', 'Kawintaláb', '¿Jantom kawintaláb an kawnal?', 'Tajk''anenek', '¿Jantij a bij?', 'Naná'' u bij', 'K''ak''námal', 'Tayej ku tsu''uxinej', 'Alwa''');
 
 -- nivel 2 · unidad 1: pronombres personales
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1
-  and v.word in ('Tehuan', 'Amehuan', 'Yehuan', 'Nehuatl niyolpaqui', 'Tehuatl ticiahui', 'Nehuatl', 'Tehuatl', 'Yehuatl');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1
+and v.word in ('Wawá''', 'Tatá''chik', 'Jajáchik', 'Inik', 'Uxum', 'Inikchik', 'Naná''', 'Tatá''', 'Jajá''');
 
 -- nivel 2 · unidad 2: la familia
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2
-  and v.word in ('Nonan', 'Notah', 'Noconeuh', 'Nochan', 'Inin', 'Inin nonan', 'Inin notah');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2
+and v.word in ('Táta''', 'Mím', 'Kwitól', 'Ani', 'Ixám');
 
--- nivel 2 · unidad 3: cómo es mi familia
+-- nivel 2 · unidad 3: los abuelos y los tíos
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3
-  and v.word in ('Chicahuac', 'Huey', 'Tepiton', 'Yancuic', 'Notah chicahuac', 'Nonan cualli', 'Cualli', 'Nonan', 'Notah');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3
+and v.word in ('Mám', 'Ách', 'Itsán', 'Tsanub', 'Epchal', 'Ani');
 
--- nivel 2 · unidad 4: hermanos y amigos
+-- nivel 2 · unidad 4: cómo es
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4
-  and v.word in ('Nocniuh', 'Noachcauh', 'Noiccauh', 'Telpochtli', 'Ichpochtli', 'Inin nocniuh', 'Inin');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4
+and v.word in ('Púlik', 'Tsakam', 'Ít', 'Alabél', 'Kidhab', 'Nakat', 'Alwa''');
 
--- nivel 2 · unidad 5: los abuelos
+-- nivel 2 · unidad 5: los colores
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5
-  and v.word in ('Nocol', 'Nocih', 'Huehue', 'Ilamatl', 'Tlamatini', 'Nocih tlamatini', 'Nocol huehue');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5
+and v.word in ('Tsakni''', 'Dhakni''', 'T''unu''', 'Yaxu''', 'Manu''');
 
--- nivel 2 · unidad 6: mi familia completa
+-- nivel 2 · unidad 6: contar del uno al cinco
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6
-  and v.word in ('Nicpia', 'Ce', 'Ome', 'Noconehuan', 'Nicpia ce nocniuh', 'Nicpia ome noconehuan', 'Nonan', 'Notah', 'Ihuan');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6
+and v.word in ('Jún', 'Tsáb', 'Óx', 'Ché''', 'Bó''', 'Ja''úb', 'Táta''', 'Mím');
 
 -- nivel 3 · unidad 1: palabras para preguntar
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1
-  and v.word in ('Aquin', 'Canin', 'Quemman', 'Tleica', 'Quezqui', 'Tlen', 'Quen');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1
+and v.word in ('Jantom', 'Jantij', 'Juta', 'Jay', 'Jachan');
 
--- nivel 3 · unidad 2: preguntas personales
+-- nivel 3 · unidad 2: mi casa y mi comunidad
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2
-  and v.word in ('Aquin tehuatl?', 'Canin tichaneh?', 'Nichaneh Tlaxcallan', 'Tlen ticchihua?', 'Nitequiti', 'Nimomachtia');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2
+and v.word in ('Atáj', 'Kwentsal', 'Nu kwentsál', 'Na k''imá''', '¿Jachana k''imá?', 'Jachan');
 
--- nivel 3 · unidad 3: preguntas sobre otros
+-- nivel 3 · unidad 3: contar del seis al diez
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3
-  and v.word in ('Aquin yehuatl?', 'Tlen quichihua?', 'Canin chaneh?', 'Tequiti', 'Momachtia', 'Yehuatl');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3
+and v.word in ('Akak', 'Búk', 'Waxik', 'Beléw', 'Laju''', 'Jún inik', 'Jún', 'Inik');
 
--- nivel 3 · unidad 4: dónde está y qué necesito
+-- nivel 3 · unidad 4: lugares y cosas
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4
-  and v.word in ('Nican', 'Ompa', 'Canin ca?', 'Nicnequi', 'Monequi', 'Atl', 'Tlen ticnequi?');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4
+and v.word in ('Alté''', 'Mom', 'Ja''', 'Tumín', 'Úw', 'Takab');
 
--- nivel 3 · unidad 5: respuestas completas
+-- nivel 3 · unidad 5: cerca y lejos
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5
-  and v.word in ('Nican ca', 'Ompa ca', 'Nicnequi atl', 'Ahmo nicnequi', 'Nicmati', 'Ahmo nicmati', 'Ahmo');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5
+and v.word in ('Utat', 'Ów', 'Alal', 'Ok''ox', 'Putat', 'Juta');
 
--- nivel 3 · unidad 6: cuántos
+-- nivel 3 · unidad 6: preguntas útiles
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6
-  and v.word in ('Eyi', 'Nahui', 'Macuilli', 'Quezqui ticnequi?', 'Nicnequi ome', 'Quezqui', 'Ce', 'Ome');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6
+and v.word in ('An', '¿Jantij in bij na kwentsalíl?', '¿Jantom kawintaláb an kawnal?', 'Kwentsal', 'Jantij', 'Jantom', 'Tének');
 
 -- nivel 4 · unidad 1: hoy, ayer y mañana
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1
-  and v.word in ('Axcan', 'Yalhua', 'Huiptla', 'Tonalli', 'Yohualli', 'Axcan nitequiti', 'Moztla');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1
+and v.word in ('Xowé''', 'We''él', 'K''icháj', 'Akal', 'K''ij', 'Tamub', 'Kalám');
 
--- nivel 4 · unidad 2: pasado y futuro
+-- nivel 4 · unidad 2: la naturaleza
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2
-  and v.word in ('Onitequit', 'Nitequitiz', 'Otitequit', 'Titequitiz', 'Onicochic', 'Nicochiz', 'Nitequiti');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2
+and v.word in ('Its''', 'Ik''', 'Lem', 'Tsunun', 'Ts''itsin', 'Alté''');
 
--- nivel 4 · unidad 3: ver y verse
+-- nivel 4 · unidad 3: lo que hago
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3
-  and v.word in ('Niquitta', 'Oniquittac', 'Niquittaz', 'Nimitzitta', 'Onimitzittac', 'Yalhua onimitzittac', 'Yalhua');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3
+and v.word in ('In atsim', 'In kalel', 'Naná'' im belal', 'Ne''ech ban nu kwentsál', 'Nu kwentsál');
 
--- nivel 4 · unidad 4: comer, beber e ir
+-- nivel 4 · unidad 4: lo que pasó
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4
-  and v.word in ('Nitlacua', 'Onitlacuah', 'Nitlacuaz', 'Niatli', 'Niyauh', 'Oniya', 'Niyaz');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4
+and v.word in ('U lejkiy an bakan', 'Bakan', 'Tatá'' tey i t''ojon', 'Tsekets an bichim', 'Bichim', 'Wat''ey', 'An');
 
--- nivel 4 · unidad 5: cuándo y dónde
+-- nivel 4 · unidad 5: ahora y después
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5
-  and v.word in ('Yalhua oniya ompa', 'Moztla niyaz', 'Axcan nican nicah', 'Nicah', 'Ticah', 'Ompa', 'Nican', 'Axcan');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5
+and v.word in ('Exom tu dhuchum', 'Dhuchum', 'Ne''ets ku ayin', 'T''ojnal', 'T''ojlab');
 
--- nivel 4 · unidad 6: contar lo que pasó
+-- nivel 4 · unidad 6: repaso del tiempo
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6
-  and v.word in ('Achto', 'Zatepan', 'Niman', 'Achto nitlacua', 'Zatepan nitequiti', 'Nitlacua', 'Nitequiti');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6
+and v.word in ('Ulits', 'Ach''a''', 'Xowé''', 'We''él', 'Kalám', 'In kalel', 'U lejkiy an bakan', 'Exom tu dhuchum');
 
--- nivel 5 · unidad 1: por la mañana
+-- nivel 5 · unidad 1: la comida
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1
-  and v.word in ('Nimehua', 'Nimaltia', 'Niquiza', 'Nihuallauh', 'Cualcan', 'Tlaneci');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1
+and v.word in ('Idhidh', 'Ajan', 'Tsanak''w', 'Its', 'K''apnél', 'Bakan');
 
--- nivel 5 · unidad 2: dormir y comer
+-- nivel 5 · unidad 2: frutas y plantas
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2
-  and v.word in ('Nicochi', 'Tlaxcalli', 'Etl', 'Chilli', 'Niccua tlaxcalli', 'Niccua etl', 'Nitlacua');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2
+and v.word in ('Lanáx', 'Uj', 'Utsun', 'Pakab', 'Pak''ak''', 'Way''');
 
--- nivel 5 · unidad 3: con otras personas
+-- nivel 5 · unidad 3: en la cocina
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3
-  and v.word in ('Titlacuah', 'Titequitih', 'Nohuan', 'Mohuan', 'Nitlacua mohuan', 'Nonan ihuan nehuatl titlacuah', 'Nonan');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3
+and v.word in ('Kapéj', 'Tay''', 'Kuchil', 'Mexa', 'Ja''', 'Takab');
 
--- nivel 5 · unidad 4: mañana, tarde y noche
+-- nivel 5 · unidad 4: acciones del día
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4
-  and v.word in ('Teotlac', 'Tlayohua', 'Teotlac nitequiti', 'Yohualli nicochi', 'Tlaneci', 'Yohualli', 'Nicochi');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4
+and v.word in ('K''apul', 'Uts''ál', 'Wayal', 'Met''ál', 'Pidhál', 'Belal');
 
--- nivel 5 · unidad 5: rutinas en plural
+-- nivel 5 · unidad 5: trabajos de la casa
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5
-  and v.word in ('Ticochih', 'Cochih', 'Tlacuah', 'Tequitih', 'Tehuan ticochih', 'Yehuan tlacuah', 'Tehuan', 'Yehuan');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5
+and v.word in ('U nujuwal an lanax', 'U kitnál an dhi''', 'Dhi''', '¡Ka k''wetoy na k''imá''!', 'K''wet', 'Xabún', 'Na k''imá''');
 
--- nivel 5 · unidad 6: mi día completo
+-- nivel 5 · unidad 6: caliente y frío
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6
-  and v.word in ('Tlaneci nimehua', 'Niman niquiza', 'Cualcan nimaltia', 'Achto', 'Zatepan', 'Niman', 'Teotlac nitequiti', 'Yohualli nicochi');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6
+and v.word in ('K''ak''', 'Chamay', 'Ts''a''ik', 'T''apay', 'Tolow', 'Kapéj');
 
--- nivel 6 · unidad 1: lo que me gusta
+-- nivel 6 · unidad 1: animales del monte
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1
-  and v.word in ('Nechpactia', 'Ahmo nechpactia', 'Mitzpactia?', 'Cenca', 'Achi');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1
+and v.word in ('Koy', 'Chuch', 'Itxamal', 'Edhem', 'Ot''el', 'Bat''aw');
 
--- nivel 6 · unidad 2: lo que quiero
+-- nivel 6 · unidad 2: animales de la casa
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2
-  and v.word in ('Ticnequi', 'Quinequi', 'Nicnequi nitlacuaz', 'Nicnequi nicochiz', 'Nicnequi', 'Ahmo nicnequi');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2
+and v.word in ('Pik''o''', 'Mitsu''', 'Koxol', 'Ch''uri''', 'Nu pik''oil', 'Yaxk''wa''', 'Bichim');
 
--- nivel 6 · unidad 3: pedir y ordenar
+-- nivel 6 · unidad 3: el cuerpo
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3
-  and v.word in ('Xitlacua', 'Xicochi', 'Xihualla', 'Ximotlali', 'Nimitztlatlauhtia', 'Nimitztlatlauhtia, xihualla');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3
+and v.word in ('Ok''', 'K''ubak', 'Akan', 'Wal', 'Wi''', 'Okob', 'Txukul');
 
--- nivel 6 · unidad 4: más y menos
+-- nivel 6 · unidad 4: lo que quiero y lo que tengo
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4
-  and v.word in ('Oc achi', 'Oc achi cualli', 'Cenca cualli', 'Ahmo cualli', 'Achi', 'Cenca', 'Cualli');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4
+and v.word in ('Le''', 'Kó''ol', 'Xumpelel', 'Belal atáj', 'Tumín');
 
--- nivel 6 · unidad 5: mis gustos
+-- nivel 6 · unidad 5: expresiones
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5
-  and v.word in ('Nechpactia atl', 'Nechpactia tlaxcalli', 'Ahmo nechpactia chilli', 'Mitzpactia etl?', 'Atl', 'Tlaxcalli', 'Chilli', 'Etl');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5
+and v.word in ('¡Abél junt''aj xu bixnél!', 'Tének Tsabál', 'Tampots''ots''', 'Labtóm', 'Tének');
 
--- nivel 6 · unidad 6: expresión completa
+-- nivel 6 · unidad 6: conversación final
 insert into rl_unit_vocab (unit_id, vocab_id)
 select u.id, v.id from ct_units u
-                           join ct_levels l on u.level_id = l.id
-                           join ct_languages la on l.language_id = la.id
-                           join ct_vocabulary v on v.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6
-  and v.word in ('Tlen mitzpactia?', 'Nahuatlahtolli', 'Nechpactia nahuatlahtolli', 'Nechpactia', 'Nicnequi', 'Tlen ticnequi?');
+join ct_levels l on u.level_id = l.id
+join ct_languages la on l.language_id = la.id
+join ct_vocabulary v on v.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6
+and v.word in ('Tajk''anenek', 'Naná'' u bij', 'Táta''', 'Mím', 'Bakan', 'Koy', 'Pik''o''', 'Lej k''ak''námal yán', 'Kit k''alej alwa''');
 
 -- ─────────────────────────────────────────────
 --  6. ejercicios (6 por unidad: 4 opción múltiple + 2 completar)
@@ -1108,2500 +1075,2923 @@ where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6
 -- nivel 1 · unidad 1: saludos
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Cómo estás?',
-       '["Quen tinemi?"]',
-       '["Quen tinemi?", "Quen motoca?", "Ximopanolti", "Timoittazque"]',
+       'Buenos días',
+       '["Tajk''anenek"]',
+       '["Alwa''", "Dhamk''unenek", "Naná''", "Tajk''anenek"]',
        'citlali',
-       'Quen tinemi? pregunta cómo está alguien; literalmente es ¿cómo vives?',
+       'Tajk''anenek significa buenos días',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estoy bien',
-       '["Cualli ninemi"]',
-       '["Cualli ninemi", "Ihuan tehuatl?", "Quen tinemi?", "Notoca"]',
+       'Buenas tardes',
+       '["Waklenenek"]',
+       '["Bij", "Jajá''", "Waklenenek", "Naná''"]',
        'coltzin',
-       'Cualli ninemi responde a Quen tinemi?: cualli (bien) + ninemi (yo vivo)',
+       'Waklenenek significa buenas tardes',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Y tú?',
-       '["Ihuan tehuatl?"]',
-       '["Ihuan tehuatl?", "Cualli ninemi", "Tlazohcamati", "Ximopanolti"]',
+       'Buenas noches',
+       '["Dhamk''unenek"]',
+       '["Tajk''anenek", "Alwa''", "Waklenenek", "Dhamk''unenek"]',
        'neza',
-       'Ihuan (y) + tehuatl (tú) devuelve la pregunta',
+       'Dhamk''unenek significa buenas noches',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Pase / bienvenido',
-       '["Ximopanolti"]',
-       '["Ximopanolti", "Timoittazque", "Quen tinemi?", "Cualli"]',
+       'Bienvenido(a)',
+       '["Alwa'' bats''udh"]',
+       '["Alwa'' bats''udh", "Lej k''ak''námal yán", "Kit k''alej alwa''", "Kit k''apúts alwa''"]',
        'tonatiuh',
-       'Ximopanolti es una invitación respetuosa a pasar',
+       'Alwa'' bats''udh significa bienvenido(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Quen ______?',
-       '["tinemi", "Quen tinemi?", "Quen tinemi"]',
+       '______ bats''udh',
+       '["Alwa''", "Alwa'' bats''udh"]',
        null,
        'xochitl',
-       'Ti- marca la segunda persona: tinemi = tú vives',
+       'Alwa'' bats''udh significa bienvenido(a)',
        20, 'medium',
-       '¿Cómo estás?'
+       'Bienvenido(a)'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Cualli ______',
-       '["ninemi", "Cualli ninemi"]',
+       'Kit ______',
+       '["wat''ey", "Kit wat''ey"]',
        null,
        'citlali',
-       'Ni- marca la primera persona: ninemi = yo vivo',
+       'Kit wat''ey significa pasa / adelante',
        20, 'medium',
-       'Estoy bien'
+       'Pasa'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1;
 
 -- nivel 1 · unidad 2: despedidas
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Nos vemos',
-       '["Timoittazque"]',
-       '["Timoittazque", "Ximopanolti", "Moztla", "Occeppa"]',
+       'Bien',
+       '["Alwa''"]',
+       '["Dhamk''unenek", "Tatá''", "Waklenenek", "Alwa''"]',
        'coltzin',
-       'Timoittazque significa nos veremos o nos vemos',
+       'Alwa'' significa bien / bueno',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Mañana',
-       '["Moztla"]',
-       '["Moztla", "Occeppa", "Cualli", "Quen"]',
+       '["Kalám"]',
+       '["Kalám", "Jajá''", "Tajk''anenek", "Naná''"]',
        'neza',
-       'Moztla significa mañana (el día siguiente)',
+       'Kalám significa mañana',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Otra vez',
-       '["Occeppa"]',
-       '["Occeppa", "Moztla", "Miac", "Quen"]',
+       'Hasta luego',
+       '["Tayej ku tsu''uxinej"]',
+       '["Pakwlanchij yán", "Kit wat''ey", "Tayej ku tsu''uxinej", "Lej k''ak''námal yán"]',
        'tonatiuh',
-       'Occeppa significa otra vez, de nuevo',
+       'Tayej ku tsu''uxinej significa hasta luego / nos vemos',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Nos vemos mañana',
-       '["Timoittazque moztla"]',
-       '["Timoittazque moztla", "Quen tinemi?", "Cualli ninemi", "Miac tlazohcamati"]',
+       'Que te vaya bien',
+       '["Kit k''alej alwa''"]',
+       '["Pakwlanchij yán", "Naná'' u bij", "Lej k''ak''námal yán", "Kit k''alej alwa''"]',
        'xochitl',
-       'Timoittazque (nos vemos) + moztla (mañana)',
+       'Kit k''alej alwa'' significa que te vaya bien',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Timoittazque ______',
-       '["moztla", "Timoittazque moztla"]',
+       '______ ku tsu''uxinej',
+       '["Tayej", "Tayej ku tsu''uxinej"]',
        null,
        'citlali',
-       'Moztla va después del verbo: timoittazque moztla',
+       'Tayej ku tsu''uxinej significa hasta luego / nos vemos',
        20, 'medium',
-       'Nos vemos mañana'
+       'Hasta luego'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ moztla',
-       '["Timoittazque", "Timoittazque moztla"]',
+       'Kit k''alej ______',
+       '["alwa''", "Kit k''alej alwa''"]',
        null,
        'coltzin',
-       'Timoittazque es la despedida para quedar de verse',
+       'Kit k''alej alwa'' significa que te vaya bien',
        20, 'medium',
-       'Nos vemos mañana'
+       'Que te vaya bien'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 2;
 
 -- nivel 1 · unidad 3: cómo te llamas
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Cómo te llamas?',
-       '["Quen motoca?"]',
-       '["Quen motoca?", "Quen tinemi?", "Ihuan tehuatl?", "Notoca"]',
-       'neza',
-       'Quen motoca? pregunta literalmente ¿cómo es tu nombre?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi nombre / me llamo',
-       '["Notoca"]',
-       '["Notoca", "Motoca", "Itoca", "Nehuatl"]',
-       'tonatiuh',
-       'No- significa mi: notoca = mi nombre',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Tu nombre',
-       '["Motoca"]',
-       '["Motoca", "Notoca", "Itoca", "Tehuatl"]',
-       'xochitl',
-       'Mo- significa tu: motoca = tu nombre',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Yo',
-       '["Nehuatl"]',
-       '["Nehuatl", "Tehuatl", "Yehuatl", "Notoca"]',
-       'citlali',
-       'Nehuatl es el pronombre yo',
+       '["Naná''"]',
+       '["Naná''", "Tajk''anenek", "Jajá''", "Waklenenek"]',
+       'neza',
+       'Naná'' significa yo',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tú',
+       '["Tatá''"]',
+       '["Alwa''", "Tajk''anenek", "Waklenenek", "Tatá''"]',
+       'tonatiuh',
+       'Tatá'' significa tú',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Él',
+       '["Jajá''"]',
+       '["Naná''", "Bij", "Alwa''", "Jajá''"]',
+       'xochitl',
+       'Jajá'' significa él / ella',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Nombre',
+       '["Bij"]',
+       '["Tatá''", "Tajk''anenek", "Bij", "Kalám"]',
+       'citlali',
+       'Bij significa nombre',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ Xochitl',
-       '["Notoca", "Notoca Xochitl"]',
+       '______ u bij',
+       '["Naná''", "Naná'' u bij"]',
        null,
        'coltzin',
-       'Para decir tu nombre: notoca + nombre',
+       'Naná'' u bij significa yo me llamo (lit. yo, mi nombre)',
        20, 'medium',
-       'Me llamo Xochitl'
+       'Yo me llamo'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Quen ______?',
-       '["motoca", "Quen motoca?", "Quen motoca"]',
+       '¿Jantij a ______?',
+       '["bij", "Jantij a bij", "¿Jantij a bij?"]',
        null,
        'neza',
-       'Mo- (tu) + toca (nombre): motoca',
+       '¿Jantij a bij? significa ¿cómo te llamas?',
        20, 'medium',
        '¿Cómo te llamas?'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 3;
 
 -- nivel 1 · unidad 4: agradecer y responder
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Gracias',
-       '["Tlazohcamati"]',
-       '["Tlazohcamati", "Timoittazque", "Ximopanolti", "Ahmo tlen"]',
+       '["K''ak''námal"]',
+       '["K''ak''námal", "Kalám", "Waklenenek", "Dhamk''unenek"]',
        'tonatiuh',
-       'Tlazohcamati es la forma de dar las gracias',
+       'K''ak''námal significa gracias',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Muchas gracias',
-       '["Miac tlazohcamati"]',
-       '["Miac tlazohcamati", "Ahmo tlen", "Cualli ninemi", "Tlazohcamati"]',
+       'Mucho',
+       '["Yán"]',
+       '["Yán", "Kalám", "Waklenenek", "Dhamk''unenek"]',
        'xochitl',
-       'Miac (mucho) + tlazohcamati (gracias)',
+       'Yán significa mucho',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'De nada',
-       '["Ahmo tlen"]',
-       '["Ahmo tlen", "Quemah", "Miac", "Tlazohcamati"]',
-       'citlali',
-       'Ahmo tlen responde a las gracias; literalmente no es nada',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Sí',
-       '["Quemah"]',
-       '["Quemah", "Ahmo", "Cualli", "Miac"]',
-       'coltzin',
-       'Quemah significa sí; la h final es un saltillo (corte de voz)',
+       '["Antsaná''"]',
+       '["Tajk''anenek", "Yab", "Alwa''", "Antsaná''"]',
+       'citlali',
+       'Antsaná'' significa sí / así es',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'No',
+       '["Yab"]',
+       '["Alwa''", "Yab", "Kalám", "Waklenenek"]',
+       'coltzin',
+       'Yab significa no',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ tlazohcamati',
-       '["Miac", "Miac tlazohcamati"]',
+       '______ k''ak''námal yán',
+       '["Lej", "Lej k''ak''námal yán"]',
        null,
        'neza',
-       'Miac (mucho) va antes de tlazohcamati',
+       'Lej k''ak''námal yán significa muchas gracias',
        20, 'medium',
        'Muchas gracias'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Ahmo ______',
-       '["tlen", "Ahmo tlen"]',
+       '______k''námal',
+       '["K''a", "K''ak''námal"]',
        null,
        'tonatiuh',
-       'Ahmo (no) + tlen (qué, nada): ahmo tlen',
+       'K''ak''námal significa gracias',
        20, 'medium',
-       'De nada'
+       'Gracias'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 4;
 
--- nivel 1 · unidad 5: cómo me siento
+-- nivel 1 · unidad 5: cortesía
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estoy contento',
-       '["Niyolpaqui"]',
-       '["Niyolpaqui", "Tiyolpaqui", "Yolpaqui", "Niciahui"]',
+       'Con permiso',
+       '["Pakwlanchij yán"]',
+       '["Pakwlanchij yán", "Tayej ku tsu''uxinej", "Kit k''alej alwa''", "Alwa'' bats''udh"]',
        'xochitl',
-       'Ni- (yo) + yolpaqui (estar contento)',
+       'Pakwlanchij yán significa con permiso / disculpa',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estás contento',
-       '["Tiyolpaqui"]',
-       '["Tiyolpaqui", "Niyolpaqui", "Yolpaqui", "Ticiahui"]',
+       'Buen provecho',
+       '["Kit k''apúts alwa''"]',
+       '["Kit k''alej alwa''", "Tayej ku tsu''uxinej", "Naná'' u bij", "Kit k''apúts alwa''"]',
        'citlali',
-       'Ti- (tú) + yolpaqui',
+       'Kit k''apúts alwa'' significa buen provecho',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Está cansado (él o ella)',
-       '["Ciahui"]',
-       '["Ciahui", "Niciahui", "Ticiahui", "Yolpaqui"]',
+       'Disfrutemos este encuentro',
+       '["Wanaj ku t''ojon kulbél"]',
+       '["Wanaj ku t''ojon kulbél", "¿Jantij a bij?", "Naná'' u bij", "Pakwlanchij yán"]',
        'coltzin',
-       'Sin prefijo el verbo habla de él o ella: ciahui',
+       'Wanaj ku t''ojon kulbél significa disfrutemos este encuentro',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estoy enfermo',
-       '["Ninococoa"]',
-       '["Ninococoa", "Niciahui", "Niyolpaqui", "Cualli ninemi"]',
+       'Pasa',
+       '["Kit wat''ey"]',
+       '["Kit k''apúts alwa''", "¿Jantij a bij?", "Kit wat''ey", "Alwa'' bats''udh"]',
        'neza',
-       'Ninococoa significa estoy enfermo o me siento mal',
+       'Kit wat''ey significa pasa / adelante',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ciahui',
-       '["Ni", "Niciahui"]',
+       '______ yán',
+       '["Pakwlanchij", "Pakwlanchij yán"]',
        null,
        'tonatiuh',
-       'Agrega ni- para hablar de ti mismo: niciahui',
+       'Pakwlanchij yán significa con permiso / disculpa',
        20, 'medium',
-       'Estoy cansado'
+       'Con permiso'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______yolpaqui',
-       '["Ti", "Tiyolpaqui"]',
+       'Kit k''apúts ______',
+       '["alwa''", "Kit k''apúts alwa''"]',
        null,
        'xochitl',
-       'Agrega ti- para hablar de la otra persona: tiyolpaqui',
+       'Kit k''apúts alwa'' significa buen provecho',
        20, 'medium',
-       'Estás contento'
+       'Buen provecho'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 5;
 
 -- nivel 1 · unidad 6: conversación básica
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Y',
-       '["Ihuan"]',
-       '["Ihuan", "Tlen", "Quen", "Ahmo"]',
+       'Tének (pueblo y lengua)',
+       '["Tének"]',
+       '["Tének", "Kawintaláb", "K''ak''námal", "Naná''"]',
        'citlali',
-       'Ihuan une palabras e ideas: y',
+       'Tének significa tének (pueblo y lengua)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Qué',
-       '["Tlen"]',
-       '["Tlen", "Quen", "Ihuan", "Miac"]',
+       'Lengua',
+       '["Kawintaláb"]',
+       '["Alwa''", "K''ak''námal", "Tének", "Kawintaláb"]',
        'coltzin',
-       'Tlen pregunta qué',
+       'Kawintaláb significa lengua / palabra',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Cómo estás? Estoy bien, ¿y tú?',
-       '["Quen tinemi? Cualli ninemi, ihuan tehuatl?"]',
-       '["Quen tinemi? Cualli ninemi, ihuan tehuatl?", "Quen motoca? Notoca, ihuan tehuatl?", "Tlazohcamati, ahmo tlen", "Timoittazque moztla"]',
+       '¿Qué lengua hablas?',
+       '["¿Jantom kawintaláb an kawnal?"]',
+       '["Pakwlanchij yán", "Kit wat''ey", "¿Jantom kawintaláb an kawnal?", "Naná'' u bij"]',
        'neza',
-       'Saludo completo: pregunta, respuesta y devolver la pregunta',
+       '¿Jantom kawintaláb an kawnal? significa ¿qué lengua hablas?',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me llamo Citlali, estoy contenta',
-       '["Notoca Citlali, niyolpaqui"]',
-       '["Notoca Citlali, niyolpaqui", "Motoca Citlali, tiyolpaqui", "Itoca Citlali, yolpaqui", "Notoca Citlali, niciahui"]',
+       'Buenos días',
+       '["Tajk''anenek"]',
+       '["Waklenenek", "Kalám", "Tajk''anenek", "Dhamk''unenek"]',
        'tonatiuh',
-       'Notoca (me llamo) + niyolpaqui (estoy contenta)',
+       'Tajk''anenek significa buenos días',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Tlazohcamati, ______ moztla',
-       '["timoittazque", "Tlazohcamati, timoittazque moztla"]',
+       '¿______ kawintaláb an kawnal?',
+       '["Jantom", "Jantom kawintaláb an kawnal", "¿Jantom kawintaláb an kawnal?"]',
        null,
        'xochitl',
-       'Despedida completa: tlazohcamati, timoittazque moztla',
+       '¿Jantom kawintaláb an kawnal? significa ¿qué lengua hablas?',
        20, 'medium',
-       'Gracias, nos vemos mañana'
+       '¿Qué lengua hablas?'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Quen ______? Cualli ninemi',
-       '["tinemi", "Quen tinemi? Cualli ninemi"]',
+       '¿Jantij a ______?',
+       '["bij", "Jantij a bij", "¿Jantij a bij?"]',
        null,
        'citlali',
-       'Pregunta con ti- (tú) y respuesta con ni- (yo)',
+       '¿Jantij a bij? significa ¿cómo te llamas?',
        20, 'medium',
-       '¿Cómo estás? Estoy bien'
+       '¿Cómo te llamas?'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 1 and u.unit_num = 6;
 
 -- nivel 2 · unidad 1: pronombres personales
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Nosotros',
-       '["Tehuan"]',
-       '["Nehuatl", "Yehuan", "Yehuatl", "Tehuan"]',
+       'Nosotros(as)',
+       '["Wawá''"]',
+       '["Naná''", "Wawá''", "Jajá''", "Inikchik"]',
        'coltzin',
-       'Tehuan significa nosotros',
+       'Wawá'' significa nosotros(as)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Ustedes',
-       '["Amehuan"]',
-       '["Noconeuh", "Notah", "Amehuan", "Yehuatl"]',
+       '["Tatá''chik"]',
+       '["Tatá''chik", "Inikchik", "Jajá''", "Uxum"]',
        'neza',
-       'Amehuan significa ustedes',
+       'Tatá''chik significa ustedes',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Ellos',
-       '["Yehuan"]',
-       '["Tehuan", "Nehuatl", "Amehuan", "Yehuan"]',
+       '["Jajáchik"]',
+       '["Uxum", "Naná''", "Jajáchik", "Tatá''chik"]',
        'tonatiuh',
-       'Yehuan significa ellos / ellas',
+       'Jajáchik significa ellos / ellas',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Yo estoy contento(a)',
-       '["Nehuatl niyolpaqui"]',
-       '["Nehuatl niyolpaqui", "Inin nocniuh", "Inin notah", "Nocol huehue"]',
+       'Hombre',
+       '["Inik"]',
+       '["Uxum", "Inik", "Tatá''chik", "Tatá''"]',
        'xochitl',
-       'Nehuatl niyolpaqui significa yo estoy contento(a)',
+       'Inik significa hombre',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ niyolpaqui',
-       '["Nehuatl", "Nehuatl niyolpaqui"]',
+       '______awá''',
+       '["W", "Wawá''"]',
        null,
        'citlali',
-       'Nehuatl niyolpaqui significa yo estoy contento(a)',
+       'Wawá'' significa nosotros(as)',
        20, 'medium',
-       'Yo estoy contento(a)'
+       'Nosotros(as)'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Tehuatl ______',
-       '["ticiahui", "Tehuatl ticiahui"]',
+       '______tá''chik',
+       '["Ta", "Tatá''chik"]',
        null,
        'coltzin',
-       'Tehuatl ticiahui significa tú estás cansado(a)',
+       'Tatá''chik significa ustedes',
        20, 'medium',
-       'Tú estás cansado(a)'
+       'Ustedes'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 1;
 
 -- nivel 2 · unidad 2: la familia
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi mamá',
-       '["Nonan"]',
-       '["Inin", "Amehuan", "Nochan", "Nonan"]',
+       'Papá',
+       '["Táta''"]',
+       '["Mím", "Ixám", "Kwitól", "Táta''"]',
        'neza',
-       'Nonan significa mi mamá',
+       'Táta'' significa papá',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi papá',
-       '["Notah"]',
-       '["Notah", "Yehuan", "Noconeuh", "Tehuan"]',
+       'Mamá',
+       '["Mím"]',
+       '["Mím", "Inik", "Táta''", "Wawá''"]',
        'tonatiuh',
-       'Notah significa mi papá',
+       'Mím significa mamá',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi hijo(a)',
-       '["Noconeuh"]',
-       '["Yehuan", "Nochan", "Noconeuh", "Amehuan"]',
+       'Niño(a)',
+       '["Kwitól"]',
+       '["Ani", "Kwitól", "Inik", "Táta''"]',
        'xochitl',
-       'Noconeuh significa mi hijo(a)',
+       'Kwitól significa niño(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi casa',
-       '["Nochan"]',
-       '["Yehuan", "Inin", "Amehuan", "Nochan"]',
+       'Y',
+       '["Ani"]',
+       '["Ani", "Wawá''", "Jajáchik", "Kwitól"]',
        'citlali',
-       'Nochan significa mi casa',
+       'Ani significa y',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nonan',
-       '["Inin", "Inin nonan"]',
+       '______áta''',
+       '["T", "Táta''"]',
        null,
        'coltzin',
-       'Inin nonan significa esta es mi mamá',
+       'Táta'' significa papá',
        20, 'medium',
-       'Esta es mi mamá'
+       'Papá'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Inin ______',
-       '["notah", "Inin notah"]',
+       '______itól',
+       '["Kw", "Kwitól"]',
        null,
        'neza',
-       'Inin notah significa este es mi papá',
+       'Kwitól significa niño(a)',
        20, 'medium',
-       'Este es mi papá'
+       'Niño(a)'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 2;
 
--- nivel 2 · unidad 3: cómo es mi familia
+-- nivel 2 · unidad 3: los abuelos y los tíos
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Fuerte',
-       '["Chicahuac"]',
-       '["Chicahuac", "Cualli", "Tepiton", "Nonan"]',
+       'Abuelo',
+       '["Mám"]',
+       '["Itsán", "Jajáchik", "Ani", "Mám"]',
        'tonatiuh',
-       'Chicahuac significa fuerte',
+       'Mám significa abuelo / anciano',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
 
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Abuela',
+       '["Ách"]',
+       '["Wawá''", "Itsán", "Ách", "Mám"]',
+       'xochitl',
+       'Ách significa abuela',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tío',
+       '["Itsán"]',
+       '["Tatá''chik", "Itsán", "Wawá''", "Jajáchik"]',
+       'citlali',
+       'Itsán significa tío',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tía',
+       '["Tsanub"]',
+       '["Ani", "Tsanub", "Wawá''", "Itsán"]',
+       'coltzin',
+       'Tsanub significa tía',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______tsán',
+       '["I", "Itsán"]',
+       null,
+       'neza',
+       'Itsán significa tío',
+       20, 'medium',
+       'Tío'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______anub',
+       '["Ts", "Tsanub"]',
+       null,
+       'tonatiuh',
+       'Tsanub significa tía',
+       20, 'medium',
+       'Tía'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 3;
+
+-- nivel 2 · unidad 4: cómo es
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Grande',
-       '["Huey"]',
-       '["Tehuan", "Cualli", "Nonan", "Huey"]',
+       '["Púlik"]',
+       '["Púlik", "Alwa''", "Alabél", "Ít"]',
        'xochitl',
-       'Huey significa grande',
+       'Púlik significa grande',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Pequeño(a)',
-       '["Tepiton"]',
-       '["Chicahuac", "Yancuic", "Tehuan", "Tepiton"]',
+       '["Tsakam"]',
+       '["Tatá''chik", "Tsakam", "Wawá''", "Púlik"]',
        'citlali',
-       'Tepiton significa pequeño(a)',
+       'Tsakam significa pequeño(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Nuevo(a)',
-       '["Yancuic"]',
-       '["Huey", "Cualli", "Yancuic", "Amehuan"]',
+       '["Ít"]',
+       '["Ít", "Tsakam", "Alwa''", "Alabél"]',
        'coltzin',
-       'Yancuic significa nuevo(a)',
+       'Ít significa nuevo(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ chicahuac',
-       '["Notah", "Notah chicahuac"]',
-       null,
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Bonito(a)',
+       '["Alabél"]',
+       '["Alabél", "Nakat", "Tsakam", "Kidhab"]',
        'neza',
-       'Notah chicahuac significa mi papá es fuerte',
-       20, 'medium',
-       'Mi papá es fuerte'
+       'Alabél significa bonito(a)',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Nonan ______',
-       '["cualli", "Nonan cualli"]',
+       '______úlik',
+       '["P", "Púlik"]',
        null,
        'tonatiuh',
-       'Nonan cualli significa mi mamá es buena',
+       'Púlik significa grande',
        20, 'medium',
-       'Mi mamá es buena'
+       'Grande'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
--- nivel 2 · unidad 4: hermanos y amigos
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi amigo(a)',
-       '["Nocniuh"]',
-       '["Nocniuh", "Yehuan", "Inin", "Tehuan"]',
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______akam',
+       '["Ts", "Tsakam"]',
+       null,
        'xochitl',
-       'Nocniuh significa mi amigo(a)',
-       15, 'medium', null
+       'Tsakam significa pequeño(a)',
+       20, 'medium',
+       'Pequeño(a)'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 4;
 
+-- nivel 2 · unidad 5: los colores
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi hermano mayor',
-       '["Noachcauh"]',
-       '["Noachcauh", "Yehuan", "Inin", "Tehuan"]',
+       'Rojo',
+       '["Tsakni''"]',
+       '["Inik", "Wawá''", "Tsakni''", "Dhakni''"]',
        'citlali',
-       'Noachcauh significa mi hermano mayor',
+       'Tsakni'' significa rojo',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi hermano menor',
-       '["Noiccauh"]',
-       '["Ichpochtli", "Telpochtli", "Amehuan", "Noiccauh"]',
+       'Blanco',
+       '["Dhakni''"]',
+       '["Dhakni''", "Manu''", "Tsakni''", "Jajáchik"]',
        'coltzin',
-       'Noiccauh significa mi hermano menor',
+       'Dhakni'' significa blanco',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Muchacho',
-       '["Telpochtli"]',
-       '["Amehuan", "Telpochtli", "Yehuan", "Inin"]',
+       'Negro',
+       '["T''unu''"]',
+       '["Wawá''", "Tatá''chik", "T''unu''", "Jajáchik"]',
        'neza',
-       'Telpochtli significa muchacho / joven',
+       'T''unu'' significa negro',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nocniuh',
-       '["Inin", "Inin nocniuh"]',
-       null,
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Verde',
+       '["Yaxu''"]',
+       '["Inik", "Wawá''", "Yaxu''", "T''unu''"]',
        'tonatiuh',
-       'Inin nocniuh significa este es mi amigo',
-       20, 'medium',
-       'Este es mi amigo'
+       'Yaxu'' significa verde',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______cniuh',
-       '["No", "Nocniuh"]',
+       '______kni''',
+       '["Tsa", "Tsakni''"]',
        null,
        'xochitl',
-       'Nocniuh significa mi amigo(a)',
+       'Tsakni'' significa rojo',
        20, 'medium',
-       'Mi amigo(a)'
+       'Rojo'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 4;
-
--- nivel 2 · unidad 5: los abuelos
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi abuelo',
-       '["Nocol"]',
-       '["Nocol", "Tehuan", "Amehuan", "Tlamatini"]',
-       'citlali',
-       'Nocol significa mi abuelo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mi abuela',
-       '["Nocih"]',
-       '["Amehuan", "Tehuan", "Yehuan", "Nocih"]',
-       'coltzin',
-       'Nocih significa mi abuela',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Anciano',
-       '["Huehue"]',
-       '["Huehue", "Nonan", "Yehuan", "Nocol"]',
-       'neza',
-       'Huehue significa anciano',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Anciana',
-       '["Ilamatl"]',
-       '["Nocih", "Nonan", "Ilamatl", "Tlamatini"]',
-       'tonatiuh',
-       'Ilamatl significa anciana',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ tlamatini',
-       '["Nocih", "Nocih tlamatini"]',
-       null,
-       'xochitl',
-       'Nocih tlamatini significa mi abuela es sabia',
-       20, 'medium',
-       'Mi abuela es sabia'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Nocol ______',
-       '["huehue", "Nocol huehue"]',
+       '______kni''',
+       '["Dha", "Dhakni''"]',
        null,
        'citlali',
-       'Nocol huehue significa mi abuelo es anciano',
+       'Dhakni'' significa blanco',
        20, 'medium',
-       'Mi abuelo es anciano'
+       'Blanco'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 5;
 
--- nivel 2 · unidad 6: mi familia completa
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Tengo',
-       '["Nicpia"]',
-       '["Nicpia", "Ce", "Noconehuan", "Amehuan"]',
-       'coltzin',
-       'Nicpia significa tengo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
-
+-- nivel 2 · unidad 6: contar del uno al cinco
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Uno',
-       '["Ce"]',
-       '["Nonan", "Noconehuan", "Nicpia", "Ce"]',
-       'neza',
-       'Ce significa uno',
+       '["Jún"]',
+       '["Bó''", "Jún", "Ché''", "Ja''úb"]',
+       'coltzin',
+       'Jún significa uno',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Dos',
-       '["Ome"]',
-       '["Amehuan", "Notah", "Ome", "Ce"]',
-       'tonatiuh',
-       'Ome significa dos',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mis hijos',
-       '["Noconehuan"]',
-       '["Notah", "Tehuan", "Noconehuan", "Ihuan"]',
-       'xochitl',
-       'Noconehuan significa mis hijos',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ ce nocniuh',
-       '["Nicpia", "Nicpia ce nocniuh"]',
-       null,
-       'citlali',
-       'Nicpia ce nocniuh significa tengo un amigo',
-       20, 'medium',
-       'Tengo un amigo'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Nicpia ome ______',
-       '["noconehuan", "Nicpia ome noconehuan"]',
-       null,
-       'coltzin',
-       'Nicpia ome noconehuan significa tengo dos hijos',
-       20, 'medium',
-       'Tengo dos hijos'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 2 and u.unit_num = 6;
-
--- nivel 3 · unidad 1: palabras para preguntar
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quién',
-       '["Aquin"]',
-       '["Quen", "Aquin", "Nimomachtia", "Tlen"]',
+       '["Tsáb"]',
+       '["Mím", "Ché''", "Óx", "Tsáb"]',
        'neza',
-       'Aquin significa quién',
+       'Tsáb significa dos',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
 
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Dónde',
-       '["Canin"]',
-       '["Canin", "Tlen", "Nimomachtia", "Quezqui"]',
-       'tonatiuh',
-       'Canin significa dónde',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Cuándo',
-       '["Quemman"]',
-       '["Quezqui", "Quen", "Quemman", "Canin"]',
-       'xochitl',
-       'Quemman significa cuándo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Por qué',
-       '["Tleica"]',
-       '["Quezqui", "Tleica", "Canin", "Nitequiti"]',
-       'citlali',
-       'Tleica significa por qué',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______quin',
-       '["A", "Aquin"]',
-       null,
-       'coltzin',
-       'Aquin significa quién',
-       20, 'medium',
-       'Quién'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______anin',
-       '["C", "Canin"]',
-       null,
-       'neza',
-       'Canin significa dónde',
-       20, 'medium',
-       'Dónde'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 1;
-
--- nivel 3 · unidad 2: preguntas personales
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajo',
-       '["Nitequiti"]',
-       '["Nimomachtia", "Quemman", "Aquin", "Nitequiti"]',
-       'tonatiuh',
-       'Nitequiti significa trabajo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estudio',
-       '["Nimomachtia"]',
-       '["Nimomachtia", "Momachtia", "Nitequiti", "Tleica"]',
-       'xochitl',
-       'Nimomachtia significa estudio',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Quién eres tú?',
-       '["Aquin tehuatl?"]',
-       '["Tlen ticchihua?", "Aquin tehuatl?", "Tlen ticnequi?", "Canin tichaneh?"]',
-       'citlali',
-       'Aquin tehuatl? significa ¿quién eres tú?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Dónde vives?',
-       '["Canin tichaneh?"]',
-       '["Canin tichaneh?", "Tlen quichihua?", "Canin ca?", "Tlen ticchihua?"]',
-       'coltzin',
-       'Canin tichaneh? significa ¿dónde vives?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ tehuatl?',
-       '["Aquin", "Aquin tehuatl?"]',
-       null,
-       'neza',
-       'Aquin tehuatl? significa ¿quién eres tú?',
-       20, 'medium',
-       '¿Quién eres tú?'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Canin ______?',
-       '["tichaneh", "Canin tichaneh?"]',
-       null,
-       'tonatiuh',
-       'Canin tichaneh? significa ¿dónde vives?',
-       20, 'medium',
-       '¿Dónde vives?'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 2;
-
--- nivel 3 · unidad 3: preguntas sobre otros
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabaja',
-       '["Tequiti"]',
-       '["Yehuatl", "Nitequiti", "Quemman", "Tequiti"]',
-       'xochitl',
-       'Tequiti significa trabaja',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estudia',
-       '["Momachtia"]',
-       '["Tleica", "Yehuatl", "Momachtia", "Tequiti"]',
-       'citlali',
-       'Momachtia significa estudia',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Quién es él',
-       '["Aquin yehuatl?"]',
-       '["Canin ca?", "Aquin yehuatl?", "Tlen ticchihua?", "Tlen ticnequi?"]',
-       'coltzin',
-       'Aquin yehuatl? significa ¿quién es él / ella?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Qué hace él',
-       '["Tlen quichihua?"]',
-       '["Nichaneh Tlaxcallan", "Tlen quichihua?", "Tlen ticchihua?", "Aquin tehuatl?"]',
-       'neza',
-       'Tlen quichihua? significa ¿qué hace él / ella?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ yehuatl?',
-       '["Aquin", "Aquin yehuatl?"]',
-       null,
-       'tonatiuh',
-       'Aquin yehuatl? significa ¿quién es él / ella?',
-       20, 'medium',
-       '¿Quién es él'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Tlen ______?',
-       '["quichihua", "Tlen quichihua?"]',
-       null,
-       'xochitl',
-       'Tlen quichihua? significa ¿qué hace él / ella?',
-       20, 'medium',
-       '¿Qué hace él'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 3;
-
--- nivel 3 · unidad 4: dónde está y qué necesito
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Aquí',
-       '["Nican"]',
-       '["Nican", "Canin", "Monequi", "Nicnequi"]',
-       'citlali',
-       'Nican significa aquí',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Allá',
-       '["Ompa"]',
-       '["Tleica", "Ompa", "Quemman", "Nican"]',
-       'coltzin',
-       'Ompa significa allá',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quiero',
-       '["Nicnequi"]',
-       '["Nicnequi", "Ompa", "Canin", "Monequi"]',
-       'neza',
-       'Nicnequi significa quiero / necesito',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Se necesita',
-       '["Monequi"]',
-       '["Monequi", "Aquin", "Ompa", "Atl"]',
-       'tonatiuh',
-       'Monequi significa se necesita',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ ca?',
-       '["Canin", "Canin ca?"]',
-       null,
-       'xochitl',
-       'Canin ca? significa ¿dónde está?',
-       20, 'medium',
-       '¿Dónde está?'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Tlen ______?',
-       '["ticnequi", "Tlen ticnequi?"]',
-       null,
-       'citlali',
-       'Tlen ticnequi? significa ¿qué quieres?',
-       20, 'medium',
-       '¿Qué quieres?'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 4;
-
--- nivel 3 · unidad 5: respuestas completas
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Sé',
-       '["Nicmati"]',
-       '["Nimomachtia", "Tleica", "Nicmati", "Ahmo"]',
-       'coltzin',
-       'Nicmati significa sé / lo sé',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Aquí está',
-       '["Nican ca"]',
-       '["Nican ca", "Ahmo nicmati", "Ompa ca", "Nichaneh Tlaxcallan"]',
-       'neza',
-       'Nican ca significa aquí está',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Allá está',
-       '["Ompa ca"]',
-       '["Aquin tehuatl?", "Canin tichaneh?", "Ompa ca", "Nichaneh Tlaxcallan"]',
-       'tonatiuh',
-       'Ompa ca significa allá está',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quiero agua',
-       '["Nicnequi atl"]',
-       '["Tlen ticchihua?", "Aquin tehuatl?", "Nicnequi atl", "Ahmo nicnequi"]',
-       'xochitl',
-       'Nicnequi atl significa quiero agua',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ ca',
-       '["Nican", "Nican ca"]',
-       null,
-       'citlali',
-       'Nican ca significa aquí está',
-       20, 'medium',
-       'Aquí está'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Ompa ______',
-       '["ca", "Ompa ca"]',
-       null,
-       'coltzin',
-       'Ompa ca significa allá está',
-       20, 'medium',
-       'Allá está'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 5;
-
--- nivel 3 · unidad 6: cuántos
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Tres',
-       '["Eyi"]',
-       '["Ce", "Eyi", "Quezqui", "Ome"]',
-       'neza',
-       'Eyi significa tres',
+       '["Óx"]',
+       '["Tsáb", "Óx", "Jún", "Táta''"]',
+       'tonatiuh',
+       'Óx significa tres',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Cuatro',
-       '["Nahui"]',
-       '["Canin", "Quezqui", "Macuilli", "Nahui"]',
-       'tonatiuh',
-       'Nahui significa cuatro',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Cinco',
-       '["Macuilli"]',
-       '["Nahui", "Macuilli", "Eyi", "Aquin"]',
+       '["Ché''"]',
+       '["Tsáb", "Ché''", "Óx", "Ja''úb"]',
        'xochitl',
-       'Macuilli significa cinco',
+       'Ché'' significa cuatro',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Cuántos quieres?',
-       '["Quezqui ticnequi?"]',
-       '["Aquin tehuatl?", "Quezqui ticnequi?", "Canin tichaneh?", "Tlen ticchihua?"]',
-       'citlali',
-       'Quezqui ticnequi? significa ¿cuántos quieres?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ ticnequi?',
-       '["Quezqui", "Quezqui ticnequi?"]',
+       '______áb',
+       '["Ts", "Tsáb"]',
+       null,
+       'citlali',
+       'Tsáb significa dos',
+       20, 'medium',
+       'Dos'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______é''',
+       '["Ch", "Ché''"]',
        null,
        'coltzin',
-       'Quezqui ticnequi? significa ¿cuántos quieres?',
+       'Ché'' significa cuatro',
        20, 'medium',
-       '¿Cuántos quieres?'
+       'Cuatro'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 2 and u.unit_num = 6;
+
+-- nivel 3 · unidad 1: palabras para preguntar
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Qué',
+       '["Jantom"]',
+       '["Juta", "Jantom", "Atáj", "Jay"]',
+       'neza',
+       'Jantom significa qué',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Cómo',
+       '["Jantij"]',
+       '["Jantom", "Jachan", "Jantij", "Jay"]',
+       'tonatiuh',
+       'Jantij significa cómo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Dónde',
+       '["Juta"]',
+       '["Jantij", "Jantom", "Juta", "Búk"]',
+       'xochitl',
+       'Juta significa dónde',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Cuánto',
+       '["Jay"]',
+       '["Jachan", "Juta", "Kwentsal", "Jay"]',
+       'citlali',
+       'Jay significa cuánto',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Nicnequi ______',
-       '["ome", "Nicnequi ome"]',
+       '______ntom',
+       '["Ja", "Jantom"]',
+       null,
+       'coltzin',
+       'Jantom significa qué',
+       20, 'medium',
+       'Qué'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ntij',
+       '["Ja", "Jantij"]',
        null,
        'neza',
-       'Nicnequi ome significa quiero dos',
+       'Jantij significa cómo',
        20, 'medium',
-       'Quiero dos'
+       'Cómo'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 3 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 1;
+
+-- nivel 3 · unidad 2: mi casa y mi comunidad
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Casa',
+       '["Atáj"]',
+       '["Jantij", "Atáj", "Juta", "Búk"]',
+       'tonatiuh',
+       'Atáj significa casa',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Comunidad',
+       '["Kwentsal"]',
+       '["Kwentsal", "Juta", "Jay", "Akak"]',
+       'xochitl',
+       'Kwentsal significa comunidad',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Mi comunidad',
+       '["Nu kwentsál"]',
+       '["¿Jachana k''imá?", "Na k''imá''", "Jún inik", "Nu kwentsál"]',
+       'citlali',
+       'Nu kwentsál significa mi comunidad',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tu casa',
+       '["Na k''imá''"]',
+       '["Na k''imá''", "Nu kwentsál", "Jún inik", "¿Jantij in bij na kwentsalíl?"]',
+       'coltzin',
+       'Na k''imá'' significa tu casa',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ kwentsál',
+       '["Nu", "Nu kwentsál"]',
+       null,
+       'neza',
+       'Nu kwentsál significa mi comunidad',
+       20, 'medium',
+       'Mi comunidad'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'Na ______',
+       '["k''imá''", "Na k''imá''"]',
+       null,
+       'tonatiuh',
+       'Na k''imá'' significa tu casa',
+       20, 'medium',
+       'Tu casa'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 2;
+
+-- nivel 3 · unidad 3: contar del seis al diez
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Seis',
+       '["Akak"]',
+       '["Beléw", "Akak", "Jún", "Búk"]',
+       'xochitl',
+       'Akak significa seis',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Siete',
+       '["Búk"]',
+       '["Waxik", "Jantij", "Jún", "Búk"]',
+       'citlali',
+       'Búk significa siete',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Ocho',
+       '["Waxik"]',
+       '["Jantij", "Beléw", "Waxik", "Jún"]',
+       'coltzin',
+       'Waxik significa ocho',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Nueve',
+       '["Beléw"]',
+       '["Jantij", "Beléw", "Waxik", "Laju''"]',
+       'neza',
+       'Beléw significa nueve',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ inik',
+       '["Jún", "Jún inik"]',
+       null,
+       'tonatiuh',
+       'Jún inik significa veinte',
+       20, 'medium',
+       'Veinte'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______kak',
+       '["A", "Akak"]',
+       null,
+       'xochitl',
+       'Akak significa seis',
+       20, 'medium',
+       'Seis'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 3;
+
+-- nivel 3 · unidad 4: lugares y cosas
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Monte',
+       '["Alté''"]',
+       '["Ja''", "Jantom", "Alté''", "Jantij"]',
+       'citlali',
+       'Alté'' significa monte',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Pozo',
+       '["Mom"]',
+       '["Ja''", "Tumín", "Mom", "Jantij"]',
+       'coltzin',
+       'Mom significa pozo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Agua',
+       '["Ja''"]',
+       '["Ja''", "Juta", "Takab", "Úw"]',
+       'neza',
+       'Ja'' significa agua',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Dinero',
+       '["Tumín"]',
+       '["Ja''", "Jantom", "Takab", "Tumín"]',
+       'tonatiuh',
+       'Tumín significa dinero',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______lté''',
+       '["A", "Alté''"]',
+       null,
+       'xochitl',
+       'Alté'' significa monte',
+       20, 'medium',
+       'Monte'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______umín',
+       '["T", "Tumín"]',
+       null,
+       'citlali',
+       'Tumín significa dinero',
+       20, 'medium',
+       'Dinero'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 4;
+
+-- nivel 3 · unidad 5: cerca y lejos
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Cerca',
+       '["Utat"]',
+       '["Juta", "Jantom", "Utat", "Ok''ox"]',
+       'coltzin',
+       'Utat significa cerca',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Lejos',
+       '["Ów"]',
+       '["Utat", "Ów", "Jay", "Putat"]',
+       'neza',
+       'Ów significa lejos',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Abajo',
+       '["Alal"]',
+       '["Alal", "Ok''ox", "Jantom", "Jantij"]',
+       'tonatiuh',
+       'Alal significa abajo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Primero',
+       '["Ok''ox"]',
+       '["Ok''ox", "Ów", "Jantom", "Jantij"]',
+       'xochitl',
+       'Ok''ox significa primero',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______tat',
+       '["U", "Utat"]',
+       null,
+       'citlali',
+       'Utat significa cerca',
+       20, 'medium',
+       'Cerca'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______lal',
+       '["A", "Alal"]',
+       null,
+       'coltzin',
+       'Alal significa abajo',
+       20, 'medium',
+       'Abajo'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 5;
+
+-- nivel 3 · unidad 6: preguntas útiles
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'El',
+       '["An"]',
+       '["Atáj", "Tének", "An", "Juta"]',
+       'neza',
+       'An significa el / la',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       '¿Cómo se llama tu comunidad?',
+       '["¿Jantij in bij na kwentsalíl?"]',
+       '["Jún inik", "Nu kwentsál", "¿Jachana k''imá?", "¿Jantij in bij na kwentsalíl?"]',
+       'tonatiuh',
+       '¿Jantij in bij na kwentsalíl? significa ¿cómo se llama tu comunidad?',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       '¿Qué lengua hablas?',
+       '["¿Jantom kawintaláb an kawnal?"]',
+       '["¿Jantom kawintaláb an kawnal?", "Jún inik", "¿Jantij in bij na kwentsalíl?", "Nu kwentsál"]',
+       'xochitl',
+       '¿Jantom kawintaláb an kawnal? significa ¿qué lengua hablas?',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Comunidad',
+       '["Kwentsal"]',
+       '["Jantom", "Jay", "Jachan", "Kwentsal"]',
+       'citlali',
+       'Kwentsal significa comunidad',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '¿______ in bij na kwentsalíl?',
+       '["Jantij", "Jantij in bij na kwentsalíl", "¿Jantij in bij na kwentsalíl?"]',
+       null,
+       'coltzin',
+       '¿Jantij in bij na kwentsalíl? significa ¿cómo se llama tu comunidad?',
+       20, 'medium',
+       '¿Cómo se llama tu comunidad?'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '¿Jantom kawintaláb an ______?',
+       '["kawnal", "Jantom kawintaláb an kawnal", "¿Jantom kawintaláb an kawnal?"]',
+       null,
+       'neza',
+       '¿Jantom kawintaláb an kawnal? significa ¿qué lengua hablas?',
+       20, 'medium',
+       '¿Qué lengua hablas?'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 3 and u.unit_num = 6;
 
 -- nivel 4 · unidad 1: hoy, ayer y mañana
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Hoy',
-       '["Axcan"]',
-       '["Huiptla", "Axcan", "Moztla", "Tonalli"]',
+       '["Xowé''"]',
+       '["Ik''", "Xowé''", "Tamub", "We''él"]',
        'tonatiuh',
-       'Axcan significa hoy / ahora',
+       'Xowé'' significa hoy',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Ayer',
-       '["Yalhua"]',
-       '["Axcan", "Yohualli", "Yalhua", "Tonalli"]',
+       '["We''él"]',
+       '["We''él", "Xowé''", "K''icháj", "Ik''"]',
        'xochitl',
-       'Yalhua significa ayer',
+       'We''él significa ayer',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Pasado mañana',
-       '["Huiptla"]',
-       '["Yalhua", "Axcan", "Huiptla", "Otitequit"]',
-       'citlali',
-       'Huiptla significa pasado mañana',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Día',
-       '["Tonalli"]',
-       '["Yohualli", "Huiptla", "Onitequit", "Tonalli"]',
-       'coltzin',
-       'Tonalli significa día / sol',
+       '["K''icháj"]',
+       '["Xowé''", "Kalám", "K''icháj", "Tamub"]',
+       'citlali',
+       'K''icháj significa día / sol',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Noche',
+       '["Akal"]',
+       '["K''icháj", "Tamub", "Akal", "Ik''"]',
+       'coltzin',
+       'Akal significa noche',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nitequiti',
-       '["Axcan", "Axcan nitequiti"]',
+       '______owé''',
+       '["X", "Xowé''"]',
        null,
        'neza',
-       'Axcan nitequiti significa hoy trabajo',
-       20, 'medium',
-       'Hoy trabajo'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______xcan',
-       '["A", "Axcan"]',
-       null,
-       'tonatiuh',
-       'Axcan significa hoy / ahora',
+       'Xowé'' significa hoy',
        20, 'medium',
        'Hoy'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 1;
-
--- nivel 4 · unidad 2: pasado y futuro
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajé',
-       '["Onitequit"]',
-       '["Onicochic", "Onitequit", "Nicochiz", "Yalhua"]',
-       'xochitl',
-       'Onitequit significa trabajé',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajaré',
-       '["Nitequitiz"]',
-       '["Nitequitiz", "Nicochiz", "Nitequiti", "Axcan"]',
-       'citlali',
-       'Nitequitiz significa trabajaré',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajaste',
-       '["Otitequit"]',
-       '["Onitequit", "Nitequiti", "Otitequit", "Yalhua"]',
-       'coltzin',
-       'Otitequit significa trabajaste',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajarás',
-       '["Titequitiz"]',
-       '["Yalhua", "Otitequit", "Nitequiti", "Titequitiz"]',
-       'neza',
-       'Titequitiz significa trabajarás',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______itequit',
-       '["On", "Onitequit"]',
+       '______e''él',
+       '["W", "We''él"]',
        null,
        'tonatiuh',
-       'Onitequit significa trabajé',
+       'We''él significa ayer',
        20, 'medium',
-       'Trabajé'
+       'Ayer'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 1;
 
+-- nivel 4 · unidad 2: la naturaleza
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______tequitiz',
-       '["Ni", "Nitequitiz"]',
-       null,
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Luna',
+       '["Its''"]',
+       '["We''él", "Ts''itsin", "Xowé''", "Its''"]',
        'xochitl',
-       'Nitequitiz significa trabajaré',
-       20, 'medium',
-       'Trabajaré'
+       'Its'' significa luna / mes',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
--- nivel 4 · unidad 3: ver y verse
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Lo',
-       '["Niquitta"]',
-       '["Tonalli", "Nimitzitta", "Niquitta", "Huiptla"]',
+       'Aire',
+       '["Ik''"]',
+       '["Alté''", "Ik''", "Tsunun", "We''él"]',
        'citlali',
-       'Niquitta significa lo / la veo',
+       'Ik'' significa aire / viento',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Lo',
-       '["Oniquittac"]',
-       '["Onimitzittac", "Onitequit", "Huiptla", "Oniquittac"]',
+       'Mariposa',
+       '["Lem"]',
+       '["Alté''", "K''icháj", "Lem", "Tsunun"]',
        'coltzin',
-       'Oniquittac significa lo / la vi',
+       'Lem significa mariposa',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Lo',
-       '["Niquittaz"]',
-       '["Onitequit", "Yalhua", "Niquittaz", "Huiptla"]',
+       'Colibrí',
+       '["Tsunun"]',
+       '["Alté''", "Xowé''", "Ik''", "Tsunun"]',
        'neza',
-       'Niquittaz significa lo / la veré',
+       'Tsunun significa colibrí',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Te veo',
-       '["Nimitzitta"]',
-       '["Tonalli", "Nimitzitta", "Niquittaz", "Onimitzittac"]',
-       'tonatiuh',
-       'Nimitzitta significa te veo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ onimitzittac',
-       '["Yalhua", "Yalhua onimitzittac"]',
-       null,
-       'xochitl',
-       'Yalhua onimitzittac significa ayer te vi',
-       20, 'medium',
-       'Ayer te vi'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______quitta',
-       '["Ni", "Niquitta"]',
-       null,
-       'citlali',
-       'Niquitta significa lo / la veo',
-       20, 'medium',
-       'Lo'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 3;
-
--- nivel 4 · unidad 4: comer, beber e ir
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Como',
-       '["Nitlacua"]',
-       '["Nitlacuaz", "Niyaz", "Nitlacua", "Axcan"]',
-       'coltzin',
-       'Nitlacua significa como',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Comí',
-       '["Onitlacuah"]',
-       '["Nitlacuaz", "Niatli", "Onitlacuah", "Axcan"]',
-       'neza',
-       'Onitlacuah significa comí',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Comeré',
-       '["Nitlacuaz"]',
-       '["Nitlacuaz", "Yalhua", "Oniya", "Niyauh"]',
-       'tonatiuh',
-       'Nitlacuaz significa comeré',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Bebo',
-       '["Niatli"]',
-       '["Nitlacuaz", "Niyaz", "Oniya", "Niatli"]',
-       'xochitl',
-       'Niatli significa bebo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______tlacua',
-       '["Ni", "Nitlacua"]',
-       null,
-       'citlali',
-       'Nitlacua significa como',
-       20, 'medium',
-       'Como'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______itlacuah',
-       '["On", "Onitlacuah"]',
-       null,
-       'coltzin',
-       'Onitlacuah significa comí',
-       20, 'medium',
-       'Comí'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 4;
-
--- nivel 4 · unidad 5: cuándo y dónde
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estoy',
-       '["Nicah"]',
-       '["Yalhua", "Huiptla", "Nicah", "Nican"]',
-       'neza',
-       'Nicah significa estoy',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Estás',
-       '["Ticah"]',
-       '["Nicah", "Ticah", "Yohualli", "Axcan"]',
-       'tonatiuh',
-       'Ticah significa estás',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Ayer fui allá',
-       '["Yalhua oniya ompa"]',
-       '["Yalhua oniya ompa", "Axcan nitequiti", "Yalhua onimitzittac", "Zatepan nitequiti"]',
-       'xochitl',
-       'Yalhua oniya ompa significa ayer fui allá',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mañana iré',
-       '["Moztla niyaz"]',
-       '["Moztla niyaz", "Zatepan nitequiti", "Axcan nitequiti", "Axcan nican nicah"]',
-       'citlali',
-       'Moztla niyaz significa mañana iré',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ oniya ompa',
-       '["Yalhua", "Yalhua oniya ompa"]',
-       null,
-       'coltzin',
-       'Yalhua oniya ompa significa ayer fui allá',
-       20, 'medium',
-       'Ayer fui allá'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Moztla ______',
-       '["niyaz", "Moztla niyaz"]',
-       null,
-       'neza',
-       'Moztla niyaz significa mañana iré',
-       20, 'medium',
-       'Mañana iré'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 5;
-
--- nivel 4 · unidad 6: contar lo que pasó
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Primero',
-       '["Achto"]',
-       '["Tonalli", "Yalhua", "Achto", "Huiptla"]',
-       'tonatiuh',
-       'Achto significa primero',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Después',
-       '["Zatepan"]',
-       '["Nitequiti", "Niman", "Huiptla", "Zatepan"]',
-       'xochitl',
-       'Zatepan significa después',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Luego',
-       '["Niman"]',
-       '["Zatepan", "Yalhua", "Achto", "Niman"]',
-       'citlali',
-       'Niman significa luego / enseguida',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Primero como',
-       '["Achto nitlacua"]',
-       '["Moztla niyaz", "Yalhua onimitzittac", "Axcan nitequiti", "Achto nitlacua"]',
-       'coltzin',
-       'Achto nitlacua significa primero como',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nitlacua',
-       '["Achto", "Achto nitlacua"]',
-       null,
-       'neza',
-       'Achto nitlacua significa primero como',
-       20, 'medium',
-       'Primero como'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Zatepan ______',
-       '["nitequiti", "Zatepan nitequiti"]',
+       '______ts''',
+       '["I", "Its''"]',
        null,
        'tonatiuh',
-       'Zatepan nitequiti significa después trabajo',
+       'Its'' significa luna / mes',
        20, 'medium',
-       'Después trabajo'
+       'Luna'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 4 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
--- nivel 5 · unidad 1: por la mañana
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me levanto',
-       '["Nimehua"]',
-       '["Etl", "Nimehua", "Tlaneci", "Nimaltia"]',
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______unun',
+       '["Ts", "Tsunun"]',
+       null,
        'xochitl',
-       'Nimehua significa me levanto',
-       15, 'medium', null
+       'Tsunun significa colibrí',
+       20, 'medium',
+       'Colibrí'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 2;
 
+-- nivel 4 · unidad 3: lo que hago
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Me baño',
-       '["Nimaltia"]',
-       '["Nimaltia", "Nimehua", "Niquiza", "Etl"]',
+       '["In atsim"]',
+       '["Naná'' im belal", "In atsim", "Ne''ech ban nu kwentsál", "Tatá'' tey i t''ojon"]',
        'citlali',
-       'Nimaltia significa me baño',
+       'In atsim significa me baño',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Salgo',
-       '["Niquiza"]',
-       '["Nimehua", "Nicochi", "Niquiza", "Tlaneci"]',
+       '["In kalel"]',
+       '["Ne''ech ban nu kwentsál", "In atsim", "In kalel", "Exom tu dhuchum"]',
        'coltzin',
-       'Niquiza significa salgo',
+       'In kalel significa salgo',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Vengo',
-       '["Nihuallauh"]',
-       '["Niquiza", "Tlaneci", "Nihuallauh", "Etl"]',
+       'Yo camino',
+       '["Naná'' im belal"]',
+       '["Tsekets an bichim", "Naná'' im belal", "U lejkiy an bakan", "Ne''ech ban nu kwentsál"]',
        'neza',
-       'Nihuallauh significa vengo',
+       'Naná'' im belal significa yo camino',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______mehua',
-       '["Ni", "Nimehua"]',
-       null,
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Voy a mi comunidad',
+       '["Ne''ech ban nu kwentsál"]',
+       '["Tatá'' tey i t''ojon", "Tsekets an bichim", "Nu kwentsál", "Ne''ech ban nu kwentsál"]',
        'tonatiuh',
-       'Nimehua significa me levanto',
-       20, 'medium',
-       'Me levanto'
+       'Ne''ech ban nu kwentsál significa voy a mi comunidad',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______maltia',
-       '["Ni", "Nimaltia"]',
+       '______ atsim',
+       '["In", "In atsim"]',
        null,
        'xochitl',
-       'Nimaltia significa me baño',
+       'In atsim significa me baño',
        20, 'medium',
        'Me baño'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 1;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
--- nivel 5 · unidad 2: dormir y comer
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Duermo',
-       '["Nicochi"]',
-       '["Niquiza", "Nitlacua", "Nimaltia", "Nicochi"]',
+select u.id, 'fill-blank', 'Completa la frase:',
+       'In ______',
+       '["kalel", "In kalel"]',
+       null,
        'citlali',
-       'Nicochi significa duermo',
-       15, 'medium', null
+       'In kalel significa salgo',
+       20, 'medium',
+       'Salgo'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 3;
 
+-- nivel 4 · unidad 4: lo que pasó
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Tortilla',
-       '["Tlaxcalli"]',
-       '["Nimehua", "Tlaxcalli", "Chilli", "Niquiza"]',
+       '["Bakan"]',
+       '["K''icháj", "Xowé''", "Bakan", "K''ij"]',
        'coltzin',
-       'Tlaxcalli significa tortilla',
+       'Bakan significa tortilla',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Caballo',
+       '["Bichim"]',
+       '["Xowé''", "Bichim", "Wat''ey", "Akal"]',
+       'neza',
+       'Bichim significa caballo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Pasó',
+       '["Wat''ey"]',
+       '["Wat''ey", "Xowé''", "An", "K''ij"]',
+       'tonatiuh',
+       'Wat''ey significa pasó',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Preparé la tortilla',
+       '["U lejkiy an bakan"]',
+       '["In atsim", "U lejkiy an bakan", "Tsekets an bichim", "Exom tu dhuchum"]',
+       'xochitl',
+       'U lejkiy an bakan significa preparé la tortilla',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ lejkiy an bakan',
+       '["U", "U lejkiy an bakan"]',
+       null,
+       'citlali',
+       'U lejkiy an bakan significa preparé la tortilla',
+       20, 'medium',
+       'Preparé la tortilla'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'Tatá'' tey i ______',
+       '["t''ojon", "Tatá'' tey i t''ojon"]',
+       null,
+       'coltzin',
+       'Tatá'' tey i t''ojon significa tú también trabajaste',
+       20, 'medium',
+       'Tú también trabajaste'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 4;
+
+-- nivel 4 · unidad 5: ahora y después
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Escribir',
+       '["Dhuchum"]',
+       '["Dhuchum", "Akal", "K''ij", "Xowé''"]',
+       'neza',
+       'Dhuchum significa escribir',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Trabajar',
+       '["T''ojnal"]',
+       '["T''ojnal", "T''ojlab", "Tamub", "We''él"]',
+       'tonatiuh',
+       'T''ojnal significa trabajar',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Trabajo',
+       '["T''ojlab"]',
+       '["T''ojlab", "Dhuchum", "Akal", "K''ij"]',
+       'xochitl',
+       'T''ojlab significa trabajo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Estamos escribiendo',
+       '["Exom tu dhuchum"]',
+       '["Tsekets an bichim", "Ne''ech ban nu kwentsál", "Exom tu dhuchum", "In atsim"]',
+       'citlali',
+       'Exom tu dhuchum significa estamos escribiendo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ tu dhuchum',
+       '["Exom", "Exom tu dhuchum"]',
+       null,
+       'coltzin',
+       'Exom tu dhuchum significa estamos escribiendo',
+       20, 'medium',
+       'Estamos escribiendo'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'Ne''ets ku ______',
+       '["ayin", "Ne''ets ku ayin"]',
+       null,
+       'neza',
+       'Ne''ets ku ayin significa regresaremos a casa',
+       20, 'medium',
+       'Regresaremos a casa'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 5;
+
+-- nivel 4 · unidad 6: repaso del tiempo
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Llegar',
+       '["Ulits"]',
+       '["Ulits", "Ach''a''", "We''él", "K''icháj"]',
+       'tonatiuh',
+       'Ulits significa llegar',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Escuchar',
+       '["Ach''a''"]',
+       '["Ach''a''", "K''ij", "Ulits", "Kalám"]',
+       'xochitl',
+       'Ach''a'' significa escuchar',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Hoy',
+       '["Xowé''"]',
+       '["Akal", "Xowé''", "Ulits", "Tamub"]',
+       'citlali',
+       'Xowé'' significa hoy',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Ayer',
+       '["We''él"]',
+       '["Akal", "K''ij", "We''él", "Xowé''"]',
+       'coltzin',
+       'We''él significa ayer',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ kalel',
+       '["In", "In kalel"]',
+       null,
+       'neza',
+       'In kalel significa salgo',
+       20, 'medium',
+       'Salgo'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'U lejkiy an ______',
+       '["bakan", "U lejkiy an bakan"]',
+       null,
+       'tonatiuh',
+       'U lejkiy an bakan significa preparé la tortilla',
+       20, 'medium',
+       'Preparé la tortilla'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 4 and u.unit_num = 6;
+
+-- nivel 5 · unidad 1: la comida
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Maíz',
+       '["Idhidh"]',
+       '["Utsun", "Its", "Idhidh", "Ajan"]',
+       'xochitl',
+       'Idhidh significa maíz',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Elote',
+       '["Ajan"]',
+       '["Utsun", "Ajan", "Uj", "K''apnél"]',
+       'citlali',
+       'Ajan significa elote',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Frijol',
-       '["Etl"]',
-       '["Nimehua", "Nihuallauh", "Etl", "Chilli"]',
-       'neza',
-       'Etl significa frijol',
+       '["Tsanak''w"]',
+       '["Ajan", "Idhidh", "Uj", "Tsanak''w"]',
+       'coltzin',
+       'Tsanak''w significa frijol',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
        'Chile',
-       '["Chilli"]',
-       '["Nimehua", "Nimaltia", "Tlaxcalli", "Chilli"]',
-       'tonatiuh',
-       'Chilli significa chile',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ tlaxcalli',
-       '["Niccua", "Niccua tlaxcalli"]',
-       null,
-       'xochitl',
-       'Niccua tlaxcalli significa como tortilla',
-       20, 'medium',
-       'Como tortilla'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Niccua ______',
-       '["etl", "Niccua etl"]',
-       null,
-       'citlali',
-       'Niccua etl significa como frijol',
-       20, 'medium',
-       'Como frijol'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 2;
-
--- nivel 5 · unidad 3: con otras personas
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Comemos',
-       '["Titlacuah"]',
-       '["Nohuan", "Titlacuah", "Mohuan", "Nimaltia"]',
-       'coltzin',
-       'Titlacuah significa comemos',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajamos',
-       '["Titequitih"]',
-       '["Mohuan", "Titlacuah", "Titequitih", "Nihuallauh"]',
+       '["Its"]',
+       '["Its", "Lanáx", "Idhidh", "Ajan"]',
        'neza',
-       'Titequitih significa trabajamos',
+       'Its significa chile',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Conmigo',
-       '["Nohuan"]',
-       '["Niquiza", "Nohuan", "Nimehua", "Mohuan"]',
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______dhidh',
+       '["I", "Idhidh"]',
+       null,
        'tonatiuh',
-       'Nohuan significa conmigo',
+       'Idhidh significa maíz',
+       20, 'medium',
+       'Maíz'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______jan',
+       '["A", "Ajan"]',
+       null,
+       'xochitl',
+       'Ajan significa elote',
+       20, 'medium',
+       'Elote'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 1;
+
+-- nivel 5 · unidad 2: frutas y plantas
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Naranja',
+       '["Lanáx"]',
+       '["Way''", "Lanáx", "Uj", "Idhidh"]',
+       'citlali',
+       'Lanáx significa naranja',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Contigo',
-       '["Mohuan"]',
-       '["Nimaltia", "Niquiza", "Nonan", "Mohuan"]',
-       'xochitl',
-       'Mohuan significa contigo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ mohuan',
-       '["Nitlacua", "Nitlacua mohuan"]',
-       null,
-       'citlali',
-       'Nitlacua mohuan significa como contigo',
-       20, 'medium',
-       'Como contigo'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Nonan ihuan nehuatl ______',
-       '["titlacuah", "Nonan ihuan nehuatl titlacuah"]',
-       null,
+       'Aguacate',
+       '["Uj"]',
+       '["Tsanak''w", "Uj", "Pakab", "Utsun"]',
        'coltzin',
-       'Nonan ihuan nehuatl titlacuah significa mi mamá y yo comemos',
-       20, 'medium',
-       'Mi mamá y yo comemos'
+       'Uj significa aguacate',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
 
--- nivel 5 · unidad 4: mañana, tarde y noche
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Tarde',
-       '["Teotlac"]',
-       '["Nimaltia", "Nicochi", "Teotlac", "Nihuallauh"]',
+       'Papaya',
+       '["Utsun"]',
+       '["Tsanak''w", "Pakab", "Idhidh", "Utsun"]',
        'neza',
-       'Teotlac significa tarde',
+       'Utsun significa papaya',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Anochece',
-       '["Tlayohua"]',
-       '["Nicochi", "Tlayohua", "Tlaneci", "Niquiza"]',
+       'Caña',
+       '["Pakab"]',
+       '["Ajan", "Pakab", "Utsun", "Lanáx"]',
        'tonatiuh',
-       'Tlayohua significa anochece',
+       'Pakab significa caña',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'En la tarde trabajo',
-       '["Teotlac nitequiti"]',
-       '["Teotlac nitequiti", "Nitlacua mohuan", "Niccua etl", "Tlaneci nimehua"]',
-       'xochitl',
-       'Teotlac nitequiti significa en la tarde trabajo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'En la noche duermo',
-       '["Yohualli nicochi"]',
-       '["Niccua etl", "Yohualli nicochi", "Niccua tlaxcalli", "Yehuan tlacuah"]',
-       'citlali',
-       'Yohualli nicochi significa en la noche duermo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nitequiti',
-       '["Teotlac", "Teotlac nitequiti"]',
+       '______anáx',
+       '["L", "Lanáx"]',
        null,
+       'xochitl',
+       'Lanáx significa naranja',
+       20, 'medium',
+       'Naranja'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______tsun',
+       '["U", "Utsun"]',
+       null,
+       'citlali',
+       'Utsun significa papaya',
+       20, 'medium',
+       'Papaya'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 2;
+
+-- nivel 5 · unidad 3: en la cocina
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Café',
+       '["Kapéj"]',
+       '["Kapéj", "Takab", "Idhidh", "Mexa"]',
        'coltzin',
-       'Teotlac nitequiti significa en la tarde trabajo',
-       20, 'medium',
-       'En la tarde trabajo'
+       'Kapéj significa café',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Yohualli ______',
-       '["nicochi", "Yohualli nicochi"]',
-       null,
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Cal',
+       '["Tay''"]',
+       '["Tay''", "Mexa", "Idhidh", "Ajan"]',
        'neza',
-       'Yohualli nicochi significa en la noche duermo',
-       20, 'medium',
-       'En la noche duermo'
+       'Tay'' significa cal',
+       15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
--- nivel 5 · unidad 5: rutinas en plural
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Dormimos',
-       '["Ticochih"]',
-       '["Ticochih", "Nimehua", "Nimaltia", "Tequitih"]',
+       'Cuchillo',
+       '["Kuchil"]',
+       '["Mexa", "Idhidh", "Ajan", "Kuchil"]',
        'tonatiuh',
-       'Ticochih significa dormimos',
+       'Kuchil significa cuchillo',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Duermen',
-       '["Cochih"]',
-       '["Cochih", "Tlacuah", "Niquiza", "Tehuan"]',
+       'Mesa',
+       '["Mexa"]',
+       '["Mexa", "Ja''", "Kuchil", "Kapéj"]',
        'xochitl',
-       'Cochih significa duermen',
+       'Mexa significa mesa',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Comen',
-       '["Tlacuah"]',
-       '["Tlacuah", "Ticochih", "Nimehua", "Nimaltia"]',
-       'citlali',
-       'Tlacuah significa comen',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Trabajan',
-       '["Tequitih"]',
-       '["Niquiza", "Yehuan", "Tequitih", "Cochih"]',
-       'coltzin',
-       'Tequitih significa trabajan',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ ticochih',
-       '["Tehuan", "Tehuan ticochih"]',
-       null,
-       'neza',
-       'Tehuan ticochih significa nosotros dormimos',
-       20, 'medium',
-       'Nosotros dormimos'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Yehuan ______',
-       '["tlacuah", "Yehuan tlacuah"]',
-       null,
-       'tonatiuh',
-       'Yehuan tlacuah significa ellos comen',
-       20, 'medium',
-       'Ellos comen'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 5;
-
--- nivel 5 · unidad 6: mi día completo
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Amanece y me levanto',
-       '["Tlaneci nimehua"]',
-       '["Tlaneci nimehua", "Niman niquiza", "Teotlac nitequiti", "Niccua tlaxcalli"]',
-       'xochitl',
-       'Tlaneci nimehua significa amanece y me levanto',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Luego salgo',
-       '["Niman niquiza"]',
-       '["Niman niquiza", "Nitlacua mohuan", "Tlaneci nimehua", "Yohualli nicochi"]',
-       'citlali',
-       'Niman niquiza significa luego salgo',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Temprano me baño',
-       '["Cualcan nimaltia"]',
-       '["Niccua etl", "Cualcan nimaltia", "Tlaneci nimehua", "Nonan ihuan nehuatl titlacuah"]',
-       'coltzin',
-       'Cualcan nimaltia significa temprano me baño',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Primero',
-       '["Achto"]',
-       '["Nihuallauh", "Cualcan", "Achto", "Nimehua"]',
-       'neza',
-       'Achto significa primero',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nimehua',
-       '["Tlaneci", "Tlaneci nimehua"]',
-       null,
-       'tonatiuh',
-       'Tlaneci nimehua significa amanece y me levanto',
-       20, 'medium',
-       'Amanece y me levanto'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Niman ______',
-       '["niquiza", "Niman niquiza"]',
-       null,
-       'xochitl',
-       'Niman niquiza significa luego salgo',
-       20, 'medium',
-       'Luego salgo'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 5 and u.unit_num = 6;
-
--- nivel 6 · unidad 1: lo que me gusta
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me gusta',
-       '["Nechpactia"]',
-       '["Xihualla", "Achi", "Nechpactia", "Mitzpactia?"]',
-       'citlali',
-       'Nechpactia significa me gusta',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Te gusta?',
-       '["Mitzpactia?"]',
-       '["Xihualla", "Mitzpactia?", "Xicochi", "Ticnequi"]',
-       'coltzin',
-       'Mitzpactia? significa ¿te gusta?',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mucho',
-       '["Cenca"]',
-       '["Mitzpactia?", "Nechpactia", "Xicochi", "Cenca"]',
-       'neza',
-       'Cenca significa mucho / muy',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Un poco',
-       '["Achi"]',
-       '["Achi", "Xitlacua", "Nechpactia", "Mitzpactia?"]',
-       'tonatiuh',
-       'Achi significa un poco',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nechpactia',
-       '["Ahmo", "Ahmo nechpactia"]',
-       null,
-       'xochitl',
-       'Ahmo nechpactia significa no me gusta',
-       20, 'medium',
-       'No me gusta'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       '______chpactia',
-       '["Ne", "Nechpactia"]',
+       '______apéj',
+       '["K", "Kapéj"]',
        null,
        'citlali',
-       'Nechpactia significa me gusta',
+       'Kapéj significa café',
        20, 'medium',
-       'Me gusta'
+       'Café'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 1;
-
--- nivel 6 · unidad 2: lo que quiero
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quieres',
-       '["Ticnequi"]',
-       '["Cenca", "Ticnequi", "Quinequi", "Achi"]',
-       'coltzin',
-       'Ticnequi significa quieres',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quiere',
-       '["Quinequi"]',
-       '["Xicochi", "Quinequi", "Nechpactia", "Nicnequi"]',
-       'neza',
-       'Quinequi significa quiere',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quiero comer',
-       '["Nicnequi nitlacuaz"]',
-       '["Ahmo cualli", "Ahmo nechpactia", "Oc achi cualli", "Nicnequi nitlacuaz"]',
-       'tonatiuh',
-       'Nicnequi nitlacuaz significa quiero comer',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Quiero dormir',
-       '["Nicnequi nicochiz"]',
-       '["Cenca cualli", "Nicnequi nicochiz", "Ahmo nechpactia", "Nicnequi nitlacuaz"]',
-       'xochitl',
-       'Nicnequi nicochiz significa quiero dormir',
-       15, 'medium', null
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ nitlacuaz',
-       '["Nicnequi", "Nicnequi nitlacuaz"]',
-       null,
-       'citlali',
-       'Nicnequi nitlacuaz significa quiero comer',
-       20, 'medium',
-       'Quiero comer'
-from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
-
-insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
-select u.id, 'fill-blank', 'Completa la frase:',
-       'Nicnequi ______',
-       '["nicochiz", "Nicnequi nicochiz"]',
+       '______ay''',
+       '["T", "Tay''"]',
        null,
        'coltzin',
-       'Nicnequi nicochiz significa quiero dormir',
+       'Tay'' significa cal',
        20, 'medium',
-       'Quiero dormir'
+       'Cal'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 2;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 3;
 
--- nivel 6 · unidad 3: pedir y ordenar
+-- nivel 5 · unidad 4: acciones del día
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Come (tú)',
-       '["Xitlacua"]',
-       '["Xitlacua", "Nechpactia", "Mitzpactia?", "Ximotlali"]',
+       'Comer',
+       '["K''apul"]',
+       '["Met''ál", "K''apul", "Pidhál", "Ajan"]',
        'neza',
-       'Xitlacua significa come (tú)',
+       'K''apul significa comer',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Duerme (tú)',
-       '["Xicochi"]',
-       '["Xicochi", "Ximotlali", "Mitzpactia?", "Cenca"]',
+       'Beber',
+       '["Uts''ál"]',
+       '["Pidhál", "K''apul", "Ajan", "Uts''ál"]',
        'tonatiuh',
-       'Xicochi significa duerme (tú)',
+       'Uts''ál significa beber',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Ven (tú)',
-       '["Xihualla"]',
-       '["Ximotlali", "Mitzpactia?", "Cenca", "Xihualla"]',
+       'Dormir',
+       '["Wayal"]',
+       '["Wayal", "K''apul", "Tsanak''w", "Belal"]',
        'xochitl',
-       'Xihualla significa ven (tú)',
+       'Wayal significa dormir',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Siéntate',
-       '["Ximotlali"]',
-       '["Ximotlali", "Nimitztlatlauhtia", "Xihualla", "Xitlacua"]',
+       'Ver',
+       '["Met''ál"]',
+       '["Idhidh", "Uts''ál", "Wayal", "Met''ál"]',
        'citlali',
-       'Ximotlali significa siéntate',
+       'Met''ál significa ver',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______, xihualla',
-       '["Nimitztlatlauhtia", "Nimitztlatlauhtia, xihualla"]',
+       '______apul',
+       '["K''", "K''apul"]',
        null,
        'coltzin',
-       'Nimitztlatlauhtia, xihualla significa por favor, ven',
+       'K''apul significa comer',
        20, 'medium',
-       'Por favor, ven'
+       'Comer'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______tlacua',
-       '["Xi", "Xitlacua"]',
+       '______ts''ál',
+       '["U", "Uts''ál"]',
        null,
        'neza',
-       'Xitlacua significa come (tú)',
+       'Uts''ál significa beber',
        20, 'medium',
-       'Come (tú)'
+       'Beber'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 3;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 4;
 
--- nivel 6 · unidad 4: más y menos
+-- nivel 5 · unidad 5: trabajos de la casa
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Más',
-       '["Oc achi"]',
-       '["Ahmo cualli", "Oc achi", "Ahmo nechpactia", "Nimitztlatlauhtia, xihualla"]',
+       'Leña',
+       '["Dhi''"]',
+       '["Tsanak''w", "Dhi''", "K''apnél", "Lanáx"]',
        'tonatiuh',
-       'Oc achi significa más',
+       'Dhi'' significa leña',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Mejor',
-       '["Oc achi cualli"]',
-       '["Ahmo nechpactia", "Oc achi", "Nimitztlatlauhtia, xihualla", "Oc achi cualli"]',
+       'Escoba',
+       '["K''wet"]',
+       '["Dhi''", "Lanáx", "K''wet", "Ajan"]',
        'xochitl',
-       'Oc achi cualli significa mejor',
+       'K''wet significa escoba',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Muy bueno',
-       '["Cenca cualli"]',
-       '["Cenca cualli", "Oc achi", "Nechpactia atl", "Nicnequi nitlacuaz"]',
+       'Jabón',
+       '["Xabún"]',
+       '["Xabún", "Idhidh", "K''wet", "Tsanak''w"]',
        'citlali',
-       'Cenca cualli significa muy bueno',
+       'Xabún significa jabón',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'No es bueno',
-       '["Ahmo cualli"]',
-       '["Nicnequi nicochiz", "Oc achi cualli", "Cenca cualli", "Ahmo cualli"]',
+       'Vendo naranjas',
+       '["U nujuwal an lanax"]',
+       '["U nujuwal an lanax", "Na k''imá''", "¡Ka k''wetoy na k''imá''!", "U kitnál an dhi''"]',
        'coltzin',
-       'Ahmo cualli significa no es bueno',
+       'U nujuwal an lanax significa vendo naranjas',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ achi',
-       '["Oc", "Oc achi"]',
+       '______ nujuwal an lanax',
+       '["U", "U nujuwal an lanax"]',
        null,
        'neza',
-       'Oc achi significa más',
+       'U nujuwal an lanax significa vendo naranjas',
        20, 'medium',
-       'Más'
+       'Vendo naranjas'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Oc achi ______',
-       '["cualli", "Oc achi cualli"]',
+       'U kitnál an ______',
+       '["dhi''", "U kitnál an dhi''"]',
        null,
        'tonatiuh',
-       'Oc achi cualli significa mejor',
+       'U kitnál an dhi'' significa cargo la leña',
        20, 'medium',
-       'Mejor'
+       'Cargo la leña'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 4;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 5;
 
--- nivel 6 · unidad 5: mis gustos
+-- nivel 5 · unidad 6: caliente y frío
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me gusta el agua',
-       '["Nechpactia atl"]',
-       '["Nicnequi nitlacuaz", "Nechpactia atl", "Nimitztlatlauhtia, xihualla", "Oc achi"]',
+       'Caliente',
+       '["K''ak''"]',
+       '["Tolow", "Tsanak''w", "K''ak''", "Idhidh"]',
        'xochitl',
-       'Nechpactia atl significa me gusta el agua',
+       'K''ak'' significa caliente',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me gusta la tortilla',
-       '["Nechpactia tlaxcalli"]',
-       '["Nechpactia atl", "Oc achi", "Nechpactia tlaxcalli", "Ahmo nechpactia"]',
+       'Frío(a)',
+       '["Chamay"]',
+       '["T''apay", "Idhidh", "Ts''a''ik", "Chamay"]',
        'citlali',
-       'Nechpactia tlaxcalli significa me gusta la tortilla',
+       'Chamay significa frío(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'No me gusta el chile',
-       '["Ahmo nechpactia chilli"]',
-       '["Ahmo nechpactia chilli", "Mitzpactia etl?", "Nechpactia tlaxcalli", "Nicnequi nitlacuaz"]',
+       'Amargo(a)',
+       '["Ts''a''ik"]',
+       '["Ajan", "T''apay", "Ts''a''ik", "Kapéj"]',
        'coltzin',
-       'Ahmo nechpactia chilli significa no me gusta el chile',
+       'Ts''a''ik significa amargo(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Te gusta el frijol?',
-       '["Mitzpactia etl?"]',
-       '["Mitzpactia etl?", "Nicnequi nicochiz", "Ahmo nechpactia chilli", "Nicnequi nitlacuaz"]',
+       'Pegajoso(a)',
+       '["T''apay"]',
+       '["Tolow", "Chamay", "T''apay", "Idhidh"]',
        'neza',
-       'Mitzpactia etl? significa ¿te gusta el frijol?',
+       'T''apay significa pegajoso(a)',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ atl',
-       '["Nechpactia", "Nechpactia atl"]',
+       '______ak''',
+       '["K''", "K''ak''"]',
        null,
        'tonatiuh',
-       'Nechpactia atl significa me gusta el agua',
+       'K''ak'' significa caliente',
        20, 'medium',
-       'Me gusta el agua'
+       'Caliente'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Nechpactia ______',
-       '["tlaxcalli", "Nechpactia tlaxcalli"]',
+       '______amay',
+       '["Ch", "Chamay"]',
        null,
        'xochitl',
-       'Nechpactia tlaxcalli significa me gusta la tortilla',
+       'Chamay significa frío(a)',
        20, 'medium',
-       'Me gusta la tortilla'
+       'Frío(a)'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 5;
+where la.code = 'hus' and l.level_num = 5 and u.unit_num = 6;
 
--- nivel 6 · unidad 6: expresión completa
+-- nivel 6 · unidad 1: animales del monte
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Idioma náhuatl',
-       '["Nahuatlahtolli"]',
-       '["Achi", "Nahuatlahtolli", "Nicnequi", "Cenca"]',
+       'Conejo',
+       '["Koy"]',
+       '["Koy", "Edhem", "Pik''o''", "Itxamal"]',
        'citlali',
-       'Nahuatlahtolli significa idioma náhuatl',
+       'Koy significa conejo',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       '¿Qué te gusta?',
-       '["Tlen mitzpactia?"]',
-       '["Ahmo nechpactia", "Nimitztlatlauhtia, xihualla", "Oc achi", "Tlen mitzpactia?"]',
+       'Coyote',
+       '["Chuch"]',
+       '["Koy", "Chuch", "Itxamal", "Edhem"]',
        'coltzin',
-       'Tlen mitzpactia? significa ¿qué te gusta?',
+       'Chuch significa coyote',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me gusta el náhuatl',
-       '["Nechpactia nahuatlahtolli"]',
-       '["Oc achi", "Ahmo nechpactia", "Nechpactia nahuatlahtolli", "Nicnequi nicochiz"]',
+       'Venado',
+       '["Itxamal"]',
+       '["Pik''o''", "Koxol", "Itxamal", "Mitsu''"]',
        'neza',
-       'Nechpactia nahuatlahtolli significa me gusta el náhuatl',
+       'Itxamal significa venado',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
-       'Me gusta',
-       '["Nechpactia"]',
-       '["Cenca", "Nicnequi", "Nechpactia", "Ticnequi"]',
+       'Mapache',
+       '["Edhem"]',
+       '["Pik''o''", "Bat''aw", "Itxamal", "Edhem"]',
        'tonatiuh',
-       'Nechpactia significa me gusta',
+       'Edhem significa mapache',
        15, 'medium', null
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       '______ mitzpactia?',
-       '["Tlen", "Tlen mitzpactia?"]',
+       '______uch',
+       '["Ch", "Chuch"]',
        null,
        'xochitl',
-       'Tlen mitzpactia? significa ¿qué te gusta?',
+       'Chuch significa coyote',
        20, 'medium',
-       '¿Qué te gusta?'
+       'Coyote'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
 
 insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
 select u.id, 'fill-blank', 'Completa la frase:',
-       'Nechpactia ______',
-       '["nahuatlahtolli", "Nechpactia nahuatlahtolli"]',
+       '______amal',
+       '["Itx", "Itxamal"]',
        null,
        'citlali',
-       'Nechpactia nahuatlahtolli significa me gusta el náhuatl',
+       'Itxamal significa venado',
        20, 'medium',
-       'Me gusta el náhuatl'
+       'Venado'
 from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
-where la.code = 'nhn' and l.level_num = 6 and u.unit_num = 6;
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 1;
+
+-- nivel 6 · unidad 2: animales de la casa
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Perro',
+       '["Pik''o''"]',
+       '["Ch''uri''", "Pik''o''", "Mitsu''", "Itxamal"]',
+       'coltzin',
+       'Pik''o'' significa perro',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Gato',
+       '["Mitsu''"]',
+       '["Koxol", "Bichim", "Ch''uri''", "Mitsu''"]',
+       'neza',
+       'Mitsu'' significa gato',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Gallo',
+       '["Koxol"]',
+       '["Chuch", "Mitsu''", "Koxol", "Yaxk''wa''"]',
+       'tonatiuh',
+       'Koxol significa gallo',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Burro',
+       '["Ch''uri''"]',
+       '["Ch''uri''", "Yaxk''wa''", "Koxol", "Mitsu''"]',
+       'xochitl',
+       'Ch''uri'' significa burro',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ pik''oil',
+       '["Nu", "Nu pik''oil"]',
+       null,
+       'citlali',
+       'Nu pik''oil significa mi perro',
+       20, 'medium',
+       'Mi perro'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ik''o''',
+       '["P", "Pik''o''"]',
+       null,
+       'coltzin',
+       'Pik''o'' significa perro',
+       20, 'medium',
+       'Perro'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 2;
+
+-- nivel 6 · unidad 3: el cuerpo
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Cabeza',
+       '["Ok''"]',
+       '["Ok''", "Koy", "Wal", "Chuch"]',
+       'neza',
+       'Ok'' significa cabeza',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Mano',
+       '["K''ubak"]',
+       '["Akan", "Ok''", "K''ubak", "Chuch"]',
+       'tonatiuh',
+       'K''ubak significa mano',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Pie',
+       '["Akan"]',
+       '["Koy", "Chuch", "Akan", "Txukul"]',
+       'xochitl',
+       'Akan significa pie',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Ojo',
+       '["Wal"]',
+       '["Txukul", "Wal", "Chuch", "Wi''"]',
+       'citlali',
+       'Wal significa ojo / cara',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ubak',
+       '["K''", "K''ubak"]',
+       null,
+       'coltzin',
+       'K''ubak significa mano',
+       20, 'medium',
+       'Mano'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______kan',
+       '["A", "Akan"]',
+       null,
+       'neza',
+       'Akan significa pie',
+       20, 'medium',
+       'Pie'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 3;
+
+-- nivel 6 · unidad 4: lo que quiero y lo que tengo
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Querer',
+       '["Le''"]',
+       '["Le''", "Edhem", "Tumín", "Itxamal"]',
+       'tonatiuh',
+       'Le'' significa querer',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Tener',
+       '["Kó''ol"]',
+       '["Kó''ol", "Le''", "Edhem", "Koy"]',
+       'xochitl',
+       'Kó''ol significa tener',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Sombrero',
+       '["Xumpelel"]',
+       '["Le''", "Xumpelel", "Kó''ol", "Ot''el"]',
+       'citlali',
+       'Xumpelel significa sombrero',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Carro',
+       '["Belal atáj"]',
+       '["Belal atáj", "Tének Tsabál", "Nu pik''oil", "¡Abél junt''aj xu bixnél!"]',
+       'coltzin',
+       'Belal atáj significa carro (lit. casa que camina)',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ atáj',
+       '["Belal", "Belal atáj"]',
+       null,
+       'neza',
+       'Belal atáj significa carro (lit. casa que camina)',
+       20, 'medium',
+       'Carro'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ó''ol',
+       '["K", "Kó''ol"]',
+       null,
+       'tonatiuh',
+       'Kó''ol significa tener',
+       20, 'medium',
+       'Tener'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 4;
+
+-- nivel 6 · unidad 5: expresiones
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'San Luis Potosí',
+       '["Tampots''ots''"]',
+       '["Ot''el", "Tampots''ots''", "Labtóm", "Edhem"]',
+       'xochitl',
+       'Tampots''ots'' significa San Luis Potosí',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'México',
+       '["Labtóm"]',
+       '["Koy", "Chuch", "Bat''aw", "Labtóm"]',
+       'citlali',
+       'Labtóm significa México',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       '¡Qué bonita danza!',
+       '["¡Abél junt''aj xu bixnél!"]',
+       '["Tének Tsabál", "Nu pik''oil", "Belal atáj", "¡Abél junt''aj xu bixnél!"]',
+       'coltzin',
+       '¡Abél junt''aj xu bixnél! significa ¡qué bonita danza!',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Región tének',
+       '["Tének Tsabál"]',
+       '["Belal atáj", "¡Abél junt''aj xu bixnél!", "Nu pik''oil", "Tének Tsabál"]',
+       'neza',
+       'Tének Tsabál significa región tének',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '¡______ junt''aj xu bixnél!',
+       '["Abél", "Abél junt''aj xu bixnél", "¡Abél junt''aj xu bixnél!"]',
+       null,
+       'tonatiuh',
+       '¡Abél junt''aj xu bixnél! significa ¡qué bonita danza!',
+       20, 'medium',
+       '¡Qué bonita danza!'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'Tének ______',
+       '["Tsabál", "Tének Tsabál"]',
+       null,
+       'xochitl',
+       'Tének Tsabál significa región tének',
+       20, 'medium',
+       'Región tének'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 5;
+
+-- nivel 6 · unidad 6: conversación final
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Buenos días',
+       '["Tajk''anenek"]',
+       '["Tajk''anenek", "Mím", "Koy", "Chuch"]',
+       'citlali',
+       'Tajk''anenek significa buenos días',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Yo me llamo',
+       '["Naná'' u bij"]',
+       '["¡Abél junt''aj xu bixnél!", "Kit k''alej alwa''", "Naná'' u bij", "Lej k''ak''námal yán"]',
+       'coltzin',
+       'Naná'' u bij significa yo me llamo (lit. yo, mi nombre)',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Papá',
+       '["Táta''"]',
+       '["Táta''", "Tajk''anenek", "Koy", "Mím"]',
+       'neza',
+       'Táta'' significa papá',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'multiple-choice', 'Selecciona la traducción correcta',
+       'Mamá',
+       '["Mím"]',
+       '["Tajk''anenek", "Chuch", "Edhem", "Mím"]',
+       'tonatiuh',
+       'Mím significa mamá',
+       15, 'medium', null
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       '______ u bij',
+       '["Naná''", "Naná'' u bij"]',
+       null,
+       'xochitl',
+       'Naná'' u bij significa yo me llamo (lit. yo, mi nombre)',
+       20, 'medium',
+       'Yo me llamo'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
+
+insert into ct_exercises (unit_id, exercise_type, question, answer, correct_ans, options, character_ref, explanation, points, difficulty, placeholder)
+select u.id, 'fill-blank', 'Completa la frase:',
+       'Lej k''ak''námal ______',
+       '["yán", "Lej k''ak''námal yán"]',
+       null,
+       'citlali',
+       'Lej k''ak''námal yán significa muchas gracias',
+       20, 'medium',
+       'Muchas gracias'
+from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
+where la.code = 'hus' and l.level_num = 6 and u.unit_num = 6;
 
 -- ─────────────────────────────────────────────
 --  7. sistema de escritura
 -- ─────────────────────────────────────────────
-insert into ct_writing_systems (language_id, system_type, system_name, description, notes)
-select id, 'alphabet', 'alfabeto práctico',
-       'Ortografía práctica de base clásica, sin macrones. Borrador pendiente de validar con hablantes de la variante.',
-       '["Tl, tz, ch, qu, cu y hu representan un solo sonido y no se separan al silabear",
-         "La tl final se queda en la sílaba anterior: xo-chitl, ne-huatl",
-         "La h marca el saltillo (corte de voz): tlazohcamati, quemah, ahmo",
-         "La vocal larga no se marca: no se usan macrones en ninguna palabra",
-         "La doble l se pronuncia como dos l: cual-li",
-         "No se usan acentos del español"]'
-from ct_languages where code = 'nhn';
+insert into ct_writing_systems (language_id, system_type, system_name, description, characters, notes)
+select id, 'alphabet', 'alfabeto tének',
+       'Norma de escritura del tének (INALI). Variante base: San Luis Potosí. Borrador pendiente de validar con hablantes.',
+       '[
+    {
+        "type": "vowel",
+        "letter": "a",
+        "pronunciation": "a",
+        "syllables": {
+            "a": "a",
+            "e": null,
+            "i": null,
+            "o": null,
+            "u": null
+        },
+        "example": "Alwa''"
+    },
+    {
+        "type": "vowel",
+        "letter": "e",
+        "pronunciation": "e",
+        "syllables": {
+            "a": null,
+            "e": "e",
+            "i": null,
+            "o": null,
+            "u": null
+        },
+        "example": "Epchal"
+    },
+    {
+        "type": "vowel",
+        "letter": "i",
+        "pronunciation": "i",
+        "syllables": {
+            "a": null,
+            "e": null,
+            "i": "i",
+            "o": null,
+            "u": null
+        },
+        "example": "Inik"
+    },
+    {
+        "type": "vowel",
+        "letter": "o",
+        "pronunciation": "o",
+        "syllables": {
+            "a": null,
+            "e": null,
+            "i": null,
+            "o": "o",
+            "u": null
+        },
+        "example": "Ok''ox"
+    },
+    {
+        "type": "vowel",
+        "letter": "u",
+        "pronunciation": "u",
+        "syllables": {
+            "a": null,
+            "e": null,
+            "i": null,
+            "o": null,
+            "u": "u"
+        },
+        "example": "Uxum"
+    },
+    {
+        "type": "consonant",
+        "letter": "b",
+        "pronunciation": "b",
+        "syllables": {
+            "a": "ba",
+            "e": "be",
+            "i": "bi",
+            "o": "bo",
+            "u": "bu"
+        },
+        "example": "Bij"
+    },
+    {
+        "type": "consonant",
+        "letter": "ch",
+        "pronunciation": "ch",
+        "syllables": {
+            "a": "cha",
+            "e": "che",
+            "i": "chi",
+            "o": "cho",
+            "u": "chu"
+        },
+        "example": "Ché''"
+    },
+    {
+        "type": "consonant",
+        "letter": "dh",
+        "pronunciation": "dh (sonido interdental)",
+        "syllables": {
+            "a": "dha",
+            "e": "dhe",
+            "i": "dhi",
+            "o": "dho",
+            "u": "dhu"
+        },
+        "example": "Dhamk''unenek"
+    },
+    {
+        "type": "consonant",
+        "letter": "j",
+        "pronunciation": "j",
+        "syllables": {
+            "a": "ja",
+            "e": "je",
+            "i": "ji",
+            "o": "jo",
+            "u": "ju"
+        },
+        "example": "Jajá''"
+    },
+    {
+        "type": "consonant",
+        "letter": "k",
+        "pronunciation": "k",
+        "syllables": {
+            "a": "ka",
+            "e": "ke",
+            "i": "ki",
+            "o": "ko",
+            "u": "ku"
+        },
+        "example": "Kalám"
+    },
+    {
+        "type": "consonant",
+        "letter": "kw",
+        "pronunciation": "kw",
+        "syllables": {
+            "a": "kwa",
+            "e": "kwe",
+            "i": "kwi",
+            "o": "kwo",
+            "u": "kwu"
+        },
+        "example": "Kwitól"
+    },
+    {
+        "type": "consonant",
+        "letter": "l",
+        "pronunciation": "l",
+        "syllables": {
+            "a": "la",
+            "e": "le",
+            "i": "li",
+            "o": "lo",
+            "u": "lu"
+        },
+        "example": "Laju''"
+    },
+    {
+        "type": "consonant",
+        "letter": "m",
+        "pronunciation": "m",
+        "syllables": {
+            "a": "ma",
+            "e": "me",
+            "i": "mi",
+            "o": "mo",
+            "u": "mu"
+        },
+        "example": "Mím"
+    },
+    {
+        "type": "consonant",
+        "letter": "n",
+        "pronunciation": "n",
+        "syllables": {
+            "a": "na",
+            "e": "ne",
+            "i": "ni",
+            "o": "no",
+            "u": "nu"
+        },
+        "example": "Naná''"
+    },
+    {
+        "type": "consonant",
+        "letter": "p",
+        "pronunciation": "p",
+        "syllables": {
+            "a": "pa",
+            "e": "pe",
+            "i": "pi",
+            "o": "po",
+            "u": "pu"
+        },
+        "example": "Púlik"
+    },
+    {
+        "type": "consonant",
+        "letter": "t",
+        "pronunciation": "t",
+        "syllables": {
+            "a": "ta",
+            "e": "te",
+            "i": "ti",
+            "o": "to",
+            "u": "tu"
+        },
+        "example": "Tajk''anenek"
+    },
+    {
+        "type": "consonant",
+        "letter": "ts",
+        "pronunciation": "ts",
+        "syllables": {
+            "a": "tsa",
+            "e": "tse",
+            "i": "tsi",
+            "o": "tso",
+            "u": "tsu"
+        },
+        "example": "Tsanub"
+    },
+    {
+        "type": "consonant",
+        "letter": "tx",
+        "pronunciation": "tx",
+        "syllables": {
+            "a": "txa",
+            "e": "txe",
+            "i": "txi",
+            "o": "txo",
+            "u": "txu"
+        },
+        "example": "Txukul"
+    },
+    {
+        "type": "consonant",
+        "letter": "w",
+        "pronunciation": "w",
+        "syllables": {
+            "a": "wa",
+            "e": "we",
+            "i": "wi",
+            "o": "wo",
+            "u": "wu"
+        },
+        "example": "Waklenenek"
+    },
+    {
+        "type": "consonant",
+        "letter": "x",
+        "pronunciation": "sh",
+        "syllables": {
+            "a": "xa",
+            "e": "xe",
+            "i": "xi",
+            "o": "xo",
+            "u": "xu"
+        },
+        "example": "Xowé''"
+    },
+    {
+        "type": "consonant",
+        "letter": "y",
+        "pronunciation": "y",
+        "syllables": {
+            "a": "ya",
+            "e": "ye",
+            "i": "yi",
+            "o": "yo",
+            "u": "yu"
+        },
+        "example": "Yán"
+    },
+    {
+        "type": "consonant",
+        "letter": "''",
+        "pronunciation": "saltillo (corte de voz)",
+        "syllables": {
+            "a": null,
+            "e": null,
+            "i": null,
+            "o": null,
+            "u": null
+        },
+        "example": "Alwa''"
+    },
+    {
+        "type": "ejective",
+        "letter": "b''",
+        "pronunciation": "b glotalizada",
+        "syllables": {
+            "a": "b''a",
+            "e": "b''e",
+            "i": "b''i",
+            "o": "b''o",
+            "u": "b''u"
+        }
+    },
+    {
+        "type": "ejective",
+        "letter": "ch''",
+        "pronunciation": "ch glotalizada",
+        "syllables": {
+            "a": "ch''a",
+            "e": "ch''e",
+            "i": "ch''i",
+            "o": "ch''o",
+            "u": "ch''u"
+        },
+        "example": "Ch''uri''"
+    },
+    {
+        "type": "ejective",
+        "letter": "k''",
+        "pronunciation": "k glotalizada",
+        "syllables": {
+            "a": "k''a",
+            "e": "k''e",
+            "i": "k''i",
+            "o": "k''o",
+            "u": "k''u"
+        },
+        "example": "K''ak''námal"
+    },
+    {
+        "type": "ejective",
+        "letter": "k''w",
+        "pronunciation": "kw glotalizada",
+        "syllables": {
+            "a": "k''wa",
+            "e": "k''we",
+            "i": "k''wi",
+            "o": "k''wo",
+            "u": "k''wu"
+        },
+        "example": "K''wet"
+    },
+    {
+        "type": "ejective",
+        "letter": "t''",
+        "pronunciation": "t glotalizada",
+        "syllables": {
+            "a": "t''a",
+            "e": "t''e",
+            "i": "t''i",
+            "o": "t''o",
+            "u": "t''u"
+        },
+        "example": "T''unu''"
+    },
+    {
+        "type": "ejective",
+        "letter": "ts''",
+        "pronunciation": "ts glotalizada",
+        "syllables": {
+            "a": "ts''a",
+            "e": "ts''e",
+            "i": "ts''i",
+            "o": "ts''o",
+            "u": "ts''u"
+        },
+        "example": "Ts''itsin"
+    },
+    {
+        "type": "ejective",
+        "letter": "y''",
+        "pronunciation": "y glotalizada",
+        "syllables": {
+            "a": "y''a",
+            "e": "y''e",
+            "i": "y''i",
+            "o": "y''o",
+            "u": "y''u"
+        },
+        "example": "Way''"
+    },
+    {
+        "type": "longVowel",
+        "letter": "á",
+        "pronunciation": "aa",
+        "syllables": {
+            "a": "á (aa)"
+        },
+        "example": "Ách"
+    },
+    {
+        "type": "longVowel",
+        "letter": "é",
+        "pronunciation": "ee",
+        "syllables": {
+            "e": "é (ee)"
+        },
+        "example": "Tének"
+    },
+    {
+        "type": "longVowel",
+        "letter": "í",
+        "pronunciation": "ii",
+        "syllables": {
+            "i": "í (ii)"
+        },
+        "example": "Ít"
+    },
+    {
+        "type": "longVowel",
+        "letter": "ó",
+        "pronunciation": "oo",
+        "syllables": {
+            "o": "ó (oo)"
+        },
+        "example": "Óx"
+    },
+    {
+        "type": "longVowel",
+        "letter": "ú",
+        "pronunciation": "uu",
+        "syllables": {
+            "u": "ú (uu)"
+        },
+        "example": "Úw"
+    }
+]',
+       '["Vocales: a, e, i, o, u; con acento son largas: á, é, í, ó, ú (atáj, búk)",
+         "La comilla sola es el saltillo (corte de voz): ja\u0027, bó\u0027, kó\u0027ol",
+         "Ch, dh, kw, ts y tx son un solo sonido y no se separan al silabear",
+         "Glotalizadas: b\u0027, ch\u0027, k\u0027, k\u0027w, t\u0027, ts\u0027, y\u0027 (k\u0027ubak, t\u0027ojlab)",
+         "Silabeo: una consonante entre vocales abre la sílaba siguiente (u-tsun, ba-t\u0027aw, ko-xol)",
+         "Plural en San Luis Potosí con -chik: tatá\u0027chik, jajáchik, inikchik"]'
+from ct_languages where code = 'hus';
 
 -- ─────────────────────────────────────────────
 --  8. ta_user_progress — unidad 1 desbloqueada para el usuario demo
@@ -3609,11 +3999,11 @@ from ct_languages where code = 'nhn';
 insert into ta_user_progress (user_id, unit_id, completed, is_current, is_locked)
 select usr.id, u.id, 0, 1, 0
 from ta_users usr
-         cross join (
+cross join (
     select u.id from ct_units u
-                         join ct_levels l on u.level_id = l.id
-                         join ct_languages la on l.language_id = la.id
-    where la.code = 'nhn' and l.level_num = 1 and u.unit_num = 1
+    join ct_levels l on u.level_id = l.id
+    join ct_languages la on l.language_id = la.id
+    where la.code = 'hus' and l.level_num = 1 and u.unit_num = 1
 ) u
 where usr.username = 'tetecuhtli';
 
@@ -3623,27 +4013,23 @@ where usr.username = 'tetecuhtli';
 insert into ta_user_stats (user_id, language_id, words_learned, lessons_done, perfect_less, days_studied, best_streak, total_mins)
 select usr.id, la.id, 0, 0, 0, 0, 0, 0
 from ta_users usr
-         cross join ct_languages la
-where usr.username = 'tetecuhtli' and la.code = 'nhn';
+cross join ct_languages la
+where usr.username = 'tetecuhtli' and la.code = 'hus';
 
 commit;
 
 -- ─────────────────────────────────────────────
 --  verificación
---  esperado: ct_levels 6 · ct_units 36 · ct_vocabulary 195 · rl_unit_vocab 254 · ct_exercises 216 · ct_writing_systems 1
+--  esperado: ct_levels 6 · ct_units 36 · ct_vocabulary 175 · rl_unit_vocab 225 · ct_exercises 216 · ct_writing_systems 1
 -- ─────────────────────────────────────────────
-select 'ct_levels' as tabla, count(1) as registros from ct_levels where language_id = (select id from ct_languages where code = 'nhn')
+select 'ct_levels' as tabla, count(1) as registros from ct_levels where language_id = (select id from ct_languages where code = 'hus')
 union all
-select 'ct_units', count(1) from ct_units where level_id in (select id from ct_levels where language_id = (select id from ct_languages where code = 'nhn'))
+select 'ct_units', count(1) from ct_units where level_id in (select id from ct_levels where language_id = (select id from ct_languages where code = 'hus'))
 union all
-select 'ct_vocabulary', count(1) from ct_vocabulary where language_id = (select id from ct_languages where code = 'nhn')
+select 'ct_vocabulary', count(1) from ct_vocabulary where language_id = (select id from ct_languages where code = 'hus')
 union all
-select 'rl_unit_vocab', count(1) from rl_unit_vocab where unit_id in (select u.id from ct_units u join ct_levels l on u.level_id = l.id where l.language_id = (select id from ct_languages where code = 'nhn'))
+select 'rl_unit_vocab', count(1) from rl_unit_vocab where unit_id in (select u.id from ct_units u join ct_levels l on u.level_id = l.id where l.language_id = (select id from ct_languages where code = 'hus'))
 union all
-select 'ct_exercises', count(1) from ct_exercises where unit_id in (select u.id from ct_units u join ct_levels l on u.level_id = l.id where l.language_id = (select id from ct_languages where code = 'nhn'))
+select 'ct_exercises', count(1) from ct_exercises where unit_id in (select u.id from ct_units u join ct_levels l on u.level_id = l.id where l.language_id = (select id from ct_languages where code = 'hus'))
 union all
-select 'ct_writing_systems', count(1) from ct_writing_systems where language_id = (select id from ct_languages where code = 'nhn');
-
--- unidades sin ejercicios (debe devolver 0 filas):
--- select l.level_num, u.unit_num from ct_units u join ct_levels l on u.level_id = l.id join ct_languages la on l.language_id = la.id
---  where la.code = 'nhn' and not exists (select 1 from ct_exercises e where e.unit_id = u.id);
+select 'ct_writing_systems', count(1) from ct_writing_systems where language_id = (select id from ct_languages where code = 'hus');

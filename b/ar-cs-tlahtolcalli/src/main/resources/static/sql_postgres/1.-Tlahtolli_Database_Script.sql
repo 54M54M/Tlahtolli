@@ -2,8 +2,9 @@
 -- ORDEN DE EJECUCION
 -- 1. Tlahtolli_Database_Script.sql
 -- 2. General_Seed_Data.sql  ← usuarios demo + logros
--- 3. Nahuatl_Seed_Data.sql
--- 4. Teenek_Seed_Data.sql
+-- 3. Add_Password_Hash.sql
+-- 4. Nahuatl_Central_nhn_Seed_Data.sql
+-- 5. Tenek_hus_Seed_Data.sql
 
 -- ============================================================
 --  SE CREA EL SCHEMA
@@ -225,9 +226,9 @@ CREATE TABLE CT_ACHIEVEMENTS (
     CONSTRAINT PK_ACHIEVEMENTS PRIMARY KEY (ID)
 );
 -- LANGUAGE_TAG: NULL o '[]' = logro global (visible en cualquier idioma)
---               '["nhce"]'  = logro exclusivo de náhuatl central
---               '["tkoc"]'  = logro exclusivo de huasteco/tének
---               '["nhce","tkoc"]' = visible en ambos idiomas
+--               '["nhn"]'   = logro exclusivo de náhuatl central
+--               '["hus"]'   = logro exclusivo de tének
+--               '["nhn","hus"]' = visible en ambos idiomas
 
 -- ============================================================
 --  13. TA_USER_ACHIEVEMENTS
@@ -244,7 +245,7 @@ CREATE TABLE TA_USER_ACHIEVEMENTS (
     CONSTRAINT FK_USER_ACHIEV_USER      FOREIGN KEY (USER_ID)    REFERENCES TA_USERS(ID)        ON DELETE CASCADE,
     CONSTRAINT FK_USER_ACHIEV_ACHIEVE   FOREIGN KEY (ACHIEVE_ID) REFERENCES CT_ACHIEVEMENTS(ID) ON DELETE CASCADE
 );
--- LANGUAGE_TAG: idioma en el que el usuario ganó este logro (ej. "nhce", "tkoc").
+-- LANGUAGE_TAG: idioma en el que el usuario ganó este logro (ej. "nhn", "hus").
 --               Se setea al momento de desbloquear (ver AchievementService.checkAndUnlock).
 --               Distinto de CT_ACHIEVEMENTS.LANGUAGE_TAG (catálogo estático, formato JSON array).
 
