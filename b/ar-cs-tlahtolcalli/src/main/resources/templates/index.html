@@ -153,6 +153,17 @@
       flex-shrink: 0;
     }
 
+    #login-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(11,13,17,.92); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; padding: 16px; }
+    #login-overlay.show { display: flex; }
+    .login-card { width: 100%; max-width: 360px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+    .login-card h2 { font-size: 1.1rem; margin-bottom: 4px; }
+    .login-card p.sub { font-size: .75rem; color: var(--muted); margin-bottom: 18px; }
+    .login-card label { display: block; font-size: .7rem; color: var(--muted); margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .06em; }
+    .login-card input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink); color: var(--text); font-size: .9rem; }
+    .login-card button { width: 100%; margin-top: 18px; }
+    .login-err { color: var(--coral); font-size: .75rem; min-height: 1em; margin-top: 10px; }
+
     .sidebar-footer {
       padding: 12px 20px;
       border-top: 1px solid var(--border);
@@ -759,6 +770,19 @@
 </head>
 
 <body>
+<!-- Acceso de administrador: el panel solo funciona con una cuenta con rol 'admin' -->
+<div id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <form class="login-card" onsubmit="adminLogin(event)">
+    <h2 id="login-title">Tlahtolcalli · Admin</h2>
+    <p class="sub">Entra con una cuenta de administrador.</p>
+    <label for="login-user">Usuario</label>
+    <input id="login-user" autocomplete="username" required>
+    <label for="login-pass">Contraseña</label>
+    <input id="login-pass" type="password" autocomplete="current-password" required>
+    <button class="btn btn-primary" type="submit" id="login-btn">Entrar</button>
+    <p class="login-err" id="login-err"></p>
+  </form>
+</div>
 
 <!-- ══ SIDEBAR ══ -->
 <aside id="sidebar">
@@ -804,6 +828,8 @@
   </nav>
   <div class="sidebar-footer">
     <p id="conn-status" onclick="showTab('config')">● Desconectado</p>
+    <p id="admin-user" style="margin-top:6px"></p>
+    <p onclick="adminLogout()" style="margin-top:4px;color:var(--coral)">Cerrar sesión</p>
     <a href="mailto:contacto.tlahtolcalli@gmail.com" title="Correo del proyecto"
        style="display:block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted);text-decoration:none;word-break:break-all">contacto.tlahtolcalli@gmail.com</a>
   </div>
@@ -894,10 +920,10 @@
           <div><p class="k">Latencia</p><p class="v" id="svc-latency">—</p></div>
           <div><p class="k">Hora del servidor</p><p class="v" id="svc-time">—</p></div>
           <div><p class="k">Última revisión</p><p class="v" id="svc-checked">—</p></div>
-          <!--div><p class="k">Endpoint</p><p class="v" id="svc-endpoint">—</p></div-->
+          <div><p class="k">Endpoint</p><p class="v" id="svc-endpoint">—</p></div>
           <div><p class="k">Monitor externo</p>
             <a class="uptime-badge" style="display:inline-flex" href="https://stats.uptimerobot.com/iG8x8aeb43?utm_source=status_badge&utm_medium=referral" target="_blank" rel="noopener">
-              <img src="https://badge.uptimerobot.com/psp/637355e694476be4e90904f07614a3f3.svg?style=logo&theme=dark" alt="Estado en UptimeRobot"></a></div>
+              <img src="https://badge.uptimerobot.com/psp/637355e694476be4e90904f07614a3f3.svg?style=logo&theme=light" alt="Estado en UptimeRobot"></a></div>
         </div>
       </div>
       <div class="table-wrap">
@@ -1564,9 +1590,49 @@
     } catch { body.innerHTML = errorHTML(); }
   }
 
+  // ── sesión de administrador (token en sessionStorage: se borra al cerrar la pestaña) ──
+  const TOKEN_KEY = 'tl_admin_token';
+  function getToken() { try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; } }
+  function showLogin(msg = '') {
+    document.getElementById('login-err').textContent = msg;
+    document.getElementById('login-overlay').classList.add('show');
+    setTimeout(() => document.getElementById('login-user').focus(), 50);
+  }
+  function adminLogout(msg = '') {
+    try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem('tl_admin_user'); } catch { }
+    document.getElementById('admin-user').textContent = '';
+    showLogin(msg);
+  }
+  async function adminLogin(ev) {
+    ev.preventDefault();
+    const btn = document.getElementById('login-btn'), err = document.getElementById('login-err');
+    btn.disabled = true; err.textContent = '';
+    try {
+      const res = await fetch(API + '/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: document.getElementById('login-user').value.trim(), password: document.getElementById('login-pass').value })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { err.textContent = data.error || 'Usuario o contraseña incorrectos'; return; }
+      if (data.role !== 'admin') { err.textContent = 'Esta cuenta no tiene rol de administrador.'; return; }
+      sessionStorage.setItem(TOKEN_KEY, data.token);
+      sessionStorage.setItem('tl_admin_user', data.username);
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-overlay').classList.remove('show');
+      startPanel();
+    } catch (e) {
+      err.textContent = 'No se pudo conectar con el backend.';
+    } finally { btn.disabled = false; }
+  }
+
   async function apiFetch(path, opts = {}) {
     try {
-      const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json', ...opts.headers }, ...opts });
+      const token = getToken();
+      const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers } });
+      if (res.status === 401 || res.status === 403) {
+        adminLogout(res.status === 401 ? 'Tu sesión venció. Entra de nuevo.' : 'Esta cuenta no tiene permiso.');
+        throw new Error(`HTTP ${res.status}`);
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.status === 204 ? null : res.json();
     } catch (e) { toast('Error: ' + e.message, true); throw e; }
@@ -2293,10 +2359,19 @@
     document.getElementById('db-host').textContent = apiHost();
     await checkHealth();
     setInterval(checkHealth, HEALTH_EVERY_MS);
+    if (!getToken()) { showLogin(); return; }
+    startPanel();
+  });
+
+  let panelStarted = false;
+  async function startPanel() {
+    try { document.getElementById('admin-user').textContent = '● ' + (sessionStorage.getItem('tl_admin_user') || 'admin'); } catch { }
+    if (panelStarted) { loadOverview(); return; }
+    panelStarted = true;
     try { const d = await apiFetch('/languages'); languagesCache = d?.content ?? d ?? []; refreshLangDropdowns(); } catch { }
     await refreshDropdowns();
     loadOverview();
-  });
+  }
 </script>
 </body>
 
