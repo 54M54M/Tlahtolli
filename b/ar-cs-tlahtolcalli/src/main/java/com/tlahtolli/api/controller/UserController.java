@@ -2,6 +2,8 @@ package com.tlahtolli.api.controller;
 
 import com.tlahtolli.api.dto.request.UserRequest;
 import com.tlahtolli.api.dto.request.SwitchLanguageRequest;
+import com.tlahtolli.api.dto.request.UpdateUserRequest;
+import com.tlahtolli.api.security.CurrentUser;
 import com.tlahtolli.api.dto.response.UserResponse;
 import com.tlahtolli.api.entity.User;
 import com.tlahtolli.api.service.UserService;
@@ -41,6 +43,8 @@ public class UserController {
 
     @GetMapping("/by-username/{username}")
     public ResponseEntity<UserResponse> getByUsername(@PathVariable String username) {
+        if (!CurrentUser.isAdmin() && !username.equalsIgnoreCase(CurrentUser.get().username()))
+            return ResponseEntity.status(403).build();
         return userService.getByUsername(username).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -61,7 +65,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRequest dto) {
+    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UpdateUserRequest dto) {
         User body = new User();
         body.setUsername(dto.username());
         body.setFullName(dto.fullName());

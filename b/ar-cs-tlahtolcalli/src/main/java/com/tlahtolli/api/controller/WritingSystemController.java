@@ -1,5 +1,8 @@
 package com.tlahtolli.api.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+import com.tlahtolli.api.config.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import com.tlahtolli.api.entity.WritingSystem;
 import com.tlahtolli.api.repository.WritingSystemRepository;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ public class WritingSystemController {
 	 * Usado por SyllabaryRepository del frontend (GlossaryView / SyllabaryContent).
 	 */
 	@GetMapping
+	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'escritura:' + #p0 + ':' + #p1")
 	public ResponseEntity<?> getAll(@RequestParam(required = false) Long languageId,
 			@RequestParam(required = false) String type) {
 
@@ -43,11 +47,13 @@ public class WritingSystemController {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PostMapping
 	public ResponseEntity<WritingSystem> create(@RequestBody WritingSystem ws) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(ws));
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PutMapping("/{id}")
 	public ResponseEntity<WritingSystem> update(@PathVariable Long id, @RequestBody WritingSystem ws) {
 		return repo.findById(id).map(existing -> {
@@ -56,6 +62,7 @@ public class WritingSystemController {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		if (!repo.existsById(id))

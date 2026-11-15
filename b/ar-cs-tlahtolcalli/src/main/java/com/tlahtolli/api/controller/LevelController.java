@@ -1,5 +1,7 @@
 package com.tlahtolli.api.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+import com.tlahtolli.api.config.CacheConfig;
 import java.util.List;
 import java.util.Map;
 
@@ -48,11 +50,13 @@ public class LevelController {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PostMapping
 	public ResponseEntity<Level> create(@RequestBody Level l) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(l));
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PutMapping("/{id}")
 	public ResponseEntity<Level> update(@PathVariable Integer id, @RequestBody Level l) {
 		return repo.findById(id).map(ex -> {
@@ -61,6 +65,7 @@ public class LevelController {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		if (!repo.existsById(id))

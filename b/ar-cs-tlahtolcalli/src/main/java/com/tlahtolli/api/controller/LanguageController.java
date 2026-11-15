@@ -1,5 +1,8 @@
 package com.tlahtolli.api.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+import com.tlahtolli.api.config.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,7 @@ public class LanguageController {
 	}
 
 	@GetMapping
+	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'idiomas'")
 	public List<Language> getAll() {
 		return repo.findAll();
 	}
@@ -43,11 +47,13 @@ public class LanguageController {
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PostMapping
 	public ResponseEntity<Language> create(@RequestBody Language body) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(body));
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@PutMapping("/{id}")
 	public ResponseEntity<Language> update(@PathVariable Long id, @RequestBody Language body) {
 		return repo.findById(id).map(existing -> {
@@ -56,6 +62,7 @@ public class LanguageController {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
+	@CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		if (!repo.existsById(id))

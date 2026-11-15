@@ -46,6 +46,10 @@ public class User {
     @Column(name = "PASSWORD_HASH", nullable = false, length = 255)
     private String passwordHash;
 
+    /** 'user' o 'admin'. Solo se cambia desde la base de datos, nunca desde la API. */
+    @Column(name = "ROLE", nullable = false, length = 20)
+    private String role = "user";
+
 	public Integer getId() {
 		return id;
 	}
@@ -132,6 +136,18 @@ public class User {
 
 	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public boolean isAdmin() {
+		return "admin".equalsIgnoreCase(role);
 	}
         
 }

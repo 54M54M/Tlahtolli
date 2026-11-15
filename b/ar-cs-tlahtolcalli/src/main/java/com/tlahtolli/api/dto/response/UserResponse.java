@@ -13,13 +13,14 @@ public record UserResponse(
         Integer totalXp,
         Short streak,
         LocalDate joinDate,
-        Integer currentLang
+        Integer currentLang,
+        String role
 ) {
     public static UserResponse from(User u) {
         return new UserResponse(
                 u.getId(), u.getUsername(), u.getFullName(), u.getEmail(),
                 u.getUserLevel(), u.getXp(), u.getTotalXp(),
-                u.getStreak(), u.getJoinDate(), u.getCurrentLang()
+                u.getStreak(), u.getJoinDate(), u.getCurrentLang(), u.getRole()
         );
     }
 }

@@ -1,5 +1,7 @@
 package com.tlahtolli.api.service;
 
+import org.springframework.cache.annotation.Cacheable;
+import com.tlahtolli.api.config.CacheConfig;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tlahtolli.api.entity.Exercise;
@@ -30,6 +32,11 @@ public class LearningService {
 	private final UserProgressRepository progressRepo;
 	private final UnitVocabRepository unitVocabRepo;
 	private final ObjectMapper mapper;
+
+	// Referencia al proxy de Spring para que las llamadas internas también usen la caché
+	@org.springframework.beans.factory.annotation.Autowired
+	@org.springframework.context.annotation.Lazy
+	private LearningService self;
 
 	public LearningService(LevelRepository levelRepo, UnitRepository unitRepo, ExerciseRepository exerciseRepo,
 			UserProgressRepository progressRepo, UnitVocabRepository unitVocabRepo) {
@@ -93,6 +100,7 @@ public class LearningService {
 
 	// ── Ejercicios ────────────────────────────────────────────────────────────
 
+	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'ejercicios:' + #p0")
 	public List<Map<String, Object>> getExercisesForUnit(Integer unitId) {
 		log.debug("Getting exercises for unitId={}", unitId);
 		List<Exercise> exercises = exerciseRepo.findByUnitId(unitId);
@@ -106,7 +114,7 @@ public class LearningService {
 		log.debug("Getting {} random exercises for levelId={}", count, levelId);
 		List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
 		List<Map<String, Object>> all = new ArrayList<>();
-		units.forEach(u -> all.addAll(getExercisesForUnit(u.getId())));
+		units.forEach(u -> all.addAll(self.getExercisesForUnit(u.getId())));
 		Collections.shuffle(all);
 		return all.subList(0, Math.min(count, all.size()));
 	}
@@ -118,6 +126,7 @@ public class LearningService {
 	 * PronunciationTooltip: { "palabra": { "translation": "...", "pronunciation":
 	 * "...", "example": "..." } }
 	 */
+	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'vocabulario:' + #p0")
 	public Map<String, Object> getVocabularyForUnit(Integer unitId) {
 		log.debug("Getting vocabulary for unitId={}", unitId);
 		List<Vocabulary> vocab = unitVocabRepo.findVocabularyByUnitId(unitId);

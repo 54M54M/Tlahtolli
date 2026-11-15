@@ -1,5 +1,7 @@
 package com.tlahtolli.api.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+import com.tlahtolli.api.config.CacheConfig;
 import com.tlahtolli.api.dto.request.LessonRequest;
 import com.tlahtolli.api.dto.response.LessonResponse;
 import com.tlahtolli.api.entity.Lesson;
@@ -39,6 +41,7 @@ public class LessonController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
     @PostMapping
     public ResponseEntity<LessonResponse> create(@Valid @RequestBody LessonRequest dto) {
         Lesson lesson = Lesson.builder()
@@ -52,6 +55,7 @@ public class LessonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(LessonResponse.from(repo.save(lesson)));
     }
 
+    @CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<LessonResponse> update(@PathVariable Long id, @Valid @RequestBody LessonRequest dto) {
         return repo.findById(id).map(existing -> {
@@ -65,6 +69,7 @@ public class LessonController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    @CacheEvict(cacheNames = CacheConfig.CATALOGO, allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!repo.existsById(id))

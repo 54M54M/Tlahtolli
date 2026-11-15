@@ -1,5 +1,6 @@
 package com.tlahtolli.api.controller;
 
+import com.tlahtolli.api.security.CurrentUser;
 import com.tlahtolli.api.dto.request.CompleteLessonRequest;
 import com.tlahtolli.api.dto.request.InitProgressRequest;
 import com.tlahtolli.api.dto.response.LessonCompletionResponse;
@@ -40,6 +41,7 @@ public class UserProgressController {
 
 	@PostMapping("/complete")
 	public ResponseEntity<LessonCompletionResponse> completeLesson(@Valid @RequestBody CompleteLessonRequest req) {
+		CurrentUser.requireSelfOrAdmin(req.userId());
 		LessonCompletionResponse result = (req.unitId() == null || req.unitId() == 0) && req.levelId() != null
 				? facade.completeQuickLevel(req)
 				: facade.completeLesson(req);
@@ -48,6 +50,7 @@ public class UserProgressController {
 
 	@PostMapping("/init")
 	public ResponseEntity<Void> init(@Valid @RequestBody InitProgressRequest req) {
+		CurrentUser.requireSelfOrAdmin(req.userId());
 		facade.initializeProgress(req.userId(), req.firstUnitId());
 		return ResponseEntity.ok().build();
 	}

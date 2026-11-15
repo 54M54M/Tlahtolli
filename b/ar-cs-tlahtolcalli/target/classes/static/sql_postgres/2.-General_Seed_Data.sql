@@ -13,8 +13,9 @@
 --  Orden de ejecución recomendado:
 --    1. Tlahtolli_Database_Script.sql
 --    2. General_Seed_Data.sql          ← este archivo
---    3. Nahuatl_Seed_Data.sql
---    4. Teenek_Seed_Data.sql
+--    3. Add_Password_Hash.sql
+--    4. Nahuatl_Central_nhn_Seed_Data.sql
+--    5. Tenek_hus_Seed_Data.sql
 -- ============================================================
 
 -- ─────────────────────────────────────────────
