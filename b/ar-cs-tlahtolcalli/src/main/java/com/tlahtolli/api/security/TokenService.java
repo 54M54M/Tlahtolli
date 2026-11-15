@@ -20,7 +20,6 @@ import com.tlahtolli.api.entity.User;
 /**
  * Tokens JWT firmados con HMAC-SHA256 (HS256), sin dependencias externas.
  *
- * Variables de entorno:
  *   JWT_SECRET  obligatorio, mínimo 32 caracteres (en Render: Environment)
  *   JWT_HOURS   opcional, vigencia en horas (por defecto 168 = 7 días)
  */
@@ -49,7 +48,12 @@ public class TokenService {
 
     /** Emite un token para el usuario. Devuelve [token, expiración en epoch segundos]. */
     public Issued issue(User u) {
-        long exp = Instant.now().getEpochSecond() + ttlSeconds;
+        return issue(u, ttlSeconds);
+    }
+
+    /** Igual que issue(u), con vigencia propia (el monitor usa tokens cortos ligados a su sesión). */
+    public Issued issue(User u, long seconds) {
+        long exp = Instant.now().getEpochSecond() + seconds;
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("sub", String.valueOf(u.getId()));
         payload.put("usr", u.getUsername());

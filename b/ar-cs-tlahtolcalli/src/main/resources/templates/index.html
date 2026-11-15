@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, nofollow">
+  <!-- token de 60 min que el servidor genera solo para una sesión admin -->
+  <meta name="api-token" th:content="${apiToken}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- https://dashboard.render.com//favicon-light.png -->
@@ -153,16 +156,6 @@
       flex-shrink: 0;
     }
 
-    #login-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(11,13,17,.92); backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center; padding: 16px; }
-    #login-overlay.show { display: flex; }
-    .login-card { width: 100%; max-width: 360px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
-    .login-card h2 { font-size: 1.1rem; margin-bottom: 4px; }
-    .login-card p.sub { font-size: .75rem; color: var(--muted); margin-bottom: 18px; }
-    .login-card label { display: block; font-size: .7rem; color: var(--muted); margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .06em; }
-    .login-card input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink); color: var(--text); font-size: .9rem; }
-    .login-card button { width: 100%; margin-top: 18px; }
-    .login-err { color: var(--coral); font-size: .75rem; min-height: 1em; margin-top: 10px; }
 
     .sidebar-footer {
       padding: 12px 20px;
@@ -770,25 +763,15 @@
 </head>
 
 <body>
-<!-- Acceso de administrador: el panel solo funciona con una cuenta con rol 'admin' -->
-<div id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
-  <form class="login-card" onsubmit="adminLogin(event)">
-    <h2 id="login-title">Tlahtolcalli · Admin</h2>
-    <p class="sub">Entra con una cuenta de administrador.</p>
-    <label for="login-user">Usuario</label>
-    <input id="login-user" autocomplete="username" required>
-    <label for="login-pass">Contraseña</label>
-    <input id="login-pass" type="password" autocomplete="current-password" required>
-    <button class="btn btn-primary" type="submit" id="login-btn">Entrar</button>
-    <p class="login-err" id="login-err"></p>
-  </form>
-</div>
 
 <!-- ══ SIDEBAR ══ -->
 <aside id="sidebar">
   <div class="logo">
-    <h1>tlahtolcalli<span>·</span></h1>
-    <p>Admin Dashboard</p>
+    <h1>tlahtolcalli</h1>
+    <a href="mailto:contacto.tlahtolcalli@gmail.com" title="Correo del proyecto"
+       style="display:block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted);text-decoration:none;word-break:break-all">
+      contacto.tlahtolcalli@gmail.com
+    </a>
   </div>
   <nav>
     <div class="nav-section">
@@ -823,15 +806,15 @@
     </div>
     <div class="nav-section">
       <span class="nav-label">Sistema</span>
+      <button class="nav-btn" data-label="Métricas" onclick="showTab('metrics')"><span class="icon">📡</span><span class="nav-text">Métricas</span></button>
       <button class="nav-btn" data-label="Configuración" onclick="showTab('config')"><span class="icon">⚙️</span><span class="nav-text">Configuración</span></button>
     </div>
   </nav>
   <div class="sidebar-footer">
     <p id="conn-status" onclick="showTab('config')">● Desconectado</p>
-    <p id="admin-user" style="margin-top:6px"></p>
-    <p onclick="adminLogout()" style="margin-top:4px;color:var(--coral)">Cerrar sesión</p>
-    <a href="mailto:contacto.tlahtolcalli@gmail.com" title="Correo del proyecto"
-       style="display:block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--muted);text-decoration:none;word-break:break-all">contacto.tlahtolcalli@gmail.com</a>
+    <form th:action="@{/monitor/logout}" method="post" style="margin-top:4px">
+      <button type="submit" style="background:none;border:0;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--coral)">Cerrar sesión</button>
+    </form>
   </div>
 </aside>
 
@@ -1197,6 +1180,21 @@
     </div>
 
     <!-- CONFIG -->
+    <div class="tab-pane" id="tab-metrics">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+        <p style="font-size:.75rem;color:var(--muted)">Se actualiza cada 30 s mientras esta pestaña está abierta · <span id="mx-updated">—</span></p>
+        <button class="btn btn-ghost btn-sm" onclick="loadMetrics()">Actualizar</button>
+      </div>
+      <div class="stats-grid" id="mx-cards"></div>
+      <div class="table-wrap"><div class="table-header"><h3 id="mx-server-title">Servidor</h3></div><div id="mx-server"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Peticiones a la API</h3><span id="mx-req-since" style="font-size:.7rem;color:var(--muted)"></span></div><div id="mx-requests"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Base de datos (Postgres)</h3></div><div id="mx-db"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Disponibilidad (UptimeRobot)</h3></div><div id="mx-uptime"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Despliegues del backend (Render)</h3></div><div id="mx-render"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Despliegues del frontend (Netlify)</h3></div><div id="mx-netlify"></div></div>
+      <div class="table-wrap"><div class="table-header"><h3>Proyecto (Neon)</h3></div><div id="mx-neon"></div></div>
+    </div>
+
     <div class="tab-pane" id="tab-config">
       <div class="config-panel">
         <h3>API Backend</h3>
@@ -1484,7 +1482,8 @@
 <div id="toast"></div>
 
 <!-- ══ JS ══ -->
-<script>
+<!-- th:inline="none": Thymeleaf no procesa expresiones dentro de este JavaScript -->
+<script th:inline="none">
   let API = localStorage.getItem('tlahtolli_api') || `${window.location.origin}/api`;
   let languagesCache = [];
   let unitsCache = [];
@@ -1590,49 +1589,18 @@
     } catch { body.innerHTML = errorHTML(); }
   }
 
-  // ── sesión de administrador (token en sessionStorage: se borra al cerrar la pestaña) ──
-  const TOKEN_KEY = 'tl_admin_token';
-  function getToken() { try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; } }
-  function showLogin(msg = '') {
-    document.getElementById('login-err').textContent = msg;
-    document.getElementById('login-overlay').classList.add('show');
-    setTimeout(() => document.getElementById('login-user').focus(), 50);
-  }
-  function adminLogout(msg = '') {
-    try { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem('tl_admin_user'); } catch { }
-    document.getElementById('admin-user').textContent = '';
-    showLogin(msg);
-  }
-  async function adminLogin(ev) {
-    ev.preventDefault();
-    const btn = document.getElementById('login-btn'), err = document.getElementById('login-err');
-    btn.disabled = true; err.textContent = '';
-    try {
-      const res = await fetch(API + '/auth/login', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: document.getElementById('login-user').value.trim(), password: document.getElementById('login-pass').value })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) { err.textContent = data.error || 'Usuario o contraseña incorrectos'; return; }
-      if (data.role !== 'admin') { err.textContent = 'Esta cuenta no tiene rol de administrador.'; return; }
-      sessionStorage.setItem(TOKEN_KEY, data.token);
-      sessionStorage.setItem('tl_admin_user', data.username);
-      document.getElementById('login-pass').value = '';
-      document.getElementById('login-overlay').classList.remove('show');
-      startPanel();
-    } catch (e) {
-      err.textContent = 'No se pudo conectar con el backend.';
-    } finally { btn.disabled = false; }
-  }
+  // ── sesión de administrador ──
+  // El servidor solo entrega esta página a una sesión con rol admin (ver SecurityConfig) y
+  // escribe aquí un token de 60 min para llamar a la API. Si vence, se vuelve al login.
+  const ADMIN_TOKEN = document.querySelector('meta[name="api-token"]')?.content || '';
+  function getToken() { return ADMIN_TOKEN; }
+  function sessionExpired() { window.location.href = '/monitor/login?expired'; }
 
   async function apiFetch(path, opts = {}) {
     try {
       const token = getToken();
       const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers } });
-      if (res.status === 401 || res.status === 403) {
-        adminLogout(res.status === 401 ? 'Tu sesión venció. Entra de nuevo.' : 'Esta cuenta no tiene permiso.');
-        throw new Error(`HTTP ${res.status}`);
-      }
+      if (res.status === 401) { sessionExpired(); throw new Error('HTTP 401'); }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.status === 204 ? null : res.json();
     } catch (e) { toast('Error: ' + e.message, true); throw e; }
@@ -1677,6 +1645,97 @@
   function fmtDate(d) { if (!d) return '—'; try { return new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: '2-digit' }); } catch { return d; } }
   function emptyHTML() { return `<div class="empty"><p>Sin registros aún</p></div>`; }
   function errorHTML() { return `<div class="empty"><p style="color:var(--coral)">No se pudo conectar con la API.<br><small>Verifica que Spring Boot esté corriendo.</small></p></div>`; }
+  /* ══ MÉTRICAS (GET /api/admin/metrics) ══ */
+  let metricsTimer = null;
+  const mono = v => `<td style="font-family:'IBM Plex Mono',monospace">${v ?? '—'}</td>`;
+  const kv = rows => `<div class="svc-grid">${rows.map(([k, v]) => `<div><p class="k">${k}</p><p class="v">${v ?? '—'}</p></div>`).join('')}</div>`;
+  const offHTML = src => src?.configured === false
+      ? `<div class="empty"><p style="color:var(--muted)">${esc(src.error)}<br><small>Agrega las variables de entorno en Render para activarlo.</small></p></div>`
+      : `<div class="empty"><p style="color:var(--coral)">No respondió: ${esc(src?.error ?? 'error')}</p></div>`;
+  const dur = s => { s = Number(s) || 0; const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return (d ? d + 'd ' : '') + (h ? h + 'h ' : '') + m + 'm'; };
+  const when = d => { if (!d) return '—'; try { return new Date(typeof d === 'number' ? d * 1000 : d).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
+  const stateChip = st => { const s = String(st || '').toLowerCase();
+    const c = ['ready', 'live', 'up', 'succeeded'].includes(s) ? 'chip-green' : ['error', 'failed', 'build_failed', 'update_failed', 'down', 'canceled'].includes(s) ? 'chip-red' : 'chip-amber';
+    return `<span class="chip ${c}">${esc(st || '—')}</span>`; };
+  const card = (label, value, sub, accent) => `<div class="stat-card" style="--accent:${accent}"><p class="label">${label}</p><p class="value">${value ?? '—'}</p><p class="sub">${sub ?? ''}</p></div>`;
+  const bar = pctv => { const p = Math.max(0, Math.min(100, Number(pctv) || 0)); const col = p > 85 ? 'var(--coral)' : p > 60 ? 'var(--amber)' : 'var(--jade)';
+    return `<div class="ebar"><div class="ebar-track"><div class="ebar-fill" style="width:${p}%;background:${col}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)">${p.toFixed(0)}%</span></div>`; };
+
+  async function loadMetrics() {
+    clearTimeout(metricsTimer);
+    if (!document.getElementById('tab-metrics').classList.contains('active')) return;
+    let m;
+    try { m = await apiFetch('/admin/metrics'); }
+    catch { ['mx-server', 'mx-requests', 'mx-db', 'mx-uptime', 'mx-render', 'mx-netlify', 'mx-neon'].forEach(id => document.getElementById(id).innerHTML = errorHTML()); return; }
+    document.getElementById('mx-updated').textContent = 'última lectura ' + new Date().toLocaleTimeString('es-MX');
+
+    const sv = m.server || {}, rq = m.requests || {}, db = m.database || {};
+    const up = (m.uptimeRobot?.monitors || [])[0];
+    const heapPct = sv.heapMaxMb ? 100 * sv.heapUsedMb / sv.heapMaxMb : 0;
+    document.getElementById('mx-cards').innerHTML =
+        card('Disponibilidad 30 d', up ? up.uptime30d + '%' : '—', up ? 'UptimeRobot · ' + up.status : 'Sin UptimeRobot', 'var(--jade)') +
+        card('Memoria JVM', sv.heapUsedMb != null ? sv.heapUsedMb + ' MB' : '—', 'de ' + (sv.heapMaxMb ?? '—') + ' MB', heapPct > 85 ? 'var(--coral)' : 'var(--amber)') +
+        card('Peticiones', (rq.total ?? 0).toLocaleString(), 'prom. ' + (rq.avgMs ?? 0) + ' ms · desde el arranque', '#7EB3FF') +
+        card('Base de datos', db.sizeMb != null ? db.sizeMb + ' MB' : '—', 'caché ' + (db.stats?.cache_hit_pct ?? '—') + '%', 'var(--coral)');
+
+    document.getElementById('mx-server-title').innerHTML = sv.environment === 'Local'
+        ? `Servidor <span class="chip chip-amber" style="margin-left:6px">LOCAL · ${esc(sv.host)}</span> <small style="color:var(--muted);font-weight:400">datos de tu computadora, no de Render</small>`
+        : `Servidor <span class="chip chip-green" style="margin-left:6px">RENDER${sv.host ? ' · ' + esc(sv.host) : ''}</span>`;
+    document.getElementById('mx-server').innerHTML = sv.ok === false ? offHTML(sv) : kv([
+        ['En línea', dur(sv.uptimeSeconds)], ['Java', sv.javaVersion], ['CPU proceso', sv.processCpu != null ? sv.processCpu + '%' : '—'],
+        ['CPU sistema', sv.systemCpu != null ? sv.systemCpu + '%' : '—'], ['Núcleos', sv.cpus], ['Hilos', sv.threads],
+        ['Heap JVM', bar(heapPct) + `<small style="color:var(--muted)">${sv.heapUsedMb} / ${sv.heapMaxMb} MB</small>`],
+        [sv.environment === 'Local' ? 'RAM del equipo' : 'RAM del contenedor', sv.systemMemTotalMb ? bar(100 * (sv.systemMemTotalMb - sv.systemMemFreeMb) / sv.systemMemTotalMb) + `<small style="color:var(--muted)">${sv.systemMemTotalMb - sv.systemMemFreeMb} / ${sv.systemMemTotalMb} MB</small>` : '—'],
+        ['Pool de conexiones', sv.poolTotal != null ? `${sv.poolActive} activas · ${sv.poolIdle} libres · ${sv.poolWaiting} esperando (máx ${sv.poolMax})` : '—'] ]);
+
+    document.getElementById('mx-req-since').textContent = rq.since ? 'desde ' + when(rq.since) + ` · ${rq.errors4xx ?? 0} 4xx · ${rq.errors5xx ?? 0} 5xx` : '';
+    document.getElementById('mx-requests').innerHTML = !(rq.endpoints || []).length ? emptyHTML() :
+        `<table><thead><tr><th>Endpoint</th><th>Peticiones</th><th>Prom.</th><th>Máx.</th><th>4xx</th><th>5xx</th></tr></thead><tbody>${rq.endpoints.map(r => `<tr>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem">${esc(r.endpoint)}</td>${mono(r.count.toLocaleString())}${mono(r.avgMs + ' ms')}${mono(r.maxMs + ' ms')}
+          <td>${r.errors4xx ? `<span class="chip chip-amber">${r.errors4xx}</span>` : '0'}</td><td>${r.errors5xx ? `<span class="chip chip-red">${r.errors5xx}</span>` : '0'}</td></tr>`).join('')}</tbody></table>`;
+
+    document.getElementById('mx-db').innerHTML = db.ok === false ? offHTML(db) : kv([
+        ['Postgres', db.version], ['Base', db.database], ['Tamaño', db.sizeMb + ' MB'], ['Aciertos de caché', (db.stats?.cache_hit_pct ?? '—') + '%'],
+        ['Commits / rollbacks', `${(db.stats?.commits ?? 0).toLocaleString()} / ${(db.stats?.rollbacks ?? 0).toLocaleString()}`],
+        ['Conexiones', (db.connections || []).map(c => `${c.total} ${esc(c.state)}`).join(' · ') || '—'] ]) +
+      `<table><thead><tr><th>Tabla</th><th>Filas</th><th>Tamaño</th></tr></thead><tbody>${(db.tables || []).map(t =>
+        `<tr><td>${esc(t.table_name)}</td>${mono(Number(t.row_count).toLocaleString())}${mono(t.size_kb + ' KB')}</tr>`).join('')}</tbody></table>`;
+
+    const ur = m.uptimeRobot;
+    document.getElementById('mx-uptime').innerHTML = !ur?.ok ? offHTML(ur) : (ur.monitors || []).map(x => {
+      const pts = (x.responseTimes || []).slice().reverse(), max = Math.max(1, ...pts.map(p => p.ms));
+      const spark = pts.length ? `<svg viewBox="0 0 ${pts.length * 10} 40" preserveAspectRatio="none" style="width:100%;height:48px;display:block" aria-label="Tiempo de respuesta">
+          <polyline fill="none" stroke="var(--jade)" stroke-width="2" vector-effect="non-scaling-stroke" points="${pts.map((p, i) => `${i * 10 + 5},${38 - 34 * p.ms / max}`).join(' ')}"/></svg>
+          <p style="font-size:.65rem;color:var(--muted)">Respuesta: ${Math.min(...pts.map(p => p.ms))}–${max} ms en las últimas lecturas</p>` : '';
+      return kv([ ['Monitor', esc(x.name)], ['Estado', stateChip(x.status)], ['24 h', x.uptime24h + '%'], ['7 días', x.uptime7d + '%'], ['30 días', x.uptime30d + '%'], ['Respuesta prom.', (x.avgResponseMs ?? '—') + ' ms'] ]) +
+        `<div style="padding:0 18px 14px">${spark}</div>` +
+        ((x.logs || []).length ? `<table><thead><tr><th>Evento</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${x.logs.map(l =>
+          `<tr><td>${l.type === 1 ? stateChip('down') : l.type === 2 ? stateChip('up') : stateChip('pausa')}</td>${mono(when(l.at))}${mono(dur(l.durationS))}</tr>`).join('')}</tbody></table>` : '');
+    }).join('');
+
+    const rd = m.render;
+    document.getElementById('mx-render').innerHTML = !rd?.ok ? offHTML(rd) : !(rd.deploys || []).length ? emptyHTML() :
+        `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Origen</th><th>Inicio</th><th>Fin</th></tr></thead><tbody>${rd.deploys.map(d => `<tr>
+          <td>${stateChip(d.status)}</td>${mono(esc(d.commit))}<td style="font-size:.78rem">${esc(d.message ?? '—')}</td><td style="font-size:.72rem;color:var(--muted)">${esc(d.trigger ?? '—')}</td>${mono(when(d.createdAt))}${mono(when(d.finishedAt))}</tr>`).join('')}</tbody></table>`;
+
+    const nf = m.netlify;
+    document.getElementById('mx-netlify').innerHTML = !nf?.ok ? offHTML(nf) : !(nf.deploys || []).length ? emptyHTML() :
+        `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Rama</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${nf.deploys.map(d => `<tr>
+          <td>${stateChip(d.state)}</td>${mono(esc(d.commit))}<td style="font-size:.78rem">${esc(d.error || d.title || '—')}</td><td style="font-size:.72rem;color:var(--muted)">${esc(d.branch)}</td>${mono(when(d.createdAt))}${mono(d.deploySeconds != null ? d.deploySeconds + ' s' : '—')}</tr>`).join('')}</tbody></table>`;
+
+    const ne = m.neon;
+    const mb = b => b != null ? (Number(b) / 1048576).toFixed(1) + ' MB' : '—';
+    document.getElementById('mx-neon').innerHTML = !ne?.ok ? offHTML(ne) : kv([
+        ['Proyecto', esc(ne.name)], ['Región', esc(ne.region)], ['Postgres', ne.pgVersion],
+        ['Tiempo activo', ne.active_time_seconds != null ? dur(ne.active_time_seconds) : '—'],
+        ['Tiempo de cómputo', ne.compute_time_seconds != null ? dur(ne.compute_time_seconds) : '—'],
+        ['CPU usada', ne.cpu_used_sec != null ? dur(ne.cpu_used_sec) : '—'],
+        ['Almacenamiento', mb(ne.synthetic_storage_size)], ['Transferencia', mb(ne.data_transfer_bytes)], ['Escrito', mb(ne.written_data_bytes)],
+        ['Periodo', ne.consumption_period_start ? when(ne.consumption_period_start) + ' → ' + when(ne.consumption_period_end) : '—'] ]);
+
+    metricsTimer = setTimeout(loadMetrics, 30000);
+  }
+
   function loadingHTML() { return `<div class="loading"><span class="spinner"></span>Cargando…</div>`; }
   function numVal(id) { return +document.getElementById(id).value || 0; }
   function strVal(id) { return document.getElementById(id).value.trim(); }
@@ -1687,13 +1746,13 @@
     overview: 'Overview', languages: 'Idiomas', users: 'Usuarios', vocabulary: 'Vocabulario',
     achievements: 'Logros', levels: 'Niveles', units: 'Unidades', lessons: 'Lecciones', exercises: 'Ejercicios',
     lesson_history: 'Historial', user_stats: 'Estadísticas', user_progress: 'Progreso de Usuario',
-    user_energy: 'Energía', user_achievements: 'Logros de Usuario', writing_systems: 'Sistemas de Escritura', config: 'Configuración'
+    user_energy: 'Energía', user_achievements: 'Logros de Usuario', writing_systems: 'Sistemas de Escritura', metrics: 'Métricas', config: 'Configuración'
   };
   const TAB_LOADERS = {
     overview: loadOverview, languages: loadLanguages, users: loadUsers, vocabulary: loadVocabulary,
     achievements: loadAchievements, levels: loadLevels, units: loadUnits, lessons: loadLessons, exercises: loadExercises,
     lesson_history: loadHistory, user_stats: loadStats, user_progress: loadUserProgress,
-    user_energy: loadUserEnergy, user_achievements: loadUserAchievements, writing_systems: loadWritingSystems, config: loadConfig
+    user_energy: loadUserEnergy, user_achievements: loadUserAchievements, writing_systems: loadWritingSystems, metrics: loadMetrics, config: loadConfig
   };
 
   function showTab(name) {
@@ -2359,13 +2418,11 @@
     document.getElementById('db-host').textContent = apiHost();
     await checkHealth();
     setInterval(checkHealth, HEALTH_EVERY_MS);
-    if (!getToken()) { showLogin(); return; }
     startPanel();
   });
 
   let panelStarted = false;
   async function startPanel() {
-    try { document.getElementById('admin-user').textContent = '● ' + (sessionStorage.getItem('tl_admin_user') || 'admin'); } catch { }
     if (panelStarted) { loadOverview(); return; }
     panelStarted = true;
     try { const d = await apiFetch('/languages'); languagesCache = d?.content ?? d ?? []; refreshLangDropdowns(); } catch { }
