@@ -5,10 +5,8 @@
 // así que no altera el progreso del usuario de prueba.
 //
 // Uso:
-//   cd /D D:\dev\source\tlahtolli
-//   ren estres_tlahtolcalli.js estres_tlahtolcalli.js
-//   k6 run -e USER=**** -e PASS=**** -e PERFIL=suave estres_tlahtolcalli.js
-//   (opcional) -e BASE=https://... -e PERFIL=suave|medio|fuerte
+//   k6 run -e USER=tetecuhtli -e PASS=demo1234 estres_tlahtolcalli.js
+//   (opcional) -e BASE=https://ar-cs-tlahtolcalli.onrender.com/api  -e PERFIL=suave|medio|fuerte
 //
 // Antes de correrlo: abre /api/health para despertar el servicio (Render free duerme a los 15 min).
 
@@ -45,7 +43,8 @@ const errores = new Rate('errores_funcionales');
 const JSON_H = { headers: { 'Content-Type': 'application/json' } };
 
 function get(path, tag) {
-    const r = http.get(`${BASE}${path}`, { tags: { endpoint: tag } });
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const r = http.get(`${BASE}${path}`, { headers, tags: { endpoint: tag } });
     errores.add(!check(r, { [`${tag} 200`]: (x) => x.status === 200 }));
     return r;
 }
@@ -61,6 +60,7 @@ export function setup() {
 
 // Sesión por usuario virtual: cada VU conserva sus variables entre iteraciones
 let user = null;
+let token = null;   // JWT que devuelve el login (el backend lo exige en los datos del usuario)
 
 function login() {
     group('login', () => {
@@ -69,6 +69,7 @@ function login() {
         errores.add(!check(r, { 'login 200': (x) => x.status === 200 }));
         const u = body(r);
         user = u && u.id ? u : null;
+        token = u && u.token ? u.token : null;
     });
 }
 

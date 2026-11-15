@@ -5,7 +5,8 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import { preventReload } from './utils/preventReload.js'
-import { warmUpBackend } from './api/apiClient.js'
+import { warmUpBackend, configureAuth } from './api/apiClient.js'
+import { useAuthStore } from './stores/auth.js'
 import { palettePlugin } from './utils/palette.js'
 
 // Despertar el backend antes de que el usuario haga login
@@ -23,4 +24,16 @@ app
     .use(pinia)
     .use(palettePlugin)
     .use(router)
-    .mount('#app')
+
+// Cada petición lleva el token; si el backend responde 401, se cierra la sesión
+const authStore = useAuthStore()
+configureAuth({
+    token: () => authStore.token,
+    unauthorized: () => {
+        if (!authStore.user) return
+        authStore.logout()
+        router.push('/login')
+    },
+})
+
+app.mount('#app')

@@ -90,11 +90,14 @@ router.afterEach((to) => {
     const title = ROUTE_TITLES[to.name]
     document.title = title
         ? `${title} · ${APP_NAME}`
-        : `${APP_NAME} · Aprende lenguas originarias de México.`
+        : `${APP_NAME} · Aprende náhuatl y tének`
 })
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
+
+    // 0. Sesión guardada sin token o con token vencido (p. ej. de antes de la actualización) → cerrarla
+    if (authStore.user && !authStore.isAuthenticated) authStore.logout()
 
     // 1. Sin usuario → solo puede ir a login
     if (to.meta.requiresAuth && !authStore.user) {

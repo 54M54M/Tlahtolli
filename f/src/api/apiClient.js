@@ -5,16 +5,34 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
+// ── sesión ──────────────────────────────────────────────────────────────────
+// main.js conecta estas funciones con el store de auth (evita importar el store aquí).
+let getToken = () => null
+let onUnauthorized = () => {}
+
+export function configureAuth({ token, unauthorized } = {}) {
+    if (token) getToken = token
+    if (unauthorized) onUnauthorized = unauthorized
+}
+
 // ── utilidad interna ────────────────────────────────────────────────────────
 
 async function request(path, options = {}) {
     const url = `${BASE_URL}${path}`
+    const token = getToken()
     const config = {
-        headers: { 'Content-Type': 'application/json', ...options.headers },
         ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
     }
 
     const res = await fetch(url, config)
+
+    // Token vencido o inválido en una ruta protegida → cerrar sesión (excepto el propio login)
+    if (res.status === 401 && !path.startsWith('/auth/login')) onUnauthorized()
 
     // Sin contenido
     if (res.status === 204) return null

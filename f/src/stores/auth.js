@@ -4,6 +4,8 @@ import { usersApi, authApi, languagesApi, progressApi, learningApi } from '../ap
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
+        token: null,                // JWT del backend (Authorization: Bearer)
+        tokenExp: null,             // expiración en epoch segundos
         selectedLanguage: null,     // código string: 'nhn'…
         selectedLangId: null,       // ID numérico en la BD
         selectedLangObj: null,      // objeto completo del idioma (con icon/emoji/color de la BD)
@@ -12,7 +14,8 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     getters: {
-        isAuthenticated: (state) => !!state.user,
+        isAuthenticated: (state) => !!state.user && !!state.token && (!state.tokenExp || state.tokenExp * 1000 > Date.now()),
+        isAdmin: (state) => state.user?.role === 'admin',
         hasSelectedLanguage: (state) => !!state.selectedLanguage,
         isLanguageReady: (state) => state.isInitialized && !!state.selectedLanguage,
 
@@ -35,12 +38,15 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         // ── Login con credenciales ─────────────────────────────────────────────
         async login(username, password) {
-            const user = await authApi.login(username, password)
+            const res = await authApi.login(username, password)
+            const { token, expiresAt, ...user } = res || {}
             if (!user) {
                 throw new Error('Usuario o contraseña incorrectos.')
             }
 
             this.user = user
+            this.token = token ?? null
+            this.tokenExp = expiresAt ?? null
             this.selectedLanguage = null
             this.selectedLangId = null
             this.selectedLangObj = null
@@ -94,6 +100,8 @@ export const useAuthStore = defineStore('auth', {
 
         logout() {
             this.user = null
+            this.token = null
+            this.tokenExp = null
             this.selectedLanguage = null
             this.selectedLangId = null
             this.selectedLangObj = null
@@ -186,6 +194,6 @@ export const useAuthStore = defineStore('auth', {
 
     persist: {
         key: 'auth-storage',
-        paths: ['user', 'selectedLanguage', 'selectedLangId', 'selectedLangObj', 'isNewUser', 'isInitialized'],
+        paths: ['user', 'token', 'tokenExp', 'selectedLanguage', 'selectedLangId', 'selectedLangObj', 'isNewUser', 'isInitialized'],
     },
 })
