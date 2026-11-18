@@ -45,6 +45,8 @@ public class AuthController {
                     body.put("joinDate", r.joinDate());
                     body.put("currentLang", r.currentLang());
                     body.put("role", r.role());
+                    body.put("emailVerified", r.emailVerified());
+                    body.put("pendingEmail", r.pendingEmail());
                     body.put("token", t.token());
                     body.put("expiresAt", t.expiresAt());
                     return ResponseEntity.ok(body);

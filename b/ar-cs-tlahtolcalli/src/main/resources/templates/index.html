@@ -1209,7 +1209,7 @@
         <section class="table-wrap mx-third"><div class="table-header"><h3>Service Availability</h3></div><div class="mx-body" id="mx-uptime"></div></section>
         <section class="table-wrap mx-third mx-third-last"><div class="table-header"><h3>Status Database Server</h3></div><div class="mx-body" id="mx-neon"></div></section>
         <section class="table-wrap mx-half"><div class="table-header"><h3>Backend (Render)</h3></div><div class="mx-body" id="mx-render"></div></section>
-        <section class="table-wrap mx-half"><div class="table-header"><h3>Frontend (Netlify))</h3></div><div class="mx-body" id="mx-netlify"></div></section>
+        <section class="table-wrap mx-half"><div class="table-header"><h3>Frontend (Netlify)</h3></div><div class="mx-body" id="mx-netlify"></div></section>
         <section class="table-wrap mx-full"><div class="table-header"><h3>API Requests</h3><span id="mx-req-since" style="font-size:.7rem;color:var(--muted)"></span></div><div class="mx-body" id="mx-requests"></div></section>
         <section class="table-wrap mx-full"><div class="table-header"><h3>Database (Postgres)</h3></div><div class="mx-body" id="mx-db"></div></section>
       </div>
@@ -1703,8 +1703,8 @@
             card('Base de datos', db.sizeMb != null ? db.sizeMb + ' MB' : '—', 'caché ' + (db.stats?.cache_hit_pct ?? '—') + '%', 'var(--coral)');
 
     document.getElementById('mx-server-title').innerHTML = sv.environment === 'Local'
-            ? `Servidor <span class="chip chip-amber" style="margin-left:6px">LOCAL · ${esc(sv.host)}</span> <small style="color:var(--muted);font-weight:400">datos de tu computadora, no de Render</small>`
-            : `Servidor <span class="chip chip-green" style="margin-left:6px">RENDER${sv.host ? ' · ' + esc(sv.host) : ''}</span>`;
+            ? `Status Backend Server <span class="chip chip-amber" style="margin-left:6px">LOCAL · ${esc(sv.host)}</span> <small style="color:var(--muted);font-weight:400">datos de tu computadora, no de Render</small>`
+            : `Status Backend Server <span class="chip chip-green" style="margin-left:6px">RENDER${sv.host ? ' · ' + esc(sv.host) : ''}</span>`;
     document.getElementById('mx-server').innerHTML = sv.ok === false ? offHTML(sv) : kv([
       ['En línea', dur(sv.uptimeSeconds)], ['Java', sv.javaVersion], ['CPU proceso', sv.processCpu != null ? sv.processCpu + '%' : '—'],
       ['CPU sistema', sv.systemCpu != null ? sv.systemCpu + '%' : '—'], ['Núcleos', sv.cpus], ['Hilos', sv.threads],

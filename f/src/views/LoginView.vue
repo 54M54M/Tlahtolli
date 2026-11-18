@@ -1,9 +1,6 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-surface-0 text-white p-4">
-        <header class="w-full max-w-md mb-3 text-center">
-            <h1 class="text-4xl font-bold text-ink">Tlahtolcalli</h1>
-         </header>
-        <div class="w-full max-w-md bg-surface-6 rounded-lg p-8 shadow-lg">
+         <div class="w-full max-w-md bg-surface-6 rounded-lg p-8 shadow-lg">
 
             <!-- Tabs -->
             <div class="flex mb-6 bg-surface-0 rounded-lg p-1">
@@ -118,7 +115,7 @@
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.163-3.592M6.53 6.533A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.357 2.56M6.53 6.533L3 3m3.53 3.533l11.94 11.934M15.47 15.47A3 3 0 019.17 9.17" /></svg>
                         </button>
                     </div>
-                    <p v-if="newPassword && newPassword.length < 6" class="mt-1 text-xs text-error">Mínimo 6 caracteres</p>
+                    <p v-if="newPassword && newPassword.length < 8" class="mt-1 text-xs text-error">Mínimo 8 caracteres</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-300">Confirmar contraseña <span class="text-error">*</span></label>
@@ -218,8 +215,12 @@ const register = async () => {
         errorMsg.value = 'Por favor completa todos los campos.'
         return
     }
-    if (newPassword.value.length < 6) {
-        errorMsg.value = 'La contraseña debe tener al menos 6 caracteres.'
+    if (!/^[A-Za-z0-9_.]{3,30}$/.test(newUsername.value.trim())) {
+        errorMsg.value = 'El usuario debe tener de 3 a 30 caracteres: letras, números, punto o guion bajo.'
+        return
+    }
+    if (newPassword.value.length < 8) {
+        errorMsg.value = 'La contraseña debe tener al menos 8 caracteres.'
         return
     }
     if (newPassword.value !== confirmPassword.value) {
@@ -229,7 +230,7 @@ const register = async () => {
     loading.value = true
     errorMsg.value = ''
     try {
-        await usersApi.create({ username: newUsername.value, fullName: `${newFirstName.value} ${newLastName.value}`, email: newEmail.value, password: newPassword.value, currentLang: null })
+        await usersApi.create({ username: newUsername.value.trim(), fullName: `${newFirstName.value.trim()} ${newLastName.value.trim()}`, email: newEmail.value.trim(), password: newPassword.value, currentLang: null })
         await authStore.login(newUsername.value, newPassword.value)
         router.push('/select-language')
     } catch (err) {

@@ -6,6 +6,7 @@ import com.tlahtolli.api.dto.request.UpdateUserRequest;
 import com.tlahtolli.api.security.CurrentUser;
 import com.tlahtolli.api.dto.response.UserResponse;
 import com.tlahtolli.api.entity.User;
+import com.tlahtolli.api.service.EmailVerificationService;
 import com.tlahtolli.api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,9 +21,11 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final EmailVerificationService verification;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailVerificationService verification) {
         this.userService = userService;
+        this.verification = verification;
     }
 
     @GetMapping
@@ -58,7 +61,9 @@ public class UserController {
             user.setEmail(dto.email());
             user.setPasswordHash(dto.password());
             if (dto.currentLang() != null) user.setCurrentLang(Math.toIntExact(dto.currentLang()));
-            return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(userService.create(user)));
+            User saved = userService.create(user);
+            verification.sendQuietly(saved);   // si el proveedor falla, la cuenta se crea igual y puede reenviarlo
+            return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(saved));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

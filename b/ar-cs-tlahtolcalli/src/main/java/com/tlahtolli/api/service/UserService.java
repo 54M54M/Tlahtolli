@@ -72,14 +72,9 @@ public class UserService {
 	public Optional<User> update(Integer id, User body) {
 		log.info("Updating user id={}", id);
 		return userRepo.findById(id).map(existing -> {
-			// Solo datos de perfil: contraseña, rol, XP, racha y fechas se conservan
-			if (!existing.getUsername().equals(body.getUsername()) && userRepo.existsByUsername(body.getUsername()))
-				throw new IllegalArgumentException("Username ya existe: " + body.getUsername());
-			if (!existing.getEmail().equals(body.getEmail()) && userRepo.existsByEmail(body.getEmail()))
-				throw new IllegalArgumentException("Email ya existe: " + body.getEmail());
-			existing.setUsername(body.getUsername());
-			existing.setFullName(body.getFullName());
-			existing.setEmail(body.getEmail());
+			// Solo nombre e idioma. El usuario (con tiempo de espera) y el correo (con verificación)
+			// se cambian en /api/account; aquí se ignoran.
+			if (body.getFullName() != null && !body.getFullName().isBlank()) existing.setFullName(body.getFullName().trim());
 			if (body.getCurrentLang() != null) existing.setCurrentLang(body.getCurrentLang());
 			User updated = userRepo.save(existing);
 			log.debug("User updated id={}", id);

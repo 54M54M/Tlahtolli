@@ -1,5 +1,10 @@
 <template>
-    <div v-if="authStore.isAuthenticated" class="flex flex-col max-h-screen bg-surface-0 text-white">
+    <!-- Enlace del correo: página sola, con o sin sesión -->
+    <div v-if="route.meta.public" class="min-h-screen bg-surface-0">
+        <router-view />
+    </div>
+
+    <div v-else-if="authStore.isAuthenticated" class="flex flex-col max-h-screen bg-surface-0 text-white">
         <!-- Loading global mientras se inicializa el idioma -->
         <div v-if="!authStore.isLanguageReady && !isLanguageSelectionRoute"
             class="fixed inset-0 flex items-center justify-center bg-surface-0 z-50">
@@ -20,6 +25,7 @@
                 'md:ml-60 lg:mr-96': !isLanguageSelectionRoute && !isLessonRoute
             }">
                 <div class="w-full px-4 mx-auto max-w-xl">
+                    <VerifyEmailBanner v-if="!isLanguageSelectionRoute && !isLessonRoute && $route.name !== 'EditarPerfil'" />
                     <router-view />
                 </div>
             </main>
@@ -44,6 +50,7 @@
 import DesktopAside from '../components/DesktopAside.vue'
 import DesktopProgressAside from '../components/ProgressAside.vue'
 import MobileNav from '../components/MobileNav.vue'
+import VerifyEmailBanner from '../components/VerifyEmailBanner.vue'
 import { useAuthStore } from '../stores/auth'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -58,7 +65,8 @@ export default {
     components: {
         DesktopAside,
         MobileNav,
-        DesktopProgressAside
+        DesktopProgressAside,
+        VerifyEmailBanner
     },
     setup() {
         const authStore = useAuthStore()
@@ -112,6 +120,7 @@ export default {
 
         return {
             authStore,
+            route,
             isLanguageSelectionRoute,
             isLessonRoute,
             asideClasses,

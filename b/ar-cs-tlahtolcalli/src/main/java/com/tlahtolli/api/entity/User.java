@@ -3,6 +3,7 @@ package com.tlahtolli.api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data 
 @NoArgsConstructor 
@@ -49,6 +50,21 @@ public class User {
     /** 'user' o 'admin'. Solo se cambia desde la base de datos, nunca desde la API. */
     @Column(name = "ROLE", nullable = false, length = 20)
     private String role = "user";
+
+    /** El correo actual está verificado. */
+    @Column(name = "EMAIL_VERIFIED", nullable = false)
+    private Boolean emailVerified = false;
+
+    @Column(name = "EMAIL_VERIFIED_AT")
+    private LocalDateTime emailVerifiedAt;
+
+    /** Correo nuevo pedido en "editar perfil"; se vuelve el correo de la cuenta al verificarlo. */
+    @Column(name = "PENDING_EMAIL", length = 150)
+    private String pendingEmail;
+
+    /** Último cambio de nombre de usuario (tiempo de espera entre cambios). */
+    @Column(name = "USERNAME_CHANGED_AT")
+    private LocalDateTime usernameChangedAt;
 
 	public Integer getId() {
 		return id;
@@ -149,5 +165,15 @@ public class User {
 	public boolean isAdmin() {
 		return "admin".equalsIgnoreCase(role);
 	}
+
+	public Boolean getEmailVerified() { return emailVerified; }
+	public void setEmailVerified(Boolean v) { this.emailVerified = v; }
+	public LocalDateTime getEmailVerifiedAt() { return emailVerifiedAt; }
+	public void setEmailVerifiedAt(LocalDateTime v) { this.emailVerifiedAt = v; }
+	public String getPendingEmail() { return pendingEmail; }
+	public void setPendingEmail(String v) { this.pendingEmail = v; }
+	public LocalDateTime getUsernameChangedAt() { return usernameChangedAt; }
+	public void setUsernameChangedAt(LocalDateTime v) { this.usernameChangedAt = v; }
+	public boolean isEmailVerified() { return Boolean.TRUE.equals(emailVerified); }
         
 }

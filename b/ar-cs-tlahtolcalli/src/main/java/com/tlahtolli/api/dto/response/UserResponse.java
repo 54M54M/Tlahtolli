@@ -14,13 +14,16 @@ public record UserResponse(
         Short streak,
         LocalDate joinDate,
         Integer currentLang,
-        String role
+        String role,
+        boolean emailVerified,
+        String pendingEmail
 ) {
     public static UserResponse from(User u) {
         return new UserResponse(
                 u.getId(), u.getUsername(), u.getFullName(), u.getEmail(),
                 u.getUserLevel(), u.getXp(), u.getTotalXp(),
-                u.getStreak(), u.getJoinDate(), u.getCurrentLang(), u.getRole()
+                u.getStreak(), u.getJoinDate(), u.getCurrentLang(), u.getRole(),
+                u.isEmailVerified(), u.getPendingEmail()
         );
     }
 }

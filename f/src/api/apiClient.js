@@ -83,6 +83,21 @@ export const authApi = {
     login: safe('auth.login', (username, password) => api.post('/auth/login', { username, password })),
 }
 
+export const accountApi = {
+    get: safe('account.get', () => api.get('/account')),
+    usernameAvailable: safe('account.usernameAvailable', (u) => api.get(`/account/username-available?username=${encodeURIComponent(u)}`)),
+    updateProfile: safe('account.updateProfile', (data) => api.put('/account/profile', data)),
+    changePassword: safe('account.changePassword', (currentPassword, newPassword) => api.put('/account/password', { currentPassword, newPassword })),
+    changeEmail: safe('account.changeEmail', (email, password) => api.post('/account/email', { email, password })),
+    cancelEmailChange: safe('account.cancelEmailChange', () => api.delete('/account/email')),
+    resendVerification: safe('account.resendVerification', () => api.post('/account/email/resend', {})),
+    remove: safe('account.remove', (password) => api.post('/account/delete', { password })),
+}
+
+export const emailApi = {
+    confirm: safe('email.confirm', (token) => api.post('/auth/email/confirm', { token })),
+}
+
 export const languagesApi = {
     getAll: safe('languages.getAll', () => api.get('/languages')),
     getById: safe('languages.getById', (id) => api.get(`/languages/${id}`)),

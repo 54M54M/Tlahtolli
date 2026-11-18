@@ -10,6 +10,12 @@ const routes = [
         meta: { requiresGuest: true }
     },
     {
+        path: '/verificar',
+        name: 'VerificarCorreo',
+        component: () => import("../views/VerifyEmailView.vue"),
+        meta: { public: true, hideNav: true }
+    },
+    {
         path: '/select-language',
         name: 'LanguageSelection',
         component: () => import("../views/VariantSelection.vue"),
@@ -84,6 +90,7 @@ const ROUTE_TITLES = {
     Glosario: 'Glosario',
     'Estadísticas': 'Estadísticas',
     EditarPerfil: 'Editar perfil',
+    VerificarCorreo: 'Verificar correo',
     Perfil: 'Perfil',
 }
 router.afterEach((to) => {
@@ -98,6 +105,9 @@ router.beforeEach(async (to, from, next) => {
 
     // 0. Sesión guardada sin token o con token vencido (p. ej. de antes de la actualización) → cerrarla
     if (authStore.user && !authStore.isAuthenticated) authStore.logout()
+
+    // Páginas abiertas con o sin sesión (enlace del correo)
+    if (to.meta.public) return next()
 
     // 1. Sin usuario → solo puede ir a login
     if (to.meta.requiresAuth && !authStore.user) {
