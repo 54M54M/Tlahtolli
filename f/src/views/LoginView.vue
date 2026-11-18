@@ -50,23 +50,11 @@
                     {{ loading ? 'Entrando...' : 'Iniciar sesión' }}
                 </button>
 
-                <!-- Credenciales demo
-                <div class="p-4 bg-surface-0 rounded-lg border border-gray-700">
-                    <p class="text-xs text-gray-400 font-semibold mb-2 uppercase tracking-wide">Cuenta de demostración</p>
-                    <div class="flex items-center gap-3">
-                        <UserAvatar name="tetecuhtli" :size="40" />
-                        <div class="flex-1">
-                            <p class="text-sm font-bold text-white">UserDemo</p>
-                            <p class="text-xs text-gray-400">Usuario: <span class="text-gray-300">tetecuhtli</span></p>
-                            <p class="text-xs text-gray-400">Contraseña: <span class="text-gray-300">demo1234</span></p>
-                        </div>
-                        <button @click="fillDemo"
-                            class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded transition-colors text-gray-300">
-                            Usar
-                        </button>
-                    </div>
+                <!-- Continuar con Google -->
+                <div class="flex items-center gap-3 text-xs text-gray-400" v-if="googleEnabled">
+                    <span class="flex-1 h-px bg-gray-600"></span>o<span class="flex-1 h-px bg-gray-600"></span>
                 </div>
-                -->
+                <GoogleButton text="signin_with" @credential="loginGoogle" />
             </div>
 
             <!-- Register -->
@@ -138,10 +126,23 @@
                     {{ errorMsg }}
                 </div>
 
+                <p class="text-xs text-gray-400 text-center">
+                    Al crear tu cuenta aceptas los
+                    <a href="https://totlahtol.netlify.app/terminos/" target="_blank" rel="noopener" class="text-turquesa hover:underline">Términos</a>
+                    y el
+                    <a href="https://totlahtol.netlify.app/privacidad/" target="_blank" rel="noopener" class="text-turquesa hover:underline">Aviso de privacidad</a>.
+                </p>
+
                 <button @click="register" :disabled="loading"
                     class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
                     {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
                 </button>
+
+                <!-- Continuar con Google -->
+                <div class="flex items-center gap-3 text-xs text-gray-400" v-if="googleEnabled">
+                    <span class="flex-1 h-px bg-gray-600"></span>o<span class="flex-1 h-px bg-gray-600"></span>
+                </div>
+                <GoogleButton text="signup_with" @credential="loginGoogle" />
             </div>
         </div>
       <p class="mt-3 text-sm text-ink-muted">
@@ -157,6 +158,7 @@ import { usersApi } from '../api/apiClient'
 import { useRouter } from 'vue-router'
 import UserAvatar from '../components/UserAvatar.vue'
 import AvatarStage from '../components/AvatarStage.vue'
+import GoogleButton from '../components/GoogleButton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -182,15 +184,6 @@ const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const passwordMatch = computed(() => newPassword.value === confirmPassword.value)
-
-const DEMO_USERNAME = 'tetecuhtli'
-const DEMO_PASSWORD = 'demo1234'
-
-const fillDemo = () => {
-    username.value = DEMO_USERNAME
-    password.value = DEMO_PASSWORD
-    errorMsg.value = ''
-}
 
 const login = async () => {
     if (!username.value || !password.value) {
@@ -235,6 +228,24 @@ const register = async () => {
         router.push('/select-language')
     } catch (err) {
         errorMsg.value = err.message || 'No se pudo crear la cuenta.'
+    } finally {
+        loading.value = false
+    }
+}
+
+// ── Google ─────────────────────────────────────────────────────────────────
+const googleEnabled = !!import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+const loginGoogle = async (credential) => {
+    loading.value = true
+    errorMsg.value = ''
+    try {
+        await authStore.loginWithGoogle(credential)
+        // Cuenta nueva → elegir usuario; luego idioma
+        if (authStore.user?.mustPickUsername) router.push('/elegir-usuario')
+        else router.push(authStore.selectedLanguage ? '/' : '/select-language')
+    } catch (err) {
+        errorMsg.value = err.message || 'No se pudo entrar con Google.'
     } finally {
         loading.value = false
     }

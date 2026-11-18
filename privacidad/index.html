@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviso de privacidad · Tlahtolcalli</title>
+    <meta name="description" content="Qué datos personales guarda Tlahtolcalli, para qué los usa, con quién los comparte y cómo puedes borrarlos.">
+    <meta name="theme-color" content="#0e1517">
+    <link rel="icon" type="image/png" href="../favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="../favicon/favicon.svg" />
+    <link rel="shortcut icon" href="../favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { obsidiana: '#0e1517', hundido: '#162125', tarjeta: '#1f2d32', linea: '#2e3f45', ink: '#ece6da',
+                      muted: '#a3ada9', turquesa: '#2bb59a', 'turquesa-deep': '#146b5b', 'turquesa-deeper': '#0f5a4c' },
+            fontFamily: { sans: ['Figtree', '"Segoe UI"', 'system-ui', 'sans-serif'],
+                          display: ['"Bricolage Grotesque"', '"Segoe UI"', 'system-ui', 'sans-serif'] } } } }
+    </script>
+    <style>
+        html, body { max-width: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+        body { background-color: #0e1517; color: #ece6da; }
+        h1, h2, h3 { font-family: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif; text-wrap: balance; }
+        .legal h2 { font-size: 1.375rem; font-weight: 700; margin: 2.5rem 0 .75rem; scroll-margin-top: 6rem; }
+        .legal h3 { font-size: 1.05rem; font-weight: 700; margin: 1.5rem 0 .5rem; }
+        .legal p, .legal li { color: #c9cfc9; line-height: 1.7; }
+        .legal p + p { margin-top: .75rem; }
+        .legal ul { list-style: disc; padding-left: 1.25rem; margin: .5rem 0; }
+        .legal li + li { margin-top: .35rem; }
+        .legal a { color: #2bb59a; font-weight: 600; }
+        .legal a:hover { text-decoration: underline; }
+        .legal strong { color: #ece6da; }
+        .legal table { width: 100%; border-collapse: collapse; margin: .75rem 0; font-size: .95rem; }
+        .legal th, .legal td { text-align: left; padding: .6rem .75rem; border-bottom: 1px solid #2e3f45; vertical-align: top; }
+        .legal th { color: #ece6da; font-weight: 600; background: #162125; }
+        .legal td { color: #c9cfc9; }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+</head>
+<body class="font-sans">
+<header class="sticky top-0 z-50 bg-obsidiana/90 backdrop-blur-sm border-b border-linea">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="/" class="flex items-center gap-2">
+            <img src="../favicon/favicon.svg" alt="" class="w-9 h-9">
+            <span class="text-xl font-bold font-display">Tlahtolcalli</span>
+        </a>
+        <a href="https://tlahtolcalli.netlify.app" target="_blank" rel="noopener"
+           class="bg-turquesa-deep hover:bg-turquesa-deeper text-white font-semibold py-2 px-4 rounded-lg transition">Abrir la app</a>
+    </div>
+</header>
+
+<main class="px-4 py-12 md:py-16">
+    <article class="legal container mx-auto max-w-3xl">
+        <p class="text-sm font-semibold tracking-widest text-turquesa uppercase mb-3">Tlahtolcalli</p>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Aviso de privacidad</h1>
+        <p class="!text-muted text-sm mb-8">Última actualización: 17 de noviembre de 2026</p>
+        <div class="bg-tarjeta border border-linea rounded-xl p-5 md:p-6 mb-4"><p><strong>En corto:</strong> guardamos lo mínimo para que tengas una cuenta y no pierdas tu avance.
+            No vendemos tus datos, no mostramos publicidad y no usamos rastreadores de terceros en la app.
+            Puedes borrar tu cuenta y todos sus datos cuando quieras desde la app.</p></div>
+
+        <h2 id="responsable">1. Quién es responsable de tus datos</h2>
+        <p><strong>Tlahtolcalli</strong> es un proyecto independiente y gratuito para aprender lenguas originarias de México.
+            Es responsable del tratamiento de los datos que se describen aquí. Para cualquier asunto de privacidad
+            escríbenos a <a href="mailto:contacto.tlahtolcalli@gmail.com">contacto.tlahtolcalli@gmail.com</a>.</p>
+
+        <h2 id="datos">2. Qué datos guardamos</h2>
+        <h3>Datos de tu cuenta</h3>
+        <ul>
+            <li>Nombre de usuario, nombre completo y correo electrónico.</li>
+            <li>Tu contraseña, guardada solo de forma cifrada (hash bcrypt): nadie puede leerla, ni nosotros.</li>
+            <li>Si el correo está verificado, la fecha de verificación y, si pediste cambiarlo, el correo nuevo pendiente.</li>
+            <li>Fecha de registro y fecha del último cambio de nombre de usuario.</li>
+        </ul>
+        <h3>Si entras con Google</h3>
+        <p>Recibimos de Google solo tu <strong>nombre, correo, si el correo está verificado y un identificador de tu
+            cuenta de Google</strong>. Con eso creamos o vinculamos tu cuenta. No recibimos tu contraseña de Google ni
+            accedemos a tus contactos, archivos, correos ni ningún otro dato de tu cuenta de Google.</p>
+        <h3>Tu aprendizaje</h3>
+        <ul>
+            <li>Idioma que estudias, unidades completadas, historial de lecciones (fecha, aciertos, tiempo y XP).</li>
+            <li>XP, nivel, racha, energía, logros y estadísticas por idioma.</li>
+        </ul>
+        <h3>En tu navegador</h3>
+        <p>La app guarda en el almacenamiento local de tu navegador tu sesión (un token que vence) y el idioma elegido,
+            para que no tengas que iniciar sesión cada vez. <strong>La app no usa cookies de publicidad ni de
+            analítica.</strong> Al cerrar sesión se borran.</p>
+        <h3>Datos técnicos</h3>
+        <p>Como cualquier sitio web, los servidores donde vive la app registran datos técnicos de las peticiones
+            (por ejemplo, dirección IP, fecha y página solicitada) para operar y proteger el servicio. Además, contamos
+            cuántas peticiones recibe cada sección de la app y cuánto tardan, sin asociarlo a personas.</p>
+
+        <h2 id="finalidades">3. Para qué los usamos</h2>
+        <ul>
+            <li>Crear y proteger tu cuenta, y dejarte iniciar sesión (con contraseña o con Google).</li>
+            <li>Guardar tu progreso, rachas y logros, y mostrártelos.</li>
+            <li>Enviarte correos <strong>necesarios para tu cuenta</strong>: verificar tu correo y avisarte si alguien
+                cambia el correo de tu cuenta. No enviamos publicidad.</li>
+            <li>Mantener el servicio funcionando, encontrar errores y prevenir abusos.</li>
+        </ul>
+        <p>No usamos tus datos para publicidad, no hacemos perfiles comerciales y no los vendemos ni rentamos.</p>
+
+        <h2 id="terceros">4. Con quién los compartimos</h2>
+        <p>Para funcionar, la app usa los siguientes servicios. Cada uno trata solo los datos necesarios para su parte
+            y puede estar ubicado fuera de México:</p>
+        <div class="overflow-x-auto">
+        <table>
+            <thead><tr><th>Servicio</th><th>Para qué</th><th>Datos</th></tr></thead>
+            <tbody>
+                <tr><td>Neon</td><td>Base de datos</td><td>Tu cuenta y tu progreso</td></tr>
+                <tr><td>Render</td><td>Servidor de la app</td><td>Peticiones a la app y datos técnicos</td></tr>
+                <tr><td>Netlify</td><td>Publicar la app y este sitio</td><td>Datos técnicos de las visitas</td></tr>
+                <tr><td>Brevo</td><td>Enviar correos de la cuenta</td><td>Tu nombre y correo, solo al enviarte un correo</td></tr>
+                <tr><td>Google</td><td>Iniciar sesión con Google (si lo eliges)</td><td>Los datos del punto 2</td></tr>
+                <tr><td>UptimeRobot</td><td>Revisar que el servidor esté en línea</td><td>Ningún dato tuyo</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>Este sitio informativo carga tipografías de Google Fonts y estilos desde un CDN, que pueden registrar tu
+            dirección IP. Solo compartiríamos datos con autoridades si una ley o una orden válida nos lo exige.</p>
+
+        <h2 id="conservacion">5. Cuánto tiempo los guardamos</h2>
+        <ul>
+            <li>Los datos de tu cuenta y tu progreso, mientras tengas la cuenta.</li>
+            <li>Los enlaces de verificación de correo vencen en 24 horas y no se pueden reutilizar.</li>
+            <li>Al borrar tu cuenta se eliminan tu cuenta, tu progreso, historial, logros, estadísticas y energía.
+                Las copias de seguridad del proveedor de base de datos pueden conservarlos por un tiempo limitado
+                antes de desaparecer.</li>
+        </ul>
+
+        <h2 id="derechos">6. Tus derechos</h2>
+        <p>Puedes <strong>acceder</strong> a tus datos, <strong>corregirlos</strong>, <strong>borrarlos</strong> u
+            <strong>oponerte</strong> a su uso, y retirar tu consentimiento:</p>
+        <ul>
+            <li>En la app, en <strong>Perfil → Editar perfil</strong>, puedes cambiar tu nombre, usuario, correo y
+                contraseña, y <strong>eliminar tu cuenta</strong> con todos sus datos.</li>
+            <li>Para cualquier otra solicitud, escribe a <a href="mailto:contacto.tlahtolcalli@gmail.com">contacto.tlahtolcalli@gmail.com</a> desde el correo de tu cuenta.
+                Te respondemos lo antes posible.</li>
+            <li>Si entraste con Google, también puedes quitarle el acceso a Tlahtolcalli desde
+                <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">tu cuenta de Google</a>.</li>
+        </ul>
+
+        <h2 id="seguridad">7. Seguridad</h2>
+        <p>Las conexiones van cifradas (HTTPS), las contraseñas se guardan con hash, las sesiones vencen y cada
+            persona solo puede ver y modificar sus propios datos. Ningún sistema es perfecto: si detectamos un problema
+            que afecte tus datos, te avisaremos.</p>
+
+        <h2 id="menores">8. Menores de edad</h2>
+        <p>Tlahtolcalli es para cualquier persona que quiera aprender. Si eres menor de edad, usa la app con permiso de
+            tu madre, padre o tutor. No pedimos datos de más a nadie. Si eres madre, padre o tutor y quieres que
+            borremos la cuenta de un menor, escríbenos.</p>
+
+        <h2 id="cambios">9. Cambios a este aviso</h2>
+        <p>Si cambiamos este aviso, actualizaremos la fecha de arriba y, si el cambio es importante, te avisaremos en
+            la app o por correo.</p>
+
+    </article>
+</main>
+<footer class="border-t border-linea py-10 px-4">
+    <div class="container mx-auto flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+        <a href="/" class="flex items-center gap-2">
+            <img src="../favicon/favicon.svg" alt="" class="w-8 h-8">
+            <span class="text-lg font-bold font-display">Tlahtolcalli</span>
+        </a>
+        <ul class="flex flex-wrap gap-x-6 gap-y-2 text-muted">
+            <li><a href="/" class="hover:text-ink">Inicio</a></li>
+            <li><a href="../privacidad/index.html" class="hover:text-ink">Privacidad</a></li>
+            <li><a href="../terminos/index.html" class="hover:text-ink">Términos</a></li>
+            <li><a href="https://tlahtolcalli.netlify.app" target="_blank" rel="noopener" class="hover:text-ink">App web</a></li>
+        </ul>
+    </div>
+    <p class="container mx-auto mt-8 text-sm text-muted">© 2026 Tlahtolcalli · Contacto:
+        <a href="mailto:contacto.tlahtolcalli@gmail.com" class="hover:text-ink break-all">contacto.tlahtolcalli@gmail.com</a></p>
+</footer>
+</body>
+</html>
