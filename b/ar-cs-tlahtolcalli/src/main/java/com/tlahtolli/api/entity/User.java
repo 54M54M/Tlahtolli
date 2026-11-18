@@ -44,7 +44,8 @@ public class User {
     @Column(name = "CURRENT_LANG")
     private Integer currentLang;
 
-    @Column(name = "PASSWORD_HASH", nullable = false, length = 255)
+    /** null en cuentas creadas con Google que aún no tienen contraseña. */
+    @Column(name = "PASSWORD_HASH", length = 255)
     private String passwordHash;
 
     /** 'user' o 'admin'. Solo se cambia desde la base de datos, nunca desde la API. */
@@ -65,6 +66,14 @@ public class User {
     /** Último cambio de nombre de usuario (tiempo de espera entre cambios). */
     @Column(name = "USERNAME_CHANGED_AT")
     private LocalDateTime usernameChangedAt;
+
+    /** Id estable de la cuenta de Google (claim "sub"); null si nunca entró con Google. */
+    @Column(name = "GOOGLE_SUB", unique = true, length = 255)
+    private String googleSub;
+
+    /** Cuenta creada con Google: debe confirmar o cambiar su usuario generado (sin tiempo de espera). */
+    @Column(name = "MUST_PICK_USERNAME", nullable = false)
+    private Boolean mustPickUsername = false;
 
 	public Integer getId() {
 		return id;
@@ -175,5 +184,11 @@ public class User {
 	public LocalDateTime getUsernameChangedAt() { return usernameChangedAt; }
 	public void setUsernameChangedAt(LocalDateTime v) { this.usernameChangedAt = v; }
 	public boolean isEmailVerified() { return Boolean.TRUE.equals(emailVerified); }
+	public String getGoogleSub() { return googleSub; }
+	public void setGoogleSub(String v) { this.googleSub = v; }
+	public Boolean getMustPickUsername() { return mustPickUsername; }
+	public void setMustPickUsername(Boolean v) { this.mustPickUsername = v; }
+	public boolean isMustPickUsername() { return Boolean.TRUE.equals(mustPickUsername); }
+	public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
         
 }

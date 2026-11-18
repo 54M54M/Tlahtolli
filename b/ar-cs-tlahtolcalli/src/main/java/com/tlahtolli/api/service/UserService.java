@@ -97,7 +97,9 @@ public class UserService {
 	/** Verifica credenciales y devuelve el usuario si son correctas. */
 	public Optional<User> login(String username, String password) {
 		log.info("Login attempt for username={}", username);
-		return userRepo.findByUsername(username).filter(u -> passwordEncoder.matches(password, u.getPasswordHash()));
+		return userRepo.findByUsername(username)
+				.filter(User::hasPassword)   // cuentas solo-Google no entran con contraseña
+				.filter(u -> passwordEncoder.matches(password, u.getPasswordHash()));
 	}
 
 	/** Cambia el idioma activo del usuario. */

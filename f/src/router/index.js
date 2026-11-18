@@ -16,6 +16,12 @@ const routes = [
         meta: { public: true, hideNav: true }
     },
     {
+        path: '/elegir-usuario',
+        name: 'ElegirUsuario',
+        component: () => import("../views/ChooseUsernameView.vue"),
+        meta: { requiresAuth: true, standalone: true, hideNav: true }
+    },
+    {
         path: '/select-language',
         name: 'LanguageSelection',
         component: () => import("../views/VariantSelection.vue"),
@@ -91,6 +97,7 @@ const ROUTE_TITLES = {
     'Estadísticas': 'Estadísticas',
     EditarPerfil: 'Editar perfil',
     VerificarCorreo: 'Verificar correo',
+    ElegirUsuario: 'Elige tu usuario',
     Perfil: 'Perfil',
 }
 router.afterEach((to) => {
@@ -112,6 +119,14 @@ router.beforeEach(async (to, from, next) => {
     // 1. Sin usuario → solo puede ir a login
     if (to.meta.requiresAuth && !authStore.user) {
         return next('/login')
+    }
+
+    // 1b. Cuenta nueva de Google → primero confirma o cambia su usuario (antes que el idioma)
+    if (authStore.user?.mustPickUsername) {
+        return to.name === 'ElegirUsuario' ? next() : next('/elegir-usuario')
+    }
+    if (to.name === 'ElegirUsuario' && authStore.user && !authStore.user.mustPickUsername) {
+        return next(authStore.selectedLanguage ? '/' : '/select-language')
     }
 
     // 2. Ya autenticado intentando ir a login → redirigir según estado

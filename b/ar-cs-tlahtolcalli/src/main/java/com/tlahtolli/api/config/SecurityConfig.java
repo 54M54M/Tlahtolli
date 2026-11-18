@@ -105,6 +105,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                     .requestMatchers("/api/health", "/error", "/favicon.ico").permitAll()
                     .requestMatchers(POST, "/api/auth/login").permitAll()
                     .requestMatchers(POST, "/api/auth/email/confirm").permitAll()   // enlace del correo
+                    .requestMatchers(POST, "/api/auth/google").permitAll()          // continuar con google
                     .requestMatchers(POST, "/api/users").permitAll()                 // registro
                     .requestMatchers(GET, CATALOGO).permitAll()
                     .requestMatchers(GET, "/api/learning/units/**").permitAll()      // ejercicios y vocabulario

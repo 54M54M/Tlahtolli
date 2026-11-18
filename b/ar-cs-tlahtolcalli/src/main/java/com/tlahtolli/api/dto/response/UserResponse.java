@@ -16,14 +16,18 @@ public record UserResponse(
         Integer currentLang,
         String role,
         boolean emailVerified,
-        String pendingEmail
+        String pendingEmail,
+        boolean mustPickUsername,
+        boolean hasPassword,
+        boolean googleLinked
 ) {
     public static UserResponse from(User u) {
         return new UserResponse(
                 u.getId(), u.getUsername(), u.getFullName(), u.getEmail(),
                 u.getUserLevel(), u.getXp(), u.getTotalXp(),
                 u.getStreak(), u.getJoinDate(), u.getCurrentLang(), u.getRole(),
-                u.isEmailVerified(), u.getPendingEmail()
+                u.isEmailVerified(), u.getPendingEmail(),
+                u.isMustPickUsername(), u.hasPassword(), u.getGoogleSub() != null
         );
     }
 }

@@ -46,13 +46,24 @@ export const useAuthStore = defineStore('auth', {
         // ── Login con credenciales ─────────────────────────────────────────────
         async login(username, password) {
             const res = await authApi.login(username, password)
-            const { token, expiresAt, ...user } = res || {}
-            if (!user) {
+            await this._startSession(res)
+        },
+
+        // ── Login / registro con Google (ID token del botón de Google) ────────
+        async loginWithGoogle(credential) {
+            const res = await authApi.google(credential)
+            await this._startSession(res)
+            return res
+        },
+
+        async _startSession(res) {
+            const { token, expiresAt, isNewUser, ...user } = res || {}
+            if (!user || !user.id || !token) {
                 throw new Error('Usuario o contraseña incorrectos.')
             }
 
             this.user = user
-            this.token = token ?? null
+            this.token = token
             this.tokenExp = expiresAt ?? null
             this.selectedLanguage = null
             this.selectedLangId = null

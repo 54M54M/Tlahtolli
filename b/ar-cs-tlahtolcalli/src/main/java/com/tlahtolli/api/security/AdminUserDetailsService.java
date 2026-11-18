@@ -29,6 +29,7 @@ public class AdminUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepo.findByUsername(username)
                 .filter(com.tlahtolli.api.entity.User::isAdmin)
+                .filter(com.tlahtolli.api.entity.User::hasPassword)
                 .map(u -> User.withUsername(u.getUsername())
                         .password(u.getPasswordHash())
                         .authorities(List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))

@@ -32,7 +32,7 @@ async function request(path, options = {}) {
     const res = await fetch(url, config)
 
     // Token vencido o inválido en una ruta protegida → cerrar sesión (excepto el propio login)
-    if (res.status === 401 && !path.startsWith('/auth/login')) onUnauthorized()
+    if (res.status === 401 && !path.startsWith('/auth/')) onUnauthorized()
 
     // Sin contenido
     if (res.status === 204) return null
@@ -81,6 +81,7 @@ export const usersApi = {
 
 export const authApi = {
     login: safe('auth.login', (username, password) => api.post('/auth/login', { username, password })),
+    google: safe('auth.google', (credential) => api.post('/auth/google', { credential })),
 }
 
 export const accountApi = {

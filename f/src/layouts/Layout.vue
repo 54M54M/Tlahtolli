@@ -1,6 +1,6 @@
 <template>
-    <!-- Enlace del correo: página sola, con o sin sesión -->
-    <div v-if="route.meta.public" class="min-h-screen bg-surface-0">
+    <!-- Páginas solas: enlace del correo (con o sin sesión) y elegir usuario -->
+    <div v-if="route.meta.public || route.meta.standalone" class="min-h-screen bg-surface-0">
         <router-view />
     </div>
 

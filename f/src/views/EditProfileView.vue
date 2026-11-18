@@ -50,6 +50,7 @@
                         <span class="break-all">{{ info.email }}</span>
                         <span v-if="info.emailVerified" class="chip bg-green-900/40 text-green-300 border-green-700">Verificado</span>
                         <span v-else class="chip bg-yellow-900/30 text-yellow-200 border-yellow-700">Sin verificar</span>
+                        <span v-if="info.googleLinked" class="chip bg-surface-0 text-gray-200 border-gray-600">Google vinculado</span>
                     </div>
 
                     <div v-if="info.pendingEmail" class="p-3 rounded-lg border border-line text-sm space-y-2">
@@ -71,8 +72,9 @@
                                 <input v-model="emailForm.email" type="email" maxlength="150" class="inp" autocomplete="email" />
                             </div>
                             <div>
-                                <label class="lbl">Tu contraseña</label>
-                                <input v-model="emailForm.password" type="password" class="inp" autocomplete="current-password" />
+                                <label class="lbl">{{ confirmLabel }}</label>
+                                <input v-model="emailForm.password" :type="info.hasPassword ? 'password' : 'text'" class="inp"
+                                    :autocomplete="info.hasPassword ? 'current-password' : 'off'" :placeholder="info.hasPassword ? '' : info.username" />
                             </div>
                             <p class="hint text-gray-400">Tu correo actual seguirá activo hasta que confirmes el nuevo.</p>
                             <button @click="changeEmail" :disabled="busy.email || !emailForm.email || !emailForm.password" class="btn">
@@ -86,7 +88,10 @@
                 <!-- ── Contraseña ─────────────────────────────────────────── -->
                 <section class="bg-surface-1 rounded-xl p-4 space-y-3">
                     <h2 class="font-bold">Contraseña</h2>
-                    <div>
+                    <p v-if="!info.hasPassword" class="text-sm text-gray-400">
+                        Entras con Google. Crea una contraseña si también quieres entrar con tu usuario.
+                    </p>
+                    <div v-if="info.hasPassword">
                         <label class="lbl">Contraseña actual</label>
                         <input v-model="pwd.current" type="password" class="inp" autocomplete="current-password" />
                     </div>
@@ -102,8 +107,8 @@
                     </div>
                     <Msg :m="msgs.password" />
                     <button @click="changePassword"
-                        :disabled="busy.password || !pwd.current || pwd.next.length < 8 || pwd.next !== pwd.confirm" class="btn">
-                        {{ busy.password ? 'Guardando…' : 'Cambiar contraseña' }}
+                        :disabled="busy.password || (info.hasPassword && !pwd.current) || pwd.next.length < 8 || pwd.next !== pwd.confirm" class="btn">
+                        {{ busy.password ? 'Guardando…' : info.hasPassword ? 'Cambiar contraseña' : 'Crear contraseña' }}
                     </button>
                 </section>
 
@@ -113,8 +118,9 @@
                     <p class="text-sm text-gray-400">Se borran tu progreso, logros, estadísticas e historial. No se puede deshacer.</p>
                     <template v-if="delOpen">
                         <div>
-                            <label class="lbl">Escribe tu contraseña para confirmar</label>
-                            <input v-model="delPassword" type="password" class="inp" autocomplete="current-password" />
+                            <label class="lbl">{{ confirmLabel }}</label>
+                            <input v-model="delPassword" :type="info.hasPassword ? 'password' : 'text'" class="inp"
+                                :autocomplete="info.hasPassword ? 'current-password' : 'off'" :placeholder="info.hasPassword ? '' : info.username" />
                         </div>
                         <Msg :m="msgs.del" />
                         <div class="flex gap-3">
@@ -171,6 +177,11 @@ const usernameState = ref('')      // '' | checking | ok | bad
 const usernameReason = ref('')
 let usernameTimer = null
 
+// Cuentas solo-Google no tienen contraseña: se confirma escribiendo el usuario
+const confirmLabel = computed(() => info.value.hasPassword
+    ? 'Escribe tu contraseña para confirmar'
+    : 'Escribe tu nombre de usuario para confirmar')
+
 const usernameChanged = computed(() => profile.username.trim() !== info.value.username)
 const profileDirty = computed(() =>
     usernameChanged.value || profile.fullName.trim().replace(/\s+/g, ' ') !== info.value.fullName)
@@ -186,6 +197,7 @@ function applyInfo(data) {
         ...authStore.user,
         username: data.username, fullName: data.fullName, email: data.email,
         emailVerified: data.emailVerified, pendingEmail: data.pendingEmail,
+        hasPassword: data.hasPassword, googleLinked: data.googleLinked, mustPickUsername: data.mustPickUsername,
     }
 }
 
@@ -259,9 +271,11 @@ const changeEmail = () => run('email', async () => {
 }, 'Te enviamos un enlace al nuevo correo. El cambio se hace al confirmarlo.')
 
 const changePassword = () => run('password', async () => {
-    await accountApi.changePassword(pwd.current, pwd.next)
+    const created = !info.value.hasPassword
+    await accountApi.changePassword(pwd.current || null, pwd.next)
     pwd.current = pwd.next = pwd.confirm = ''
-}, 'Contraseña actualizada.')
+    if (created) applyInfo(await accountApi.get())
+}, 'Contraseña guardada.')
 
 const deleteAccount = () => run('del', async () => {
     await accountApi.remove(delPassword.value)

@@ -57,6 +57,9 @@ public class AccountService {
         m.put("pendingEmail", u.getPendingEmail());
         m.put("usernameChangeAvailableAt", usernameChangeAvailableAt(u));
         m.put("usernameCooldownDays", cooldownDays);
+        m.put("mustPickUsername", u.isMustPickUsername());
+        m.put("hasPassword", u.hasPassword());
+        m.put("googleLinked", u.getGoogleSub() != null);
         return m;
     }
 
@@ -76,27 +79,30 @@ public class AccountService {
             if (n.isEmpty() || n.length() > 100) throw new IllegalArgumentException("Escribe tu nombre (máximo 100 caracteres)");
             u.setFullName(n);
         }
+        boolean firstPick = u.isMustPickUsername();   // cuenta nueva de Google: elegir usuario no cuenta como cambio
         if (username != null && !username.trim().equals(u.getUsername())) {
             String nu = username.trim();
-            LocalDateTime next = usernameChangeAvailableAt(u);
+            LocalDateTime next = firstPick ? null : usernameChangeAvailableAt(u);
             if (next != null) throw new IllegalArgumentException("Podrás cambiar tu usuario de nuevo el " + next.toLocalDate());
             String problem = usernameProblem(nu, u.getId());
             if (problem != null) throw new IllegalArgumentException(problem);
             log.info("[cuenta] userId={} cambia usuario", u.getId());
             u.setUsername(nu);
-            u.setUsernameChangedAt(LocalDateTime.now());
+            if (!firstPick) u.setUsernameChangedAt(LocalDateTime.now());
         }
+        if (firstPick && username != null) u.setMustPickUsername(false);
         return userRepo.save(u);
     }
 
     @Transactional
     public void changePassword(Integer userId, String current, String next) {
         User u = get(userId);
-        if (current == null || !encoder.matches(current, u.getPasswordHash()))
+        // Cuentas creadas con Google: la primera vez se crea la contraseña sin pedir la actual
+        if (u.hasPassword() && (current == null || !encoder.matches(current, u.getPasswordHash())))
             throw new IllegalArgumentException("La contraseña actual no es correcta");
         if (next == null || next.length() < 8 || next.length() > 100)
             throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres");
-        if (encoder.matches(next, u.getPasswordHash()))
+        if (u.hasPassword() && encoder.matches(next, u.getPasswordHash()))
             throw new IllegalArgumentException("La nueva contraseña debe ser distinta a la actual");
         u.setPasswordHash(encoder.encode(next));
         userRepo.save(u);
@@ -107,8 +113,7 @@ public class AccountService {
     @Transactional
     public User requestEmailChange(Integer userId, String newEmail, String password) {
         User u = get(userId);
-        if (password == null || !encoder.matches(password, u.getPasswordHash()))
-            throw new IllegalArgumentException("La contraseña no es correcta");
+        confirm(u, password);
         String e = newEmail == null ? "" : newEmail.trim().toLowerCase();
         if (!EMAIL.matcher(e).matches() || e.length() > 150) throw new IllegalArgumentException("Escribe un correo válido");
         if (e.equalsIgnoreCase(u.getEmail())) throw new IllegalArgumentException("Ese ya es tu correo");
@@ -117,6 +122,16 @@ public class AccountService {
         User saved = userRepo.save(u);
         verification.send(saved);
         return saved;
+    }
+
+    /** Con contraseña: se pide la contraseña. Sin contraseña (solo Google): se pide escribir el usuario. */
+    private void confirm(User u, String value) {
+        if (u.hasPassword()) {
+            if (value == null || !encoder.matches(value, u.getPasswordHash()))
+                throw new IllegalArgumentException("La contraseña no es correcta");
+        } else if (value == null || !value.trim().equalsIgnoreCase(u.getUsername())) {
+            throw new IllegalArgumentException("Escribe tu nombre de usuario exactamente para confirmar");
+        }
     }
 
     @Transactional
@@ -129,8 +144,7 @@ public class AccountService {
     @Transactional
     public void delete(Integer userId, String password) {
         User u = get(userId);
-        if (password == null || !encoder.matches(password, u.getPasswordHash()))
-            throw new IllegalArgumentException("La contraseña no es correcta");
+        confirm(u, password);
         if (u.isAdmin()) throw new IllegalArgumentException("Una cuenta de administrador no se puede borrar desde la app");
         userRepo.delete(u);   // las tablas hijas tienen on delete cascade
         log.info("[cuenta] userId={} borró su cuenta", userId);
