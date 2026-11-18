@@ -25,7 +25,6 @@
                 'md:ml-60 lg:mr-96': !isLanguageSelectionRoute && !isLessonRoute
             }">
                 <div class="w-full px-4 mx-auto max-w-xl">
-                    <VerifyEmailBanner v-if="!isLanguageSelectionRoute && !isLessonRoute && $route.name !== 'EditarPerfil'" />
                     <router-view />
                 </div>
             </main>
@@ -34,6 +33,9 @@
             <DesktopProgressAside v-if="!isLanguageSelectionRoute && !isLessonRoute && authStore.isLanguageReady"
                 :class="asideClasses" />
         </div>
+
+        <!-- Aviso de correo sin verificar (modal, se monta en <body>) -->
+        <VerifyEmailModal />
 
         <!-- Mobile Navigation (hidden en desktop, language selection y lesson) -->
         <MobileNav v-if="!isLanguageSelectionRoute && !isLessonRoute && authStore.isLanguageReady"
@@ -50,7 +52,7 @@
 import DesktopAside from '../components/DesktopAside.vue'
 import DesktopProgressAside from '../components/ProgressAside.vue'
 import MobileNav from '../components/MobileNav.vue'
-import VerifyEmailBanner from '../components/VerifyEmailBanner.vue'
+import VerifyEmailModal from '../components/VerifyEmailModal.vue'
 import { useAuthStore } from '../stores/auth'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -66,7 +68,7 @@ export default {
         DesktopAside,
         MobileNav,
         DesktopProgressAside,
-        VerifyEmailBanner
+        VerifyEmailModal
     },
     setup() {
         const authStore = useAuthStore()

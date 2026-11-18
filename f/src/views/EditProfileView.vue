@@ -136,7 +136,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, h } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { accountApi } from '../api/apiClient'
 import UserAvatar from '../components/UserAvatar.vue'
@@ -153,13 +153,14 @@ const Msg = (props) => props.m?.text
 Msg.props = ['m']
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const loadingInfo = ref(true)
 const info = ref({})
 const profile = reactive({ fullName: '', username: '' })
 const emailForm = reactive({ email: '', password: '' })
-const emailFormOpen = ref(false)
+const emailFormOpen = ref(route.query.correo === '1')   // viene del aviso "Cambiar correo"
 const pwd = reactive({ current: '', next: '', confirm: '' })
 const delOpen = ref(false)
 const delPassword = ref('')
