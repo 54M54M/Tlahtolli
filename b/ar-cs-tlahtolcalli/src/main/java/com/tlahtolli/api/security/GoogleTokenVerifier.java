@@ -63,27 +63,29 @@ public class GoogleTokenVerifier {
         if (!isEnabled()) throw new IllegalArgumentException("El inicio con Google no está disponible");
         if (idToken == null || idToken.isBlank()) throw new IllegalArgumentException("Falta el token de Google");
         String[] parts = idToken.trim().split("\\.");
-        if (parts.length != 3) throw invalid();
+        if (parts.length != 3) throw invalid("el token no tiene 3 partes");
         try {
             JsonNode header = mapper.readTree(B64.decode(parts[0]));
-            if (!"RS256".equals(header.path("alg").asText())) throw invalid();
+            if (!"RS256".equals(header.path("alg").asText())) throw invalid("alg=" + header.path("alg").asText());
             PublicKey key = key(header.path("kid").asText(null));
 
             Signature sig = Signature.getInstance("SHA256withRSA");
             sig.initVerify(key);
             sig.update((parts[0] + "." + parts[1]).getBytes(StandardCharsets.US_ASCII));
-            if (!sig.verify(B64.decode(parts[2]))) throw invalid();
+            if (!sig.verify(B64.decode(parts[2]))) throw invalid("firma no coincide (kid=" + header.path("kid").asText() + ")");
 
             JsonNode p = mapper.readTree(B64.decode(parts[1]));
             long now = Instant.now().getEpochSecond();
-            if (!ISSUERS.contains(p.path("iss").asText())) throw invalid();
-            if (!audienceMatches(p.path("aud"))) throw invalid();
+            if (!ISSUERS.contains(p.path("iss").asText())) throw invalid("iss=" + p.path("iss").asText());
+            if (!audienceMatches(p.path("aud")))
+                throw invalid("aud del token=" + mask(p.path("aud").toString()) + " ≠ GOOGLE_CLIENT_ID=" + mask(clientId)
+                        + " (revisa que Render y Netlify tengan el mismo Client ID, sin espacios)");
             if (p.path("exp").asLong(0) + SKEW_SECONDS < now) throw new IllegalArgumentException("La sesión de Google venció, intenta de nuevo");
-            if (p.has("iat") && p.path("iat").asLong(0) - SKEW_SECONDS > now) throw invalid();
+            if (p.has("iat") && p.path("iat").asLong(0) - SKEW_SECONDS > now) throw invalid("iat en el futuro: revisa la hora del servidor");
 
             String sub = p.path("sub").asText("");
             String email = p.path("email").asText("").trim().toLowerCase();
-            if (sub.isEmpty() || email.isEmpty()) throw invalid();
+            if (sub.isEmpty() || email.isEmpty()) throw invalid("token sin sub o email");
             JsonNode ev = p.path("email_verified");
             boolean verified = ev.isBoolean() ? ev.asBoolean() : "true".equalsIgnoreCase(ev.asText());
             return new GoogleUser(sub, email, verified,
@@ -91,7 +93,7 @@ public class GoogleTokenVerifier {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            log.warn("[google] token inválido: {}", e.toString());
+            log.warn("[google] no se pudo validar el token: {}", e.toString(), e);
             throw invalid();
         }
     }
@@ -105,7 +107,7 @@ public class GoogleTokenVerifier {
     }
 
     private PublicKey key(String kid) throws Exception {
-        if (kid == null) throw invalid();
+        if (kid == null) throw invalid("token sin kid");
         PublicKey k = Instant.now().isBefore(keysExpireAt) ? keys.get(kid) : null;
         if (k != null) return k;
         // llaves vencidas o "kid" desconocido (Google rota llaves): recargar, máximo una vez cada 30 s
@@ -116,7 +118,7 @@ public class GoogleTokenVerifier {
                 k = keys.get(kid);
             }
         }
-        if (k == null) throw invalid();
+        if (k == null) throw invalid("kid " + kid + " no está en las llaves de Google (" + keys.keySet() + ")");
         return k;
     }
 
@@ -152,5 +154,18 @@ public class GoogleTokenVerifier {
 
     private static IllegalArgumentException invalid() {
         return new IllegalArgumentException("No se pudo validar tu cuenta de Google");
+    }
+
+    /** Registra el motivo en los logs (Render) y responde al usuario el mensaje genérico. */
+    private static IllegalArgumentException invalid(String reason) {
+        log.warn("[google] token rechazado: {}", reason);
+        return invalid();
+    }
+
+    /** Muestra solo el inicio y el final (para comparar Client IDs en los logs sin exponerlos completos). */
+    private static String mask(String v) {
+        if (v == null) return "null";
+        String t = v.replace("\"", "");
+        return t.length() <= 16 ? t : t.substring(0, 8) + "…" + t.substring(t.length() - 30) + " (" + t.length() + " car.)";
     }
 }
