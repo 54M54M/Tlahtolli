@@ -1,8 +1,5 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-surface-0 text-white p-4">
-        <header class="w-full max-w-md mb-3 text-center">
-            <h1 class="text-4xl font-bold text-ink">Tlahtolcalli</h1>
-         </header>
         <div class="w-full max-w-md bg-surface-6 rounded-lg p-8 shadow-lg">
 
             <!-- Tabs -->
