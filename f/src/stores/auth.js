@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import { usersApi, authApi, languagesApi, progressApi, learningApi } from '../api/apiClient.js'
 
+// "Verificar más tarde" del modal de correo: dura hasta cerrar sesión o volver a iniciarla
+function clearVerifyLater() {
+    try {
+        Object.keys(sessionStorage).filter(k => k.startsWith('verifyEmailLater:')).forEach(k => sessionStorage.removeItem(k))
+    } catch { /* sin almacenamiento */ }
+}
+
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
@@ -54,6 +61,7 @@ export const useAuthStore = defineStore('auth', {
             this.isInitialized = true
 
             localStorage.removeItem('selectedLanguage')
+            clearVerifyLater()   // el aviso de verificar correo vuelve a salir en cada inicio de sesión
 
             // Usuario existente → restaurar el último idioma guardado en BD (currentLang)
             if (user.currentLang) {
@@ -108,6 +116,7 @@ export const useAuthStore = defineStore('auth', {
             this.isNewUser = true
             this.isInitialized = false
             localStorage.removeItem('selectedLanguage')
+            clearVerifyLater()
         },
 
         // ── Cambio de idioma (recibe código string: 'nhn'…) ──────────

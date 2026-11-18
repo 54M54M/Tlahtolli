@@ -63,11 +63,25 @@ const ok = ref(false)
 const cooldown = ref(0)
 let timer = null
 
-// "Más tarde" vale para esta sesión del navegador; vuelve a salir al abrir la app de nuevo
-const key = computed(() => `verifyEmailLater:${authStore.user?.id}`)
+// "Más tarde" vale solo para este inicio de sesión: cada login trae un token nuevo,
+// así que al volver a entrar el aviso sale otra vez
+const key = computed(() => `verifyEmailLater:${authStore.user?.id}:${(authStore.token || '').slice(-16)}`)
 const dismissed = ref(false)
 watch(key, (k) => {
     try { dismissed.value = sessionStorage.getItem(k) === '1' } catch { dismissed.value = false }
+}, { immediate: true })
+
+// El estado real se pide al backend una vez por sesión: el usuario guardado en el navegador
+// puede venir de antes de la verificación y no traer emailVerified
+const checkedFor = ref(null)
+watch(() => [authStore.user?.id, authStore.tokenExp, authStore.isLanguageReady], async ([id, exp, ready]) => {
+    if (!id || !ready || checkedFor.value === `${id}:${exp}`) return
+    checkedFor.value = `${id}:${exp}`
+    try {
+        const a = await accountApi.get()
+        if (authStore.user?.id === a.id)
+            authStore.user = { ...authStore.user, email: a.email, emailVerified: a.emailVerified, pendingEmail: a.pendingEmail }
+    } catch { /* sin conexión: se usa lo que haya en el store */ }
 }, { immediate: true })
 
 const pending = computed(() => !!authStore.user?.pendingEmail)
@@ -76,7 +90,7 @@ const email = computed(() => authStore.user?.pendingEmail || authStore.user?.ema
 const visible = computed(() =>
     !!authStore.user &&
     authStore.isLanguageReady &&
-    (authStore.user.emailVerified === false || pending.value) &&
+    (authStore.user.emailVerified !== true || pending.value) &&
     !dismissed.value &&
     !HIDDEN_ON.includes(route.name))
 

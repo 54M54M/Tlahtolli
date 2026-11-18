@@ -4,7 +4,6 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import './style.css'
 import App from './App.vue'
 import router from './router'
-import { preventReload } from './utils/preventReload.js'
 import { warmUpBackend, configureAuth } from './api/apiClient.js'
 import { useAuthStore } from './stores/auth.js'
 import { palettePlugin } from './utils/palette.js'
@@ -16,9 +15,6 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
-
-// Aplicar el mixin globalmente
-app.mixin(preventReload)
 
 app
     .use(pinia)

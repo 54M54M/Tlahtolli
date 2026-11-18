@@ -57,12 +57,8 @@ import { useAuthStore } from '../stores/auth'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { preventReload } from '../utils/preventReload.js'
-
 export default {
     name: 'Layout',
-
-    mixins: [preventReload],
 
     components: {
         DesktopAside,
