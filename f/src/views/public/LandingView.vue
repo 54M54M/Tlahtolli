@@ -1,9 +1,9 @@
 <template>
     <PublicShell>
-        <!-- Portada -->
-        <section class="py-10 md:py-20 px-4">
-            <div class="container mx-auto flex flex-col md:flex-row items-center gap-10">
-                <div class="md:w-1/2">
+        <!-- Portada: texto a la izquierda, pantallas reales de la app inclinadas a la derecha -->
+        <section class="portada relative overflow-hidden">
+            <div class="container mx-auto px-4 relative z-10 py-10 md:py-0 md:min-h-[640px] flex items-center">
+                <div class="md:w-1/2 md:pr-6">
                     <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight text-balance">
                         Lenguas originarias de México, palabra por palabra</h1>
                     <p class="text-lg md:text-xl mb-8 text-gray-400 max-w-xl">Tlahtolcalli es una app web gratuita para
@@ -23,40 +23,16 @@
                         </a>
                     </div>
                 </div>
-                <div class="md:w-1/2 flex justify-center">
-                    <div class="relative">
-                        <div class="absolute -top-6 -left-6 w-32 h-32 bg-turquesa rounded-full blur-2xl opacity-40"></div>
-                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-cempasuchil rounded-full blur-2xl opacity-30"></div>
-                        <!-- Dos teléfonos dibujados con CSS (nítidos en cualquier pantalla, sin imagen que descargar) -->
-                        <div class="phones relative z-10" role="img" aria-label="La app Tlahtolcalli en un teléfono">
-                            <!-- Atrás: la app por dentro -->
-                            <div class="phone phone-back">
-                                <div class="screen bg-surface-0 px-3 pt-8 pb-3 flex flex-col gap-2.5">
-                                    <div class="flex items-center justify-between">
-                                        <span class="h-2.5 w-16 rounded-full bg-white/25"></span>
-                                        <span class="h-5 w-10 rounded-full bg-cempasuchil/30"></span>
-                                    </div>
-                                    <div v-for="c in PHONE_CARDS" :key="c" class="rounded-xl p-2.5 flex items-center gap-2" :class="c">
-                                        <span class="w-7 h-7 rounded-lg bg-white/30 shrink-0"></span>
-                                        <span class="flex-1 space-y-1.5">
-                                            <span class="block h-2 w-4/5 rounded-full bg-white/60"></span>
-                                            <span class="block h-1.5 w-1/2 rounded-full bg-white/35"></span>
-                                        </span>
-                                    </div>
-                                    <div class="mt-auto flex justify-around pt-2 border-t border-white/10">
-                                        <span v-for="n in 4" :key="n" class="w-5 h-5 rounded-md" :class="n === 1 ? 'bg-turquesa' : 'bg-white/15'"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Frente: la marca -->
-                            <div class="phone phone-front">
-                                <div class="screen screen-brand flex flex-col items-center justify-center text-center px-4">
-                                    <img src="/android-chrome-512x512.png" alt="" width="512" height="512"
-                                        class="w-28 h-28 md:w-32 md:h-32 drop-shadow-lg">
-                                    <span class="mt-4 font-display font-bold text-2xl md:text-[1.7rem] text-gray-100 tracking-tight">Tlahtolcalli</span>
-                                    <span class="mt-1 text-xs md:text-sm text-gray-400">Casa de la palabra</span>
-                                </div>
-                            </div>
+            </div>
+
+            <!-- 3 columnas desfasadas, giradas en conjunto (capturas en public/landing/pantallas) -->
+            <div class="telefonos relative h-[460px] md:h-auto md:absolute md:inset-y-0 md:right-0 md:w-[55%]"
+                role="img" aria-label="Pantallas de la app Tlahtolcalli">
+                <div class="inclinado">
+                    <div v-for="(col, c) in COLUMNAS" :key="c" class="columna" :style="{ '--y': ['-12%', '6%', '-22%'][c] }">
+                        <div v-for="(sc, i) in col" :key="sc + i" class="tel">
+                            <img :src="`/landing/pantallas/${sc}.webp`" alt="" width="432" height="935" decoding="async"
+                                :fetchpriority="c === 1 && i === 1 ? 'high' : 'auto'">
                         </div>
                     </div>
                 </div>
@@ -207,7 +183,13 @@ const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior:
 // Si llegó con /#seccion desde otra página
 onMounted(() => { if (route.hash) setTimeout(() => scrollTo(route.hash.slice(1)), 50) })
 
-const PHONE_CARDS = ['bg-turquesa-deep', 'bg-azul-maya/60', 'bg-cempasuchil/60', 'bg-grana/50', 'bg-barro/50']
+// Pantallas de la portada, por columna (capturas en public/landing/pantallas)
+// nhn = náhuatl central · hus = tének
+const COLUMNAS = [
+    ['hus-glosario', 'nhn-nivel', 'hus-estadisticas'],
+    ['hus-leccion-correcta', 'nhn-leccion-correcta', 'hus-nivel1'],
+    ['nhn-glosario', 'nhn-inicio', 'hus-inicio'],
+]
 
 const CHALLENGES = [
     'México tiene 68 agrupaciones lingüísticas originarias y 364 variantes, y muchas están en riesgo de desaparecer.',
@@ -259,25 +241,34 @@ const COLLAB = [
 .escalon span { display: block; width: 16px; border-radius: 2px; }
 .text-balance { text-wrap: balance; }
 
-/* Teléfonos de la portada */
-.phones { width: min(84vw, 380px); aspect-ratio: 380 / 470; }
-.phone {
-    position: absolute; width: 58%; aspect-ratio: 9 / 18.5; padding: 3.2%;
-    background: #0b0f10; border-radius: 13% / 6.4%;
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .7), inset 0 0 0 2px #2a3336;
-}
-.phone::before { /* cámara */
-    content: ''; position: absolute; top: 4.2%; left: 50%; transform: translateX(-50%);
-    width: 30%; height: 2.6%; border-radius: 999px; background: #0b0f10; z-index: 2;
-}
-.phone .screen { width: 100%; height: 100%; border-radius: 10.5% / 5.2%; overflow: hidden; }
-.phone-back { right: 0; top: 0; transform: rotate(9deg); }
-.phone-front { left: 0; bottom: 0; transform: rotate(-7deg); }
-.screen-brand {
+/* Portada */
+.portada {
     background:
-        radial-gradient(120% 60% at 15% 0%, rgb(var(--turquesa) / .35), transparent 60%),
-        radial-gradient(90% 50% at 100% 100%, rgb(var(--grana) / .30), transparent 60%),
-        radial-gradient(70% 40% at 0% 100%, rgb(var(--cempasuchil) / .25), transparent 60%),
-        rgb(var(--surface-0));
+        radial-gradient(45% 60% at 80% 25%, rgb(var(--turquesa) / .16), transparent 70%),
+        radial-gradient(40% 50% at 70% 100%, rgb(var(--cempasuchil) / .10), transparent 70%);
 }
+.telefonos {
+    /* los teléfonos se desvanecen hacia el texto (escritorio) y hacia abajo (móvil) */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 72%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 72%, transparent);
+}
+@media (min-width: 768px) {
+    .telefonos {
+        -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 6%, #000 36%);
+                mask-image: linear-gradient(to right, transparent 0, transparent 6%, #000 36%);
+    }
+}
+.inclinado {
+    position: absolute; left: 50%; top: 50%;
+    display: flex; gap: 22px; width: max-content;
+    transform: translate(-46%, -50%) rotate(-18deg);
+}
+.columna { display: flex; flex-direction: column; gap: 22px; transform: translateY(var(--y)); }
+.tel {
+    width: 170px; padding: 6px; background: #0b0f10; border-radius: 26px;
+    box-shadow: 0 24px 40px -18px rgba(0, 0, 0, .8), inset 0 0 0 1.5px #2a3336;
+}
+.tel img { display: block; width: 100%; height: auto; border-radius: 20px; }
+@media (min-width: 1024px) { .tel { width: 200px; border-radius: 30px; padding: 7px; } .tel img { border-radius: 23px; } }
+
 </style>
