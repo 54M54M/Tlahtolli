@@ -2,6 +2,47 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { publicRoutes } from './publicRoutes'
 
+// Niveles y lecciones bloqueados (o de otro idioma) no se abren escribiendo la URL: vuelven al inicio.
+// Si la API falla, se deja pasar y la vista muestra su propio error; el backend valida al completar.
+const allowIf = (check) => async (to) => {
+    try {
+        const { [check]: fn } = await import('../data/learning.js')
+        const id = to.params.id ?? to.params.unitId ?? to.params.levelId
+        return (await fn(id)) ? true : '/app'
+    } catch (e) {
+        console.warn('[router] no se pudo validar el acceso:', e)
+        return true
+    }
+}
+
+// ── URLs sin id: el usuario ve /app/nivel/nhn y la app usa /app/nivel/25 ─────
+// Internamente las rutas siguen siendo por id (/app/nivel/25). Al terminar de navegar,
+// la barra de direcciones se cambia a /app/nivel/<idioma> y el id se guarda en el estado
+// del historial (history.state.tl). Al recargar o usar Atrás/Adelante, la ruta con idioma
+// lee ese id y vuelve a la ruta interna. Sin id (enlace compartido o escrito a mano)
+// abre el nivel / la lección en curso.
+const PRETTY = {
+    Nivel: { seg: 'nivel', param: 'id', kind: 'level' },
+    Leccion: { seg: 'leccion', param: 'unitId', kind: 'unit' },
+    NivelRapido: { seg: 'nivel-rapido', param: 'levelId', kind: 'level' },
+}
+
+const fromLanguage = (name) => async (to) => {
+    const { seg, kind } = PRETTY[name]
+    const authStore = useAuthStore()
+    if (to.params.lang !== authStore.selectedLanguage) return '/app'
+    try {
+        const learning = await import('../data/learning.js')
+        const saved = window.history.state?.tl
+        let id = saved?.kind === kind && saved.seg === seg ? saved.id : null
+        if (id == null) id = kind === 'unit' ? await learning.currentUnitId() : await learning.currentLevelId()
+        return id == null ? '/app' : { path: `/app/${seg}/${id}`, replace: true }
+    } catch (e) {
+        console.warn('[router] no se pudo resolver la ruta:', e)
+        return '/app'
+    }
+}
+
 // ── Mapa del sitio ──────────────────────────────────────────────────────────
 //   /                     landing (con o sin sesión) · ?auth=login | ?auth=register abre el modal
 //   /novedades /privacidad /terminos   páginas públicas (prerenderizadas)
@@ -32,26 +73,34 @@ const appRoutes = [
         component: () => import('../views/VariantSelection.vue'),
         meta: { requiresAuth: true }
     },
+    // Rutas que ve el usuario (idioma en lugar del id)
+    { path: '/app/nivel/:lang([a-z]+)', component: { render: () => null }, meta: { requiresAuth: true }, beforeEnter: fromLanguage('Nivel') },
+    { path: '/app/leccion/:lang([a-z]+)', component: { render: () => null }, meta: { requiresAuth: true }, beforeEnter: fromLanguage('Leccion') },
+    { path: '/app/nivel-rapido/:lang([a-z]+)', component: { render: () => null }, meta: { requiresAuth: true }, beforeEnter: fromLanguage('NivelRapido') },
+    // Rutas internas (por id)
     {
-        path: '/app/nivel/:id',
+        path: '/app/nivel/:id(\\d+)',
         name: 'Nivel',
         component: () => import('../views/learn/LevelView.vue'),
         props: true,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
+        beforeEnter: allowIf('canOpenLevel')
     },
     {
-        path: '/app/leccion/:unitId',
+        path: '/app/leccion/:unitId(\\d+)',
         name: 'Leccion',
         component: () => import('../views/learn/LessonView.vue'),
         props: true,
         meta: { hideNav: true, requiresAuth: true },
+        beforeEnter: allowIf('canOpenUnit'),
     },
     {
-        path: '/app/nivel-rapido/:levelId',
+        path: '/app/nivel-rapido/:levelId(\\d+)',
         name: 'NivelRapido',
         component: () => import('../views/learn/QuickLevelView.vue'),
         props: true,
         meta: { hideNav: true, requiresAuth: true },
+        beforeEnter: allowIf('canOpenLevel'),
     },
     {
         path: '/app/glosario',
@@ -125,6 +174,17 @@ const ROUTE_TITLES = {
     ElegirUsuario: 'Elige tu usuario',
     Perfil: 'Perfil',
 }
+// Muestra el idioma en la barra de direcciones y guarda el id en el historial
+router.afterEach((to, from, failure) => {
+    const p = PRETTY[to.name]
+    if (failure || !p) return
+    const lang = useAuthStore().selectedLanguage
+    if (!lang) return
+    const pretty = `/app/${p.seg}/${lang}`
+    const state = { ...window.history.state, current: pretty, tl: { kind: p.kind, seg: p.seg, id: Number(to.params[p.param]) } }
+    window.history.replaceState(state, '', pretty)
+})
+
 router.afterEach((to) => {
     if (to.meta.title) {
         document.title = to.query.auth === 'login' ? `Iniciar sesión · ${APP_NAME}`

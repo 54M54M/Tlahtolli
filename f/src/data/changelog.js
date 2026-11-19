@@ -7,6 +7,25 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.0.2',
+        date: '2026-11-18',
+        title: 'Direcciones más limpias',
+        items: [
+            { type: 'mejora', text: 'La dirección de niveles y lecciones muestra tu idioma (por ejemplo /app/leccion/nhn) en lugar de un número.' },
+            { type: 'mejora', text: 'Si abres esa dirección desde un marcador o un enlace, te lleva a tu nivel o lección en curso.' },
+        ],
+    },
+    {
+        version: '4.0.1',
+        date: '2026-11-18',
+        title: 'Ajustes después del cambio',
+        items: [
+            { type: 'correccion', text: 'El botón Volver de los niveles y del glosario regresa al inicio de la app, no a la portada.' },
+            { type: 'correccion', text: 'Los niveles y lecciones bloqueados ya no se abren escribiendo su dirección: hay que desbloquearlos primero.' },
+            { type: 'mejora', text: 'La portada muestra pantallas reales de los cursos de náhuatl central y tének.' },
+        ],
+    },
+    {
         version: '4.0.0',
         date: '2026-11-18',
         title: 'Una sola casa para Tlahtolcalli',

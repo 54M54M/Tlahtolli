@@ -61,16 +61,46 @@ export async function findUnitWithLevel(unitId) {
     return { unit: null, level: null }
 }
 
+// ── Acceso: niveles y unidades bloqueados no se abren aunque se escriba la URL ──
+// (el backend también lo valida al completar; esto evita mostrar la vista)
+
+/** El nivel es del idioma activo y está desbloqueado. */
+export async function canOpenLevel(levelId) {
+    const level = (await getLevels()).find(l => l.id === Number(levelId))
+    return !!level && !level.locked
+}
+
+/** La unidad es del idioma activo, su nivel está desbloqueado y la unidad también. */
+export async function canOpenUnit(unitId) {
+    const { unit, level } = await findUnitWithLevel(unitId)
+    return !!unit && !unit.locked && !!level && !level.locked
+}
+
+/** Nivel en curso: el primero desbloqueado sin terminar (o el último desbloqueado). */
+export async function currentLevelId() {
+    const open = (await getLevels()).filter(l => !l.locked).sort((a, b) => a.levelNum - b.levelNum)
+    const level = open.find(l => l.completedUnits < l.totalUnits) || open[open.length - 1]
+    return level?.id ?? null
+}
+
+/** Lección en curso: la marcada como actual del nivel en curso (o la primera abierta sin completar). */
+export async function currentUnitId() {
+    const levelId = await currentLevelId()
+    if (levelId == null) return null
+    const open = (await getUnits(levelId)).filter(u => !u.locked)
+    const unit = open.find(u => u.current) || open.find(u => !u.completed) || open[open.length - 1]
+    return unit?.id ?? null
+}
+
 /**
  * Invalida todo lo que cambia al completar una lección:
- * levels (progreso/desbloqueos), units del nivel afectado.
+ * levels (progreso/desbloqueos) y units (desbloqueos, también del nivel siguiente).
  * Llamar una sola vez desde lessonApi.js tras completeLesson().
  */
-export function invalidateAfterLesson(levelId) {
+export function invalidateAfterLesson(levelId) { // eslint-disable-line no-unused-vars
     const { cache } = stores()
     cache.invalidatePrefix('levels')
-    if (levelId != null) {
-        const { auth } = stores()
-        cache.invalidate(cache.unitsKey(levelId, auth.user?.id))
-    }
+    // Todas las unidades: al terminar un nivel se desbloquean las del siguiente,
+    // y la validación de acceso de las rutas las lee de esta caché
+    cache.invalidatePrefix('units')
 }
