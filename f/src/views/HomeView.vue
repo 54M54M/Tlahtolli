@@ -156,7 +156,7 @@ export default {
     watch(
         () => route.value.fullPath,
         (path) => {
-          if (path === '/') loadLevels()
+          if (path === '/app') loadLevels()
         }
     )
 

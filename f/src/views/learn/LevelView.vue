@@ -9,7 +9,7 @@
         <template v-else>
             <Header variant="levels" :title="currentLevel.titleNative || currentLevel.title || ''"
                 :subtitle="currentLevel.title || ''" @show-all="handleShowAll" :color="$levelColor(currentLevel.levelNum)"
-                :backRoute="'/'" />
+                :backRoute="'/app'" />
 
             <div class="space-y-4">
                 <!-- Unidades desbloqueadas -->

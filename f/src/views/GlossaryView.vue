@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-surface-0 text-white">
     <!-- Top header -->
-    <Header variant="simple" :title="currentTabTitle" backRoute="/" class="pt-6 md:pt-5" />
+    <Header variant="simple" :title="currentTabTitle" backRoute="/app" class="pt-6 md:pt-5" />
 
     <main class="container mx-auto py-2 md:py-10">
       <div class="max-w-4xl mx-auto ">
