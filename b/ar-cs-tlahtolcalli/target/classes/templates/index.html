@@ -222,6 +222,23 @@
     .svc-pill.waking { color: var(--amber); } .svc-pill.waking .dot { background: var(--amber); animation: pulse 1s infinite; }
     .uptime-badge { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
     .uptime-badge img { height: 20px; }
+    /* Métricas: rejilla de 6 columnas (tercios, mitades y ancho completo) */
+    .mx-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; margin-top: 16px; align-items: stretch; }
+    .mx-grid > .table-wrap { margin: 0; min-width: 0; display: flex; flex-direction: column; }
+    .mx-third { grid-column: span 2; }
+    .mx-half { grid-column: span 3; }
+    .mx-full { grid-column: span 6; }
+    .mx-body { flex: 1; overflow-x: auto; }
+    .mx-body table { min-width: 520px; }
+    .mx-third .svc-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+    .mx-grid .svc-grid .v { word-break: normal; overflow-wrap: anywhere; }
+    @media (max-width: 1280px) {
+      .mx-third { grid-column: span 3; }
+      .mx-third-last { grid-column: span 6; }
+    }
+    @media (max-width: 900px) {
+      .mx-third, .mx-half, .mx-third-last { grid-column: span 6; }
+    }
     .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding: 16px 18px; }
     .svc-grid .k { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
     .svc-grid .v { font-family: 'IBM Plex Mono', monospace; font-size: .85rem; word-break: break-all; }
@@ -1186,13 +1203,16 @@
         <button class="btn btn-ghost btn-sm" onclick="loadMetrics()">Actualizar</button>
       </div>
       <div class="stats-grid" id="mx-cards"></div>
-      <div class="table-wrap"><div class="table-header"><h3 id="mx-server-title">Servidor</h3></div><div id="mx-server"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Peticiones a la API</h3><span id="mx-req-since" style="font-size:.7rem;color:var(--muted)"></span></div><div id="mx-requests"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Base de datos (Postgres)</h3></div><div id="mx-db"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Disponibilidad (UptimeRobot)</h3></div><div id="mx-uptime"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Despliegues del backend (Render)</h3></div><div id="mx-render"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Despliegues del frontend (Netlify)</h3></div><div id="mx-netlify"></div></div>
-      <div class="table-wrap"><div class="table-header"><h3>Proyecto (Neon)</h3></div><div id="mx-neon"></div></div>
+      <!-- Fila 1: servidor · disponibilidad · Neon | Fila 2: despliegues | Filas 3 y 4: peticiones y base de datos -->
+      <div class="mx-grid">
+        <section class="table-wrap mx-third"><div class="table-header"><h3 id="mx-server-title">Status Backend Server</h3></div><div class="mx-body" id="mx-server"></div></section>
+        <section class="table-wrap mx-third"><div class="table-header"><h3>Service Availability</h3></div><div class="mx-body" id="mx-uptime"></div></section>
+        <section class="table-wrap mx-third mx-third-last"><div class="table-header"><h3>Status Database Server</h3></div><div class="mx-body" id="mx-neon"></div></section>
+        <section class="table-wrap mx-half"><div class="table-header"><h3>Backend (Render)</h3></div><div class="mx-body" id="mx-render"></div></section>
+        <section class="table-wrap mx-half"><div class="table-header"><h3>Frontend (Netlify)</h3></div><div class="mx-body" id="mx-netlify"></div></section>
+        <section class="table-wrap mx-full"><div class="table-header"><h3>API Requests</h3><span id="mx-req-since" style="font-size:.7rem;color:var(--muted)"></span></div><div class="mx-body" id="mx-requests"></div></section>
+        <section class="table-wrap mx-full"><div class="table-header"><h3>Database (Postgres)</h3></div><div class="mx-body" id="mx-db"></div></section>
+      </div>
     </div>
 
     <div class="tab-pane" id="tab-config">
@@ -1650,8 +1670,8 @@
   const mono = v => `<td style="font-family:'IBM Plex Mono',monospace">${v ?? '—'}</td>`;
   const kv = rows => `<div class="svc-grid">${rows.map(([k, v]) => `<div><p class="k">${k}</p><p class="v">${v ?? '—'}</p></div>`).join('')}</div>`;
   const offHTML = src => src?.configured === false
-      ? `<div class="empty"><p style="color:var(--muted)">${esc(src.error)}<br><small>Agrega las variables de entorno en Render para activarlo.</small></p></div>`
-      : `<div class="empty"><p style="color:var(--coral)">No respondió: ${esc(src?.error ?? 'error')}</p></div>`;
+          ? `<div class="empty"><p style="color:var(--muted)">${esc(src.error)}<br><small>Agrega las variables de entorno en Render para activarlo.</small></p></div>`
+          : `<div class="empty"><p style="color:var(--coral)">No respondió: ${esc(src?.error ?? 'error')}</p></div>`;
   const dur = s => { s = Number(s) || 0; const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return (d ? d + 'd ' : '') + (h ? h + 'h ' : '') + m + 'm'; };
   const when = d => { if (!d) return '—'; try { return new Date(typeof d === 'number' ? d * 1000 : d).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
   const stateChip = st => { const s = String(st || '').toLowerCase();
@@ -1670,36 +1690,40 @@
     document.getElementById('mx-updated').textContent = 'última lectura ' + new Date().toLocaleTimeString('es-MX');
 
     const sv = m.server || {}, rq = m.requests || {}, db = m.database || {};
-    const up = (m.uptimeRobot?.monitors || [])[0];
+    // Monitores de UptimeRobot: el que apunta a Netlify es el frontend; el otro, el backend
+    const mons = m.uptimeRobot?.monitors || [];
+    const upFront = mons.find(x => /netlify/i.test(x.url || ''));
+    const upBack = mons.find(x => x !== upFront);
     const heapPct = sv.heapMaxMb ? 100 * sv.heapUsedMb / sv.heapMaxMb : 0;
     document.getElementById('mx-cards').innerHTML =
-        card('Disponibilidad 30 d', up ? up.uptime30d + '%' : '—', up ? 'UptimeRobot · ' + up.status : 'Sin UptimeRobot', 'var(--jade)') +
-        card('Memoria JVM', sv.heapUsedMb != null ? sv.heapUsedMb + ' MB' : '—', 'de ' + (sv.heapMaxMb ?? '—') + ' MB', heapPct > 85 ? 'var(--coral)' : 'var(--amber)') +
-        card('Peticiones', (rq.total ?? 0).toLocaleString(), 'prom. ' + (rq.avgMs ?? 0) + ' ms · desde el arranque', '#7EB3FF') +
-        card('Base de datos', db.sizeMb != null ? db.sizeMb + ' MB' : '—', 'caché ' + (db.stats?.cache_hit_pct ?? '—') + '%', 'var(--coral)');
+            card('Backend · 30 d', upBack ? upBack.uptime30d + '%' : '—', upBack ? esc(upBack.name) + ' · ' + upBack.status : 'Sin monitor', 'var(--jade)') +
+            card('Frontend · 30 d', upFront ? upFront.uptime30d + '%' : '—', upFront ? esc(upFront.name) + ' · ' + upFront.status : 'Sin monitor', 'var(--jade)') +
+            card('Memoria JVM', sv.heapUsedMb != null ? sv.heapUsedMb + ' MB' : '—', 'de ' + (sv.heapMaxMb ?? '—') + ' MB', heapPct > 85 ? 'var(--coral)' : 'var(--amber)') +
+            card('Peticiones', (rq.total ?? 0).toLocaleString(), 'prom. ' + (rq.avgMs ?? 0) + ' ms · desde el arranque', '#7EB3FF') +
+            card('Base de datos', db.sizeMb != null ? db.sizeMb + ' MB' : '—', 'caché ' + (db.stats?.cache_hit_pct ?? '—') + '%', 'var(--coral)');
 
     document.getElementById('mx-server-title').innerHTML = sv.environment === 'Local'
-        ? `Servidor <span class="chip chip-amber" style="margin-left:6px">LOCAL · ${esc(sv.host)}</span> <small style="color:var(--muted);font-weight:400">datos de tu computadora, no de Render</small>`
-        : `Servidor <span class="chip chip-green" style="margin-left:6px">RENDER${sv.host ? ' · ' + esc(sv.host) : ''}</span>`;
+            ? `Status Backend Server <span class="chip chip-amber" style="margin-left:6px">LOCAL · ${esc(sv.host)}</span> <small style="color:var(--muted);font-weight:400">datos de tu computadora, no de Render</small>`
+            : `Status Backend Server <span class="chip chip-green" style="margin-left:6px">RENDER${sv.host ? ' · ' + esc(sv.host) : ''}</span>`;
     document.getElementById('mx-server').innerHTML = sv.ok === false ? offHTML(sv) : kv([
-        ['En línea', dur(sv.uptimeSeconds)], ['Java', sv.javaVersion], ['CPU proceso', sv.processCpu != null ? sv.processCpu + '%' : '—'],
-        ['CPU sistema', sv.systemCpu != null ? sv.systemCpu + '%' : '—'], ['Núcleos', sv.cpus], ['Hilos', sv.threads],
-        ['Heap JVM', bar(heapPct) + `<small style="color:var(--muted)">${sv.heapUsedMb} / ${sv.heapMaxMb} MB</small>`],
-        [sv.environment === 'Local' ? 'RAM del equipo' : 'RAM del contenedor', sv.systemMemTotalMb ? bar(100 * (sv.systemMemTotalMb - sv.systemMemFreeMb) / sv.systemMemTotalMb) + `<small style="color:var(--muted)">${sv.systemMemTotalMb - sv.systemMemFreeMb} / ${sv.systemMemTotalMb} MB</small>` : '—'],
-        ['Pool de conexiones', sv.poolTotal != null ? `${sv.poolActive} activas · ${sv.poolIdle} libres · ${sv.poolWaiting} esperando (máx ${sv.poolMax})` : '—'] ]);
+      ['En línea', dur(sv.uptimeSeconds)], ['Java', sv.javaVersion], ['CPU proceso', sv.processCpu != null ? sv.processCpu + '%' : '—'],
+      ['CPU sistema', sv.systemCpu != null ? sv.systemCpu + '%' : '—'], ['Núcleos', sv.cpus], ['Hilos', sv.threads],
+      ['Heap JVM', bar(heapPct) + `<small style="color:var(--muted)">${sv.heapUsedMb} / ${sv.heapMaxMb} MB</small>`],
+      [sv.environment === 'Local' ? 'RAM del equipo' : 'RAM del contenedor', sv.systemMemTotalMb ? bar(100 * (sv.systemMemTotalMb - sv.systemMemFreeMb) / sv.systemMemTotalMb) + `<small style="color:var(--muted)">${sv.systemMemTotalMb - sv.systemMemFreeMb} / ${sv.systemMemTotalMb} MB</small>` : '—'],
+      ['Pool de conexiones', sv.poolTotal != null ? `${sv.poolActive} activas · ${sv.poolIdle} libres · ${sv.poolWaiting} esperando (máx ${sv.poolMax})` : '—'] ]);
 
     document.getElementById('mx-req-since').textContent = rq.since ? 'desde ' + when(rq.since) + ` · ${rq.errors4xx ?? 0} 4xx · ${rq.errors5xx ?? 0} 5xx` : '';
     document.getElementById('mx-requests').innerHTML = !(rq.endpoints || []).length ? emptyHTML() :
-        `<table><thead><tr><th>Endpoint</th><th>Peticiones</th><th>Prom.</th><th>Máx.</th><th>4xx</th><th>5xx</th></tr></thead><tbody>${rq.endpoints.map(r => `<tr>
+            `<table><thead><tr><th>Endpoint</th><th>Peticiones</th><th>Prom.</th><th>Máx.</th><th>4xx</th><th>5xx</th></tr></thead><tbody>${rq.endpoints.map(r => `<tr>
           <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem">${esc(r.endpoint)}</td>${mono(r.count.toLocaleString())}${mono(r.avgMs + ' ms')}${mono(r.maxMs + ' ms')}
           <td>${r.errors4xx ? `<span class="chip chip-amber">${r.errors4xx}</span>` : '0'}</td><td>${r.errors5xx ? `<span class="chip chip-red">${r.errors5xx}</span>` : '0'}</td></tr>`).join('')}</tbody></table>`;
 
     document.getElementById('mx-db').innerHTML = db.ok === false ? offHTML(db) : kv([
-        ['Postgres', db.version], ['Base', db.database], ['Tamaño', db.sizeMb + ' MB'], ['Aciertos de caché', (db.stats?.cache_hit_pct ?? '—') + '%'],
-        ['Commits / rollbacks', `${(db.stats?.commits ?? 0).toLocaleString()} / ${(db.stats?.rollbacks ?? 0).toLocaleString()}`],
-        ['Conexiones', (db.connections || []).map(c => `${c.total} ${esc(c.state)}`).join(' · ') || '—'] ]) +
-      `<table><thead><tr><th>Tabla</th><th>Filas</th><th>Tamaño</th></tr></thead><tbody>${(db.tables || []).map(t =>
-        `<tr><td>${esc(t.table_name)}</td>${mono(Number(t.row_count).toLocaleString())}${mono(t.size_kb + ' KB')}</tr>`).join('')}</tbody></table>`;
+              ['Postgres', db.version], ['Base', db.database], ['Tamaño', db.sizeMb + ' MB'], ['Aciertos de caché', (db.stats?.cache_hit_pct ?? '—') + '%'],
+              ['Commits / rollbacks', `${(db.stats?.commits ?? 0).toLocaleString()} / ${(db.stats?.rollbacks ?? 0).toLocaleString()}`],
+              ['Conexiones', (db.connections || []).map(c => `${c.total} ${esc(c.state)}`).join(' · ') || '—'] ]) +
+            `<table><thead><tr><th>Tabla</th><th>Filas</th><th>Tamaño</th></tr></thead><tbody>${(db.tables || []).map(t =>
+                    `<tr><td>${esc(t.table_name)}</td>${mono(Number(t.row_count).toLocaleString())}${mono(t.size_kb + ' KB')}</tr>`).join('')}</tbody></table>`;
 
     const ur = m.uptimeRobot;
     document.getElementById('mx-uptime').innerHTML = !ur?.ok ? offHTML(ur) : (ur.monitors || []).map(x => {
@@ -1708,30 +1732,30 @@
           <polyline fill="none" stroke="var(--jade)" stroke-width="2" vector-effect="non-scaling-stroke" points="${pts.map((p, i) => `${i * 10 + 5},${38 - 34 * p.ms / max}`).join(' ')}"/></svg>
           <p style="font-size:.65rem;color:var(--muted)">Respuesta: ${Math.min(...pts.map(p => p.ms))}–${max} ms en las últimas lecturas</p>` : '';
       return kv([ ['Monitor', esc(x.name)], ['Estado', stateChip(x.status)], ['24 h', x.uptime24h + '%'], ['7 días', x.uptime7d + '%'], ['30 días', x.uptime30d + '%'], ['Respuesta prom.', (x.avgResponseMs ?? '—') + ' ms'] ]) +
-        `<div style="padding:0 18px 14px">${spark}</div>` +
-        ((x.logs || []).length ? `<table><thead><tr><th>Evento</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${x.logs.map(l =>
-          `<tr><td>${l.type === 1 ? stateChip('down') : l.type === 2 ? stateChip('up') : stateChip('pausa')}</td>${mono(when(l.at))}${mono(dur(l.durationS))}</tr>`).join('')}</tbody></table>` : '');
-    }).join('');
+              `<div style="padding:0 18px 14px">${spark}</div>` +
+              ((x.logs || []).length ? `<table><thead><tr><th>Evento</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${x.logs.map(l =>
+                      `<tr><td>${l.type === 1 ? stateChip('down') : l.type === 2 ? stateChip('up') : stateChip('pausa')}</td>${mono(when(l.at))}${mono(dur(l.durationS))}</tr>`).join('')}</tbody></table>` : '');
+    }).join('<hr style="border:0;border-top:1px solid var(--border);margin:0">');
 
     const rd = m.render;
     document.getElementById('mx-render').innerHTML = !rd?.ok ? offHTML(rd) : !(rd.deploys || []).length ? emptyHTML() :
-        `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Origen</th><th>Inicio</th><th>Fin</th></tr></thead><tbody>${rd.deploys.map(d => `<tr>
+            `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Origen</th><th>Inicio</th><th>Fin</th></tr></thead><tbody>${rd.deploys.map(d => `<tr>
           <td>${stateChip(d.status)}</td>${mono(esc(d.commit))}<td style="font-size:.78rem">${esc(d.message ?? '—')}</td><td style="font-size:.72rem;color:var(--muted)">${esc(d.trigger ?? '—')}</td>${mono(when(d.createdAt))}${mono(when(d.finishedAt))}</tr>`).join('')}</tbody></table>`;
 
     const nf = m.netlify;
     document.getElementById('mx-netlify').innerHTML = !nf?.ok ? offHTML(nf) : !(nf.deploys || []).length ? emptyHTML() :
-        `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Rama</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${nf.deploys.map(d => `<tr>
+            `<table><thead><tr><th>Estado</th><th>Commit</th><th>Mensaje</th><th>Rama</th><th>Fecha</th><th>Duración</th></tr></thead><tbody>${nf.deploys.map(d => `<tr>
           <td>${stateChip(d.state)}</td>${mono(esc(d.commit))}<td style="font-size:.78rem">${esc(d.error || d.title || '—')}</td><td style="font-size:.72rem;color:var(--muted)">${esc(d.branch)}</td>${mono(when(d.createdAt))}${mono(d.deploySeconds != null ? d.deploySeconds + ' s' : '—')}</tr>`).join('')}</tbody></table>`;
 
     const ne = m.neon;
     const mb = b => b != null ? (Number(b) / 1048576).toFixed(1) + ' MB' : '—';
     document.getElementById('mx-neon').innerHTML = !ne?.ok ? offHTML(ne) : kv([
-        ['Proyecto', esc(ne.name)], ['Región', esc(ne.region)], ['Postgres', ne.pgVersion],
-        ['Tiempo activo', ne.active_time_seconds != null ? dur(ne.active_time_seconds) : '—'],
-        ['Tiempo de cómputo', ne.compute_time_seconds != null ? dur(ne.compute_time_seconds) : '—'],
-        ['CPU usada', ne.cpu_used_sec != null ? dur(ne.cpu_used_sec) : '—'],
-        ['Almacenamiento', mb(ne.synthetic_storage_size)], ['Transferencia', mb(ne.data_transfer_bytes)], ['Escrito', mb(ne.written_data_bytes)],
-        ['Periodo', ne.consumption_period_start ? when(ne.consumption_period_start) + ' → ' + when(ne.consumption_period_end) : '—'] ]);
+      ['Proyecto', esc(ne.name)], ['Región', esc(ne.region)], ['Postgres', ne.pgVersion],
+      ['Tiempo activo', ne.active_time_seconds != null ? dur(ne.active_time_seconds) : '—'],
+      ['Tiempo de cómputo', ne.compute_time_seconds != null ? dur(ne.compute_time_seconds) : '—'],
+      ['CPU usada', ne.cpu_used_sec != null ? dur(ne.cpu_used_sec) : '—'],
+      ['Almacenamiento', mb(ne.synthetic_storage_size)], ['Transferencia', mb(ne.data_transfer_bytes)], ['Escrito', mb(ne.written_data_bytes)],
+      ['Periodo', ne.consumption_period_start ? when(ne.consumption_period_start) + ' → ' + when(ne.consumption_period_end) : '—'] ]);
 
     metricsTimer = setTimeout(loadMetrics, 30000);
   }

@@ -3,7 +3,10 @@
   publish = "dist"
   base = "f"
 
+# Las páginas públicas (/, /novedades, /privacidad, /terminos) existen como HTML
+# prerenderizado y Netlify las sirve directo. Todo lo demás (/app/…, /verificar,
+# rutas viejas) abre el shell de la app y Vue Router decide.
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/spa.html"
   status = 200

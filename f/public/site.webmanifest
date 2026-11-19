@@ -3,7 +3,7 @@
     "short_name": "Tlahtolcalli",
     "description": "Aprende lenguas originarias de México.",
     "lang": "es-MX",
-    "start_url": "/",
+    "start_url": "/app",
     "scope": "/",
     "icons": [
         {

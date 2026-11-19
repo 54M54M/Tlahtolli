@@ -3,7 +3,7 @@
         <!-- Header con título dinámico - SOLO se muestra durante la lección -->
         <Header v-if="currentQuestion <= quickExercises.length" variant="lesson" :title="`Nivel Rápido ${levelId}`"
             :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
-            :progressCurrent="completedExercises" :progressTotal="totalExercises" :backRoute="`/nivel/${levelId}`"
+            :progressCurrent="completedExercises" :progressTotal="totalExercises" :backRoute="`/app/nivel/${levelId}`"
             @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick" />
 
         <!-- Loading inicial -->
@@ -132,7 +132,7 @@
 
                     <!-- Mensaje de finalización - DISEÑO QUICKLEVEL -->
                     <CompletionMessage v-if="currentQuestion > quickExercises.length" title="¡Nivel Rápido Completado!"
-                        :back-route="`/nivel/${levelId}`" :show-stats="true"
+                        :back-route="`/app/nivel/${levelId}`" :show-stats="true"
                         :correct-answers-count="correctAnswersCount" :total-exercises="totalExercises"
                         :performance="performance" :lesson-time="lessonTime" :show-unlock-section="true"
                         :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId" />
@@ -147,7 +147,7 @@
         <NoEnergyModal :show="showNoEnergyModal" :modal-type="noEnergyModalType"
             :current-energy="energyStore.currentEnergy" :max-energy="energyStore.maxEnergy"
             :required-energy="requiredEnergyForLesson"
-            :recovery-time="energyStore.getRecoveryTime(requiredEnergyForLesson)" :redirect-to="`/nivel/${levelId}`"
+            :recovery-time="energyStore.getRecoveryTime(requiredEnergyForLesson)" :redirect-to="`/app/nivel/${levelId}`"
             @return="handleEnergyModalReturn" @practice="handlePracticeForEnergy" @close="closeNoEnergyModal" />
     </div>
 </template>
@@ -423,18 +423,18 @@ export default {
             this.showNoEnergyModal = false;
             this.lessonInProgress = false;
             if (this.energyCheckInterval) { clearInterval(this.energyCheckInterval); this.energyCheckInterval = null; }
-            this.$router.push(`/nivel/${this.levelId}`);
+            this.$router.push(`/app/nivel/${this.levelId}`);
         },
 
         handlePracticeForEnergy() {
             this.showNoEnergyModal = false;
-            this.$router.push('/');
+            this.$router.push('/app');
         },
 
         closeNoEnergyModal() {
             this.showNoEnergyModal = false;
             if (this.energyStore.currentEnergy <= 0) {
-                this.$router.push(`/nivel/${this.levelId}`);
+                this.$router.push(`/app/nivel/${this.levelId}`);
             }
         },
 
@@ -443,8 +443,8 @@ export default {
         closeWarningModal() { this.showWarningModal = false; },
         showExitConfirmModal() { this.showExitConfirmModalFlag = true; },
         closeExitConfirmModal() { this.showExitConfirmModalFlag = false; },
-        confirmExitLesson() { this.closeExitConfirmModal(); this.$router.push(`/nivel/${this.levelId}`); },
-        endSession() { this.closeWarningModal(); this.$router.push(`/nivel/${this.levelId}`); },
+        confirmExitLesson() { this.closeExitConfirmModal(); this.$router.push(`/app/nivel/${this.levelId}`); },
+        endSession() { this.closeWarningModal(); this.$router.push(`/app/nivel/${this.levelId}`); },
 
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);

@@ -102,7 +102,7 @@
               </div>
             </div>
             <div class="mt-4 space-y-2">
-              <button @click="router.push('/perfil/editar')"
+              <button @click="router.push('/app/perfil/editar')"
                       class="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 rounded p-2">
                 Editar perfil
               </button>

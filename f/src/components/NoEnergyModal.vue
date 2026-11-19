@@ -277,7 +277,7 @@ export default {
             let route = this.redirectTo;
 
             if (!route && this.currentLevel?.id) {
-                route = `/nivel/${this.currentLevel.id}`;
+                route = `/app/nivel/${this.currentLevel.id}`;
             }
 
             if (!route || route === '') {
@@ -290,7 +290,7 @@ export default {
                 this.$router.push(route);
             } catch (error) {
                 console.error('❌ Error al redirigir:', error);
-                this.$router.push('/');
+                this.$router.push('/app');
             }
 
             this.$emit('return');

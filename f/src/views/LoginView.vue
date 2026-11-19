@@ -1,15 +1,16 @@
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-surface-0 text-white p-4">
+    <div class="flex flex-col items-center justify-center bg-surface-0 text-white p-4"
+        :class="embedded ? 'py-6' : 'min-h-screen'">
         <div class="w-full max-w-md bg-surface-6 rounded-lg p-8 shadow-lg">
 
             <!-- Tabs -->
             <div class="flex mb-6 bg-surface-0 rounded-lg p-1">
-                <button @click="activeTab = 'login'"
+                <button @click="switchTab('login')"
                     :class="activeTab === 'login' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
                     class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Iniciar sesión
                 </button>
-                <button @click="activeTab = 'register'"
+                <button @click="switchTab('register')"
                     :class="activeTab === 'register' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
                     class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Registrarse
@@ -144,6 +145,13 @@
                     {{ errorMsg }}
                 </div>
 
+                <p class="text-xs text-gray-400 text-center">
+                    Al crear tu cuenta aceptas los
+                    <a href="/terminos" target="_blank" rel="noopener" class="text-turquesa hover:underline">Términos</a>
+                    y el
+                    <a href="/privacidad" target="_blank" rel="noopener" class="text-turquesa hover:underline">Aviso de privacidad</a>.
+                </p>
+
                 <button @click="register" :disabled="loading"
                     class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
                     {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
@@ -163,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { usersApi } from '../api/apiClient'
 import { useRouter } from 'vue-router'
@@ -174,7 +182,15 @@ import GoogleButton from '../components/GoogleButton.vue'
 const authStore = useAuthStore()
 const router = useRouter()
 
-const activeTab = ref('login')
+// En el modal de la landing (?auth=login | ?auth=register) la pestaña viene de la URL
+const props = defineProps({
+    embedded: { type: Boolean, default: false },
+    tab: { type: String, default: 'login' },
+})
+const emit = defineEmits(['tab-change'])
+
+const activeTab = ref(props.tab === 'register' ? 'register' : 'login')
+watch(() => props.tab, (t) => { activeTab.value = t === 'register' ? 'register' : 'login' })
 const loading = ref(false)
 const errorMsg = ref('')
 
@@ -215,7 +231,7 @@ const login = async () => {
     try {
         await authStore.login(username.value, password.value)
         // Usuario con idioma previo → home; sin idioma (nuevo) → selector
-        router.push(authStore.selectedLanguage ? '/' : '/select-language')
+        router.push(authStore.selectedLanguage ? '/app' : '/app/idioma')
     } catch (err) {
         errorMsg.value = err.message || 'Usuario o contraseña incorrectos.'
     } finally {
@@ -245,7 +261,7 @@ const register = async () => {
     try {
         await usersApi.create({ username: newUsername.value.trim(), fullName: `${newFirstName.value.trim()} ${newLastName.value.trim()}`, email: newEmail.value.trim(), password: newPassword.value, currentLang: null })
         await authStore.login(newUsername.value, newPassword.value)
-        router.push('/select-language')
+        router.push('/app/idioma')
     } catch (err) {
         errorMsg.value = err.message || 'No se pudo crear la cuenta.'
     } finally {
@@ -262,8 +278,8 @@ const loginGoogle = async (credential) => {
     try {
         await authStore.loginWithGoogle(credential)
         // Cuenta nueva → elegir usuario; luego idioma
-        if (authStore.user?.mustPickUsername) router.push('/elegir-usuario')
-        else router.push(authStore.selectedLanguage ? '/' : '/select-language')
+        if (authStore.user?.mustPickUsername) router.push('/app/elegir-usuario')
+        else router.push(authStore.selectedLanguage ? '/app' : '/app/idioma')
     } catch (err) {
         errorMsg.value = err.message || 'No se pudo entrar con Google.'
     } finally {
@@ -273,13 +289,15 @@ const loginGoogle = async (credential) => {
 
 // Limpiar error al cambiar de tab
 const switchTab = (tab) => {
+    if (activeTab.value === tab) return
     activeTab.value = tab
     errorMsg.value = ''
+    emit('tab-change', tab)
 }
 
 onMounted(() => {
     if (authStore.user && !authStore.isNewUser && authStore.selectedLanguage) {
-        router.push('/')
+        router.push('/app')
     }
 })
 </script>

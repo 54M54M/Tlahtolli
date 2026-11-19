@@ -2,7 +2,7 @@
     <nav v-if="!$route.meta.hideNav" class="md:hidden bg-gray-800 text-white fixed bottom-0 left-0 right-0">
         <div class="fixed bottom-0 inset-x-0 bg-surface-0 border-t border-gray-700 py-3">
             <div class="container mx-auto flex justify-around items-center">
-                <router-link to="/" class="flex flex-col items-center group" active-class="text-blue-400"
+                <router-link to="/app" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">
@@ -14,7 +14,7 @@
                     <span class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Inicio</span>
                 </router-link>
 
-                <router-link to="/glosario" class="flex flex-col items-center group" active-class="text-blue-400"
+                <router-link to="/app/glosario" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">
@@ -26,7 +26,7 @@
                     <span class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Glosario</span>
                 </router-link>
 
-                <!-- <router-link to="/mapa" class="flex flex-col items-center group" active-class="text-blue-400"
+                <!-- <router-link to="/app/mapa" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">
@@ -38,7 +38,7 @@
                     <span class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Mapa</span>
                 </router-link> -->
 
-                <router-link to="/estadisticas" class="flex flex-col items-center group" active-class="text-blue-400"
+                <router-link to="/app/estadisticas" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">
@@ -51,7 +51,7 @@
                         class="text-xs mt-1 transition-colors duration-200 group-hover:text-blue-400">Estadísticas</span>
                 </router-link>
 
-                <router-link to="/perfil" class="flex flex-col items-center group" active-class="text-blue-400"
+                <router-link to="/app/perfil" class="flex flex-col items-center group" active-class="text-blue-400"
                     exact-active-class="text-blue-500">
                     <div
                         class="w-8 h-8 flex items-center justify-center transition-colors duration-200 group-hover:text-amber-500">

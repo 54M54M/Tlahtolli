@@ -89,7 +89,7 @@ async function save() {
         // Enviar el usuario (aunque no cambie) confirma la elección; no cuenta para el tiempo de espera
         const info = await accountApi.updateProfile({ username: username.value.trim() })
         authStore.user = { ...authStore.user, username: info.username, mustPickUsername: false }
-        router.replace(authStore.selectedLanguage ? '/' : '/select-language')
+        router.replace(authStore.selectedLanguage ? '/app' : '/app/idioma')
     } catch (e) {
         errorMsg.value = e.message || 'No se pudo guardar tu usuario.'
     } finally {

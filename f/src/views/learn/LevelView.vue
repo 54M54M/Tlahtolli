@@ -13,7 +13,7 @@
 
             <div class="space-y-4">
                 <!-- Unidades desbloqueadas -->
-                <router-link v-for="unit in unlockedUnits" :key="unit.id" :to="'/leccion/' + unit.id" class="block">
+                <router-link v-for="unit in unlockedUnits" :key="unit.id" :to="'/app/leccion/' + unit.id" class="block">
                     <div class="rounded-xl p-4 space-y-4 text-ink-on-color transition-transform transform hover:scale-105"
                         :style="{ backgroundColor: $levelColor(currentLevel.levelNum) }">
 

@@ -1,0 +1,4 @@
+# Sitio anterior de la landing (totlahtol.netlify.app).
+# La landing ahora vive en la app: https://tlahtolcalli.netlify.app
+# 301 permanente para que Google pase la relevancia y los enlaces viejos sigan funcionando.
+/*  https://tlahtolcalli.netlify.app/:splat  301!

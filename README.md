@@ -65,97 +65,46 @@ Plataforma web de aprendizaje de lenguas originarias que utiliza un enfoque gami
 - **LocalStorage**: Persistencia de datos en el navegador
 - **Componentes modulares**: Estructura organizada y mantenible
 
-## 📖 Estructura del proyecto
+## 📖 Estructura del repositorio
 
 ```
-└── 📁src
-    └── 📁assets
-        └── 📁exercises
-            ├── img.webp
-    └── 📁components
-        ├── AchievementsList.vue
-        ├── Badge.vue
-        ├── Card.vue
-        ├── CompletionMessage.vue
-        ├── DesktopAside.vue
-        ├── DialectProgress.vue
-        ├── ExerciseImage.vue
-        ├── ExitConfirmModal.vue
-        ├── FeedbackModal.vue
-        ├── LanguageGroupSelector.vue
-        ├── LearningStats.vue
-        ├── MobileNav.vue
-        ├── NextStage.vue
-        ├── NoEnergyModal.vue
-        ├── ProcessedText.vue
-        ├── ProgressAside.vue
-        ├── ProgressBar.vue
-        ├── PronunciationTooltip.vue
-        ├── SettingsPanel.vue
-        ├── Tab.vue
-        ├── UserProfile.vue
-        ├── vHeader.vue
-        ├── WarningModal.vue
-        ├── WritingSystem.vue
-    └── 📁data
-        └── 📁config
-            ├── LanguageConfig.js
-        └── 📁models
-            ├── Achievement.js
-            ├── DictionaryEntry.js
-            ├── Energy.js
-            ├── Exercise.js
-            ├── Level.js
-            ├── Region.js
-            ├── Stats.js
-            ├── Unit.js
-            ├── User.js
-        └── 📁repositories
-            └── 📁contentRepositories
-                ├── learningContent.js
-            ├── DictionaryRepository.js
-            ├── LearningRepository.js
-            ├── RepositoryFactory.js
-            ├── StatsRepository.js
-            ├── SyllabaryRepository.js
-            ├── UserRepository.js
-        └── 📁services
-            ├── AchievementService.js
-            ├── EnergyService.js
-            ├── LanguageService.js
-            ├── ProgressService.js
-            ├── QuickLevelService.js
-            ├── SpeechService.js
-            ├── StudyService.js
-            ├── UnlockService.js
-        └── 📁storage
-            ├── LocalStorageService.js
-    └── 📁layouts
-        ├── Layout.vue
-    └── 📁router
-        ├── index.js
-    └── 📁stores
-        ├── auth.js
-        ├── energy.js
-    └── 📁utils
-        ├── preventReload.js
-    └── 📁views
-        └── 📁glossary
-            ├── SyllabaryContent.vue
-        └── 📁learn
-            ├── LessonView.vue
-            ├── LevelView.vue
-            ├── QuickLevelView.vue
-        ├── GlossaryView.vue
-        ├── HomeView.vue
-        ├── LoginView.vue
-        ├── ProfileView.vue
-        ├── StatsView.vue
-        ├── VariantSelection.vue
-    ├── App.vue
-    ├── main.js
-    └── style.css
+├── f/                         Frontend (Vue 3 + Vite) · Netlify: tlahtolcalli.netlify.app
+│   ├── public/                Íconos, imagen de la portada, robots.txt, sitemap.xml
+│   ├── scripts/prerender.mjs  Genera el HTML de las páginas públicas al compilar
+│   └── src/
+│       ├── views/public/      Portada (/), novedades, privacidad y términos
+│       ├── components/public/ Encabezado y pie públicos, modal de inicio de sesión
+│       ├── views/             Vistas de la app (/app/…)
+│       ├── data/changelog.js  Novedades que ven los usuarios en /novedades
+│       ├── router/            Rutas públicas (publicRoutes.js) y de la app (index.js)
+│       └── entry-prerender.js Entrada del prerender
+├── b/ar-cs-tlahtolcalli/      Backend (Spring Boot 3 · Java 21) · Render, con el monitor en /monitor
+├── doc/                       Documentación: changelogs técnicos, despliegue, notas y recursos
+└── _redirects                 Redirige el sitio anterior de la landing (totlahtol) a la app
 ```
+
+### Rutas
+
+| Ruta | Qué es | Sesión |
+|---|---|---|
+| `/` | Portada | Con o sin sesión |
+| `/?auth=login` · `/?auth=register` | Modal para iniciar sesión o crear cuenta | Sin sesión |
+| `/novedades` · `/privacidad` · `/terminos` | Páginas públicas | Con o sin sesión |
+| `/verificar` | Enlace del correo de verificación | Con o sin sesión |
+| `/app/…` | La app | Requiere sesión |
+
+Las rutas anteriores (`/login`, `/perfil`, `/glosario`, …) redirigen a las nuevas.
+
+### Compilar
+
+```
+cd f
+npm install
+npm run build        # vite build + prerender de las páginas públicas
+npm run build:spa    # solo vite build, sin prerender
+```
+
+La documentación está en [`/doc`](doc/README.md).
 
 ## 🎯 Flujo de usuario
 

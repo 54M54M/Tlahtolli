@@ -22,7 +22,7 @@
       <div class="space-y-4">
 
         <!-- Niveles desbloqueados -->
-        <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/nivel/' + level.id"
+        <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/app/nivel/' + level.id"
                      class="w-full block">
           <Card
               class="rounded-xl text-ink-on-color overflow-hidden shadow-lg transition-transform transform hover:scale-105"
@@ -134,7 +134,7 @@ export default {
       }
     }
 
-    const goToLanguageSelection = () => router.push('/select-language')
+    const goToLanguageSelection = () => router.push('/app/idioma')
 
     const handleLanguageUpdate = async () => {
       await loadLevels(true)
@@ -162,7 +162,7 @@ export default {
 
     onMounted(async () => {
       if (!authStore.selectedLanguage) {
-        router.push('/select-language')
+        router.push('/app/idioma')
         return
       }
 

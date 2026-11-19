@@ -122,7 +122,7 @@ const handleSingleLanguage = async () => {
             emit('language-selected', singleLanguage)
             emit('close')
         } else {
-            router.push('/')
+            router.push('/app')
         }
     }
 }
@@ -137,7 +137,7 @@ onMounted(async () => {
     // En modo ruta normal: si ya tiene idioma y no es nuevo usuario, ir a home.
     // En modo modal: NUNCA redirigir — el usuario quiere cambiar de idioma explícitamente.
     if (!props.isModal && authStore.selectedLanguage && !authStore.isNewUser) {
-        router.push('/')
+        router.push('/app')
         return
     }
 
@@ -179,7 +179,7 @@ const confirmSelection = async () => {
             emit('language-selected', langObj ?? { code: selectedLanguage.value })
             emit('close')
         } else {
-            router.push('/')
+            router.push('/app')
         }
     } catch (error) {
         console.error('[VariantSelection] Error al confirmar selección:', error)

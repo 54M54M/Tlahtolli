@@ -54,7 +54,7 @@ function loadScript() {
     return window.__gisScriptPromise
 }
 // Empieza a descargar el script en cuanto se carga este componente, antes de montarlo
-if (clientId) loadScript().catch(() => {})
+if (clientId && typeof window !== 'undefined') loadScript().catch(() => {})
 
 const onCredential = (resp) => { if (resp?.credential) emit('credential', resp.credential) }
 

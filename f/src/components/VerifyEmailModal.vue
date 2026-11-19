@@ -129,7 +129,7 @@ async function resend() {
 
 function changeEmail() {
     dismiss()
-    router.push({ path: '/perfil/editar', query: { correo: '1' } })
+    router.push({ path: '/app/perfil/editar', query: { correo: '1' } })
 }
 
 function later() { dismiss() }

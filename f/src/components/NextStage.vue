@@ -120,11 +120,11 @@ export default {
       }
     },
     handleQuickLevel() {
-      this.$router.push(`/nivel-rapido/${this.currentLevelId}`);
+      this.$router.push(`/app/nivel-rapido/${this.currentLevelId}`);
     },
     handleContinueToNextLevel() {
       // Aquí SÍ usamos el id (la ruta funciona por id de BD, no por levelNum)
-      this.$router.push(`/nivel/${this.nextLevel.id}`);
+      this.$router.push(`/app/nivel/${this.nextLevel.id}`);
     },
     handleLevelAction() {
       if (!this.nextLevel) return;

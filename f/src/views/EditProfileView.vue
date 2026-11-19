@@ -1,6 +1,6 @@
 <template>
     <div class="bg-surface-0 text-white pt-4">
-        <Header variant="simple" title="Editar perfil" show-back back-route="/perfil" class="pt-6 md:pt-5" />
+        <Header variant="simple" title="Editar perfil" show-back back-route="/app/perfil" class="pt-6 md:pt-5" />
 
         <main class="container mx-auto py-1 md:py-2 pb-16 md:pb-20">
             <div v-if="loadingInfo" class="flex justify-center py-16">

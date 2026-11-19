@@ -10,7 +10,17 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.prerender
 *.local
+
+# Secretos (las credenciales van en variables de entorno de Render/Netlify, nunca en el repo)
+env.txt
+neon-storage.env
+.env.local
+.env.*.local
+
+# Backend: compilados de Maven
+target/
 
 .gitignore
 

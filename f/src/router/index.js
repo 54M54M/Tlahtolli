@@ -1,88 +1,113 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Inicio from '../views/HomeView.vue'
 import { useAuthStore } from '../stores/auth'
+import { publicRoutes } from './publicRoutes'
 
-const routes = [
-    {
-        path: '/login',
-        name: 'Login',
-        component: () => import("../views/LoginView.vue"),
-        meta: { requiresGuest: true }
-    },
+// ── Mapa del sitio ──────────────────────────────────────────────────────────
+//   /                     landing (con o sin sesión) · ?auth=login | ?auth=register abre el modal
+//   /novedades /privacidad /terminos   páginas públicas (prerenderizadas)
+//   /verificar            enlace del correo de verificación (con o sin sesión)
+//   /app/...              la app (requiere sesión)
+const appRoutes = [
     {
         path: '/verificar',
         name: 'VerificarCorreo',
-        component: () => import("../views/VerifyEmailView.vue"),
+        component: () => import('../views/VerifyEmailView.vue'),
         meta: { public: true, hideNav: true }
     },
     {
-        path: '/elegir-usuario',
+        path: '/app',
+        name: 'Inicio',
+        component: () => import('../views/HomeView.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/app/elegir-usuario',
         name: 'ElegirUsuario',
-        component: () => import("../views/ChooseUsernameView.vue"),
+        component: () => import('../views/ChooseUsernameView.vue'),
         meta: { requiresAuth: true, standalone: true, hideNav: true }
     },
     {
-        path: '/select-language',
+        path: '/app/idioma',
         name: 'LanguageSelection',
-        component: () => import("../views/VariantSelection.vue"),
+        component: () => import('../views/VariantSelection.vue'),
         meta: { requiresAuth: true }
     },
     {
-        path: '/',
-        name: 'Inicio',
-        component: Inicio,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/nivel/:id',
+        path: '/app/nivel/:id',
         name: 'Nivel',
-        component: () => import("../views/learn/LevelView.vue"),
+        component: () => import('../views/learn/LevelView.vue'),
         props: true,
         meta: { requiresAuth: true }
     },
     {
-        path: '/leccion/:unitId',
+        path: '/app/leccion/:unitId',
         name: 'Leccion',
-        component: () => import("../views/learn/LessonView.vue"),
+        component: () => import('../views/learn/LessonView.vue'),
         props: true,
         meta: { hideNav: true, requiresAuth: true },
     },
     {
-        path: '/nivel-rapido/:levelId',
+        path: '/app/nivel-rapido/:levelId',
         name: 'NivelRapido',
-        component: () => import("../views/learn/QuickLevelView.vue"),
+        component: () => import('../views/learn/QuickLevelView.vue'),
         props: true,
         meta: { hideNav: true, requiresAuth: true },
     },
     {
-        path: '/glosario',
+        path: '/app/glosario',
         name: 'Glosario',
-        component: () => import("../views/GlossaryView.vue"),
+        component: () => import('../views/GlossaryView.vue'),
         meta: { requiresAuth: true }
     },
     {
-        path: '/estadisticas',
+        path: '/app/estadisticas',
         name: 'Estadísticas',
-        component: () => import("../views/StatsView.vue"),
+        component: () => import('../views/StatsView.vue'),
         meta: { requiresAuth: true }
     },
     {
-        path: '/perfil/editar',
+        path: '/app/perfil/editar',
         name: 'EditarPerfil',
-        component: () => import("../views/EditProfileView.vue"),
+        component: () => import('../views/EditProfileView.vue'),
         meta: { hideNav: true, requiresAuth: true },
     },
     {
-        path: '/perfil',
+        path: '/app/perfil',
         name: 'Perfil',
-        component: () => import("../views/ProfileView.vue"),
+        component: () => import('../views/ProfileView.vue'),
         meta: { requiresAuth: true }
     },
 ]
 
+// Rutas anteriores → nuevas (marcadores, enlaces compartidos, apps instaladas)
+const legacyRoutes = [
+    { path: '/login', redirect: (to) => ({ path: '/', query: { ...to.query, auth: 'login' } }) },
+    { path: '/registro', redirect: (to) => ({ path: '/', query: { ...to.query, auth: 'register' } }) },
+    { path: '/select-language', redirect: '/app/idioma' },
+    { path: '/elegir-usuario', redirect: '/app/elegir-usuario' },
+    { path: '/nivel/:id', redirect: (to) => `/app/nivel/${to.params.id}` },
+    { path: '/leccion/:unitId', redirect: (to) => `/app/leccion/${to.params.unitId}` },
+    { path: '/nivel-rapido/:levelId', redirect: (to) => `/app/nivel-rapido/${to.params.levelId}` },
+    { path: '/glosario', redirect: '/app/glosario' },
+    { path: '/estadisticas', redirect: '/app/estadisticas' },
+    { path: '/perfil/editar', redirect: '/app/perfil/editar' },
+    { path: '/perfil', redirect: '/app/perfil' },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
+]
+
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes: [...publicRoutes, ...appRoutes, ...legacyRoutes],
+    // La página se desplaza dentro de #app (html y body no tienen scroll), así que se hace a mano
+    scrollBehavior(to, from) {
+        if (to.hash) {
+            setTimeout(() => document.querySelector(to.hash)?.scrollIntoView({ behavior: 'smooth' }), 0)
+        } else if (to.path !== from.path) {
+            const scroller = document.getElementById('app')
+            if (scroller) scroller.scrollTop = 0
+        }
+        return false
+    },
 })
 
 // Título de la pestaña por ruta (lo leen Google y el historial del navegador)
@@ -101,52 +126,48 @@ const ROUTE_TITLES = {
     Perfil: 'Perfil',
 }
 router.afterEach((to) => {
+    if (to.meta.title) {
+        document.title = to.query.auth === 'login' ? `Iniciar sesión · ${APP_NAME}`
+            : to.query.auth === 'register' ? `Crear cuenta · ${APP_NAME}`
+            : to.meta.title
+        return
+    }
     const title = ROUTE_TITLES[to.name]
-    document.title = title
-        ? `${title} · ${APP_NAME}`
-        : `${APP_NAME} · Aprende náhuatl y tének`
+    document.title = title ? `${title} · ${APP_NAME}` : `${APP_NAME} · Aprende lenguas originarias de México`
 })
 
-router.beforeEach(async (to, from, next) => {
+const LOGIN = { path: '/', query: { auth: 'login' } }
+
+router.beforeEach((to) => {
     const authStore = useAuthStore()
 
-    // 0. Sesión guardada sin token o con token vencido (p. ej. de antes de la actualización) → cerrarla
+    // 0. Sesión guardada sin token o con token vencido → cerrarla
     if (authStore.user && !authStore.isAuthenticated) authStore.logout()
 
-    // Páginas abiertas con o sin sesión (enlace del correo)
-    if (to.meta.public) return next()
+    const user = authStore.user
+    const home = authStore.selectedLanguage ? '/app' : '/app/idioma'
 
-    // 1. Sin usuario → solo puede ir a login
-    if (to.meta.requiresAuth && !authStore.user) {
-        return next('/login')
+    // Páginas públicas
+    if (to.meta.public) {
+        // Con sesión no tiene sentido abrir el login/registro: directo a la app
+        if (user && to.query.auth) return user.mustPickUsername ? '/app/elegir-usuario' : home
+        return true
     }
 
-    // 1b. Cuenta nueva de Google → primero confirma o cambia su usuario (antes que el idioma)
-    if (authStore.user?.mustPickUsername) {
-        return to.name === 'ElegirUsuario' ? next() : next('/elegir-usuario')
-    }
-    if (to.name === 'ElegirUsuario' && authStore.user && !authStore.user.mustPickUsername) {
-        return next(authStore.selectedLanguage ? '/' : '/select-language')
-    }
+    // 1. Sin sesión → landing con el modal de inicio de sesión
+    if (to.meta.requiresAuth && !user) return LOGIN
 
-    // 2. Ya autenticado intentando ir a login → redirigir según estado
-    if (to.name === 'Login' && authStore.user) {
-        return authStore.selectedLanguage ? next('/') : next('/select-language')
-    }
+    // 2. Cuenta nueva de Google → primero confirma o cambia su usuario (antes que el idioma)
+    if (user?.mustPickUsername) return to.name === 'ElegirUsuario' ? true : '/app/elegir-usuario'
+    if (to.name === 'ElegirUsuario') return home
 
-    // 3. Autenticado pero sin idioma elegido → forzar selección
-    //    Usamos selectedLanguage directamente, NO isNewUser (puede estar desincronizado)
-    if (authStore.user && !authStore.selectedLanguage && to.name !== 'LanguageSelection') {
-        return next('/select-language')
-    }
+    // 3. Con sesión pero sin idioma → selector
+    if (user && !authStore.selectedLanguage && to.name !== 'LanguageSelection') return '/app/idioma'
 
-    // 4. Ya tiene idioma y quiere ir a select-language → home
-    //    Permite acceder si viene del header (el header lo maneja como modal, no como ruta)
-    if (to.name === 'LanguageSelection' && authStore.user && authStore.selectedLanguage) {
-        return next('/')
-    }
+    // 4. Ya tiene idioma y quiere ir al selector como página → home (el header lo abre como modal)
+    if (to.name === 'LanguageSelection' && user && authStore.selectedLanguage) return '/app'
 
-    next()
+    return true
 })
 
 export default router

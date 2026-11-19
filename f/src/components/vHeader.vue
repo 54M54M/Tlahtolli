@@ -240,7 +240,7 @@ export default {
     },
     backRoute: {
       type: [String, Object],
-      default: '/'
+      default: '/app'
     },
     /** Solo en variant 'simple': muestra la flecha para volver a backRoute. */
     showBack: {

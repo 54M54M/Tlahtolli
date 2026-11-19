@@ -32,4 +32,6 @@ configureAuth({
     },
 })
 
-app.mount('#app')
+// Se monta cuando el router resolvió la primera ruta: así el HTML prerenderizado
+// (portada, novedades, privacidad, términos) se reemplaza sin parpadeo en blanco
+router.isReady().then(() => app.mount('#app'))

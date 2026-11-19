@@ -21,7 +21,7 @@
             <template v-else-if="state === 'ok'">
                 <h1 class="text-xl font-bold">¡Correo confirmado!</h1>
                 <p class="text-sm text-gray-400 break-all">{{ email }}</p>
-                <router-link :to="authStore.user ? '/' : '/login'"
+                <router-link :to="authStore.user ? '/app' : '/login'"
                     class="block w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white font-bold py-3 rounded-lg transition-colors">
                     {{ authStore.user ? 'Ir a la app' : 'Iniciar sesión' }}
                 </router-link>
@@ -31,7 +31,7 @@
                 <h1 class="text-xl font-bold">No se pudo confirmar</h1>
                 <p class="text-sm text-error">{{ error }}</p>
                 <p class="text-xs text-gray-400">Puedes pedir un enlace nuevo desde “Editar perfil”.</p>
-                <router-link :to="authStore.user ? '/perfil/editar' : '/login'"
+                <router-link :to="authStore.user ? '/app/perfil/editar' : '/login'"
                     class="block w-full border border-gray-600 hover:border-turquesa text-white font-bold py-3 rounded-lg transition-colors">
                     {{ authStore.user ? 'Ir a editar perfil' : 'Iniciar sesión' }}
                 </router-link>

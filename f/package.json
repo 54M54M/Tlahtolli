@@ -1,12 +1,13 @@
 {
   "name": "tlahtolli",
   "private": true,
-  "version": "3.2.0",
+  "version": "4.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && vite build --ssr src/entry-prerender.js --outDir .prerender && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "build:spa": "vite build"
   },
   "dependencies": {
     "blobatar": "2.7.0",
