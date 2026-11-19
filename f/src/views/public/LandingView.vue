@@ -103,7 +103,7 @@
                     <article v-for="c in COURSES" :key="c.name" class="bg-surface-2 border border-line rounded-xl p-7">
                         <div class="flex items-center justify-between gap-3 mb-4">
                             <h3 class="text-2xl font-bold">{{ c.name }}</h3>
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" :class="c.badge">Curso completo</span>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" :class="c.badge">Curso en desarrollo</span>
                         </div>
                         <p class="text-gray-400 mb-6">{{ c.text }}</p>
                         <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center tabular-nums">
