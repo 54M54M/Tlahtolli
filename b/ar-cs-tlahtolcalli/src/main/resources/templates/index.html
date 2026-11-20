@@ -951,11 +951,12 @@
       <div class="filter-bar">
         <input class="input-search" type="text" placeholder="Buscar idioma…"
                oninput="filterTable('languages-table',this.value)" />
-        <button class="btn btn-primary" onclick="openModal('modal-language')">+ Nuevo idioma</button>
+        <button class="btn btn-primary" onclick="document.getElementById('lang-status').value='draft';openModal('modal-language')">+ Nuevo idioma</button>
       </div>
       <div class="table-wrap">
         <div class="table-header">
           <h3>Idiomas</h3>
+          <span style="color:var(--muted);font-size:.72rem">En pruebas: solo el front de desarrollo (tester/admin) · Publicado: todos</span>
         </div>
         <div id="languages-body">
           <div class="loading"><span class="spinner"></span>Cargando…</div>
@@ -1259,6 +1260,13 @@
           <option value="syllabary">syllabary</option>
           <option value="logogram">logogram</option>
           <option value="abugida">abugida</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Estado del curso</label>
+        <select class="form-sel" id="lang-status">
+          <option value="draft">En pruebas (solo front de desarrollo)</option>
+          <option value="published">Publicado (visible para todos)</option>
         </select>
       </div>
     </div>
@@ -1619,7 +1627,7 @@
   async function apiFetch(path, opts = {}) {
     try {
       const token = getToken();
-      const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers } });
+      const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', 'X-Tlahtolcalli-Env': 'monitor', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...opts.headers } });
       if (res.status === 401) { sessionExpired(); throw new Error('HTTP 401'); }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.status === 204 ? null : res.json();
@@ -1895,36 +1903,59 @@
   async function loadLanguages() {
     const body = document.getElementById('languages-body'); body.innerHTML = loadingHTML();
     try {
-      const data = await apiFetch('/languages'); const rows = data?.content ?? data ?? [];
+      const [data, summary] = await Promise.all([apiFetch('/languages'), apiFetch('/admin/courses')]);
+      const langs = data?.content ?? data ?? [];
+      const byId = Object.fromEntries((summary ?? []).map(c => [c.id, c]));
+      const rows = langs.map(l => ({ ...l, ...(byId[l.id] ?? {}) }));
       languagesCache = rows; refreshLangDropdowns();
       if (!rows.length) { body.innerHTML = emptyHTML(); return; }
+      const mono = "font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted)";
       body.innerHTML = `<table id="languages-table">
-          <thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Nativo</th><th>Familia</th><th>Escritura</th><th>Acciones</th></tr></thead>
-          <tbody>${rows.map(r => `<tr>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--muted)">${r.id}</td>
+          <thead><tr><th>ID</th><th>Código</th><th>Nombre</th><th>Nativo</th><th>Familia</th><th>Escritura</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>${rows.map(r => {
+            const draft = r.status === 'draft';
+            return `<tr>
+            <td style="${mono}">${r.id}</td>
             <td><span class="chip chip-green">${r.code}</span></td>
             <td><strong>${r.langName ?? r.lang_name}</strong></td>
             <td style="color:var(--muted)">${r.nativeName ?? r.native_name ?? ''}</td>
             <td style="color:var(--muted);font-size:.78rem">${r.family ?? ''}</td>
             <td><span class="chip chip-blue">${r.writingSystem ?? r.writing_system ?? ''}</span></td>
+            <td style="${mono}" title="niveles · unidades · ejercicios">${r.levels ?? 0} niv · ${r.units ?? 0} uni · ${r.exercises ?? 0} ejer</td>
+            <td>${draft ? '<span class="chip chip-amber">En pruebas</span>' : '<span class="chip chip-green">Publicado</span>'}</td>
             <td><div style="display:flex;gap:6px">
+              <button class="btn ${draft ? 'btn-primary' : 'btn-ghost'} btn-sm" onclick="toggleCourseStatus(${r.id}, '${r.code}', '${draft ? 'published' : 'draft'}')">${draft ? 'Publicar' : 'A pruebas'}</button>
               <button class="btn btn-ghost btn-sm" onclick='editLanguage(${JSON.stringify(r).replace(/'/g, "&#39;")})'>Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteRecord('languages',${r.id},'loadLanguages')">Eliminar</button>
-            </div></td></tr>`).join('')}</tbody></table>`;
+            </div></td></tr>`;
+          }).join('')}</tbody></table>`;
     } catch { body.innerHTML = errorHTML(); }
+  }
+  async function toggleCourseStatus(id, code, status) {
+    const msg = status === 'published'
+      ? `¿Publicar el curso "${code}"?\n\nAparecerá en producción para todos los usuarios al instante.`
+      : `¿Regresar "${code}" a pruebas?\n\nDesaparecerá de producción; quien lo esté estudiando ya no podrá abrirlo.`;
+    if (!confirm(msg)) return;
+    try {
+      await apiFetch(`/admin/courses/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+      toast(status === 'published' ? `Curso ${code} publicado ✓` : `Curso ${code} en pruebas ✓`);
+      loadLanguages();
+    } catch { }
   }
   function editLanguage(r) {
     document.getElementById('lang-id').value = r.id; document.getElementById('lang-code').value = r.code;
     document.getElementById('lang-name').value = r.langName ?? r.lang_name ?? ''; document.getElementById('lang-native').value = r.nativeName ?? r.native_name ?? '';
     document.getElementById('lang-color').value = r.color ?? ''; document.getElementById('lang-flag').value = r.flag ?? '';
     document.getElementById('lang-family').value = r.family ?? ''; document.getElementById('lang-ws').value = r.writingSystem ?? r.writing_system ?? 'alphabet';
+    document.getElementById('lang-status').value = r.status === 'published' ? 'published' : 'draft';
     document.getElementById('modal-language-title').textContent = 'Editar idioma'; openModal('modal-language');
   }
   async function saveLanguage() {
     const id = strVal('lang-id');
     const payload = {
       code: strVal('lang-code'), langName: strVal('lang-name'), nativeName: strVal('lang-native'),
-      color: strVal('lang-color'), flag: strVal('lang-flag'), family: strVal('lang-family'), writingSystem: strVal('lang-ws')
+      color: strVal('lang-color'), flag: strVal('lang-flag'), family: strVal('lang-family'), writingSystem: strVal('lang-ws'),
+      status: strVal('lang-status') || 'draft'
     };
     try {
       if (id) await apiFetch('/languages/' + id, { method: 'PUT', body: JSON.stringify(payload) });

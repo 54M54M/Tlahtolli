@@ -10,6 +10,9 @@
   Filtra `/api/languages` y responde 404 en niveles, unidades, ejercicios, vocabulario, nivel rápido,
   completar lección, registro y cambio de idioma.
 
+- Monitor → Idiomas: columnas Contenido y Estado, botón Publicar / A pruebas (`GET /api/admin/courses`, `PUT /api/admin/courses/{id}/status`).
+  El monitor manda `X-Tlahtolcalli-Env: monitor` y, como admin, ve también los cursos en pruebas.
+
 ### Changed
 - CORS: solo los orígenes de `CORS_ORIGINS` (por defecto prod y `dev-tlahtolcalli`) y localhost; antes `*`.
 - Incluye la validación de niveles/lecciones bloqueados de 4.0.1 (`LearningService`, `LessonCompletionFacade`).

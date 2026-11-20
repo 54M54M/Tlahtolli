@@ -27,9 +27,9 @@ import com.tlahtolli.api.security.TokenService;
 /**
  * Cursos en pruebas (ct_languages.status = 'draft').
  *
- * Un curso en pruebas solo existe para quien cumple las dos condiciones:
- *   1. La petición viene del front de desarrollo (encabezado X-Tlahtolcalli-Env: dev).
- *   2. El usuario del token tiene rol 'tester' o 'admin'.
+ * Un curso en pruebas solo existe para:
+ *   - el front de desarrollo (encabezado X-Tlahtolcalli-Env: dev) con rol 'tester' o 'admin', o
+ *   - el monitor (X-Tlahtolcalli-Env: monitor) con rol 'admin'.
  * Para todos los demás no aparece en /api/languages y sus niveles, unidades,
  * ejercicios y vocabulario responden 404. Al publicarlo
  * (update ct_languages set status = 'published' ...) aparece en producción.
@@ -80,12 +80,18 @@ public class CourseAccess {
 
     // ── Quién puede ver cursos en pruebas ────────────────────────────────────
 
+    /**
+     * X-Tlahtolcalli-Env: dev     → front de desarrollo: rol tester o admin.
+     * X-Tlahtolcalli-Env: monitor → monitor del backend: solo admin.
+     */
     public boolean canSeeDrafts() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attrs)) return false;
-        if (!"dev".equalsIgnoreCase(attrs.getRequest().getHeader(ENV_HEADER))) return false;
+        String env = attrs.getRequest().getHeader(ENV_HEADER);
+        if (!"dev".equalsIgnoreCase(env) && !"monitor".equalsIgnoreCase(env)) return false;
         try {
             TokenService.Claims c = CurrentUser.get();
-            return c.isAdmin() || "tester".equalsIgnoreCase(c.role());
+            if (c.isAdmin()) return true;
+            return "dev".equalsIgnoreCase(env) && "tester".equalsIgnoreCase(c.role());
         } catch (ResponseStatusException sinSesion) {
             return false;
         }

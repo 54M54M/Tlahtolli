@@ -136,8 +136,9 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 **Día a día**
 - Curso nuevo: insertarlo con `status = 'draft'` (ejemplos en `8.-Estado_Cursos.sql`) y probarlo en el front de desarrollo.
-- Publicarlo: `update ct_languages set status = 'published' where code = 'xxx';`
-  La API guarda el catálogo en caché: aparece en producción en máximo 30 min, o al instante reiniciando el servicio en Render.
+- Publicarlo: **Monitor → Idiomas → Publicar** (o **A pruebas** para regresarlo). Se ve al instante en los fronts.
+  Por SQL también funciona (`update ct_languages set status = 'published' where code = 'xxx';`), pero la API guarda
+  el catálogo en caché: aparece en máximo 30 min, o al instante reiniciando el servicio en Render.
 
 ---
 
