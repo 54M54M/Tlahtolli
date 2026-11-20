@@ -5,6 +5,11 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
+// Front de desarrollo (VITE_APP_ENV=dev): el backend le muestra también los cursos en pruebas
+// a las cuentas con rol tester o admin. En producción no se manda.
+export const IS_DEV_SITE = import.meta.env.VITE_APP_ENV === 'dev'
+const ENV_HEADERS = IS_DEV_SITE ? { 'X-Tlahtolcalli-Env': 'dev' } : {}
+
 // ── sesión ──────────────────────────────────────────────────────────────────
 // main.js conecta estas funciones con el store de auth (evita importar el store aquí).
 let getToken = () => null
@@ -24,6 +29,7 @@ async function request(path, options = {}) {
         ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...ENV_HEADERS,
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options.headers,
         },

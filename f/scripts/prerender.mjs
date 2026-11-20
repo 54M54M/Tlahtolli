@@ -51,3 +51,17 @@ for (const page of PAGES) {
 }
 
 fs.rmSync(SSR_DIR, { recursive: true, force: true })
+
+// Sitio de desarrollo (VITE_APP_ENV=dev en Netlify): que Google no lo indexe
+if (process.env.VITE_APP_ENV === 'dev') {
+    fs.writeFileSync(path.join(DIST, 'robots.txt'), 'User-agent: *\nDisallow: /\n')
+    fs.rmSync(path.join(DIST, 'sitemap.xml'), { force: true })
+    fs.writeFileSync(path.join(DIST, '_headers'), '/*\n  X-Robots-Tag: noindex, nofollow\n')
+    for (const f of fs.readdirSync(DIST, { recursive: true }).filter((f) => String(f).endsWith('.html'))) {
+        const file = path.join(DIST, String(f))
+        const html = fs.readFileSync(file, 'utf8')
+            .replace(/<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/, '<meta name="robots" content="noindex, nofollow" />')
+        fs.writeFileSync(file, html)
+    }
+    console.log('[prerender] sitio de desarrollo: noindex, robots.txt sin acceso')
+}

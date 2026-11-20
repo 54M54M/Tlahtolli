@@ -105,6 +105,42 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://<tu-backend>.onrender.
 
 ---
 
+## 5. Front de desarrollo (cursos en pruebas)
+
+```
+                                         ┌──> front prod (tlahtolcalli.netlify.app)
+                                         │      solo cursos published
+neondb <──> render ──[filtro por curso]──┤
+  ct_languages.status                    │
+  ('draft' | 'published')                └──> front dev (dev-tlahtolcalli.netlify.app)
+                                                manda X-Tlahtolcalli-Env: dev
+                                                + cuenta con rol tester/admin
+                                                → published + draft
+```
+
+Un curso con `status = 'draft'` solo existe para el front de desarrollo **y** una cuenta con rol `tester` o `admin`.
+Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercicios y vocabulario responden 404
+(también al guardar progreso o al elegirlo como idioma).
+
+**Una vez**
+1. Neon: ejecutar `8.-Estado_Cursos.sql` (agrega `status`; los cursos actuales quedan `published`).
+2. Neon: `update ta_users set role = 'tester' where username = 'tu_usuario';` (o usar tu cuenta `admin`).
+   El rol va dentro del token: cierra sesión y vuelve a entrar.
+3. Netlify → **Add new site → Import from Git** → mismo repo, nombre `dev-tlahtolcalli`:
+   - Branch to deploy: `dev` (base `f`, build y publish los toma de `netlify.toml`).
+   - Variables: `VITE_API_URL` (la misma de prod), `VITE_GOOGLE_CLIENT_ID` (la misma), `VITE_APP_ENV=dev`.
+   - Con `VITE_APP_ENV=dev` el build sale con `noindex`, `robots.txt` sin acceso y la etiqueta **Desarrollo** en pantalla.
+4. Render: si el sitio de desarrollo no se llama `dev-tlahtolcalli`, agregar `CORS_ORIGINS`
+   (`https://tlahtolcalli.netlify.app,https://<tu-sitio-dev>.netlify.app`).
+5. Google Cloud → credencial OAuth → **Orígenes de JavaScript autorizados**: agregar el dominio de desarrollo.
+
+**Día a día**
+- Curso nuevo: insertarlo con `status = 'draft'` (ejemplos en `8.-Estado_Cursos.sql`) y probarlo en el front de desarrollo.
+- Publicarlo: `update ct_languages set status = 'published' where code = 'xxx';`
+  La API guarda el catálogo en caché: aparece en producción en máximo 30 min, o al instante reiniciando el servicio en Render.
+
+---
+
 ## Orden resumido
 
 ```

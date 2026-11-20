@@ -13,6 +13,7 @@ export const CHANGELOG = [
         items: [
             { type: 'mejora', text: 'La dirección de niveles y lecciones muestra tu idioma (por ejemplo /app/leccion/nhn) en lugar de un número.' },
             { type: 'mejora', text: 'Si abres esa dirección desde un marcador o un enlace, te lleva a tu nivel o lección en curso.' },
+            { type: 'nuevo', text: 'La portada explica qué significa Tlahtolcalli y las otras formas de escribirlo.' },
         ],
     },
     {

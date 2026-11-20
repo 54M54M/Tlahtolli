@@ -2,7 +2,6 @@ package com.tlahtolli.api.controller;
 
 import org.springframework.cache.annotation.CacheEvict;
 import com.tlahtolli.api.config.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 import java.util.Map;
 
@@ -19,31 +18,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tlahtolli.api.entity.Language;
 import com.tlahtolli.api.repository.LanguageRepository;
+import com.tlahtolli.api.service.CourseAccess;
 
 @RestController
 @RequestMapping("/api/languages")
 public class LanguageController {
 
 	private final LanguageRepository repo;
+	private final CourseAccess courses;
 
-	public LanguageController(LanguageRepository repo) {
+	public LanguageController(LanguageRepository repo, CourseAccess courses) {
 		super();
 		this.repo = repo;
+		this.courses = courses;
 	}
 
+	/** Solo los cursos publicados; los que están en pruebas, únicamente para el front de desarrollo (tester/admin). */
 	@GetMapping
-	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'idiomas'")
 	public List<Language> getAll() {
-		return repo.findAll();
+		return courses.visibleLanguages();
 	}
 
 	@GetMapping("/count")
 	public Map<String, Long> count() {
-		return Map.of("count", repo.count());
+		return Map.of("count", (long) courses.visibleLanguages().size());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Language> getById(@PathVariable Long id) {
+		if (!courses.isLanguageVisible(Math.toIntExact(id))) return ResponseEntity.notFound().build();
 		return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
@@ -58,6 +61,7 @@ public class LanguageController {
 	public ResponseEntity<Language> update(@PathVariable Long id, @RequestBody Language body) {
 		return repo.findById(id).map(existing -> {
 			body.setId(existing.getId());
+			if (body.getStatus() == null) body.setStatus(existing.getStatus());
 			return ResponseEntity.ok(repo.save(body));
 		}).orElse(ResponseEntity.notFound().build());
 	}

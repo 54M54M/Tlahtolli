@@ -26,13 +26,24 @@ public class LessonCompletionFacade {
 
     private final ProgressService progressService;
     private final AchievementService achievementService;
+    private final LearningService learningService;
+    private final CourseAccess courses;
 
-    public LessonCompletionFacade(ProgressService progressService, AchievementService achievementService) {
+    public LessonCompletionFacade(ProgressService progressService, AchievementService achievementService,
+                                  LearningService learningService, CourseAccess courses) {
         this.progressService = progressService;
         this.achievementService = achievementService;
+        this.learningService = learningService;
+        this.courses = courses;
     }
 
     public LessonCompletionResponse completeLesson(CompleteLessonRequest req) {
+        courses.requireUnit(req.unitId());   // curso en pruebas fuera del front de desarrollo
+        // No se puede completar (ni ganar XP en) una lección bloqueada, aunque se llame a la API directo
+        if (!learningService.isUnitAccessible(req.userId(), req.unitId())) {
+            log.warn("[progreso] userId={} intentó completar la unidad bloqueada {}", req.userId(), req.unitId());
+            throw new IllegalArgumentException("Esta lección todavía está bloqueada");
+        }
         Map<String, Object> progress = progressService.completeLesson(
                 req.userId(), req.unitId(), req.languageId(),
                 req.performance(), req.earnedExp(),
@@ -43,6 +54,11 @@ public class LessonCompletionFacade {
     }
 
     public LessonCompletionResponse completeQuickLevel(CompleteLessonRequest req) {
+        courses.requireLevel(req.levelId());
+        if (!learningService.isLevelAccessible(req.userId(), req.levelId())) {
+            log.warn("[progreso] userId={} intentó el nivel rápido bloqueado {}", req.userId(), req.levelId());
+            throw new IllegalArgumentException("Este nivel todavía está bloqueado");
+        }
         Map<String, Object> progress = progressService.completeQuickLevelPublic(
                 req.userId(), req.levelId(), req.languageId(),
                 req.performance(), req.earnedExp(),

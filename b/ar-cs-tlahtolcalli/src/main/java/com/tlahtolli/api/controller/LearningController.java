@@ -1,5 +1,6 @@
 package com.tlahtolli.api.controller;
 
+import com.tlahtolli.api.service.CourseAccess;
 import com.tlahtolli.api.service.LearningService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,11 @@ public class LearningController {
 
 	private final LearningService learningService;
 
-	public LearningController(LearningService learningService) {
+	private final CourseAccess courses;
+
+	public LearningController(LearningService learningService, CourseAccess courses) {
 		this.learningService = learningService;
+		this.courses = courses;
 	}
 
 	/**
@@ -25,6 +29,7 @@ public class LearningController {
 	@GetMapping("/levels")
 	public ResponseEntity<List<Map<String, Object>>> getLevels(@RequestParam Integer languageId,
 			@RequestParam Integer userId) {
+		courses.requireLanguage(languageId);
 		return ResponseEntity.ok(learningService.getLevelsWithProgress(languageId, userId));
 	}
 
@@ -35,6 +40,7 @@ public class LearningController {
 	 */
 	@GetMapping("/levels/{levelId}/units")
 	public ResponseEntity<List<Map<String, Object>>> getUnits(@PathVariable Integer levelId, @RequestParam Integer userId) {
+		courses.requireLevel(levelId);
 		return ResponseEntity.ok(learningService.getUnitsWithProgress(levelId, userId));
 	}
 
@@ -45,6 +51,7 @@ public class LearningController {
 	 */
 	@GetMapping("/units/{unitId}/exercises")
 	public ResponseEntity<List<Map<String, Object>>> getExercises(@PathVariable Integer unitId) {
+		courses.requireUnit(unitId);
 		return ResponseEntity.ok(learningService.getExercisesForUnit(unitId));
 	}
 
@@ -55,6 +62,7 @@ public class LearningController {
 	 */
 	@GetMapping("/units/{unitId}/vocabulary")
 	public ResponseEntity<Object> getVocabulary(@PathVariable Integer unitId) {
+		courses.requireUnit(unitId);
 		return ResponseEntity.ok(learningService.getVocabularyForUnit(unitId));
 	}
 
@@ -65,6 +73,7 @@ public class LearningController {
 	@GetMapping("/levels/{levelId}/quick")
 	public ResponseEntity<List<Map<String, Object>>> getQuickExercises(@PathVariable Integer levelId,
 			@RequestParam(defaultValue = "6") int count) {
+		courses.requireLevel(levelId);
 		return ResponseEntity.ok(learningService.getRandomExercisesForLevel(levelId, count));
 	}
 }

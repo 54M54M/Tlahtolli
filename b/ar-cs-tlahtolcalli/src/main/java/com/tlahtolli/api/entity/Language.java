@@ -44,6 +44,26 @@ public class Language {
     @Column(name = "WRITING_SYSTEM", length = 20)
     private String writingSystem;
 
+    /** 'draft' = en pruebas (solo el front de desarrollo con rol tester/admin) · 'published' = público */
+    @Builder.Default
+    @Column(name = "STATUS", nullable = false, length = 20)
+    private String status = STATUS_PUBLISHED;
+
+    public static final String STATUS_DRAFT = "draft";
+    public static final String STATUS_PUBLISHED = "published";
+
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public boolean isDraft() {
+		return STATUS_DRAFT.equalsIgnoreCase(status);
+	}
+
 	public Integer getId() {
 		return id;
 	}

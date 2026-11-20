@@ -39,6 +39,23 @@
             </div>
         </section>
 
+        <!-- Qué significa el nombre (también ayuda a que Google encuentre las otras formas de escribirlo) -->
+        <section id="nombre" class="py-14 md:py-16 px-4 scroll-mt-20">
+            <div class="container mx-auto md:px-10 max-w-3xl text-center">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">¿Qué significa Tlahtolcalli?</h2>
+                <p class="text-lg mb-6">
+                    En náhuatl, <strong class="text-turquesa">tlahtōlli</strong> es «palabra» o «lengua» y
+                    <strong class="text-turquesa">calli</strong> es «casa»: <strong>Tlahtolcalli</strong> es
+                    <em>la casa de la palabra</em>, un lugar para aprender y cuidar las lenguas originarias de México.
+                </p>
+                <p class="text-sm text-gray-400">
+                    Según la variante y la escritura, también lo encontrarás como tlahtolcali, tlajtolcalli, tlajtolcali,
+                    tla'tolcalli o tla'tolcali. La raíz, tlahtolli, se escribe también tlahtoli, tlajtolli, tlajtoli,
+                    tla'tolli o tla'toli.
+                </p>
+            </div>
+        </section>
+
         <!-- Desafío y propuesta -->
         <section class="py-16 md:py-20 px-4 bg-surface-1">
             <div class="container mx-auto md:px-10 grid md:grid-cols-2 gap-8">

@@ -2,6 +2,18 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.1.0] - 2026-11-19 - Cursos en pruebas
+
+### Added
+- `ct_languages.status` (`draft` | `published`) — script `8.-Estado_Cursos.sql`.
+- `CourseAccess`: un curso `draft` solo es visible con el encabezado `X-Tlahtolcalli-Env: dev` y rol `tester`/`admin`.
+  Filtra `/api/languages` y responde 404 en niveles, unidades, ejercicios, vocabulario, nivel rápido,
+  completar lección, registro y cambio de idioma.
+
+### Changed
+- CORS: solo los orígenes de `CORS_ORIGINS` (por defecto prod y `dev-tlahtolcalli`) y localhost; antes `*`.
+- Incluye la validación de niveles/lecciones bloqueados de 4.0.1 (`LearningService`, `LessonCompletionFacade`).
+
 ## [0.0.4] - 2026-03-15 - Correcciones de Compilación
 
 ### Fixed

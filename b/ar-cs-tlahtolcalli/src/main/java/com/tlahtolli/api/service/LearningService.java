@@ -75,10 +75,12 @@ public class LearningService {
 
 	public List<Map<String, Object>> getUnitsWithProgress(Integer levelId, Integer userId) {
 		log.debug("Getting units with progress for levelId={}, userId={}", levelId, userId);
+		// Si el nivel está bloqueado, todas sus unidades lo están (antes la unidad 1 salía abierta)
+		boolean levelLocked = levelRepo.findById(levelId).map(l -> isLevelLocked(l, userId)).orElse(true);
 		return unitRepo.findByLevelIdOrderByUnitNum(levelId).stream().map(unit -> {
 			Optional<UserProgress> up = progressRepo.findByUserIdAndUnitId(userId, unit.getId());
 
-			boolean locked = up.map(p -> p.getIsLocked() == 1).orElse(unit.getUnitNum() > 1);
+			boolean locked = levelLocked || isUnitLocked(unit, up);
 			boolean completed = up.map(p -> p.getCompleted() == 1).orElse(false);
 			boolean current = up.map(p -> p.getIsCurrent() == 1).orElse(false);
 
@@ -206,6 +208,27 @@ public class LearningService {
 			log.warn("Failed to parse JSON list: {}", e.getMessage());
 			return new ArrayList<>();
 		}
+	}
+
+	// ── Acceso (lo usan las vistas y la validación al completar) ─────────────
+
+	/** El nivel existe y está desbloqueado para el usuario. */
+	public boolean isLevelAccessible(Integer userId, Integer levelId) {
+		if (userId == null || levelId == null) return false;
+		return levelRepo.findById(levelId).map(l -> !isLevelLocked(l, userId)).orElse(false);
+	}
+
+	/** La unidad existe, su nivel está desbloqueado y la unidad también. */
+	public boolean isUnitAccessible(Integer userId, Integer unitId) {
+		if (userId == null || unitId == null) return false;
+		return unitRepo.findById(unitId)
+				.filter(u -> isLevelAccessible(userId, u.getLevelId()))
+				.map(u -> !isUnitLocked(u, progressRepo.findByUserIdAndUnitId(userId, u.getId())))
+				.orElse(false);
+	}
+
+	private static boolean isUnitLocked(Unit unit, Optional<UserProgress> up) {
+		return up.map(p -> p.getIsLocked() == 1).orElse(unit.getUnitNum() > 1);
 	}
 
 	private boolean isLevelLocked(Level level, Integer userId) {

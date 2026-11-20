@@ -48,7 +48,10 @@
               </div>
 
               <div class="flex-1">
-                <p class="font-semibold">{{ lang.name }}</p>
+                <p class="font-semibold">
+                  {{ lang.name }}
+                  <span v-if="lang.draft" class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">En pruebas</span>
+                </p>
                 <p class="text-sm text-gray-300">{{ lang.nativeName }}</p>
               </div>
 
@@ -95,7 +98,8 @@ const transformLanguages = (langs) => {
     nativeName: lang.nativeName || lang.native_name || '',
     flag: lang.flag || '🌐',
     color: languageColor(lang),
-    family: lang.family || lang.langName || lang.lang_name || 'Otros'
+    family: lang.family || lang.langName || lang.lang_name || 'Otros',
+    draft: lang.status === 'draft'
   }))
 }
 

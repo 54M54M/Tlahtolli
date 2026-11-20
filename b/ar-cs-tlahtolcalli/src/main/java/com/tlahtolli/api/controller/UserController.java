@@ -6,6 +6,7 @@ import com.tlahtolli.api.dto.request.UpdateUserRequest;
 import com.tlahtolli.api.security.CurrentUser;
 import com.tlahtolli.api.dto.response.UserResponse;
 import com.tlahtolli.api.entity.User;
+import com.tlahtolli.api.service.CourseAccess;
 import com.tlahtolli.api.service.EmailVerificationService;
 import com.tlahtolli.api.service.UserService;
 import jakarta.validation.Valid;
@@ -22,10 +23,12 @@ public class UserController {
 
     private final UserService userService;
     private final EmailVerificationService verification;
+    private final CourseAccess courses;
 
-    public UserController(UserService userService, EmailVerificationService verification) {
+    public UserController(UserService userService, EmailVerificationService verification, CourseAccess courses) {
         this.userService = userService;
         this.verification = verification;
+        this.courses = courses;
     }
 
     @GetMapping
@@ -60,7 +63,10 @@ public class UserController {
             user.setFullName(dto.fullName());
             user.setEmail(dto.email());
             user.setPasswordHash(dto.password());
-            if (dto.currentLang() != null) user.setCurrentLang(Math.toIntExact(dto.currentLang()));
+            if (dto.currentLang() != null) {
+                courses.requireLanguage(Math.toIntExact(dto.currentLang()));
+                user.setCurrentLang(Math.toIntExact(dto.currentLang()));
+            }
             User saved = userService.create(user);
             verification.sendQuietly(saved);   // si el proveedor falla, la cuenta se crea igual y puede reenviarlo
             return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(saved));
@@ -75,7 +81,10 @@ public class UserController {
         body.setUsername(dto.username());
         body.setFullName(dto.fullName());
         body.setEmail(dto.email());
-        if (dto.currentLang() != null) body.setCurrentLang(Math.toIntExact(dto.currentLang()));
+        if (dto.currentLang() != null) {
+            courses.requireLanguage(Math.toIntExact(dto.currentLang()));
+            body.setCurrentLang(Math.toIntExact(dto.currentLang()));
+        }
         return userService.update(id, body).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -83,6 +92,7 @@ public class UserController {
     @PutMapping("/{id}/language")
     public ResponseEntity<?> switchLanguage(@PathVariable Integer id,
             @Valid @RequestBody SwitchLanguageRequest body) {
+        courses.requireLanguage(body.languageId());
         return userService.switchLanguage(id, body.languageId()).map(UserResponse::from).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

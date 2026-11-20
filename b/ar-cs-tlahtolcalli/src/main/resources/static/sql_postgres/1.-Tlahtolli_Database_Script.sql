@@ -23,9 +23,11 @@ CREATE TABLE CT_LANGUAGES (
     FLAG            VARCHAR(10),
     FAMILY          VARCHAR(100),
     WRITING_SYSTEM  VARCHAR(20),
+    status          varchar(20)     not null default 'published',   -- draft | published (ver 8.-Estado_Cursos.sql)
     CONSTRAINT PK_LANGUAGES         PRIMARY KEY (ID),
     CONSTRAINT UQ_LANGUAGES_CODE    UNIQUE (CODE),
-    CONSTRAINT CHK_LANGUAGES_WS     CHECK (WRITING_SYSTEM IN ('syllabary','alphabet','logogram','abugida'))
+    CONSTRAINT CHK_LANGUAGES_WS     CHECK (WRITING_SYSTEM IN ('syllabary','alphabet','logogram','abugida')),
+    constraint chk_languages_status check (status in ('draft', 'published'))
 );
 
 -- ============================================================
