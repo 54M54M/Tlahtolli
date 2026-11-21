@@ -19,6 +19,6 @@ Archivos de apoyo que no son código de la app. Nada de esta carpeta se publica 
 
 ## Novedades para usuarios
 
-Lo que ven los usuarios en `/novedades` está en `f/src/data/changelog.js`.
+Lo que ven los usuarios en `/novedades` está en `f/am-ui-tlahtolcalli/src/data/changelog.js`.
 Al publicar una versión, agrega una entrada al inicio de ese arreglo (en lenguaje para usuarios)
 y, si quieres el detalle técnico, súmalo a `changelog/`.

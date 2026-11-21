@@ -61,7 +61,7 @@ flowchart LR
 
 ## 2. Frontend
 
-Vue 3 + Pinia + Tailwind, en `f/`. Las páginas públicas se prerenderizan a HTML (SEO); el resto usa `spa.html`.
+Vue 3 + Pinia + Tailwind, en `f/am-ui-tlahtolcalli/`. Las páginas públicas se prerenderizan a HTML (SEO); el resto usa `spa.html`.
 
 ```mermaid
 flowchart TB

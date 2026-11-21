@@ -72,18 +72,22 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 
 ## 3. Frontend — Netlify
 
-1. Tu `netlify.toml` en `/f`:
+1. El front vive en `f/am-ui-tlahtolcalli` (como el back en `b/ar-cs-tlahtolcalli`). Su `netlify.toml`:
 ```toml
 [build]
   command = "npm run build"
   publish = "dist"
-  base = "f"
+  base = "f/am-ui-tlahtolcalli"
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/spa.html"
   status = 200
 ```
+   En Netlify (**Project configuration → Developer settings → Build settings**), en prod y en dev:
+   **Base directory** = `f/am-ui-tlahtolcalli`, **Package directory** vacío, **Publish directory** vacío o
+   `f/am-ui-tlahtolcalli/dist`. Netlify lee el `netlify.toml` de la Base directory: si la base apunta a otra
+   carpeta, no lo encuentra.
 2. En tu código, apunta las llamadas API a una variable de entorno con fallback:
 ```javascript
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://<tu-backend>.onrender.com/api'
@@ -127,7 +131,7 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 2. Neon: `update ta_users set role = 'tester' where username = 'tu_usuario';` (o usar tu cuenta `admin`).
    El rol va dentro del token: cierra sesión y vuelve a entrar.
 3. Netlify → **Add new site → Import from Git** → mismo repo, nombre `dev-tlahtolcalli`:
-   - Branch to deploy: `dev` (base `f`, build y publish los toma de `netlify.toml`).
+   - Branch to deploy: `dev` (base `f/am-ui-tlahtolcalli`, build y publish los toma de `netlify.toml`).
    - Variables: `VITE_API_URL` (la misma de prod), `VITE_GOOGLE_CLIENT_ID` (la misma), `VITE_APP_ENV=dev`.
    - Con `VITE_APP_ENV=dev` el build sale con `noindex`, `robots.txt` sin acceso y la etiqueta **Desarrollo** en pantalla.
 4. Render: si el sitio de desarrollo no se llama `dev-tlahtolcalli`, agregar `CORS_ORIGINS`

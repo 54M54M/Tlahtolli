@@ -98,7 +98,7 @@ Las rutas anteriores (`/login`, `/perfil`, `/glosario`, …) redirigen a las nue
 ### Compilar
 
 ```
-cd f
+cd f/am-ui-tlahtolcalli
 npm install
 npm run build        # vite build + prerender de las páginas públicas
 npm run build:spa    # solo vite build, sin prerender
