@@ -72,8 +72,10 @@
                     <h2 class="text-2xl font-bold mb-6 text-turquesa">Nuestra propuesta</h2>
                     <p class="text-lg mb-6">Una app gratuita y gamificada que hace el aprendizaje accesible y respetuoso
                         con cada lengua y su variante.</p>
-                    <p class="text-gray-400">El contenido se escribe con una sola norma ortográfica por variante y se
-                        revisa con hablantes antes de publicarse.</p>
+                    <p class="text-gray-400">Cada variante se escribe con una sola norma ortográfica. Los cursos se
+                        crearon a partir de investigación en fuentes publicadas (gramáticas, diccionarios y normas de
+                        escritura). El de náhuatl recibió comentarios de un hablante; ninguno ha tenido una revisión
+                        completa de hablantes nativos, así que pueden tener errores.</p>
                 </div>
             </div>
         </section>
@@ -111,11 +113,51 @@
             </div>
         </section>
 
+        <!-- Cómo se usa (resumen del manual de uso) -->
+        <section id="guia" class="py-16 md:py-20 px-4 scroll-mt-20">
+            <div class="container mx-auto md:px-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Cómo se usa</h2>
+                <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">Funciona igual en el teléfono y en la
+                    computadora. Entra desde cualquier navegador; no hay que instalar nada.</p>
+                <div class="grid md:grid-cols-[minmax(0,1fr)_auto] gap-10 md:gap-16 items-start">
+                    <ol class="space-y-3 order-2 md:order-1">
+                        <li v-for="(g, i) in GUIDE" :key="g.title">
+                            <button type="button" @click="step = i" :aria-pressed="step === i"
+                                class="w-full text-left flex gap-4 p-5 rounded-xl border transition-colors"
+                                :class="step === i ? 'bg-surface-2 border-turquesa' : 'border-line hover:border-gray-500'">
+                                <span class="shrink-0 w-9 h-9 rounded-lg font-bold flex items-center justify-center"
+                                    :class="step === i ? 'bg-turquesa text-surface-3' : 'bg-surface-2 text-gray-300'">{{ i + 1 }}</span>
+                                <span>
+                                    <span class="block text-lg font-bold mb-1">{{ g.title }}</span>
+                                    <span class="block text-gray-400" v-html="g.text"></span>
+                                </span>
+                            </button>
+                        </li>
+                    </ol>
+                    <figure class="order-1 md:order-2 md:sticky md:top-24 mx-auto">
+                        <div class="guia-tel">
+                            <Transition name="guia" mode="out-in">
+                                <img :key="GUIDE[step].img" :src="`/landing/pantallas/${GUIDE[step].img}.webp`"
+                                    :alt="GUIDE[step].alt" width="432" height="935" loading="lazy">
+                            </Transition>
+                        </div>
+                        <figcaption class="text-center text-sm text-gray-400 mt-3">Paso {{ step + 1 }} de {{ GUIDE.length }}</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
         <!-- Idiomas y estado del proyecto -->
         <section id="idiomas" class="py-16 md:py-20 px-4 scroll-mt-20">
             <div class="container mx-auto md:px-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Idiomas disponibles</h2>
                 <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">Tlahtolcalli está en desarrollo activo. Esto es lo que hay hoy.</p>
+                <p class="bg-cempasuchil/10 border border-cempasuchil/40 text-gray-200 rounded-xl p-5 mb-10 max-w-3xl mx-auto text-center">
+                    <strong class="text-cempasuchil">Sobre el contenido:</strong> los cursos se armaron a partir de
+                    investigación en fuentes publicadas. El de náhuatl central incorpora los comentarios de un hablante;
+                    ninguno ha tenido todavía una revisión completa de hablantes nativos. Si hablas
+                    la lengua y ves un error, <a href="#colabora" @click.prevent="scrollTo('colabora')"
+                    class="text-turquesa font-semibold hover:underline">ayúdanos a corregirlo</a>.</p>
                 <div class="grid md:grid-cols-2 gap-6 mb-10">
                     <article v-for="c in COURSES" :key="c.name" class="bg-surface-2 border border-line rounded-xl p-7">
                         <div class="flex items-center justify-between gap-3 mb-4">
@@ -150,8 +192,9 @@
         <section id="colabora" class="py-16 md:py-20 px-4 scroll-mt-20">
             <div class="container mx-auto md:px-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Colabora</h2>
-                <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">Tlahtolcalli crece con la comunidad. Si
-                    hablas o enseñas una lengua originaria, tu ayuda hace que el contenido sea correcto y respetuoso.</p>
+                <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">Tlahtolcalli crece con la comunidad. Ningún
+                    curso ha tenido todavía una revisión completa de hablantes: si hablas o enseñas una lengua originaria, tu
+                    ayuda hace que el contenido sea correcto y respetuoso.</p>
                 <div class="grid md:grid-cols-3 gap-6 mb-10">
                     <a v-for="c in COLLAB" :key="c.title" :href="`mailto:${MAIL}?subject=${encodeURIComponent(c.subject)}`"
                         class="block bg-surface-2 border border-line hover:border-turquesa p-7 rounded-xl transition-colors">
@@ -186,7 +229,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import PublicShell from '../../components/public/PublicShell.vue'
@@ -232,15 +275,36 @@ const LEVELS = [
     { color: 'bg-turquesa', title: 'Expresa tus gustos', text: 'Lo que te gusta, lo que quieres y cómo pedir algo.' },
 ]
 
+// Pasos del manual de uso. El texto es fijo (lo lee Google); la imagen cambia con el paso elegido.
+const step = ref(0)
+const GUIDE = [
+    { img: 'registro', alt: 'Formulario para crear cuenta', title: 'Crea tu cuenta',
+      text: 'Toca <b>Empezar gratis</b>, llena tus datos y toca <b>Crear cuenta</b>; te llega un correo para verificarla. También puedes entrar con <b>Continuar con Google</b>.' },
+    { img: 'idioma', alt: 'Lista para elegir idioma', title: 'Elige tu idioma',
+      text: 'Abre la familia de lenguas, marca el idioma y toca <b>Continuar</b>. El náhuatl central está en uto-aztec y el tének en maya.' },
+    { img: 'nhn-inicio', alt: 'Niveles del curso', title: 'Avanza por niveles',
+      text: 'Cada curso tiene 6 niveles. El primero está abierto y cada uno se abre al terminar el anterior. El rayo de arriba es tu energía.' },
+    { img: 'nhn-nivel', alt: 'Unidades de un nivel', title: 'Entra a una unidad',
+      text: 'Cada nivel tiene 6 unidades con su objetivo y una nota de gramática. Toca <b>Empezar lección</b>; las terminadas se pueden repasar.' },
+    { img: 'nhn-leccion-correcta', alt: 'Ejercicio respondido correctamente', title: 'Haz la lección',
+      text: 'Elige la traducción o escribe la palabra que falta y toca <b>Verificar</b>. Las palabras subrayadas muestran su pronunciación. Si fallas, pierdes 1 punto de energía.' },
+    { img: 'nhn-glosario', alt: 'Glosario con el alfabeto', title: 'Gana EXP y repasa',
+      text: 'Al terminar ganas EXP y se abre la siguiente unidad. En <b>Glosario</b> está el alfabeto del idioma; en <b>Estadísticas</b> y <b>Perfil</b>, tu avance y tus logros.' },
+    { img: 'hus-inicio', alt: 'Inicio con el botón de idioma', title: 'Cambia de idioma',
+      text: 'En el inicio, toca el círculo con el ícono del idioma, arriba a la izquierda, y elige otro. Tu avance de cada idioma se guarda.' },
+    { img: 'editar', alt: 'Pantalla Editar perfil', title: 'Edita tu perfil',
+      text: 'En <b>Perfil → Ajustes → Editar perfil</b> cambias tu nombre, usuario, correo o contraseña, o eliminas tu cuenta.' },
+]
+
 const COURSES = [
     {
         name: 'Náhuatl central', badge: 'bg-turquesa/15 text-turquesa',
-        text: 'Variante nhn, escrita en ortografía moderna con macrones. Contenido en revisión con un hablante de la variante.',
+        text: 'Variante nhn, escrita en ortografía moderna con macrones. Creado a partir de investigación; incorpora los comentarios de un hablante, pero no tiene una revisión completa.',
         stats: [['Niveles', 6], ['Unidades', 36], ['Palabras', 195], ['Ejercicios', 216]],
     },
     {
         name: 'Tének', badge: 'bg-azul-maya/15 text-azul-maya',
-        text: 'Variante hus de San Luis Potosí, con la norma de escritura del INALI. Contenido en revisión con hablantes.',
+        text: 'Variante hus de San Luis Potosí, con la norma de escritura del INALI. Creado a partir de investigación, sin revisión de hablantes.',
         stats: [['Niveles', 6], ['Unidades', 36], ['Palabras', 175], ['Ejercicios', 216]],
     },
 ]
@@ -253,6 +317,13 @@ const COLLAB = [
 </script>
 
 <style scoped>
+/* Teléfono de la guía de uso */
+.guia-tel { width: 15rem; aspect-ratio: 432 / 935; border-radius: 2rem; padding: .5rem; background: #0b1219;
+    border: 1px solid rgb(255 255 255 / .12); box-shadow: 0 24px 60px -20px rgb(0 0 0 / .7); overflow: hidden; }
+.guia-tel img { width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem; display: block; }
+@media (min-width: 768px) { .guia-tel { width: 17rem; } }
+.guia-enter-active, .guia-leave-active { transition: opacity .2s ease; }
+.guia-enter-from, .guia-leave-to { opacity: 0; }
 /* Motivo escalonado (greca xicalcoliuhqui): el único patrón de la marca */
 .escalon { display: grid; grid-template-columns: repeat(7, 16px); gap: 8px; align-items: end; }
 .escalon span { display: block; width: 16px; border-radius: 2px; }

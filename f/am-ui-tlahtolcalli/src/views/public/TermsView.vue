@@ -33,8 +33,10 @@
 
         <h2 id="contenido">4. El contenido y las lenguas</h2>
         <p>Las lenguas originarias pertenecen a sus pueblos y comunidades hablantes. Tlahtolcalli no se adueña de ellas:
-            organiza materiales de aprendizaje y los revisa con hablantes antes de publicarlos. Aun así, puede haber errores
-            o diferencias entre variantes. El contenido es para aprender, no sustituye a hablantes, docentes ni fuentes
+            organiza materiales de aprendizaje creados a partir de investigación en fuentes publicadas (gramáticas,
+            diccionarios y normas de escritura). El curso de náhuatl incorpora los comentarios de un hablante, pero
+            ningún curso ha tenido una revisión completa de hablantes nativos, así que puede haber errores o
+            diferencias entre variantes. El contenido es para aprender, no sustituye a hablantes, docentes ni fuentes
             oficiales. Si encuentras un error,
             <a class="lnk" :href="`mailto:${MAIL}?subject=Correcci%C3%B3n%20de%20contenido`">avísanos</a>.</p>
         <p>El diseño, la mascota, el código y la organización de los cursos son de Tlahtolcalli. Si nos envías

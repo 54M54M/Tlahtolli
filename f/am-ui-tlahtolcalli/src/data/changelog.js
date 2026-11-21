@@ -7,6 +7,15 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.1.1',
+        date: '2026-11-21',
+        title: 'Guía de uso y origen del contenido',
+        items: [
+            { type: 'nuevo', text: 'La portada explica paso a paso cómo usar la app, con capturas de cada pantalla.' },
+            { type: 'mejora', text: 'Aclaramos de dónde viene el contenido: los cursos se crearon a partir de investigación en fuentes publicadas; el de náhuatl incorpora los comentarios de un hablante y ninguno tiene todavía una revisión completa de hablantes nativos.' },
+        ],
+    },
+    {
         version: '4.0.2',
         date: '2026-11-18',
         title: 'Direcciones más limpias',

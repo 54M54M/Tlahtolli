@@ -45,7 +45,7 @@
         <!-- Navegación inferior (móvil) -->
         <nav class="md:hidden fixed bottom-0 inset-x-0 z-20 bg-surface-3 border-t border-line">
             <div class="flex justify-between py-2 px-2">
-                <a v-for="s in SECTIONS.slice(0, 3)" :key="s.id" :href="`/#${s.id}`" @click="goSection($event, s.id)"
+                <a v-for="s in SECTIONS.filter((s) => !s.desktopOnly).slice(0, 3)" :key="s.id" :href="`/#${s.id}`" @click="goSection($event, s.id)"
                     class="flex-1 text-center text-gray-400 hover:text-gray-100 text-xs py-2">{{ s.label }}</a>
                 <router-link :to="authStore.user ? '/app' : { query: { auth: 'register' } }"
                     class="flex-1 text-center text-turquesa font-semibold text-xs py-2">
@@ -68,6 +68,7 @@ import UserAvatar from '../UserAvatar.vue'
 const SECTIONS = [
     { id: 'caracteristicas', label: 'Características' },
     { id: 'metodo', label: 'Método' },
+    { id: 'guia', label: 'Cómo se usa', desktopOnly: true },
     { id: 'idiomas', label: 'Idiomas' },
     { id: 'colabora', label: 'Colabora' },
 ]

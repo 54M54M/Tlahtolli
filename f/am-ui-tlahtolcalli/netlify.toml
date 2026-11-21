@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  base = "f"
+  base = "f/am-ui-tlahtolcalli"
 
 # Las páginas públicas (/, /novedades, /privacidad, /terminos) existen como HTML
 # prerenderizado y Netlify las sirve directo. Todo lo demás (/app/…, /verificar,
