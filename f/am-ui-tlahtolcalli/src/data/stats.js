@@ -1,4 +1,3 @@
-// src/data/stats.js
 import { statsApi } from '../api/apiClient.js'
 import { useAuthStore } from '../stores/auth.js'
 import { useCacheStore } from '../stores/cache.js'
@@ -7,12 +6,13 @@ function stores() {
     return { auth: useAuthStore(), cache: useCacheStore() }
 }
 
-export async function getStatsByLanguage(languageId) {
+/** opts.optional: llamada desde un panel secundario (si falta sin conexión, no muestra la pantalla de "Sin conexión"). */
+export async function getStatsByLanguage(languageId, opts = {}) {
     const { auth, cache } = stores()
     const key = cache.statsKey(auth.user?.id, languageId)
     const hit = cache.get(key)
     if (hit) return hit
-    const data = await statsApi.getByUserLang(auth.user?.id, languageId)
+    const data = await statsApi.getByUserLang(auth.user?.id, languageId, opts)
     cache.set(key, data)
     return data
 }

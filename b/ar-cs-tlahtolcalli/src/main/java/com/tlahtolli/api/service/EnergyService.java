@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,7 +38,31 @@ public class EnergyService {
 	public Map<String, Object> consume(Integer userId, boolean isCorrect) {
 		log.debug("Consuming energy for userId={}, isCorrect={}", userId, isCorrect);
 		UserEnergy e = getOrCreate(userId);
+		int change = applyAnswer(e, isCorrect);
+		energyRepo.save(e);
+		log.info("Energy consumed for userId={}: newEnergy={}, change={}, streak={}", userId, e.getCurrentEnergy(), change, e.getStreakCount());
 
+		return Map.of("newEnergy", e.getCurrentEnergy().intValue(), "energyChange", change, "streak", e.getStreakCount(), "maxEnergy",
+				e.getMaxEnergy());
+	}
+
+	/**
+	 * Respuestas contestadas sin conexión, aplicadas en orden con las mismas reglas que consume().
+	 * La recuperación pasiva se aplica antes (al leer la energía), así que el tiempo sin conexión también cuenta.
+	 */
+	@Transactional
+	public UserEnergy sync(Integer userId, List<Boolean> answers) {
+		UserEnergy e = getOrCreate(userId);
+		int total = 0;
+		for (Boolean correct : answers) total += applyAnswer(e, Boolean.TRUE.equals(correct));
+		UserEnergy saved = energyRepo.save(e);
+		log.info("Energy synced for userId={}: {} respuestas sin conexión, change={}, newEnergy={}", userId,
+				answers.size(), total, saved.getCurrentEnergy());
+		return saved;
+	}
+
+	/** Una respuesta: -1 base; si es correcta +1/+2 y, con racha de 3 o más, +3/+4. Devuelve el cambio. */
+	private int applyAnswer(UserEnergy e, boolean isCorrect) {
 		int change = -1; // consumo base siempre
 
 		if (isCorrect) {
@@ -54,11 +79,7 @@ public class EnergyService {
 		e.setCurrentEnergy((short) newEnergy);
 		e.setDailyUsage((short) (e.getDailyUsage() + 1));
 		e.setLastUpdate(LocalDateTime.now());
-		energyRepo.save(e);
-		log.info("Energy consumed for userId={}: newEnergy={}, change={}, streak={}", userId, newEnergy, change, e.getStreakCount());
-
-		return Map.of("newEnergy", newEnergy, "energyChange", change, "streak", e.getStreakCount(), "maxEnergy",
-				e.getMaxEnergy());
+		return change;
 	}
 
 	/** Sobrescribe la energía directamente (admin / debug). */

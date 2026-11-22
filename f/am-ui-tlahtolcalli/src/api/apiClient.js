@@ -3,6 +3,8 @@
 // Toda llamada HTTP de la app pasa por aquí.
 // src/api/apiClient.js
 
+import { canCopy, readCopy, saveCopy } from '../offline/copies.js'
+
 const BASE_URL = import.meta.env.VITE_API_URL
 
 // Front de desarrollo (VITE_APP_ENV=dev): el backend le muestra también los cursos en pruebas
@@ -33,8 +35,9 @@ function connection(ok) {
 async function request(path, options = {}) {
     const url = `${BASE_URL}${path}`
     const token = getToken()
+    const { optional, ...fetchOptions } = options // eslint-disable-line no-unused-vars
     const config = {
-        ...options,
+        ...fetchOptions,
         headers: {
             'Content-Type': 'application/json',
             ...ENV_HEADERS,
@@ -43,13 +46,28 @@ async function request(path, options = {}) {
         },
     }
 
+    const method = (options.method || 'GET').toUpperCase()
+
     let res
     try {
         res = await fetch(url, config)
     } catch (err) {
-        // Sin respuesta del servidor (sin internet): lo muestra OfflineScreen.vue
+        // Sin respuesta del servidor (sin internet)
         connection(false)
-        throw err
+        if (method === 'GET') {
+            // Si esta consulta ya se había hecho, se usa la última respuesta guardada
+            const copy = readCopy(path)
+            if (copy) return copy.data
+            // Si no, la vista no tiene con qué mostrarse: OfflineScreen.vue muestra la pantalla completa
+            // (options.optional: datos secundarios, p. ej. el panel lateral; si faltan no tapan la vista)
+            if (canCopy(path) && !options.optional && typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('tl:data-missing', { detail: path }))
+            }
+        }
+        const offlineErr = new Error('Sin conexión')
+        offlineErr.offline = true
+        offlineErr.cause = err
+        throw offlineErr
     }
     connection(true)
 
@@ -65,16 +83,24 @@ async function request(path, options = {}) {
 
     if (!res.ok) {
         const message = data?.error ?? data?.message ?? `HTTP ${res.status}`
-        throw new Error(message)
+        const httpErr = new Error(message)
+        httpErr.status = res.status
+        throw httpErr
     }
 
+    if (method === 'GET') saveCopy(path, data)
     return data
+}
+
+/** El error fue por falta de conexión (no hubo respuesta del servidor). */
+export function isOfflineError(err) {
+    return err?.offline === true
 }
 
 // ── métodos públicos ────────────────────────────────────────────────────────
 
 export const api = {
-    get: (path) => request(path),
+    get: (path, opts = {}) => request(path, opts),
     post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body) }),
     put: (path, body) => request(path, { method: 'PUT', body: JSON.stringify(body) }),
     delete: (path) => request(path, { method: 'DELETE' }),
@@ -148,11 +174,13 @@ export const energyApi = {
     get: safe('energy.get', (userId) => api.get(`/energy/user/${userId}`)),
     consume: safe('energy.consume', (userId, isCorrect) => api.post(`/energy/user/${userId}/consume`, { isCorrect })),
     set: safe('energy.set', (userId, value) => api.put(`/energy/user/${userId}/set`, { value })),
+    // Respuestas contestadas sin conexión, en orden (src/offline/outbox.js)
+    sync: safe('energy.sync', (userId, clientId, answers) => api.post(`/energy/user/${userId}/sync`, { clientId, answers })),
 }
 
 export const statsApi = {
     getByUser: safe('stats.getByUser', (userId) => api.get(`/user-stats?userId=${userId}`)),
-    getByUserLang: safe('stats.getByUserLang', (userId, languageId) => api.get(`/user-stats?userId=${userId}&languageId=${languageId}`)),
+    getByUserLang: safe('stats.getByUserLang', (userId, languageId, opts) => api.get(`/user-stats?userId=${userId}&languageId=${languageId}`, opts)),
 }
 
 export const achievementsApi = {

@@ -25,7 +25,8 @@
                 'md:ml-60 lg:mr-96': !isLanguageSelectionRoute && !isLessonRoute
             }">
                 <div class="w-full px-4 mx-auto max-w-xl">
-                    <router-view />
+                    <!-- viewEpoch cambia al volver la conexión si a la vista le faltaban datos: se vuelve a montar -->
+                    <router-view :key="viewEpoch" />
                 </div>
             </main>
 
@@ -54,6 +55,7 @@ import DesktopProgressAside from '../components/ProgressAside.vue'
 import MobileNav from '../components/MobileNav.vue'
 import VerifyEmailModal from '../components/VerifyEmailModal.vue'
 import { useAuthStore } from '../stores/auth'
+import { viewEpoch } from '../offline/status.js'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -123,6 +125,7 @@ export default {
             isLanguageSelectionRoute,
             isLessonRoute,
             asideClasses,
+            viewEpoch,
             isAuthenticated: computed(() => !!authStore.user)
         }
     }

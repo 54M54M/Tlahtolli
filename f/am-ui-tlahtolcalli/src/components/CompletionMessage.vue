@@ -38,8 +38,14 @@
             Has completado {{ correctAnswersCount }} de {{ totalExercises }} ejercicios correctamente.
         </p>
 
+        <!-- Terminada sin conexión: se envía al reconectar -->
+        <div v-if="pendingSync" role="status" class="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/40 text-sm text-amber-200">
+            Sin conexión: tu avance quedó guardado en este dispositivo y se enviará cuando vuelva el internet.
+            La experiencia y los desbloqueos se actualizan en ese momento.
+        </div>
+
         <!-- Sección de desbloqueo -->
-        <div v-if="showUnlockSection" class="mb-4">
+        <div v-if="showUnlockSection && !pendingSync" class="mb-4">
             <!-- Mensaje de desbloqueo exitoso -->
             <div v-if="unlockedNextLevelUnit && performance >= 0.8" class="p-4 bg-green-900/20 rounded-lg">
                 <!--h3 class="font-semibold text-green-400 mb-2">¡Nuevo Nivel Desbloqueado!</h3>
@@ -93,6 +99,12 @@ export default {
         buttonText: {
             type: String,
             default: "RECIBIR EXP"
+        },
+
+        // Se terminó sin conexión (quedó en la cola de envíos)
+        pendingSync: {
+            type: Boolean,
+            default: false
         },
 
         // Propiedades para QuickLevel

@@ -160,11 +160,31 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 - `vite-plugin-pwa` genera al compilar `site.webmanifest` y `sw.js` (configuración en `vite.config.js`).
   Ya no existe `public/site.webmanifest`: no lo vuelvas a crear, el plugin lo escribe.
 - Con `VITE_APP_ENV=dev` el manifest sale como **Tlahtolcalli Dev** con íconos `*-dev-*` (para no confundirlas en el teléfono).
-- El service worker guarda JS, CSS e imágenes y `spa.html`; la API **nunca** se guarda.
+- El service worker guarda JS, CSS e imágenes y `spa.html`; la API no pasa por él (ver sección 8).
 - Versión nueva: `UpdatePrompt.vue` avisa y el usuario decide (no aparece en lecciones ni en la bienvenida).
-- Sin conexión: `OfflineScreen.vue` (sin red, o la API no responde).
+- Sin conexión: ver sección 8.
 - `netlify.toml` manda `Cache-Control: no-cache` para `sw.js` y `site.webmanifest`.
 - Probar: Chrome → DevTools → Application → Manifest / Service workers. Si algo queda "pegado", **Unregister** y recarga.
+
+---
+
+## 8. Sin conexión (lecciones y avance)
+
+- Neon: ejecutar `12.-Sincronizacion_Sin_Conexion.sql` (tabla `ta_sync_ops`). Se puede ejecutar más de una vez.
+  **Antes** de publicar el back: sin la tabla, completar lección falla.
+- Render (opcional): `APP_TIMEZONE` (por defecto `America/Mexico_City`) — zona con la que se decide el día de una lección.
+- Front (`src/offline/`):
+  - `copies.js`: guarda en el teléfono la última respuesta de cada consulta GET; solo se usa sin conexión
+    (la energía no: la lleva su store). Se borra al cerrar sesión.
+  - `outbox.js`: cola de lo hecho sin conexión (respuestas → `POST /api/energy/user/{id}/sync`,
+    lecciones → `POST /api/user-progress/complete` con `clientId` y `completedAt`). Se envía en orden al reconectar,
+    al abrir la app, al volver a ella y al iniciar sesión. Si el servidor rechaza un envío (4xx), se descarta.
+  - `sync.js`: detecta la conexión (eventos del navegador + `/api/health` cada 15 s mientras no hay).
+  - `OfflineScreen.vue`: pantalla completa **solo** si la vista abierta no tiene datos guardados;
+    si no, un aviso pequeño. Al volver la conexión se envía lo pendiente y la vista se vuelve a montar.
+- Back: `clientId` repetido → se ignora (`SyncOpService`); `completedAt` se acepta hasta 7 días atrás y no en el futuro.
+- Limitación: sin conexión no se actualizan experiencia, logros ni desbloqueos (se ven al sincronizar);
+  la siguiente lección se abre hasta entonces.
 
 ---
 

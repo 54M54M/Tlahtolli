@@ -41,7 +41,7 @@ public class ProgressService {
 
 	@Transactional
 	public Map<String, Object> completeLesson(Integer userId, Integer unitId, Integer languageId, double performance,
-			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds, LocalDate day) {
 		log.info("Completing lesson for userId={}, unitId={}, languageId={}, performance={}", userId, unitId, languageId, performance);
 
 		if (unitId == null || unitId == 0) {
@@ -54,7 +54,7 @@ public class ProgressService {
 		LessonHistory history = new LessonHistory();
 		history.setUserId(userId);
 		history.setUnitId(unitId);
-		history.setCompletedAt(LocalDate.now());
+		history.setCompletedAt(day != null ? day : LocalDate.now());
 		history.setPerformance(BigDecimal.valueOf(performance));
 		history.setEarnedExp(earnedExp);
 		history.setCorrectAns((short) correctAns);
@@ -72,7 +72,7 @@ public class ProgressService {
 		});
 		up.setCompleted((short) 1);
 		up.setIsCurrent((short) 0);
-		up.setCompletedAt(LocalDate.now());
+		up.setCompletedAt(day != null ? day : LocalDate.now());
 		progressRepo.save(up);
 
 		Integer nextUnitId = unlockNextUnit(userId, unitId);

@@ -140,7 +140,7 @@
       <CompletionMessage v-if="!dataLoading && currentQuestion > currentExercises.length" title="¡Lección completada!"
              :back-route="`/app/nivel/${currentLevel.id}`"
              :performance="currentExercises.length > 0 ? correctAnswersCount / currentExercises.length : 1"
-             :lesson-time="lessonTime" :earned-exp="earnedExp" class="md:mt-[-10%]"/>
+             :lesson-time="lessonTime" :earned-exp="earnedExp" :pending-sync="pendingSync" class="md:mt-[-10%]"/>
 
         <!-- MODALES COMPONENTES -->
         <WarningModal :show="showWarningModal" @close="closeWarningModal" @confirm="endSession" />
@@ -225,6 +225,7 @@ export default {
             noEnergyModalType: 'depleted',
             requiredEnergyForLesson: 10,
             energyCheckInterval: null,
+            pendingSync: false,
         };
     },
     computed: {
@@ -401,8 +402,11 @@ export default {
                 });
 
                 this.earnedExp = result.xpEarned ?? earnedPoints;
+                this.pendingSync = result.offline === true;
 
-                if (result.wasAlreadyCompleted) {
+                if (result.offline) {
+                    this.showFeedback('¡Lección completada!', 'Sin conexión: tu avance se guardará cuando vuelva el internet.');
+                } else if (result.wasAlreadyCompleted) {
                     this.showFeedback('¡Lección repasada!', 'Fresco como una lechuga!');
                 } else {
                     this.showFeedback('¡Lección completada!', 'Has desbloqueado nuevas unidades.');

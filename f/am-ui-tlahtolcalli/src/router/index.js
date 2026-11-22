@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { publicRoutes } from './publicRoutes'
 import { isWelcomePending } from '../data/welcome.js'
+import { dataMissing } from '../offline/status.js'
 
 // Niveles y lecciones bloqueados (o de otro idioma) no se abren escribiendo la URL: vuelven al inicio.
 // Si la API falla, se deja pasar y la vista muestra su propio error; el backend valida al completar.
@@ -189,6 +190,12 @@ const ROUTE_TITLES = {
     ElegirUsuario: 'Elige tu usuario',
     Perfil: 'Perfil',
 }
+// Cada navegación empieza sin la pantalla de "Sin conexión": la vuelve a pedir
+// la vista nueva si sus datos no están guardados (src/offline). Va antes que los demás guards.
+router.beforeEach(() => {
+    dataMissing.value = false
+})
+
 // Muestra el idioma en la barra de direcciones y guarda el id en el historial
 router.afterEach((to, from, failure) => {
     const p = PRETTY[to.name]

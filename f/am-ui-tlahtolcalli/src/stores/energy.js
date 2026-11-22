@@ -1,6 +1,11 @@
 // src/stores/energy.js
 import { defineStore } from 'pinia'
-import { energyApi } from '../api/apiClient.js'
+import { energyApi, isOfflineError } from '../api/apiClient.js'
+import { offline } from '../offline/status.js'
+import { queueAnswer, hasPending, flushOutbox } from '../offline/outbox.js'
+
+// Mismas reglas que EnergyService en el back (para calcularla sin conexión)
+const RECOVERY_MS = 20 * 60 * 1000
 
 export const useEnergyStore = defineStore('energy', {
     state: () => ({
@@ -43,16 +48,22 @@ export const useEnergyStore = defineStore('energy', {
 
             this.isLoading = true
             try {
+                // Primero lo gastado sin conexión, para que el servidor lo descuente
+                if (!offline.value && hasPending(userId)) await flushOutbox(userId)
+                if (offline.value) throw Object.assign(new Error('Sin conexión'), { offline: true })
                 // El backend aplica recuperación pasiva automáticamente en este GET.
                 // Si no existe, lo crea.
                 this.energy = await energyApi.get(userId)
                 this.lastSync = Date.now()
                 console.log('[energy] Sincronizado para userId:', userId, '→', this.energy?.currentEnergy, '/', this.energy?.maxEnergy)
             } catch (err) {
-                console.error('[energy] initializeEnergy:', err.message)
+                if (!isOfflineError(err)) console.error('[energy] initializeEnergy:', err.message)
                 // Fallback: energía por defecto para no romper la UI
-                if (!this.energy) {
+                if (!this.energy || this.energy.userId !== userId) {
                     this.energy = { currentEnergy: 15, maxEnergy: 15, streakCount: 0, userId }
+                    this.lastSync = Date.now()
+                } else {
+                    this._recoverLocally()
                 }
             } finally {
                 this.isLoading = false
@@ -64,6 +75,13 @@ export const useEnergyStore = defineStore('energy', {
             return this.initializeEnergy(userId)
         },
 
+        /** Energía que respondió el servidor al enviar lo hecho sin conexión. */
+        applyServer(energy) {
+            if (!energy) return
+            this.energy = { ...(this.energy || {}), ...energy }
+            this.lastSync = Date.now()
+        },
+
         // ── consumo ────────────────────────────────────────────────────────────
 
         async consumeForExercise(isCorrect) {
@@ -73,6 +91,7 @@ export const useEnergyStore = defineStore('energy', {
                 return { newEnergy: 15, energyChange: 0, streak: 0 }
             }
 
+            if (offline.value) return this._consumeOffline(userId, isCorrect)
             try {
                 const result = await energyApi.consume(userId, isCorrect)
                 this.energy.currentEnergy = result.newEnergy
@@ -81,8 +100,40 @@ export const useEnergyStore = defineStore('energy', {
                 this._addChange(result.energyChange)
                 return result
             } catch (err) {
+                if (isOfflineError(err)) return this._consumeOffline(userId, isCorrect)
                 console.error('[energy] consumeForExercise:', err.message)
                 return { newEnergy: this.energy?.currentEnergy ?? 15, energyChange: 0, streak: 0 }
+            }
+        },
+
+        /** Sin conexión: se calcula aquí con las mismas reglas y la respuesta se envía al reconectar. */
+        _consumeOffline(userId, isCorrect) {
+            this._recoverLocally()
+            const e = this.energy
+            let change = -1
+            if (isCorrect) {
+                change += Math.random() < 0.5 ? 1 : 2
+                e.streakCount = (e.streakCount ?? 0) + 1
+                if (e.streakCount >= 3) change += Math.random() < 0.5 ? 3 : 4
+            } else {
+                e.streakCount = 0
+            }
+            e.currentEnergy = Math.max(0, Math.min(e.maxEnergy ?? 15, (e.currentEnergy ?? 15) + change))
+            queueAnswer(userId, isCorrect)
+            this._addChange(change)
+            return { newEnergy: e.currentEnergy, energyChange: change, streak: e.streakCount, maxEnergy: e.maxEnergy, offline: true }
+        },
+
+        /** Recuperación pasiva sin conexión: +1 cada 20 minutos desde la última vez. */
+        _recoverLocally() {
+            const e = this.energy
+            if (!e || !this.lastSync) { this.lastSync = Date.now(); return }
+            const max = e.maxEnergy ?? 15
+            if ((e.currentEnergy ?? max) >= max) { this.lastSync = Date.now(); return }
+            const recovered = Math.floor((Date.now() - this.lastSync) / RECOVERY_MS)
+            if (recovered > 0) {
+                e.currentEnergy = Math.min(max, e.currentEnergy + recovered)
+                this.lastSync += recovered * RECOVERY_MS
             }
         },
 

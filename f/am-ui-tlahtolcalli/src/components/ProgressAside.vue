@@ -112,7 +112,7 @@ export default {
     const loadStats = async () => {
       if (!authStore.user || !authStore.selectedLangId) return
       try {
-        rawStats.value = await getStatsByLanguage(authStore.selectedLangId)
+        rawStats.value = await getStatsByLanguage(authStore.selectedLangId, { optional: true })
       } catch (err) {
         console.warn('[ProgressAside] loadStats:', err.message)
       }

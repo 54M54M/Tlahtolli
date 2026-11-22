@@ -7,6 +7,16 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.4.0',
+        date: '2026-11-22',
+        title: 'Sigue aprendiendo sin internet',
+        items: [
+            { type: 'nuevo', text: 'Si se va el internet a media lección, puedes terminarla: tu avance se guarda en tu dispositivo y se envía solo cuando vuelve la conexión.' },
+            { type: 'mejora', text: 'Sin conexión puedes seguir viendo lo que ya habías abierto (inicio, niveles, lecciones). El aviso de "Sin conexión" solo tapa la pantalla si esa sección nunca se había cargado.' },
+            { type: 'correccion', text: 'Las lecciones cuentan en el día correcto (hora de México), también las que terminaste sin conexión.' },
+        ],
+    },
+    {
         version: '4.3.0',
         date: '2026-11-22',
         title: 'Instálala como app',

@@ -2,6 +2,22 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.4.0] - 2026-11-22 - Sin conexión
+
+### Added
+- `ta_sync_ops` (script `12.-Sincronizacion_Sin_Conexion.sql`) y `SyncOpService`: cada envío hecho sin conexión trae un
+  `clientId` (UUID); si llega dos veces, el segundo se ignora. Si aplicarlo falla, se libera para el reintento.
+- `POST /api/energy/user/{userId}/sync` (`{ clientId, answers: [bool…] }`): respuestas contestadas sin conexión,
+  aplicadas en orden con las mismas reglas que `consume`. Solo el propio usuario o admin.
+- `CompleteLessonRequest.clientId` y `completedAt` (opcionales; el front viejo sigue funcionando).
+
+### Changed
+- El día de una lección (`ta_lesson_history.completed_at`, `ta_user_progress.completed_at`) es el de `completedAt`
+  en `APP_TIMEZONE` (por defecto `America/Mexico_City`), acotado a los últimos 7 días y nunca en el futuro.
+  Antes era `LocalDate.now()` del servidor (UTC en Render: de 6 pm en adelante contaba como el día siguiente).
+- Monitor: las URLs del ícono llevan `?v=<huella>`; al cambiar `icon.png` Chrome/Android ya no reutilizan el viejo.
+  Ícono también `maskable`; manifest sin caché.
+
 ## [4.2.0] - 2026-11-21 - Olvidé mi contraseña
 
 ### Added

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { clearCopies } from '../offline/copies.js'
 import { usersApi, authApi, languagesApi, progressApi, learningApi } from '../api/apiClient.js'
 
 // "Verificar más tarde" del modal de correo: dura hasta cerrar sesión o volver a iniciarla
@@ -128,6 +129,8 @@ export const useAuthStore = defineStore('auth', {
             this.isInitialized = false
             localStorage.removeItem('selectedLanguage')
             clearVerifyLater()
+            // Las copias para usar sin conexión son de esta cuenta (lo pendiente por enviar se conserva: se envía al volver a entrar)
+            clearCopies()
         },
 
         // ── Cambio de idioma (recibe código string: 'nhn'…) ──────────

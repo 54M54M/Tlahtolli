@@ -135,7 +135,8 @@
                         :back-route="`/app/nivel/${levelId}`" :show-stats="true"
                         :correct-answers-count="correctAnswersCount" :total-exercises="totalExercises"
                         :performance="performance" :lesson-time="lessonTime" :show-unlock-section="true"
-                        :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId" />
+                        :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId"
+                        :pending-sync="pendingSync" />
                 </div>
             </div>
         </div>
@@ -204,6 +205,7 @@ export default {
             correctAnswersCount: 0,
             completedExercises: 0,
             unlockedNextLevelUnit: false,
+            pendingSync: false,
             nextLevelId: null,
             performance: 0,
             screenHeight: 0,
@@ -373,6 +375,12 @@ export default {
                     totalExerc: this.totalExercises,
                     timeSeconds: this.lessonTime,
                 });
+
+                // Sin conexión: se guardó para enviarse después; el siguiente nivel se abre al sincronizar
+                if (result?.offline) {
+                    this.pendingSync = true;
+                    return;
+                }
 
                 // Caché ya invalidada en completeQuickLevel → lectura fresca
                 const levels = await getLevels(true);
