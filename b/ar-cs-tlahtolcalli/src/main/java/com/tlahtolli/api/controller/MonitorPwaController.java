@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
 
@@ -39,6 +40,9 @@ import org.springframework.web.bind.annotation.RestController;
  * tamaño completo. Si no, se toma el de Render (MONITOR_ICON_URL), se centra sobre el fondo del monitor.
  * En ambos casos se redimensiona a 192 y 512 px y se guarda en memoria.
  * Si Render no responde, se dibuja uno provisional y se vuelve a intentar en la siguiente petición.
+ *
+ * Las URLs de los íconos llevan ?v=<huella del ícono>: si cambias icon.png, cambia la URL y Chrome/Android
+ * no reutilizan la imagen vieja de su caché (al reinstalar la app toman la nueva).
  */
 @RestController
 public class MonitorPwaController {
@@ -48,6 +52,7 @@ public class MonitorPwaController {
     private static final String OWN_ICON = "static/monitor/icon.png";
 
     private final String iconUrl;
+    private final String iconVersion;
     private final Map<Integer, byte[]> cache = new ConcurrentHashMap<>();
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
@@ -57,10 +62,29 @@ public class MonitorPwaController {
     public MonitorPwaController(
             @Value("${MONITOR_ICON_URL:https://dashboard.render.com/favicon-light.png}") String iconUrl) {
         this.iconUrl = iconUrl;
+        this.iconVersion = fingerprint(iconUrl);
+    }
+
+    /** Huella corta del ícono actual; la usan el manifest y las plantillas (${@monitorPwaController.iconVersion}). */
+    public String getIconVersion() {
+        return iconVersion;
+    }
+
+    private static String fingerprint(String iconUrl) {
+        CRC32 crc = new CRC32();
+        ClassPathResource own = new ClassPathResource(OWN_ICON);
+        try (InputStream in = own.exists() ? own.getInputStream() : null) {
+            if (in != null) crc.update(in.readAllBytes());
+            else crc.update(iconUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            crc.update(iconUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+        return Long.toHexString(crc.getValue());
     }
 
     @GetMapping(value = "/monitor/assets/manifest.webmanifest", produces = "application/manifest+json")
     public ResponseEntity<String> manifest() {
+        String v = iconVersion;
         String json = """
             {
               "name": "Tlahtolcalli Monitor",
@@ -73,12 +97,14 @@ public class MonitorPwaController {
               "background_color": "#000000",
               "theme_color": "#000000",
               "icons": [
-                { "src": "/monitor/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-                { "src": "/monitor/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+                { "src": "/monitor/assets/icon-192.png?v=%1$s", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+                { "src": "/monitor/assets/icon-512.png?v=%1$s", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+                { "src": "/monitor/assets/icon-192.png?v=%1$s", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+                { "src": "/monitor/assets/icon-512.png?v=%1$s", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
               ]
             }
-            """;
-        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(Duration.ofHours(1))).body(json);
+            """.formatted(v);
+        return ResponseEntity.ok().cacheControl(CacheControl.noCache()).body(json);
     }
 
     @GetMapping(value = "/monitor/assets/icon-{size}.png", produces = MediaType.IMAGE_PNG_VALUE)
