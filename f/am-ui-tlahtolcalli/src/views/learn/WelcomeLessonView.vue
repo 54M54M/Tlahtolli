@@ -112,11 +112,12 @@ import { loadWelcome, markWelcomeDone } from '../../data/welcome.js'
 import ExerciseImage from '../../components/ExerciseImage.vue'
 import ProcessedText from '../../components/ProcessedText.vue'
 import FeedbackModal from '../../components/FeedbackModal.vue'
-import tochIntro from '../../assets/exercises/toch/toch_mirentodos.webp'
-import tochEnd from '../../assets/exercises/toch/toch_celebracion.webp'
+import { toch, TOCH_BIENVENIDA, TOCH_FINAL } from '../../data/toch.js'
 
 // Cada pregunta con un personaje al azar
 const CHARACTERS = ['citlali', 'coltzin', 'neza', 'tonatiuh', 'xochitl']
+const tochIntro = toch(TOCH_BIENVENIDA)   // Toch con megáfono
+const tochEnd = toch(TOCH_FINAL)          // Toch celebrando
 const randomCharacter = () => CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)]
 
 const router = useRouter()
