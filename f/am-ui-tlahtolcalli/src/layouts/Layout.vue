@@ -80,6 +80,7 @@ export default {
         const isLessonRoute = computed(() => {
             return route.name === 'Leccion' ||
                 route.name === 'NivelRapido' ||
+                route.name === 'Bienvenida' ||
                 route.path.includes('/leccion/') ||
                 route.path.includes('/nivel-rapido/')
         })

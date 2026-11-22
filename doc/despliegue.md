@@ -146,6 +146,15 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 ---
 
+## 6. Olvidé mi contraseña
+
+- Neon: ejecutar `11.-Restablecer_Contrasena.sql` (acepta `purpose = 'reset'` en `ta_email_tokens`). Se puede ejecutar más de una vez.
+- Usa el mismo correo que la verificación (`EMAIL_PROVIDER=brevo`, `BREVO_API_KEY`, `EMAIL_FROM`) y `APP_URL` para armar el enlace
+  `APP_URL/restablecer?token=…`. Sin Brevo el enlace solo sale en los logs de Render.
+- Limitación: las sesiones abiertas siguen activas hasta que vence su token; restablecer no cierra las otras sesiones.
+
+---
+
 ## Orden resumido
 
 ```

@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+import { shouldShowWelcome } from '../data/welcome.js'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -118,11 +119,13 @@ const handleSingleLanguage = async () => {
 
         await new Promise(resolve => setTimeout(resolve, 200))
 
+        const next = (await shouldShowWelcome()) ? '/app/bienvenida' : '/app'
         if (props.isModal) {
             emit('language-selected', singleLanguage)
             emit('close')
+            if (next !== '/app') router.push(next)
         } else {
-            router.push('/app')
+            router.push(next)
         }
     }
 }
@@ -173,13 +176,16 @@ const confirmSelection = async () => {
         )
 
         await authStore.setLanguage(selectedLanguage.value)
+        // Idioma sin avance → lección de bienvenida antes de la primera lección
+        const next = (await shouldShowWelcome()) ? '/app/bienvenida' : '/app'
 
         if (props.isModal) {
             // Notifica al padre con el objeto completo; el padre actualiza la UI
             emit('language-selected', langObj ?? { code: selectedLanguage.value })
             emit('close')
+            if (next !== '/app') router.push(next)
         } else {
-            router.push('/app')
+            router.push(next)
         }
     } catch (error) {
         console.error('[VariantSelection] Error al confirmar selección:', error)

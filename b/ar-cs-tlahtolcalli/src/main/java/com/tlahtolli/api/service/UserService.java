@@ -47,11 +47,11 @@ public class UserService {
 		log.info("Creating user username={}", user.getUsername());
 		if (userRepo.existsByUsername(user.getUsername())) {
 			log.warn("Username already exists: {}", user.getUsername());
-			throw new IllegalArgumentException("Username ya existe: " + user.getUsername());
+			throw new IllegalArgumentException("Ese usuario ya está en uso. Si es tuyo, inicia sesión o recupera tu contraseña.");
 		}
 		if (userRepo.existsByEmail(user.getEmail())) {
 			log.warn("Email already exists: {}", user.getEmail());
-			throw new IllegalArgumentException("Email ya existe: " + user.getEmail());
+			throw new IllegalArgumentException("Ya hay una cuenta con ese correo. Si es tuya, inicia sesión o recupera tu contraseña.");
 		}
 
 		user.setJoinDate(LocalDate.now());

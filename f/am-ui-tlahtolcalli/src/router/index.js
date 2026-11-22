@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { publicRoutes } from './publicRoutes'
+import { isWelcomePending } from '../data/welcome.js'
 
 // Niveles y lecciones bloqueados (o de otro idioma) no se abren escribiendo la URL: vuelven al inicio.
 // Si la API falla, se deja pasar y la vista muestra su propio error; el backend valida al completar.
@@ -56,6 +57,12 @@ const appRoutes = [
         meta: { public: true, hideNav: true }
     },
     {
+        path: '/restablecer',
+        name: 'RestablecerContrasena',
+        component: () => import('../views/ResetPasswordView.vue'),
+        meta: { public: true, hideNav: true }
+    },
+    {
         path: '/app',
         name: 'Inicio',
         component: () => import('../views/HomeView.vue'),
@@ -101,6 +108,12 @@ const appRoutes = [
         props: true,
         meta: { hideNav: true, requiresAuth: true },
         beforeEnter: allowIf('canOpenLevel'),
+    },
+    {
+        path: '/app/bienvenida',
+        name: 'Bienvenida',
+        component: () => import('../views/learn/WelcomeLessonView.vue'),
+        meta: { hideNav: true, requiresAuth: true },
     },
     {
         path: '/app/glosario',
@@ -171,6 +184,8 @@ const ROUTE_TITLES = {
     'Estadísticas': 'Estadísticas',
     EditarPerfil: 'Editar perfil',
     VerificarCorreo: 'Verificar correo',
+    RestablecerContrasena: 'Nueva contraseña',
+    Bienvenida: 'Bienvenida',
     ElegirUsuario: 'Elige tu usuario',
     Perfil: 'Perfil',
 }
@@ -226,6 +241,9 @@ router.beforeEach((to) => {
 
     // 4. Ya tiene idioma y quiere ir al selector como página → home (el header lo abre como modal)
     if (to.name === 'LanguageSelection' && user && authStore.selectedLanguage) return '/app'
+
+    // 5. Lección de bienvenida pendiente: no se puede saltar
+    if (to.meta.requiresAuth && to.name !== 'Bienvenida' && isWelcomePending()) return '/app/bienvenida'
 
     return true
 })

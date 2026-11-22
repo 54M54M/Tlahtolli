@@ -17,8 +17,41 @@
                 </button>
             </div>
 
+            <!-- Olvidé mi contraseña -->
+            <div v-if="activeTab === 'login' && forgot" class="space-y-4">
+                <div>
+                    <h2 class="text-xl font-bold">Recupera tu cuenta</h2>
+                    <p class="text-sm text-gray-400 mt-1">Escribe tu usuario o tu correo y te mandamos un enlace para crear
+                        una contraseña nueva.</p>
+                </div>
+                <template v-if="!forgotSent">
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-300">Usuario o correo</label>
+                        <input v-model="forgotId" type="text" placeholder="mi_usuario o correo@ejemplo.com" autocomplete="username"
+                            class="w-full bg-surface-0 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-turquesa transition-colors"
+                            @keyup.enter="sendForgot" />
+                    </div>
+                    <div v-if="errorMsg" class="p-3 bg-error-soft/40 border border-error rounded-lg text-error text-sm">
+                        {{ errorMsg }}
+                    </div>
+                    <button @click="sendForgot" :disabled="loading"
+                        class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-50 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        {{ loading ? 'Enviando...' : 'Enviarme el enlace' }}
+                    </button>
+                </template>
+                <div v-else class="p-4 bg-turquesa/10 border border-turquesa/40 rounded-lg text-sm text-gray-200 space-y-2">
+                    <p class="font-semibold text-turquesa">Revisa tu correo</p>
+                    <p>Si hay una cuenta con esos datos, te enviamos un enlace para crear una contraseña nueva. Vence en
+                        1 hora. Si no lo ves, revisa la carpeta de spam.</p>
+                    <p class="text-gray-400">Si entraste con Google, también puedes usar <b>Continuar con Google</b>.</p>
+                </div>
+                <button @click="closeForgot" class="w-full text-sm text-gray-400 hover:text-white font-semibold py-1">
+                    ← Volver a iniciar sesión
+                </button>
+            </div>
+
             <!-- Login -->
-            <div v-if="activeTab === 'login'" class="space-y-4">
+            <div v-else-if="activeTab === 'login'" class="space-y-4">
                 <div class="flex justify-center">
                     <AvatarStage :name="username" :size="72" />
                 </div>
@@ -39,6 +72,10 @@
                             <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.163-3.592M6.53 6.533A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.357 2.56M6.53 6.533L3 3m3.53 3.533l11.94 11.934M15.47 15.47A3 3 0 019.17 9.17" /></svg>
                         </button>
+                    </div>
+                    <div class="text-right mt-2">
+                        <button type="button" @click="openForgot(username)"
+                            class="text-sm text-turquesa hover:underline font-semibold">¿Olvidaste tu contraseña?</button>
                     </div>
                 </div>
 
@@ -143,6 +180,8 @@
 
                 <div v-if="errorMsg" class="p-3 bg-error-soft/40 border border-error rounded-lg text-error text-sm">
                     {{ errorMsg }}
+                    <button v-if="accountExists" type="button" @click="recoverFromRegister"
+                        class="block mt-2 text-turquesa font-semibold hover:underline">Recuperar mi contraseña →</button>
                 </div>
 
                 <p class="text-xs text-gray-400 text-center">
@@ -173,7 +212,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { usersApi } from '../api/apiClient'
+import { usersApi, authApi } from '../api/apiClient'
 import { useRouter } from 'vue-router'
 import UserAvatar from '../components/UserAvatar.vue'
 import AvatarStage from '../components/AvatarStage.vue'
@@ -211,6 +250,45 @@ const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const passwordMatch = computed(() => newPassword.value === confirmPassword.value)
+
+// ── Olvidé mi contraseña ───────────────────────────────────────────────────
+const forgot = ref(false)
+const forgotId = ref('')
+const forgotSent = ref(false)
+const accountExists = computed(() => activeTab.value === 'register' && /ya (está en uso|hay una cuenta)/i.test(errorMsg.value))
+
+const openForgot = (prefill = '') => {
+    forgot.value = true
+    forgotSent.value = false
+    forgotId.value = prefill || ''
+    errorMsg.value = ''
+}
+const closeForgot = () => {
+    forgot.value = false
+    forgotSent.value = false
+    errorMsg.value = ''
+}
+const recoverFromRegister = () => {
+    const id = /correo/i.test(errorMsg.value) ? newEmail.value.trim() : newUsername.value.trim()
+    switchTab('login')
+    openForgot(id)
+}
+const sendForgot = async () => {
+    if (!forgotId.value.trim()) {
+        errorMsg.value = 'Escribe tu usuario o tu correo.'
+        return
+    }
+    loading.value = true
+    errorMsg.value = ''
+    try {
+        await authApi.forgotPassword(forgotId.value.trim())
+        forgotSent.value = true
+    } catch (err) {
+        errorMsg.value = err.message || 'No se pudo enviar el enlace. Intenta de nuevo.'
+    } finally {
+        loading.value = false
+    }
+}
 
 const DEMO_USERNAME = 'tetecuhtli'
 const DEMO_PASSWORD = 'demo1234'
@@ -291,6 +369,7 @@ const loginGoogle = async (credential) => {
 const switchTab = (tab) => {
     if (activeTab.value === tab) return
     activeTab.value = tab
+    forgot.value = false
     errorMsg.value = ''
     emit('tab-change', tab)
 }

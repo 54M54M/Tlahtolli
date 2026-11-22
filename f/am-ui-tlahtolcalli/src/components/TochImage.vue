@@ -4,13 +4,17 @@
 
 <script setup>
 import { computed } from 'vue';
-import tochN1 from '../assets/exercises/toch/toch_n1.webp';
-import tochCelebracion from '../assets/exercises/toch/toch_celebracion.webp';
-import tochMencanto from '../assets/exercises/toch/toch_mencanto.webp';
-import tochMirentodos from '../assets/exercises/toch/toch_mirentodos.webp';
-import tochWow from '../assets/exercises/toch/toch_wow.webp';
+import toch1 from '../assets/exercises/toch/1.webp';
+import toch2 from '../assets/exercises/toch/2.webp';
+import toch3 from '../assets/exercises/toch/3.webp';
+import toch4 from '../assets/exercises/toch/4.webp';
+import toch5 from '../assets/exercises/toch/5.webp';
+import toch6 from '../assets/exercises/toch/6.webp';
+import toch7 from '../assets/exercises/toch/7.webp';
+import toch8 from '../assets/exercises/toch/8.webp';
+import toch9 from '../assets/exercises/toch/9.webp';
 
-const regularImages = [tochCelebracion, tochMencanto, tochMirentodos, tochWow];
+const regularImages = [toch1, toch2, toch3, toch4, toch5, toch6, toch7, toch8];
 
 const props = defineProps({
     performance: { type: Number, required: true },
@@ -19,7 +23,7 @@ const props = defineProps({
 
 const image = computed(() =>
     props.performance === 1 && props.lessonTime < 30
-        ? tochN1
+        ? toch9
         : regularImages[Math.floor(Math.random() * regularImages.length)]
 );
 </script>

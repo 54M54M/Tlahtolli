@@ -2,6 +2,18 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.2.0] - 2026-11-21 - Olvidé mi contraseña
+
+### Added
+- `PasswordResetService`: `POST /api/auth/password/forgot` (usuario o correo; responde lo mismo exista o no la cuenta)
+  y `POST /api/auth/password/reset` (token del correo + contraseña nueva). Token de 32 bytes, solo su hash SHA-256,
+  un uso, 1 hora; 1 envío por minuto y 5 por hora por cuenta. Al restablecer, el correo queda verificado y se avisa por correo.
+- `ta_email_tokens.purpose = 'reset'` — script `11.-Restablecer_Contrasena.sql`.
+
+### Changed
+- La verificación de correo ya no invalida los enlaces de restablecer (y al revés); un enlace de contraseña no verifica correos.
+- Registro con usuario o correo existente: mensajes en español que sugieren recuperar la contraseña.
+
 ## [4.1.0] - 2026-11-19 - Cursos en pruebas
 
 ### Added

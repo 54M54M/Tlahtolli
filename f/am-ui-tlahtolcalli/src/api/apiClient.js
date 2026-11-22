@@ -88,6 +88,8 @@ export const usersApi = {
 export const authApi = {
     login: safe('auth.login', (username, password) => api.post('/auth/login', { username, password })),
     google: safe('auth.google', (credential) => api.post('/auth/google', { credential })),
+    forgotPassword: safe('auth.forgotPassword', (identifier) => api.post('/auth/password/forgot', { identifier })),
+    resetPassword: safe('auth.resetPassword', (token, password) => api.post('/auth/password/reset', { token, password })),
 }
 
 export const accountApi = {

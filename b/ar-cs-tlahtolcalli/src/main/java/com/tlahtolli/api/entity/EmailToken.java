@@ -11,6 +11,7 @@ public class EmailToken {
 
     public static final String VERIFY = "verify";   // verificar el correo de la cuenta
     public static final String CHANGE = "change";   // verificar un correo nuevo (cambio de correo)
+    public static final String RESET = "reset";     // restablecer la contraseña ("olvidé mi contraseña")
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

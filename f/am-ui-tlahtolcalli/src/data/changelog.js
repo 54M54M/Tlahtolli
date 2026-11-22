@@ -7,6 +7,16 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.2.0',
+        date: '2026-11-21',
+        title: 'Recupera tu cuenta y lección de bienvenida',
+        items: [
+            { type: 'nuevo', text: '¿Olvidaste tu contraseña? Pide un enlace con tu usuario o tu correo y crea una nueva.' },
+            { type: 'nuevo', text: 'Al elegir un idioma nuevo, una lección de bienvenida de 5 preguntas te muestra cómo funcionan las lecciones. No gasta energía.' },
+            { type: 'mejora', text: 'Si intentas registrarte con un usuario o correo que ya tiene cuenta, la app te ofrece recuperar tu contraseña.' },
+        ],
+    },
+    {
         version: '4.1.1',
         date: '2026-11-21',
         title: 'Guía de uso y origen del contenido',

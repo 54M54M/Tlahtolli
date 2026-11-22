@@ -23,4 +23,14 @@ public interface EmailTokenRepository extends JpaRepository<EmailToken, Integer>
     @Modifying
     @Query("update EmailToken t set t.usedAt = :now where t.userId = :userId and t.usedAt is null")
     int invalidateAll(@Param("userId") Integer userId, @Param("now") LocalDateTime now);
+
+    // ── Restablecer contraseña: sus tokens se cuentan e invalidan aparte de los de verificación ──
+
+    long countByUserIdAndPurposeAndCreatedAtAfter(Integer userId, String purpose, LocalDateTime after);
+
+    Optional<EmailToken> findFirstByUserIdAndPurposeOrderByCreatedAtDesc(Integer userId, String purpose);
+
+    @Modifying
+    @Query("update EmailToken t set t.usedAt = :now where t.userId = :userId and t.purpose = :purpose and t.usedAt is null")
+    int invalidateByPurpose(@Param("userId") Integer userId, @Param("purpose") String purpose, @Param("now") LocalDateTime now);
 }

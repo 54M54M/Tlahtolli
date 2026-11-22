@@ -5,6 +5,7 @@ import com.tlahtolli.api.dto.response.UserResponse;
 import com.tlahtolli.api.entity.User;
 import com.tlahtolli.api.security.TokenService;
 import com.tlahtolli.api.service.GoogleAuthService;
+import com.tlahtolli.api.service.PasswordResetService;
 import com.tlahtolli.api.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +19,34 @@ import java.util.Map;
 public class AuthController {
 
     public record GoogleLoginRequest(String credential) {}
+    public record ForgotPasswordRequest(String identifier) {}
+    public record ResetPasswordRequest(String token, String password) {}
 
     private final UserService userService;
     private final TokenService tokenService;
     private final GoogleAuthService googleAuth;
+    private final PasswordResetService passwordReset;
 
-    public AuthController(UserService userService, TokenService tokenService, GoogleAuthService googleAuth) {
+    public AuthController(UserService userService, TokenService tokenService, GoogleAuthService googleAuth,
+                          PasswordResetService passwordReset) {
         this.userService = userService;
         this.tokenService = tokenService;
         this.googleAuth = googleAuth;
+        this.passwordReset = passwordReset;
+    }
+
+    /** "Olvidé mi contraseña": siempre responde lo mismo, exista o no la cuenta. */
+    @PostMapping("/password/forgot")
+    public Map<String, Object> forgotPassword(@RequestBody ForgotPasswordRequest body) {
+        passwordReset.request(body == null ? null : body.identifier());
+        return Map.of("sent", true);
+    }
+
+    /** Enlace del correo: crea la contraseña nueva. */
+    @PostMapping("/password/reset")
+    public Map<String, Object> resetPassword(@RequestBody ResetPasswordRequest body) {
+        User u = passwordReset.reset(body == null ? null : body.token(), body == null ? null : body.password());
+        return Map.of("reset", true, "username", u.getUsername());
     }
 
     /**

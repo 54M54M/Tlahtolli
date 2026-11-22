@@ -68,7 +68,8 @@ public class EmailVerificationService {
         RANDOM.nextBytes(raw);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
 
-        tokenRepo.invalidateAll(user.getId(), now);
+        tokenRepo.invalidateByPurpose(user.getId(), EmailToken.VERIFY, now);
+        tokenRepo.invalidateByPurpose(user.getId(), EmailToken.CHANGE, now);
         EmailToken t = new EmailToken();
         t.setUserId(user.getId());
         t.setEmail(email);
@@ -97,6 +98,7 @@ public class EmailVerificationService {
     public User confirm(String token) {
         if (token == null || token.isBlank()) throw new IllegalArgumentException("Enlace inválido");
         EmailToken t = tokenRepo.findByTokenHash(sha256(token.trim()))
+                .filter(x -> !EmailToken.RESET.equals(x.getPurpose()))   // un enlace de contraseña no verifica correos
                 .orElseThrow(() -> new IllegalArgumentException("El enlace no es válido o ya se usó"));
         LocalDateTime now = LocalDateTime.now();
         if (t.getUsedAt() != null) throw new IllegalArgumentException("El enlace no es válido o ya se usó");
