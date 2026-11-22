@@ -9,13 +9,14 @@
             class="fixed inset-0 z-[150] bg-surface-0/95 backdrop-blur-sm flex items-center justify-center px-6">
             <div class="max-w-sm w-full text-center space-y-4">
                 <img :src="image" alt="" class="mx-auto h-44 object-contain">
-                <h2 id="off-title" class="text-2xl font-bold font-display text-white">Sin conexión</h2>
+                <h2 id="off-title" class="text-2xl font-bold font-display text-white">
+                  Esta pantalla no esta disponible en este momento
+                </h2>
                 <p class="text-gray-400">
-                    Esta sección todavía no se había cargado y necesita internet.
-                    Revisa tu conexión; esta pantalla se quita sola cuando vuelva.
+                    Parece que estas offline. ¡Revisa tu conexión!
                 </p>
                 <p v-if="pendingCount > 0" class="text-sm text-amber-200">
-                    Tu avance está guardado en este dispositivo y se enviará al reconectar.
+                    Tranquilo, tu avance está guardado, se enviará al recuperar la conexión.
                 </p>
                 <button @click="retry" :disabled="checking"
                     class="w-full bg-turquesa-deep hover:bg-turquesa-deeper disabled:opacity-60 text-white font-bold py-3 rounded-lg">
@@ -29,8 +30,8 @@
         </div>
         <div v-else-if="offline && isAppRoute" role="status"
             class="fixed top-1 inset-x-0 z-[150] flex justify-center pointer-events-none">
-            <span class="bg-amber-500 text-black text-xs font-semibold rounded-full px-3 py-1 shadow-lg">
-                {{ isLessonRoute ? 'Sin conexión · tu avance se guarda al reconectar' : 'Sin conexión · mostrando lo último que cargaste' }}
+            <span class="bg-gray-500 text-black text-xs font-semibold rounded-full px-3 py-1 shadow-lg">
+                {{ isLessonRoute ? 'SIN CONEXIÓN' : 'SIN CONEXIÓN' }}
             </span>
         </div>
         <div v-else-if="offline" role="status"
