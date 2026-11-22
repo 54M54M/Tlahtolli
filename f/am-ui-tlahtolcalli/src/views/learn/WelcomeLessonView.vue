@@ -1,10 +1,10 @@
 <template>
     <!-- Lección de bienvenida: después de elegir idioma y antes de la primera lección.
          5 preguntas de opción múltiple de la unidad 1. No gasta energía ni guarda progreso. -->
-    <div class="min-h-screen bg-surface-0 text-white flex flex-col">
+    <div class="fixed inset-0 z-40 bg-surface-0 text-white flex flex-col overflow-y-auto overscroll-contain">
 
         <!-- Barra superior: solo el avance (la bienvenida no se puede saltar) -->
-        <div class="sticky top-0 z-30 bg-surface-0 border-b border-line">
+        <div class="shrink-0 sticky top-0 z-30 bg-surface-0 border-b border-line">
             <div class="max-w-3xl mx-auto flex items-center gap-4 px-4 py-4">
                 <div class="flex-1 h-3 bg-surface-2 rounded-full overflow-hidden" role="progressbar"
                     :aria-valuenow="done" aria-valuemin="0" :aria-valuemax="exercises.length">
@@ -21,9 +21,9 @@
         </div>
 
         <!-- Presentación -->
-        <div v-else-if="stage === 'intro'" class="flex-1 flex items-center justify-center px-4 py-10">
-            <div class="max-w-md w-full text-center space-y-5">
-                <img :src="tochIntro" alt="Toch te da la bienvenida" class="mx-auto h-56 object-contain">
+        <div v-else-if="stage === 'intro'" class="flex-1 flex items-center justify-center px-4 py-6">
+            <div class="max-w-md w-full text-center space-y-4">
+                <img :src="tochIntro" alt="Toch te da la bienvenida" class="mx-auto h-[26dvh] max-h-56 object-contain">
                 <p class="text-xs tracking-widest uppercase text-turquesa font-bold">Lección de bienvenida</p>
                 <h1 class="text-3xl font-bold font-display">Tus primeras palabras en {{ langName }}</h1>
                 <p class="text-gray-400">
@@ -38,7 +38,7 @@
         </div>
 
         <!-- Preguntas -->
-        <div v-else-if="stage === 'quiz'" class="flex-1 flex flex-col px-4 pt-8 pb-40 md:pb-48">
+        <div v-else-if="stage === 'quiz'" class="flex-1 flex flex-col px-4 pt-6 pb-32">
             <div class="max-w-3xl w-full mx-auto">
                 <h1 class="text-xl md:text-3xl font-bold mb-6">{{ current.question }}</h1>
 
@@ -82,9 +82,9 @@
         </div>
 
         <!-- Final -->
-        <div v-else class="flex-1 flex items-center justify-center px-4 py-10">
-            <div class="max-w-md w-full text-center space-y-5">
-                <img :src="tochEnd" alt="Toch celebra" class="mx-auto h-56 object-contain">
+        <div v-else class="flex-1 flex items-center justify-center px-4 py-6">
+            <div class="max-w-md w-full text-center space-y-4">
+                <img :src="tochEnd" alt="Toch celebra" class="mx-auto h-[26dvh] max-h-56 object-contain">
                 <h1 class="text-3xl font-bold font-display">¡Ya diste tus primeros pasos!</h1>
                 <p v-if="exercises.length" class="text-gray-300 text-lg">
                     Acertaste <strong class="text-turquesa">{{ score }} de {{ exercises.length }}</strong>.
