@@ -2,6 +2,19 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.4.1] - 2026-11-22 - Neon puede dormir
+
+### Changed
+- Pool de conexiones (`SQLConfig`): `minimumIdle` 0 (antes 1), conexiones inactivas se cierran al minuto (antes 5),
+  sin keepalive. Neon se apaga 5 min después de la última consulta aunque el back siga despierto (UptimeRobot).
+  Configurable: `DB_MIN_IDLE`, `DB_IDLE_TIMEOUT_MS`. Antes la base estaba encendida 24/7 (~6 CU-h al día).
+- Monitor: el health check (cada 60 s) solo corre con la pestaña/app a la vista.
+
+### Added
+- `GET /api/admin/neon-usage` (`NeonUsageService`): CU-h del mes, ritmo por día, proyección y fecha en que se acabarían,
+  leído de la API de Neon (no despierta la base; caché de 5 min). Tarjeta "Consumo de Neon" en el Overview del monitor,
+  en ámbar desde 70 % y rojo desde 90 %. Variables: `NEON_API_KEY`, `NEON_PROJECT_ID`, `NEON_CU_HOURS_LIMIT` (100).
+
 ## [4.4.0] - 2026-11-22 - Sin conexión
 
 ### Added

@@ -931,6 +931,15 @@
               <img src="https://badge.uptimerobot.com/psp/637355e694476be4e90904f07614a3f3.svg?style=logo&theme=dark" alt="Estado en UptimeRobot"></a></div>
         </div>
       </div>
+      <div class="table-wrap" id="neon-card">
+        <div class="table-header">
+          <h3>Consumo de Neon (mes)</h3>
+          <button class="btn btn-ghost btn-sm" onclick="loadNeonUsage(true)">Actualizar</button>
+        </div>
+        <div id="neon-body" style="padding:1rem 1.25rem">
+          <div class="loading"><span class="spinner"></span>Cargando…</div>
+        </div>
+      </div>
       <div class="table-wrap">
         <div class="table-header">
           <h3>Contenido por idioma</h3>
@@ -1857,7 +1866,50 @@
 
   /* ══ LOADERS ══ */
 
+  // ── Consumo de Neon: CU-h del mes, ritmo y cuándo se acabaría (GET /api/admin/neon-usage) ──
+  // Plan gratis: 100 CU-h; al llegar, la base se apaga hasta el siguiente periodo. Aviso desde 70 %.
+  async function loadNeonUsage(refresh = false) {
+    const body = document.getElementById('neon-body');
+    if (!body) return;
+    const fmt = d => d ? new Date(d).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+    const kv = (k, v, color) => `<div><p class="k">${k}</p><p class="v"${color ? ` style="color:${color}"` : ''}>${v}</p></div>`;
+    try {
+      const u = await apiFetch('/admin/neon-usage' + (refresh ? '?refresh=true' : ''));
+      if (!u?.configured) {
+        body.innerHTML = `<p style="color:var(--muted);font-size:.85rem">Sin configurar. En Render agrega <code>NEON_API_KEY</code>
+          (Neon → Account settings → API keys) y <code>NEON_PROJECT_ID</code> (Neon → Settings → General).</p>`;
+        return;
+      }
+      if (u.error) { body.innerHTML = `<p style="color:var(--coral);font-size:.85rem">${u.error}</p>`; return; }
+      const pct = Math.min(100, u.percent ?? 0);
+      const color = pct >= 90 ? 'var(--coral)' : pct >= 70 ? 'var(--amber)' : 'var(--jade)';
+      const exhaust = u.exhaustAt
+        ? `<p style="margin-top:.75rem;color:${color};font-size:.85rem">⚠ A este ritmo se acaba el <b>${fmt(u.exhaustAt)}</b>: la base se apagaría hasta el ${fmt(u.resetAt)}</p>`
+        : (u.projected != null ? `<p style="margin-top:.75rem;color:var(--muted);font-size:.85rem">A este ritmo alcanza hasta el reinicio (~${u.projected} CU-h al cierre).</p>` : '');
+      body.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">
+          <span style="font-size:1.5rem;font-weight:700;color:${color}">${u.cuHours} <span style="font-size:.85rem;color:var(--muted)">/ ${u.limitHours} CU-h</span></span>
+          <span style="font-family:'IBM Plex Mono',monospace;color:${color}">${u.percent}%</span>
+        </div>
+        <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${color}"></div>
+        </div>
+        ${exhaust}
+        <div class="svc-grid" style="margin-top:.75rem">
+          ${kv('Ritmo', u.perDay != null ? `${u.perDay} CU-h/día` : '—')}
+          ${kv('Horas encendida', u.activeHours != null ? `${u.activeHours} h` : '—')}
+          ${kv('Última actividad', fmt(u.lastActiveAt))}
+          ${kv('Se reinicia', fmt(u.resetAt))}
+        </div>`;
+      // Aviso también en la pestaña: el monitor se abre poco, que se note
+      if (pct >= 70) toast(`Neon: ${u.percent}% de las CU-h del mes`);
+    } catch {
+      body.innerHTML = `<p style="color:var(--muted);font-size:.85rem">No se pudo leer el consumo.</p>`;
+    }
+  }
+
   async function loadOverview() {
+    loadNeonUsage();
     try {
       const [users, langs, exercises, vocab, ach, lessons, history] = await Promise.all([
         apiFetch('/users/count'), apiFetch('/languages/count'), apiFetch('/exercises/count'),
@@ -2477,7 +2529,9 @@
     const saved = localStorage.getItem('tlahtolli_api'); if (saved) API = saved;
     document.getElementById('db-host').textContent = apiHost();
     await checkHealth();
-    setInterval(checkHealth, HEALTH_EVERY_MS);
+    // Solo mientras el monitor está a la vista (pestaña oculta o app en segundo plano: no consulta)
+    setInterval(() => { if (document.visibilityState === 'visible') checkHealth(); }, HEALTH_EVERY_MS);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkHealth(); });
     startPanel();
   });
 

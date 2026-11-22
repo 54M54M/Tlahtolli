@@ -22,6 +22,15 @@ import com.zaxxer.hikari.HikariDataSource;
  *
  * Pool pequeño a propósito: en los planes gratuitos de Render y Neon más conexiones no
  * dan más velocidad, solo más memoria. Usa el host "-pooler" de Neon (PgBouncer).
+ *
+ * Pool que se vacía solo: Neon apaga la base tras 5 minutos sin conexiones, y el plan gratis cobra
+ * cada minuto encendida (100 CU-h al mes). Con conexiones mínimas en 0, las que no se usan se cierran a
+ * los DB_IDLE_TIMEOUT_MS y Neon puede dormirse aunque el back siga despierto (UptimeRobot).
+ * La primera consulta tras dormir tarda ~1 s más mientras Neon despierta.
+ *
+ *   DB_POOL_SIZE        máximo de conexiones (5)
+ *   DB_MIN_IDLE         conexiones que se quedan abiertas sin uso (0 = ninguna)
+ *   DB_IDLE_TIMEOUT_MS  tras cuánto sin uso se cierra una conexión (60000 = 1 min; mínimo 10000)
  */
 @Configuration
 public class SQLConfig {
@@ -41,10 +50,11 @@ public class SQLConfig {
         cfg.setPassword(required("DB_PASSWORD"));
         cfg.setDriverClassName("org.postgresql.Driver");
         cfg.setMaximumPoolSize(env.getProperty("DB_POOL_SIZE", Integer.class, 5));
-        cfg.setMinimumIdle(1);
+        cfg.setMinimumIdle(env.getProperty("DB_MIN_IDLE", Integer.class, 0));
         cfg.setConnectionTimeout(30_000);   // Neon puede tardar en despertar
-        cfg.setIdleTimeout(300_000);
+        cfg.setIdleTimeout(Math.max(10_000L, env.getProperty("DB_IDLE_TIMEOUT_MS", Long.class, 60_000L)));
         cfg.setMaxLifetime(1_500_000);
+        cfg.setKeepaliveTime(0);            // sin "pings" a conexiones inactivas: despertarían a Neon
         cfg.setPoolName("tlahtolcalli-pool");
         return new HikariDataSource(cfg);
     }

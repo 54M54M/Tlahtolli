@@ -188,6 +188,20 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 ---
 
+## 9. Consumo de Neon (plan gratis: 100 CU-h al mes)
+
+- La base se apaga sola tras 5 min sin conexiones y solo cuenta el tiempo encendida. El pool del back no deja conexiones
+  abiertas (`DB_MIN_IDLE=0`, `DB_IDLE_TIMEOUT_MS=60000`), así que el back puede seguir despierto (UptimeRobot) sin gastar.
+  **No** subas `DB_MIN_IDLE`: con una sola conexión abierta la base no se apaga nunca (~6 CU-h al día, se acaba el mes).
+- Neon → Branch → Compute → Edit: autoscaling **0.25 ↔ 0.5** como tope (con 2 CU un pico gasta 8 veces más rápido).
+- Monitor → Overview → "Consumo de Neon": en Render agrega
+  - `NEON_API_KEY` — Neon → Account settings → API keys
+  - `NEON_PROJECT_ID` — Neon → Settings → General (Project ID)
+  - `NEON_CU_HOURS_LIMIT` — opcional, 100 por defecto
+- Comprobar: Neon → Monitoring → *Last day*: deben aparecer tramos rayados "endpoint inactive" cuando nadie usa la app.
+
+---
+
 ## Orden resumido
 
 ```
