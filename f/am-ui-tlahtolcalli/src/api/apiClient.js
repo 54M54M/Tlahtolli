@@ -22,6 +22,14 @@ export function configureAuth({ token, unauthorized } = {}) {
 
 // ── utilidad interna ────────────────────────────────────────────────────────
 
+// Avisa a la interfaz si el servidor respondió o no (evento 'tl:connection', detail: true | false)
+let lastConnection = true
+function connection(ok) {
+    if (ok === lastConnection || typeof window === 'undefined') return
+    lastConnection = ok
+    window.dispatchEvent(new CustomEvent('tl:connection', { detail: ok }))
+}
+
 async function request(path, options = {}) {
     const url = `${BASE_URL}${path}`
     const token = getToken()
@@ -35,7 +43,15 @@ async function request(path, options = {}) {
         },
     }
 
-    const res = await fetch(url, config)
+    let res
+    try {
+        res = await fetch(url, config)
+    } catch (err) {
+        // Sin respuesta del servidor (sin internet): lo muestra OfflineScreen.vue
+        connection(false)
+        throw err
+    }
+    connection(true)
 
     // Token vencido o inválido en una ruta protegida → cerrar sesión (excepto el propio login)
     if (res.status === 401 && !path.startsWith('/auth/')) onUnauthorized()

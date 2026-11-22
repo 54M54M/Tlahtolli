@@ -35,8 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
  * Chrome ofrece "Instalar app" cuando la página enlaza un manifest con íconos de 192 y 512 px.
  * Todo vive en /monitor/assets/**, que SecurityConfig ya deja pasar sin sesión (Chrome los pide antes del login).
  *
- * Ícono: si existe src/main/resources/static/monitor/icon.png (propio), se usa ese. Si no, se toma el de Render
- * (MONITOR_ICON_URL), se redimensiona a 192 y 512 px sobre el fondo del monitor y se guarda en memoria.
+ * Ícono: si existe src/main/resources/static/monitor/icon.png (propio, cuadrado y con su fondo), se usa ese a
+ * tamaño completo. Si no, se toma el de Render (MONITOR_ICON_URL), se centra sobre el fondo del monitor.
+ * En ambos casos se redimensiona a 192 y 512 px y se guarda en memoria.
  * Si Render no responde, se dibuja uno provisional y se vuelve a intentar en la siguiente petición.
  */
 @RestController
@@ -69,8 +70,8 @@ public class MonitorPwaController {
               "start_url": "/monitor",
               "scope": "/monitor",
               "display": "standalone",
-              "background_color": "#0e1517",
-              "theme_color": "#0e1517",
+              "background_color": "#000000",
+              "theme_color": "#000000",
               "icons": [
                 { "src": "/monitor/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
                 { "src": "/monitor/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
@@ -87,9 +88,10 @@ public class MonitorPwaController {
         byte[] cached = cache.get(size);
         if (cached != null) return png(cached, Duration.ofDays(1));
 
-        BufferedImage source = loadSource();
+        BufferedImage own = loadOwn();
+        BufferedImage source = own != null ? own : loadRemote();
         if (source != null) {
-            byte[] bytes = encode(compose(source, size));
+            byte[] bytes = encode(own != null ? scale(own, size) : compose(source, size));
             if (bytes != null) {
                 cache.put(size, bytes);
                 return png(bytes, Duration.ofDays(1));
@@ -104,17 +106,20 @@ public class MonitorPwaController {
         return ResponseEntity.ok().cacheControl(CacheControl.maxAge(maxAge)).contentType(MediaType.IMAGE_PNG).body(bytes);
     }
 
-    /** Ícono propio del classpath o, si no hay, el de Render. */
-    private BufferedImage loadSource() {
+    /** Ícono propio del classpath (static/monitor/icon.png), si existe. */
+    private static BufferedImage loadOwn() {
         ClassPathResource own = new ClassPathResource(OWN_ICON);
-        if (own.exists()) {
-            try (InputStream in = own.getInputStream()) {
-                BufferedImage img = ImageIO.read(in);
-                if (img != null) return img;
-            } catch (IOException e) {
-                log.warn("[monitor] no se pudo leer {}: {}", OWN_ICON, e.getMessage());
-            }
+        if (!own.exists()) return null;
+        try (InputStream in = own.getInputStream()) {
+            return ImageIO.read(in);
+        } catch (IOException e) {
+            log.warn("[monitor] no se pudo leer {}: {}", OWN_ICON, e.getMessage());
+            return null;
         }
+    }
+
+    /** Favicon de Render (MONITOR_ICON_URL). */
+    private BufferedImage loadRemote() {
         try {
             HttpResponse<byte[]> res = http.send(
                     HttpRequest.newBuilder(URI.create(iconUrl)).timeout(Duration.ofSeconds(8)).GET().build(),
@@ -128,6 +133,21 @@ public class MonitorPwaController {
             log.warn("[monitor] no se pudo descargar el ícono {}: {}", iconUrl, e.getMessage());
         }
         return null;
+    }
+
+    /** Ícono propio a tamaño completo (ya trae su fondo y sus márgenes). */
+    private static BufferedImage scale(BufferedImage src, int size) {
+        BufferedImage out = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = out.createGraphics();
+        try {
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.drawImage(src, 0, 0, size, size, null);
+        } finally {
+            g.dispose();
+        }
+        return out;
     }
 
     /** Fondo del monitor con el ícono centrado al 70 % (margen para las máscaras redondas de Android). */

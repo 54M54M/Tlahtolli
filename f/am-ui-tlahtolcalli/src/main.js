@@ -7,6 +7,7 @@ import router from './router'
 import { warmUpBackend, configureAuth } from './api/apiClient.js'
 import { useAuthStore } from './stores/auth.js'
 import { palettePlugin } from './utils/palette.js'
+import { setupPWA } from './pwa.js'
 
 // Despertar el backend antes de que el usuario haga login
 warmUpBackend()
@@ -35,3 +36,6 @@ configureAuth({
 // Se monta cuando el router resolvió la primera ruta: así el HTML prerenderizado
 // (portada, novedades, privacidad, términos) se reemplaza sin parpadeo en blanco
 router.isReady().then(() => app.mount('#app'))
+
+// Service worker: la app abre al instante, funciona instalada y avisa cuando hay versión nueva
+setupPWA()

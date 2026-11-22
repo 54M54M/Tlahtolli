@@ -7,6 +7,17 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.3.0',
+        date: '2026-11-22',
+        title: 'Instálala como app',
+        items: [
+            { type: 'nuevo', text: 'Instala Tlahtolcalli en tu teléfono o computadora: abre al instante, sin la barra del navegador.' },
+            { type: 'nuevo', text: 'Si te quedas sin internet, la app te avisa en lugar de mostrar un error del navegador.' },
+            { type: 'nuevo', text: 'Cuando hay una versión nueva, la app te avisa para actualizar (nunca a media lección).' },
+            { type: 'mejora', text: 'Al mantener presionado el ícono: accesos directos a continuar, glosario y estadísticas.' },
+        ],
+    },
+    {
         version: '4.2.0',
         date: '2026-11-21',
         title: 'Recupera tu cuenta y lección de bienvenida',

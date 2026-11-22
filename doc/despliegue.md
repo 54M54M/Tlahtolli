@@ -155,6 +155,19 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 ---
 
+## 7. PWA (app instalable)
+
+- `vite-plugin-pwa` genera al compilar `site.webmanifest` y `sw.js` (configuración en `vite.config.js`).
+  Ya no existe `public/site.webmanifest`: no lo vuelvas a crear, el plugin lo escribe.
+- Con `VITE_APP_ENV=dev` el manifest sale como **Tlahtolcalli Dev** con íconos `*-dev-*` (para no confundirlas en el teléfono).
+- El service worker guarda JS, CSS e imágenes y `spa.html`; la API **nunca** se guarda.
+- Versión nueva: `UpdatePrompt.vue` avisa y el usuario decide (no aparece en lecciones ni en la bienvenida).
+- Sin conexión: `OfflineScreen.vue` (sin red, o la API no responde).
+- `netlify.toml` manda `Cache-Control: no-cache` para `sw.js` y `site.webmanifest`.
+- Probar: Chrome → DevTools → Application → Manifest / Service workers. Si algo queda "pegado", **Unregister** y recarga.
+
+---
+
 ## Orden resumido
 
 ```
