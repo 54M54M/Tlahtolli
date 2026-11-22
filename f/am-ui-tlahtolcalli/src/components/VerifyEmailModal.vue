@@ -50,7 +50,7 @@ import { useAuthStore } from '../stores/auth'
 import { accountApi } from '../api/apiClient'
 
 // Rutas donde no debe interrumpir
-const HIDDEN_ON = ['LanguageSelection', 'Leccion', 'NivelRapido', 'EditarPerfil', 'VerificarCorreo']
+const HIDDEN_ON = ['LanguageSelection', 'Bienvenida', 'Leccion', 'NivelRapido', 'EditarPerfil', 'VerificarCorreo']
 
 const authStore = useAuthStore()
 const route = useRoute()
