@@ -101,7 +101,8 @@
                 <span>{{ currentLanguageName }}</span>
               </div>
               <div class="flex justify-between">
-                <router-link to="/novedades" class="font-mono text-sm text-gray-300 hover:text-white">{{ appVersion }}v</router-link>
+                <span class="text-gray-400">Version</span>
+                <span class="font-mono text-sm text-gray-300 hover:text-white">{{ appVersion }}</span>
               </div>
             </div>
             <div class="mt-4 space-y-2">

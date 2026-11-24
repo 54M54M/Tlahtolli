@@ -71,10 +71,6 @@
                     </svg>
                     <span>Cerrar sesión</span>
                 </button>
-                <router-link to="/novedades" class="block mt-3 text-center text-[11px] text-gray-500 hover:text-gray-300"
-                    title="Ver novedades">
-                    Tlahtolcalli v{{ version }}
-                </router-link>
             </div>
         </div>
 
