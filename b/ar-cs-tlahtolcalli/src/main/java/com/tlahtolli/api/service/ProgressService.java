@@ -28,10 +28,12 @@ public class ProgressService {
 	private final UnitVocabRepository unitVocabRepo;
 	private final LevelRepository levelRepo;
 	private final StudyStreakService streaks;
+	private final UserLevelService levels;
 
 	public ProgressService(UserProgressRepository progressRepo, UserStatsRepository statsRepo,
 			LessonHistoryRepository historyRepo, UserRepository userRepo, UnitRepository unitRepo,
-			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo, StudyStreakService streaks) {
+			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo, StudyStreakService streaks,
+			UserLevelService levels) {
 		this.progressRepo = progressRepo;
 		this.statsRepo = statsRepo;
 		this.historyRepo = historyRepo;
@@ -40,6 +42,7 @@ public class ProgressService {
 		this.unitVocabRepo = unitVocabRepo;
 		this.levelRepo = levelRepo;
 		this.streaks = streaks;
+		this.levels = levels;
 	}
 
 	/**
@@ -98,6 +101,7 @@ public class ProgressService {
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
+		levels.apply(user);
 
 		UserStats stats = getOrCreateStats(userId, languageId);
 		if (!wasAlreadyCompleted) {
@@ -184,6 +188,7 @@ public class ProgressService {
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
+		levels.apply(user);
 
 		if (languageId != null) {
 			UserStats stats = getOrCreateStats(userId, languageId);

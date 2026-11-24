@@ -25,10 +25,13 @@ public class AchievementService {
 	private final UserStatsRepository statsRepo;
 	private final UserRepository userRepo;
 	private final LanguageRepository languageRepo;
+	private final UserLevelService levels;
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	public AchievementService(AchievementRepository achievementRepo, UserAchievementRepository userAchievementRepo,
-	                          UserStatsRepository statsRepo, UserRepository userRepo, LanguageRepository languageRepo) {
+	                          UserStatsRepository statsRepo, UserRepository userRepo, LanguageRepository languageRepo,
+	                          UserLevelService levels) {
+		this.levels = levels;
 		this.achievementRepo = achievementRepo;
 		this.userAchievementRepo = userAchievementRepo;
 		this.statsRepo = statsRepo;
@@ -73,6 +76,7 @@ public class AchievementService {
 				if (user != null && a.getXpReward() != null && a.getXpReward() > 0) {
 					user.setXp(user.getXp() + a.getXpReward());
 					user.setTotalXp(user.getTotalXp() + a.getXpReward());
+					levels.apply(user);
 					userRepo.save(user);
 					log.debug("XP reward granted for userId={}: +{} xp", userId, a.getXpReward());
 				}

@@ -162,9 +162,11 @@ const userData = computed(() => {
     name: u.fullName || u.full_name || 'UserDemo',
     username: u.username,
     email: u.email,
+    // Nivel y XP del nivel los calcula el back (UserLevelService) con los puntos de los ejercicios
     level: u.userLevel || u.user_level || 1,
-    xp: u.xp || 0,
-    xpToNextLevel: 1000,
+    xp: u.totalXp ?? u.xp ?? 0,
+    xpInLevel: u.xpInLevel ?? 0,
+    xpToNextLevel: u.xpToNextLevel || 1,
     streak: u.streak || 0,
     studiedToday: !!u.studiedToday,
     joinDate: u.joinDate || u.join_date || '',

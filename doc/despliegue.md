@@ -208,11 +208,14 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
   - `13.-Racha_Dias_Estudio.sql` — tabla `ta_study_days`, `ta_users.last_study_date`; rellena con el historial y
     recalcula racha, días estudiados (antes sumaba 1 por lección) y mejor racha.
   - `14.-Cerrar_Sesiones.sql` — `ta_users.token_version`.
+  - `15.-Nivel_Usuario.sql` — recalcula `user_level` con la XP total (antes siempre 1). Puede correrse en cualquier momento.
 - Racha: días seguidos con al menos una lección o nivel rápido, en cualquier idioma, en `APP_TIMEZONE`.
   Si el último día estudiado no es hoy ni ayer, vale 0. Las lecciones hechas sin conexión cuentan en su día real.
 - Sesiones: cada token lleva `tv` (versión); restablecer la contraseña la sube y los tokens anteriores dejan de
   valer en todos los dispositivos (el front recibe 401 y cierra la sesión). La versión se guarda 10 min en memoria
   (`SessionVersions`) para no consultar la base en cada petición; `/api/health` no la revisa.
+- Nivel: XP por nivel = puntos de los ejercicios de un nivel del curso (`UserLevelService`); el perfil muestra
+  `xpInLevel / xpToNextLevel` tal como los manda el back.
 - Versión: `package.json` → visible en Perfil → Ajustes y en el menú lateral (con el commit corto en Netlify).
 
 ## 11. App de Android (TWA)

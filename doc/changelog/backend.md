@@ -11,6 +11,10 @@
   hoy ni ayer), `lastStudyDate` y `studiedToday`. Los logros de racha de 7 y 30 días ya pueden desbloquearse.
 - Cierre de sesiones al restablecer la contraseña: `ta_users.token_version` (script `14.-Cerrar_Sesiones.sql`), claim
   `tv` en el JWT y `SessionVersions` (caché de 10 min) en `JwtAuthFilter`. El correo de aviso lo menciona.
+- Nivel del usuario: `UserLevelService` actualiza `ta_users.user_level` cada vez que se gana XP (lecciones, niveles
+  rápidos, logros). XP por nivel = suma de los puntos de los ejercicios de un nivel del curso (promedio de los cursos
+  publicados, hoy ≈ 36 × 15 = 540), con caché de 1 h; el nivel nunca baja. `UserResponse` y el login traen
+  `xpInLevel` y `xpToNextLevel` para la barra del perfil. Script `15.-Nivel_Usuario.sql` recalcula los niveles.
 - `util/AppTime`: zona horaria única de la app (día de lecciones, racha, fecha de alta y de logros).
 
 ### Fixed

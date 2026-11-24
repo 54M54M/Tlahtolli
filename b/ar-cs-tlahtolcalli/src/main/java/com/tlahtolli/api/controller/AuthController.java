@@ -80,7 +80,11 @@ public class AuthController {
         body.put("userLevel", r.userLevel());
         body.put("xp", r.xp());
         body.put("totalXp", r.totalXp());
+        body.put("xpInLevel", r.xpInLevel());
+        body.put("xpToNextLevel", r.xpToNextLevel());
         body.put("streak", r.streak());
+        body.put("lastStudyDate", r.lastStudyDate());
+        body.put("studiedToday", r.studiedToday());
         body.put("joinDate", r.joinDate());
         body.put("currentLang", r.currentLang());
         body.put("role", r.role());
