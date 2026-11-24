@@ -65,8 +65,10 @@ public final class EmailTemplates {
     public static Mail passwordChangedNotice(String name) {
         String subject = "Se cambió tu contraseña · Tlahtolcalli";
         String text = "Hola, " + name + "\n\nLa contraseña de tu cuenta de Tlahtolcalli se cambió."
+                + " Por seguridad cerramos tu sesión en todos los dispositivos; entra de nuevo con la contraseña nueva."
                 + "\n\nSi no fuiste tú, escríbenos a contacto.tlahtolcalli@gmail.com.\n\nTlahtolcalli";
         String html = "<p>Hola, " + escape(name) + "</p><p>La contraseña de tu cuenta de Tlahtolcalli se cambió.</p>"
+                + "<p>Por seguridad cerramos tu sesión en todos los dispositivos; entra de nuevo con la contraseña nueva.</p>"
                 + "<p>Si no fuiste tú, escríbenos a contacto.tlahtolcalli@gmail.com.</p>";
         return new Mail(subject, html, text);
     }

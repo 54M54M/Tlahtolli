@@ -16,6 +16,7 @@ import com.tlahtolli.api.email.EmailSender;
 import com.tlahtolli.api.email.EmailTemplates;
 import com.tlahtolli.api.entity.EmailToken;
 import com.tlahtolli.api.entity.User;
+import com.tlahtolli.api.security.SessionVersions;
 import com.tlahtolli.api.repository.EmailTokenRepository;
 import com.tlahtolli.api.repository.UserRepository;
 
@@ -40,9 +41,11 @@ public class PasswordResetService {
     private final EmailSender sender;
     private final PasswordEncoder encoder;
     private final String appUrl;
+    private final SessionVersions sessions;
 
     public PasswordResetService(EmailTokenRepository tokenRepo, UserRepository userRepo,
-                                EmailSender sender, PasswordEncoder encoder, Environment env) {
+                                EmailSender sender, PasswordEncoder encoder, Environment env, SessionVersions sessions) {
+        this.sessions = sessions;
         this.tokenRepo = tokenRepo;
         this.userRepo = userRepo;
         this.sender = sender;
@@ -119,12 +122,15 @@ public class PasswordResetService {
         tokenRepo.invalidateByPurpose(user.getId(), EmailToken.RESET, now);
 
         user.setPasswordHash(encoder.encode(newPassword));
+        // Cierra todas las sesiones abiertas (tokens con la versión anterior dejan de valer)
+        user.setTokenVersion(user.getTokenVersion() + 1);
         if (!user.isEmailVerified()) {
             user.setEmailVerified(true);
             user.setEmailVerifiedAt(now);
         }
         User saved = userRepo.save(user);
-        log.info("[contraseña] restablecida userId={}", user.getId());
+        sessions.update(saved.getId(), saved.getTokenVersion());
+        log.info("[contraseña] restablecida userId={}; sesiones cerradas (versión {})", user.getId(), saved.getTokenVersion());
 
         try {
             var mail = EmailTemplates.passwordChangedNotice(firstName(user));

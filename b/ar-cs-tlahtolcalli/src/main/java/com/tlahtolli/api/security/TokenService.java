@@ -42,7 +42,8 @@ public class TokenService {
         this.ttlSeconds = env.getProperty("JWT_HOURS", Long.class, 168L) * 3600;
     }
 
-    public record Claims(Integer userId, String username, String role, long exp) {
+    /** tokenVersion: versión de sesión del usuario al emitirse (ver SessionVersions); 0 en tokens viejos. */
+    public record Claims(Integer userId, String username, String role, long exp, int tokenVersion) {
         public boolean isAdmin() { return "admin".equalsIgnoreCase(role); }
     }
 
@@ -58,6 +59,7 @@ public class TokenService {
         payload.put("sub", String.valueOf(u.getId()));
         payload.put("usr", u.getUsername());
         payload.put("role", u.getRole() == null ? "user" : u.getRole());
+        payload.put("tv", u.getTokenVersion());
         payload.put("iat", Instant.now().getEpochSecond());
         payload.put("exp", exp);
         try {
@@ -82,7 +84,8 @@ public class TokenService {
             Map<?, ?> p = mapper.readValue(B64D.decode(parts[1]), Map.class);
             long exp = ((Number) p.get("exp")).longValue();
             if (Instant.now().getEpochSecond() >= exp) return Optional.empty();
-            return Optional.of(new Claims(Integer.valueOf((String) p.get("sub")), (String) p.get("usr"), (String) p.get("role"), exp));
+            int tv = p.get("tv") instanceof Number n ? n.intValue() : 0;
+            return Optional.of(new Claims(Integer.valueOf((String) p.get("sub")), (String) p.get("usr"), (String) p.get("role"), exp, tv));
         } catch (Exception e) {
             return Optional.empty();
         }

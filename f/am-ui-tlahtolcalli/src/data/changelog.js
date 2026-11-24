@@ -7,6 +7,20 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.5.0',
+        date: '2026-11-22',
+        title: 'Tu racha cuenta',
+        items: [
+            { type: 'nuevo', text: 'Racha de días: cuántos días seguidos llevas estudiando, en tu perfil y en tus estadísticas, junto con tu mejor racha. El fuego cambia de color: rojo desde 50 días, morado desde 200 y azul desde 500.' },
+            { type: 'correccion', text: '"Días estudiados" ahora cuenta días distintos (antes sumaba uno por lección).' },
+            { type: 'mejora', text: 'Al restablecer tu contraseña se cierra tu sesión en todos tus dispositivos.' },
+            { type: 'mejora', text: 'Las frases largas en los diálogos de las lecciones ahora se acomodan bien en pantallas pequeñas.' },
+            { type: 'nuevo', text: 'Puedes ver la versión de la app en Perfil → Ajustes.' },
+            { type: 'correccion', text: 'El encabezado de inicio queda centrado en todos los teléfonos y el glosario ya no muestra un recuadro vacío.' },
+            { type: 'mejora', text: 'Al cambiar de idioma, "Continuar" solo se activa si eliges uno distinto al actual.' },
+        ],
+    },
+    {
         version: '4.4.0',
         date: '2026-11-22',
         title: 'Sigue aprendiendo sin internet',

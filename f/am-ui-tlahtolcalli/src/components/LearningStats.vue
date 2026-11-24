@@ -8,7 +8,9 @@
                         :class="getNumberColor(stat.label, getStatValue(stat.value))">
                         {{ getStatValue(stat.value) }}
                     </p>
-                    <span v-if="showStreakEmoji(stat.label, getStatValue(stat.value))" class="text-[14px]">
+                    <!-- Racha: fuego de color según los días (gris, normal, rojo, morado, azul) -->
+                    <StreakFlame v-if="isStreak(stat.label)" :days="Number(getStatValue(stat.value)) || 0" :size="15" />
+                    <span v-else-if="showStreakEmoji(stat.label, getStatValue(stat.value))" class="text-[14px]">
                         {{ getStreakEmoji(stat.label, getStatValue(stat.value)) }}
                     </span>
                 </div>
@@ -20,6 +22,11 @@
 
 <script setup>
 import Card from './Card.vue';
+import StreakFlame from './StreakFlame.vue';
+import { streakTier } from '../data/streak.js';
+
+const STREAK_LABELS = ['Racha actual', 'Mejor racha'];
+const isStreak = (label) => STREAK_LABELS.includes(label);
 
 defineProps({
     stats: {
@@ -44,8 +51,10 @@ const getStatColor = (label) => {
 };
 
 const getNumberColor = (label, value) => {
+    // El número de la racha toma el color de su fuego
+    if (isStreak(label)) return streakTier(Number(value) || 0).text;
     const numericValue = Number(value); // Asegura que sea número
-    const streakLabels = ['Lecciones perfectas', 'Días estudiados'];
+    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Racha actual', 'Mejor racha'];
 
     if (!streakLabels.includes(label)) {
         return getStatColor(label);
@@ -64,7 +73,7 @@ const getNumberColor = (label, value) => {
 
 const showStreakEmoji = (label, value) => {
     const numericValue = Number(value);
-    const streakLabels = ['Lecciones perfectas', 'Días estudiados'];
+    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Racha actual', 'Mejor racha'];
     return streakLabels.includes(label) && numericValue >= 3;
 };
 
@@ -73,7 +82,7 @@ const getStreakEmoji = (label, value) => {
 
     const emojis = {
         'Lecciones perfectas': '🏆',
-        'Días estudiados': '🔥'
+        'Días estudiados': '📅',
     };
 
     return emojis[label] || '🔥';

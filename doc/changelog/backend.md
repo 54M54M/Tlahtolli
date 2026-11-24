@@ -2,6 +2,21 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.5.0] - 2026-11-22 - Racha y cierre de sesiones
+
+### Added
+- Racha de días: `ta_study_days` (script `13.-Racha_Dias_Estudio.sql`) y `StudyStreakService`. Cada lección o nivel
+  rápido marca el día (en `APP_TIMEZONE`) y recalcula `ta_users.streak` + `last_study_date` (días seguidos en cualquier
+  idioma) y, por idioma, `days_studied` y `best_streak`. `UserResponse` trae `streak` vigente (0 si el último día no es
+  hoy ni ayer), `lastStudyDate` y `studiedToday`. Los logros de racha de 7 y 30 días ya pueden desbloquearse.
+- Cierre de sesiones al restablecer la contraseña: `ta_users.token_version` (script `14.-Cerrar_Sesiones.sql`), claim
+  `tv` en el JWT y `SessionVersions` (caché de 10 min) en `JwtAuthFilter`. El correo de aviso lo menciona.
+- `util/AppTime`: zona horaria única de la app (día de lecciones, racha, fecha de alta y de logros).
+
+### Fixed
+- `days_studied` sumaba 1 por lección; ahora son días distintos.
+- Repetir una lección ya completada también cuenta para la racha del día.
+
 ## [4.4.1] - 2026-11-22 - Neon puede dormir
 
 ### Changed

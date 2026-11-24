@@ -151,7 +151,7 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 - Neon: ejecutar `11.-Restablecer_Contrasena.sql` (acepta `purpose = 'reset'` en `ta_email_tokens`). Se puede ejecutar más de una vez.
 - Usa el mismo correo que la verificación (`EMAIL_PROVIDER=brevo`, `BREVO_API_KEY`, `EMAIL_FROM`) y `APP_URL` para armar el enlace
   `APP_URL/restablecer?token=…`. Sin Brevo el enlace solo sale en los logs de Render.
-- Limitación: las sesiones abiertas siguen activas hasta que vence su token; restablecer no cierra las otras sesiones.
+- Al restablecer se cierran **todas** las sesiones de la cuenta (script `14.-Cerrar_Sesiones.sql`, ver sección 10).
 
 ---
 
@@ -199,6 +199,30 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
   - `NEON_PROJECT_ID` — Neon → Settings → General (Project ID)
   - `NEON_CU_HOURS_LIMIT` — opcional, 100 por defecto
 - Comprobar: Neon → Monitoring → *Last day*: deben aparecer tramos rayados "endpoint inactive" cuando nadie usa la app.
+
+---
+
+## 10. Racha, sesiones y versión (4.5.0)
+
+- Neon: ejecutar **antes** de publicar el back (el back lee columnas nuevas de `ta_users`; sin ellas falla todo lo de usuarios):
+  - `13.-Racha_Dias_Estudio.sql` — tabla `ta_study_days`, `ta_users.last_study_date`; rellena con el historial y
+    recalcula racha, días estudiados (antes sumaba 1 por lección) y mejor racha.
+  - `14.-Cerrar_Sesiones.sql` — `ta_users.token_version`.
+- Racha: días seguidos con al menos una lección o nivel rápido, en cualquier idioma, en `APP_TIMEZONE`.
+  Si el último día estudiado no es hoy ni ayer, vale 0. Las lecciones hechas sin conexión cuentan en su día real.
+- Sesiones: cada token lleva `tv` (versión); restablecer la contraseña la sube y los tokens anteriores dejan de
+  valer en todos los dispositivos (el front recibe 401 y cierra la sesión). La versión se guarda 10 min en memoria
+  (`SessionVersions`) para no consultar la base en cada petición; `/api/health` no la revisa.
+- Versión: `package.json` → visible en Perfil → Ajustes y en el menú lateral (con el commit corto en Netlify).
+
+## 11. App de Android (TWA)
+
+Ver `f/am-ui-tlahtolcalli/twa/README.md`. Resumen:
+- `npm run twa:version` copia la versión de `package.json` a `twa/twa-manifest.json` (4.5.0 → versionCode 40500).
+- `cd twa && bubblewrap update && bubblewrap build` → `app-release-signed.apk`.
+- Netlify (solo prod): `TWA_SHA256_FINGERPRINTS` = huella de la llave (`bubblewrap fingerprint list`); el build publica
+  `/.well-known/assetlinks.json` y la app abre sin barra de dirección.
+- La llave (`android.keystore`) y los APK no van al repo (`.gitignore`).
 
 ---
 

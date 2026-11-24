@@ -37,7 +37,7 @@
                                     :altText="`Personaje ${currentExercise.character}`" />
 
                                 <!-- ANSWER MOBILE -->
-                                <div v-if="currentExercise.answer" class="sm:hidden block mx-3 mt-10">
+                                <div v-if="currentExercise.answer" class="sm:hidden block mx-3 mt-10 flex-1 min-w-0">
                                     <div class="relative">
                                         <!-- Pico -->
                                         <div class="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 
@@ -46,7 +46,7 @@
                                             border-b-[15px] border-b-transparent z-10"></div>
                                         <!-- Div principal -->
                                         <div
-                                            class="relative text-white bg-surface-0 border border-line py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
+                                            class="relative text-white bg-surface-0 border border-line py-3 px-4 text-center rounded-lg shadow-lg z-20 inline-block max-w-full break-words">
                                             <p class="text-lg font-medium">
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"
@@ -72,7 +72,7 @@
                                             border-b-[15px] border-b-transparent z-10"></div>
                                         <!-- Div principal -->
                                         <div
-                                            class="relative text-white bg-surface-0 border border-line py-3 px-6 text-center rounded-lg shadow-lg z-20 inline-block">
+                                            class="relative text-white bg-surface-0 border border-line py-3 px-4 text-center rounded-lg shadow-lg z-20 inline-block max-w-full break-words">
                                             <p class="text-xl font-medium md:-ml-2">
                                                 <ProcessedText :text="currentExercise.answer"
                                                     :language="authStore.selectedLanguage"

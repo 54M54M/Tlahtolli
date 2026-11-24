@@ -100,6 +100,9 @@
                 <span class="text-gray-400">Idioma actual</span>
                 <span>{{ currentLanguageName }}</span>
               </div>
+              <div class="flex justify-between">
+                <router-link to="/novedades" class="font-mono text-sm text-gray-300 hover:text-white">{{ appVersion }}v</router-link>
+              </div>
             </div>
             <div class="mt-4 space-y-2">
               <button @click="router.push('/app/perfil/editar')"
@@ -126,6 +129,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { VERSION_LABEL as appVersion } from '../version.js';
 
 import Header from '../components/vHeader.vue';
 import Card from '../components/Card.vue';
@@ -161,6 +165,7 @@ const userData = computed(() => {
     xp: u.xp || 0,
     xpToNextLevel: 1000,
     streak: u.streak || 0,
+    studiedToday: !!u.studiedToday,
     joinDate: u.joinDate || u.join_date || '',
   };
 });

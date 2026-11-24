@@ -1,0 +1,62 @@
+{
+  "packageId": "app.netlify.tlahtolcalli.twa",
+  "host": "tlahtolcalli.netlify.app",
+  "name": "Tlahtolcalli",
+  "launcherName": "Tlahtolcalli",
+  "display": "standalone",
+  "orientation": "default",
+  "themeColor": "#0E1517",
+  "themeColorDark": "#0E1517",
+  "navigationColor": "#0E1517",
+  "navigationColorDark": "#0E1517",
+  "navigationDividerColor": "#0E1517",
+  "navigationDividerColorDark": "#0E1517",
+  "backgroundColor": "#0E1517",
+  "enableNotifications": false,
+  "startUrl": "/app",
+  "iconUrl": "https://tlahtolcalli.netlify.app/android-chrome-512x512.png",
+  "maskableIconUrl": "https://tlahtolcalli.netlify.app/maskable-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "tlahtolcalli"
+  },
+  "appVersionName": "4.5.0",
+  "appVersionCode": 40500,
+  "appVersion": "4.5.0",
+  "shortcuts": [
+    {
+      "name": "Continuar aprendiendo",
+      "shortName": "Continuar",
+      "url": "https://tlahtolcalli.netlify.app/app",
+      "chosenIconUrl": "https://tlahtolcalli.netlify.app/android-chrome-192x192.png"
+    },
+    {
+      "name": "Glosario",
+      "shortName": "Glosario",
+      "url": "https://tlahtolcalli.netlify.app/app/glosario",
+      "chosenIconUrl": "https://tlahtolcalli.netlify.app/android-chrome-192x192.png"
+    },
+    {
+      "name": "Estadísticas",
+      "shortName": "Estadísticas",
+      "url": "https://tlahtolcalli.netlify.app/app/estadisticas",
+      "chosenIconUrl": "https://tlahtolcalli.netlify.app/android-chrome-192x192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://tlahtolcalli.netlify.app/site.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://tlahtolcalli.netlify.app/",
+  "minSdkVersion": 21,
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}

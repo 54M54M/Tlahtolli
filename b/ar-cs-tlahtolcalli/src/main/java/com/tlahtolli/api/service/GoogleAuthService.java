@@ -74,7 +74,7 @@ public class GoogleAuthService {
         u.setEmailVerifiedAt(LocalDateTime.now());
         u.setMustPickUsername(true);
         u.setRole("user");
-        u.setJoinDate(LocalDate.now());
+        u.setJoinDate(com.tlahtolli.api.util.AppTime.today());
         u.setUserLevel((short) 1);
         u.setXp(0);
         u.setTotalXp(0);

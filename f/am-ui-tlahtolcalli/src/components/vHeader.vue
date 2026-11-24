@@ -16,10 +16,12 @@
 
   <!-- HomeView header -->
   <div v-else-if="variant === 'homeview'"
-       class="py-3 px-4 text-white w-full top-0 left-0 md:left-[-70px] right-20 z-20">
-    <div class="max-w-xl mx-auto flex items-center">
+       class="py-3 text-white w-full z-20">
+    <!-- Tres columnas: los lados (1fr) miden lo mismo, así el título queda centrado aunque el botón de idioma
+         y el de energía tengan anchos distintos; en pantallas angostas el título pasa a dos líneas en vez de empujar la energía -->
+    <div class="max-w-xl mx-auto grid grid-cols-[1fr_minmax(0,auto)_1fr] items-center gap-2">
       <!-- Izquierda - Botón para cambiar idioma -->
-      <div class="mr-2">
+      <div class="justify-self-start">
         <div class="flex items-center gap-2 px-3 py-1 rounded-full transition-all duration-300 hover:scale-105 cursor-pointer"
              :style="{ backgroundColor: currentLanguageData.colorSoft }" @click="openLanguageSelector">
           <div class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
@@ -30,13 +32,13 @@
       </div>
 
       <!-- Centro -->
-      <div class="flex-grow flex justify-center">
-        <h1 class="md:text-xl text-[18px] truncate font-semibold">{{ title }}</h1>
+      <div class="min-w-0 text-center">
+        <h1 class="text-base min-[420px]:text-lg md:text-xl font-semibold leading-tight [text-wrap:balance]">{{ title }}</h1>
       </div>
 
       <!-- Derecha -->
-      <div class="ml-2">
-        <div class="flex items-center px-3 py-1 mt-2 rounded-full transition-all duration-300 hover:scale-105 relative bg-cempasuchil/25"
+      <div class="justify-self-end">
+        <div class="flex items-center px-3 py-1 rounded-full transition-all duration-300 hover:scale-105 relative bg-cempasuchil/25"
              @click="$emit('energy-click')">
           <div class="h-6 rounded-full flex items-center justify-center text-white text-xs font-bold">
             <svg width="16px" height="16px" viewBox="0 0 32 32" enable-background="new 0 0 32 32"

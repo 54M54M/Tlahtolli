@@ -1,13 +1,14 @@
 {
   "name": "tlahtolli",
   "private": true,
-  "version": "4.4.0",
+  "version": "4.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --ssr src/entry-prerender.js --outDir .prerender && node scripts/prerender.mjs",
+    "build": "vite build && vite build --ssr src/entry-prerender.js --outDir .prerender && node scripts/prerender.mjs && node scripts/assetlinks.mjs",
     "preview": "vite preview",
-    "build:spa": "vite build"
+    "build:spa": "vite build",
+    "twa:version": "node scripts/twa-version.mjs"
   },
   "dependencies": {
     "blobatar": "2.7.0",

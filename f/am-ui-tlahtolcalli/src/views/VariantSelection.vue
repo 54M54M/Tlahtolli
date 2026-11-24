@@ -55,7 +55,7 @@
 
             <!-- Botón continuar -->
             <div class="flex-shrink-0 px-4 md:px-8 py-4 border-t border-gray-700">
-                <button @click="confirmSelection" :disabled="!selectedLanguage || isConfirming"
+                <button @click="confirmSelection" :disabled="!selectedLanguage || isSameLanguage || isConfirming"
                     class="w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     CONTINUAR
                 </button>
@@ -66,7 +66,7 @@
 
 <script setup>
 import { shouldShowWelcome } from '../data/welcome.js'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { languagesApi } from '../api/apiClient.js'
@@ -88,6 +88,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const selectedLanguage = ref(null)
+
+// Si el elegido es el idioma que ya tiene, no hay nada que cambiar: el botón queda desactivado
+const isSameLanguage = computed(() =>
+    !!selectedLanguage.value && !!authStore.selectedLanguage &&
+    selectedLanguage.value.toLowerCase() === authStore.selectedLanguage.toLowerCase()
+)
 const isAutoRedirecting = ref(false)
 const isConfirming = ref(false)
 const loadingLanguages = ref(true)
@@ -166,7 +172,7 @@ onMounted(async () => {
 })
 
 const confirmSelection = async () => {
-    if (!selectedLanguage.value) return
+    if (!selectedLanguage.value || isSameLanguage.value) return
 
     isConfirming.value = true
     try {

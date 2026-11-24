@@ -54,7 +54,7 @@ public class UserService {
 			throw new IllegalArgumentException("Ya hay una cuenta con ese correo. Si es tuya, inicia sesión o recupera tu contraseña.");
 		}
 
-		user.setJoinDate(LocalDate.now());
+		user.setJoinDate(com.tlahtolli.api.util.AppTime.today());
 		user.setUserLevel((short) 1);
 		user.setXp(0);
 		user.setTotalXp(0);

@@ -1,4 +1,6 @@
 <template>
+    <!-- Los espacios entre palabras son segmentos normales (" "): ahí el texto puede saltar de línea dentro de
+         la burbuja. Antes además se agregaba un &nbsp; por palabra: doble espacio y saltos raros. -->
     <span class="processed-text">
         <template v-for="(segment, index) in processedSegments" :key="index">
             <template v-if="segment.isWord && segment.hasPronunciation && exerciseType !== 'fill-blank'">
@@ -19,7 +21,6 @@
                     {{ segment.text }}
                 </span>
             </template>
-            <span v-if="segment.spaceAfter">&nbsp;</span>
         </template>
     </span>
 

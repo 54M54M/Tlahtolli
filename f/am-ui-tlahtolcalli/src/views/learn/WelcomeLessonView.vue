@@ -45,10 +45,10 @@
                 <div class="flex items-start gap-3 mb-8">
                     <ExerciseImage :characterName="current.character" :imageState="!checked || correct"
                         :showAnswer="!!current.answer" :altText="`Personaje ${current.character}`" />
-                    <div v-if="current.answer" class="relative mt-6 md:mt-10">
+                    <div v-if="current.answer" class="relative mt-6 md:mt-10 flex-1 min-w-0">
                         <div class="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 border-t-[12px] border-t-transparent
                             border-r-[18px] border-r-line border-b-[12px] border-b-transparent"></div>
-                        <div class="bg-surface-0 border border-line py-3 px-5 rounded-lg shadow-lg inline-block">
+                        <div class="bg-surface-0 border border-line py-3 px-4 rounded-lg shadow-lg inline-block max-w-full break-words">
                             <p class="text-lg md:text-xl font-medium">
                                 <ProcessedText :text="current.answer" :language="authStore.selectedLanguage"
                                     :vocabulary="vocabulary" :exercise-type="current.type" />

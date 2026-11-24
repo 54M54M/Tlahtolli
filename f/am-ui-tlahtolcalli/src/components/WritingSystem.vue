@@ -2,7 +2,7 @@
     <!-- NAHUATL CENTRAL -->
     <div v-if="writingSystem === 'syllabary'" class="space-y-6">
         <!-- Sección de Vocales -->
-        <div v-if="availableVowels.length > 0" class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div v-if="availableVowels.length > 0" class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Vocales</h3>
 
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
@@ -17,7 +17,7 @@
         </div>
 
         <!-- Sección de Consonantes -->
-        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Consonantes</h3>
 
             <!-- Consonantes básicas -->
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Sección de Silabas (Consonante + Vocal) -->
-        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Silabas</h3>
 
             <!-- Consonantes básicas -->
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Sección de Dígrafos -->
-        <div v-if="specialCombinations.length > 0" class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div v-if="specialCombinations.length > 0" class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-5 text-center">Dígrafos y fonemas unitarios</h3>
 
             <!-- Combinaciones -->
@@ -88,7 +88,7 @@
 
         <!-- Sección de Vocales Largas -->
         <div v-if="longVowels && Object.keys(filteredLongVowels).length > 0"
-            class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+            class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Vocales Largas</h3>
             <p class="text-sm text-slate-400 mb-4 text-center">Vocales con duración extendida</p>
 
@@ -111,7 +111,7 @@
     <!-- TEENEK OCCIDENTAL -->
     <div v-else-if="writingSystem === 'alphabet'" class="space-y-6">
         <!-- Sección de Vocales -->
-        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Vocales</h3>
 
             <div class="grid grid-cols-5 gap-2 sm:gap-4 mb-2">
@@ -126,7 +126,7 @@
         </div>
 
         <!-- Sección de Consonantes -->
-        <div class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Consonantes</h3>
 
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
@@ -141,7 +141,7 @@
         </div>
 
         <!-- Sección de Sonidos Eyectivos -->
-        <div v-if="alphabetByType.ejectives.length > 0" class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+        <div v-if="alphabetByType.ejectives.length > 0" class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Sonidos Eyectivos</h3>
             <p class="text-sm text-slate-400 mb-4 text-center">Sonidos glotalizados característicos</p>
 
@@ -161,7 +161,7 @@
 
         <!-- Sección de Vocales Largas -->
         <div v-if="writingSystem === 'alphabet' && alphabetByType.longVowels.length > 0"
-            class="rounded-2xl bg-slate-800/60 p-4 backdrop-blur-sm sm:p-6">
+            class="rounded-2xl bg-slate-800/60 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-cyan-400 mb-4 text-center">Vocales Largas</h3>
             <p class="text-sm text-slate-400 mb-4 text-center">Vocales con duración extendida</p>
 

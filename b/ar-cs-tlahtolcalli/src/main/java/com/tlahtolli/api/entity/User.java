@@ -37,6 +37,14 @@ public class User {
  
     @Column(name = "STREAK")
     private Short streak = 0;
+
+    /** Último día (APP_TIMEZONE) con al menos una lección; si no es hoy ni ayer, la racha ya se rompió. */
+    @Column(name = "LAST_STUDY_DATE")
+    private LocalDate lastStudyDate;
+
+    /** Sube al restablecer la contraseña: los tokens con una versión anterior dejan de valer (cierra sesiones). */
+    @Column(name = "TOKEN_VERSION", nullable = false)
+    private Integer tokenVersion = 0;
  
     @Column(name = "JOIN_DATE")
     private LocalDate joinDate;
@@ -190,5 +198,20 @@ public class User {
 	public void setMustPickUsername(Boolean v) { this.mustPickUsername = v; }
 	public boolean isMustPickUsername() { return Boolean.TRUE.equals(mustPickUsername); }
 	public boolean hasPassword() { return passwordHash != null && !passwordHash.isBlank(); }
+	public LocalDate getLastStudyDate() { return lastStudyDate; }
+	public void setLastStudyDate(LocalDate v) { this.lastStudyDate = v; }
+	public int getTokenVersion() { return tokenVersion == null ? 0 : tokenVersion; }
+
+	@PrePersist
+	void defaultTokenVersion() {
+		if (tokenVersion == null) tokenVersion = 0;
+	}
+	public void setTokenVersion(Integer v) { this.tokenVersion = v; }
+
+	/** Racha vigente: la guardada si estudió hoy o ayer; si no, 0. */
+	public short currentStreak(LocalDate today) {
+		if (streak == null || lastStudyDate == null) return 0;
+		return lastStudyDate.isBefore(today.minusDays(1)) ? 0 : streak;
+	}
         
 }

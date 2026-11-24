@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.tlahtolli.api.util.AppTime;
 
 /**
  * Orquestador sin @Transactional propio.
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
  *   3. Arma LessonCompletionResponse con el conteo de logros desbloqueados.
  *
  * Sin conexión: el teléfono guarda la lección y la envía al reconectar, con un clientId (si llega dos veces se
- * ignora, ver SyncOpService) y con completedAt (el día que cuenta es el día en que la terminó, en APP_TIMEZONE).
+ * ignora, ver SyncOpService) y con completedAt (el día que cuenta es el día en que la terminó, en APP_TIMEZONE, ver AppTime).
  */
 @Service
 public class LessonCompletionFacade {
@@ -46,14 +46,13 @@ public class LessonCompletionFacade {
     private static final Duration CLOCK_SKEW = Duration.ofMinutes(5);
 
     public LessonCompletionFacade(ProgressService progressService, AchievementService achievementService,
-                                  LearningService learningService, CourseAccess courses, SyncOpService syncOps,
-                                  @Value("${APP_TIMEZONE:America/Mexico_City}") String timezone) {
+                                  LearningService learningService, CourseAccess courses, SyncOpService syncOps) {
         this.progressService = progressService;
         this.achievementService = achievementService;
         this.learningService = learningService;
         this.courses = courses;
         this.syncOps = syncOps;
-        this.zone = ZoneId.of(timezone);
+        this.zone = AppTime.zone();
     }
 
     public LessonCompletionResponse completeLesson(CompleteLessonRequest req) {
@@ -111,7 +110,7 @@ public class LessonCompletionFacade {
         Map<String, Object> progress = progressService.completeQuickLevelPublic(
                 req.userId(), req.levelId(), req.languageId(),
                 req.performance(), req.earnedExp(),
-                req.correctAns(), req.totalExerc(), req.timeSeconds()
+                req.correctAns(), req.totalExerc(), req.timeSeconds(), lessonDay(req.completedAt())
         );
         int newAchievements = unlockAchievementsSafely(req.userId(), req.languageId());
         return buildResponse(progress, newAchievements);

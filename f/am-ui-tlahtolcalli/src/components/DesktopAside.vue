@@ -71,6 +71,10 @@
                     </svg>
                     <span>Cerrar sesión</span>
                 </button>
+                <router-link to="/novedades" class="block mt-3 text-center text-[11px] text-gray-500 hover:text-gray-300"
+                    title="Ver novedades">
+                    Tlahtolcalli v{{ version }}
+                </router-link>
             </div>
         </div>
 
@@ -81,6 +85,7 @@
 import UserAvatar from './UserAvatar.vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
+import { VERSION_LABEL } from '../version.js'
 
 export default {
     name: 'DesktopAside',
@@ -96,7 +101,8 @@ export default {
 
         return {
             authStore,
-            logout
+            logout,
+            version: VERSION_LABEL
         }
     }
 }

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.tlahtolli.api.util.AppTime;
 
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -26,10 +27,11 @@ public class ProgressService {
 	private final UnitRepository unitRepo;
 	private final UnitVocabRepository unitVocabRepo;
 	private final LevelRepository levelRepo;
+	private final StudyStreakService streaks;
 
 	public ProgressService(UserProgressRepository progressRepo, UserStatsRepository statsRepo,
 			LessonHistoryRepository historyRepo, UserRepository userRepo, UnitRepository unitRepo,
-			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo) {
+			UnitVocabRepository unitVocabRepo, LevelRepository levelRepo, StudyStreakService streaks) {
 		this.progressRepo = progressRepo;
 		this.statsRepo = statsRepo;
 		this.historyRepo = historyRepo;
@@ -37,6 +39,21 @@ public class ProgressService {
 		this.unitRepo = unitRepo;
 		this.unitVocabRepo = unitVocabRepo;
 		this.levelRepo = levelRepo;
+		this.streaks = streaks;
+	}
+
+	/**
+	 * Marca el día como estudiado y recalcula: días estudiados y mejor racha del idioma (stats),
+	 * racha actual y último día del usuario. Cuenta también al repetir una lección.
+	 */
+	private void applyStudyDay(User user, UserStats stats, Integer languageId, LocalDate day) {
+		streaks.markDay(user.getId(), languageId, day);
+		stats.setDaysStudied(streaks.daysStudied(user.getId(), languageId));
+		short best = stats.getBestStreak() == null ? 0 : stats.getBestStreak();
+		stats.setBestStreak((short) Math.min(Short.MAX_VALUE, Math.max(best, streaks.bestRun(user.getId(), languageId))));
+		StudyStreakService.Run run = streaks.currentRun(user.getId());
+		user.setStreak((short) Math.min(Short.MAX_VALUE, run.length()));
+		user.setLastStudyDate(run.lastDay());
 	}
 
 	@Transactional
@@ -46,15 +63,16 @@ public class ProgressService {
 
 		if (unitId == null || unitId == 0) {
 			log.debug("unitId is null/0, routing to completeQuickLevel for userId={}", userId);
-			return completeQuickLevel(userId, null, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
+			return completeQuickLevel(userId, null, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds, day);
 		}
+		if (day == null) day = AppTime.today();
 
 		boolean wasAlreadyCompleted = historyRepo.existsByUserIdAndUnitId(userId, unitId);
 
 		LessonHistory history = new LessonHistory();
 		history.setUserId(userId);
 		history.setUnitId(unitId);
-		history.setCompletedAt(day != null ? day : LocalDate.now());
+		history.setCompletedAt(day);
 		history.setPerformance(BigDecimal.valueOf(performance));
 		history.setEarnedExp(earnedExp);
 		history.setCorrectAns((short) correctAns);
@@ -72,7 +90,7 @@ public class ProgressService {
 		});
 		up.setCompleted((short) 1);
 		up.setIsCurrent((short) 0);
-		up.setCompletedAt(day != null ? day : LocalDate.now());
+		up.setCompletedAt(day);
 		progressRepo.save(up);
 
 		Integer nextUnitId = unlockNextUnit(userId, unitId);
@@ -80,10 +98,9 @@ public class ProgressService {
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
-		userRepo.save(user);
 
+		UserStats stats = getOrCreateStats(userId, languageId);
 		if (!wasAlreadyCompleted) {
-			UserStats stats = getOrCreateStats(userId, languageId);
 			stats.setLessonsDone(stats.getLessonsDone() + 1);
 
 			int vocabCount = unitVocabRepo.findByUnitId(unitId).size();
@@ -94,9 +111,10 @@ public class ProgressService {
 			if (performance >= 0.9) {
 				stats.setPerfectLess(stats.getPerfectLess() + 1);
 			}
-			stats.setDaysStudied(stats.getDaysStudied() + 1);
-			statsRepo.save(stats);
 		}
+		applyStudyDay(user, stats, languageId, day);
+		statsRepo.save(stats);
+		userRepo.save(user);
 
 		log.info("Lesson completed for userId={}, unitId={}: xpEarned={}", userId, unitId, earnedExp);
 
@@ -110,13 +128,13 @@ public class ProgressService {
 	}
 
 	private Map<String, Object> completeQuickLevel(Integer userId, Integer levelId, Integer languageId, double performance,
-			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
-		return completeQuickLevelPublic(userId, levelId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds);
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds, LocalDate day) {
+		return completeQuickLevelPublic(userId, levelId, languageId, performance, earnedExp, correctAns, totalExerc, timeSeconds, day);
 	}
 
 	@Transactional
 	public Map<String, Object> completeQuickLevelPublic(Integer userId, Integer levelId, Integer languageId, double performance,
-			int earnedExp, int correctAns, int totalExerc, int timeSeconds) {
+			int earnedExp, int correctAns, int totalExerc, int timeSeconds, LocalDate day) {
 		log.info("Completing quick level for userId={}, levelId={}, performance={}", userId, levelId, performance);
 
 		boolean nextLevelUnlocked = false;
@@ -166,19 +184,21 @@ public class ProgressService {
 		User user = userRepo.findById(userId).orElseThrow();
 		user.setXp(user.getXp() + earnedExp);
 		user.setTotalXp(user.getTotalXp() + earnedExp);
-		userRepo.save(user);
 
-		if (levelId != null && languageId != null) {
-			List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
+		if (languageId != null) {
 			UserStats stats = getOrCreateStats(userId, languageId);
-			stats.setLessonsDone(stats.getLessonsDone() + units.size());
-			int totalVocab = units.stream().mapToInt(u -> unitVocabRepo.findByUnitId(u.getId()).size()).sum();
-			if (totalVocab > 0) stats.setWordsLearned(stats.getWordsLearned() + totalVocab);
-			if (performance >= 0.9) stats.setPerfectLess(stats.getPerfectLess() + 1);
-			stats.setDaysStudied(stats.getDaysStudied() + 1);
-			stats.setTotalMins(stats.getTotalMins() + (timeSeconds / 60));
+			if (levelId != null) {
+				List<Unit> units = unitRepo.findByLevelIdOrderByUnitNum(levelId);
+				stats.setLessonsDone(stats.getLessonsDone() + units.size());
+				int totalVocab = units.stream().mapToInt(u -> unitVocabRepo.findByUnitId(u.getId()).size()).sum();
+				if (totalVocab > 0) stats.setWordsLearned(stats.getWordsLearned() + totalVocab);
+				if (performance >= 0.9) stats.setPerfectLess(stats.getPerfectLess() + 1);
+				stats.setTotalMins(stats.getTotalMins() + (timeSeconds / 60));
+			}
+			applyStudyDay(user, stats, languageId, day != null ? day : AppTime.today());
 			statsRepo.save(stats);
 		}
+		userRepo.save(user);
 
 		log.info("Quick level completed for userId={}: xpEarned={}, nextLevelUnlocked={}", userId, earnedExp, nextLevelUnlocked);
 

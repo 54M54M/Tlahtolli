@@ -95,6 +95,9 @@ export default {
         { label: 'Lecciones completadas', value: s?.lessonsDone || 0 },
         { label: 'Lecciones perfectas', value: s?.perfectLess || 0 },
         { label: 'Días estudiados', value: s?.daysStudied || 0 },
+        // Racha actual: días seguidos en cualquier idioma (usuario); mejor racha: en este idioma
+        { label: 'Racha actual', value: authStore.user?.streak || 0 },
+        { label: 'Mejor racha', value: s?.bestStreak || 0 },
       ]
     })
 

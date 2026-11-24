@@ -3,6 +3,10 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync } from 'node:fs'
+
+// Versión de la app (package.json) y commit (Netlify da COMMIT_REF): se muestran en Perfil → Ajustes
+const APP_VERSION = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8')).version
 
 // ── PWA ─────────────────────────────────────────────────────────────────────
 // Manifest (site.webmanifest) y service worker (sw.js) se generan al compilar.
@@ -88,6 +92,10 @@ export default defineConfig(({ mode, isSsrBuild }) => {
     base: '/',
     // El build SSR solo prerenderiza las páginas públicas: no lleva service worker
     plugins: [vue(), !isSsrBuild && pwa(isDev)].filter(Boolean),
+    define: {
+      __APP_VERSION__: JSON.stringify(APP_VERSION),
+      __APP_COMMIT__: JSON.stringify((env.COMMIT_REF || '').slice(0, 7)),
+    },
     build: {
       outDir: 'dist'
     },

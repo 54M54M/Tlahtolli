@@ -48,6 +48,9 @@
                     Tu contraseña se guardó. Ya puedes entrar con tu usuario
                     <strong class="text-turquesa">{{ username }}</strong> y tu contraseña nueva.
                 </p>
+                <p class="text-xs text-gray-400 text-center">
+                    Por seguridad cerramos tu sesión en todos los dispositivos.
+                </p>
                 <router-link :to="{ path: '/', query: { auth: 'login' } }"
                     class="block w-full text-center bg-turquesa-deep hover:bg-turquesa-deeper text-white font-bold py-3 rounded-lg transition-colors">
                     Iniciar sesión
@@ -61,6 +64,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authApi } from '../api/apiClient'
+import { useAuthStore } from '../stores/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -85,6 +89,9 @@ const submit = async () => {
         const res = await authApi.resetPassword(token, password.value)
         username.value = res?.username || ''
         state.value = 'ok'
+        // El back cerró todas las sesiones de la cuenta: si este navegador tenía una, se cierra aquí también
+        const auth = useAuthStore()
+        if (auth.token) auth.logout()
     } catch (e) {
         error.value = e.message || 'No se pudo guardar la contraseña.'
     } finally {

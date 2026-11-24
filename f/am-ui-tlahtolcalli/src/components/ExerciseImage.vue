@@ -1,5 +1,6 @@
 <template>
-    <div class="w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg">
+    <!-- shrink-0: junto a la burbuja de diálogo, la imagen no se aplasta; el texto es el que salta de línea -->
+    <div class="w-28 h-28 min-[380px]:w-36 min-[380px]:h-36 md:w-48 md:h-48 object-cover rounded-lg shrink-0">
         <img :src="currentImage" :alt="altText" :class="imageClasses" @error="handleImageError" />
     </div>
 </template>
@@ -42,7 +43,7 @@ export default {
         },
         customClasses: {
             type: String,
-            default: 'w-36 h-36 md:w-48 md:h-48 object-cover rounded-lg'
+            default: 'w-28 h-28 min-[380px]:w-36 min-[380px]:h-36 md:w-48 md:h-48 object-cover rounded-lg'
         }
     },
     computed: {

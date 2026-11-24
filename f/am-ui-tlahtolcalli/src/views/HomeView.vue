@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center text-white min-h-screen mt-[-47px] md:mt-[-20px] md:pt-1">
 
-    <Header variant="homeview" title="¿Que vamos aprender hoy?" class="mt-[-3%] md:mt-3"
+    <Header variant="homeview" title="¿Qué vamos a aprender hoy?" class="mt-[-3%] md:mt-3"
             @show-all="goToLanguageSelection" @energy-click="() => { }" @language-changed="handleLanguageUpdate" />
 
     <!-- Loading skeleton -->

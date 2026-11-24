@@ -64,7 +64,7 @@ public class AchievementService {
 				UserAchievement ua = new UserAchievement();
 				ua.setUserId(userId);
 				ua.setAchieveId(a.getId());
-				ua.setEarnedAt(LocalDate.now());
+				ua.setEarnedAt(com.tlahtolli.api.util.AppTime.today());
 				ua.setLanguageTag(languageTag);
 				userAchievementRepo.save(ua);
 				newlyUnlocked.add(ua);
