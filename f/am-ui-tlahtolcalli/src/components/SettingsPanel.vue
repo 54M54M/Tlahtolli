@@ -3,26 +3,28 @@
         <h3 class="font-bold mb-3">Preferencias de aprendizaje</h3>
         <div class="space-y-4">
 
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span><svg width="23" height="23" fill="#ec6f80" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 2.625c-5.17 0-9.375 4.206-9.375 9.375 0 5.17 4.206 9.375 9.375 9.375 5.17 0 9.375-4.206 9.375-9.375 0-5.17-4.206-9.375-9.375-9.375Zm0 3.844a1.219 1.219 0 1 1 0 2.437 1.219 1.219 0 0 1 0-2.437Zm3 10.593H9.375v-1.5h2.063v-4.124h-1.5v-1.5h3v5.624H15v1.5Z">
-                            </path>
-                        </svg></span>
-                    <label>Funciones en desarrollo...</label>
+            <!-- Diseño de las opciones y fichas de los ejercicios (src/data/uiPrefs.js, se guarda en este dispositivo) -->
+            <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <label for="pref-duo" class="block cursor-pointer">Botones con relieve</label>
+                    <p class="text-xs text-gray-400">Opciones y fichas de las lecciones como teclas que se hunden al tocarlas.</p>
                 </div>
-                <!-- <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" :checked="autoPronunciation"
-                        @change="$emit('update:autoPronunciation', $event.target.checked)" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer 
-                    peer-checked:after:translate-x-full peer-checked:after:border-white 
-                    after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
-                    after:bg-white after:border-gray-300 after:border after:rounded-full 
-                    after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500">
+                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input id="pref-duo" type="checkbox" v-model="duoButtons" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-700 peer-focus-visible:ring-2 peer-focus-visible:ring-turquesa rounded-full peer
+                    peer-checked:after:translate-x-full peer-checked:after:border-white
+                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                    after:bg-white after:border-gray-300 after:border after:rounded-full
+                    after:h-5 after:w-5 after:transition-all peer-checked:bg-turquesa-deep">
                     </div>
-                </label> -->
+                </label>
+            </div>
+
+            <!-- Vista previa del diseño elegido -->
+            <div class="flex gap-2" aria-hidden="true">
+                <span class="tl-choice px-3 py-2 text-sm">Opción</span>
+                <span class="tl-choice is-selected px-3 py-2 text-sm">Elegida</span>
+                <span class="tl-choice is-correct px-3 py-2 text-sm">Correcta</span>
             </div>
 
             <!-- <div class="flex items-center justify-between">
@@ -82,6 +84,7 @@
 
 <script setup>
 import Card from './Card.vue';
+import { duoButtons } from '../data/uiPrefs.js';
 
 defineProps({
     preferredDialect: {

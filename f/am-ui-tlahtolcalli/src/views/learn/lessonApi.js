@@ -17,17 +17,24 @@ export async function loadLessonData(unitId) {
         getVocabulary(unitId),
         findUnitWithLevel(unitId),
     ])
-    const reviewVocabulary = await loadReviewVocabulary(unit, level)
-    return { currentUnit: unit, currentLevel: level, currentExercises: exercises, vocabulary, reviewVocabulary }
+    const { review: reviewVocabulary, extra: extraVocabulary } = await loadReviewVocabulary(unit, level)
+    return { currentUnit: unit, currentLevel: level, currentExercises: exercises, vocabulary, reviewVocabulary, extraVocabulary }
 }
 
 /**
- * Vocabulario ya visto, para repasarlo en la lección (src/data/lessonPlan.js): el de las unidades anteriores
- * del mismo nivel; si es la primera unidad del nivel, el de las 2 últimas unidades del nivel anterior.
+ * Vocabulario para la lección (src/data/lessonPlan.js):
+ *   review → ya visto, para repasarlo: el de las unidades anteriores del mismo nivel; si es la primera unidad
+ *            del nivel, el de las 2 últimas unidades del nivel anterior.
+ *   extra  → el de las demás unidades del nivel, solo para completar las opciones a 4.
  * Es opcional: si algo falla (p. ej. sin conexión) la lección sigue sin repaso.
  */
 async function loadReviewVocabulary(unit, level) {
-    if (!unit?.id || !level?.id) return []
+    const none = { review: [], extra: [] }
+    if (!unit?.id || !level?.id) return none
+    const flat = lists => lists.filter(Boolean).flatMap(v => Array.isArray(v)
+        ? v
+        : Object.entries(v).map(([word, e]) => ({ word, ...(e || {}) })))
+    const vocabOf = list => Promise.all(list.map(u => getVocabulary(u.id, { optional: true }).catch(() => null)))
     try {
         const units = await getUnits(level.id)
         const num = u => u.unitNum ?? u.unit_num ?? 0
@@ -38,13 +45,12 @@ async function loadReviewVocabulary(unit, level) {
             const prevLevel = levels.filter(l => lnum(l) < lnum(level)).sort((a, b) => lnum(b) - lnum(a))[0]
             if (prevLevel) previous = (await getUnits(prevLevel.id)).sort((a, b) => num(b) - num(a)).slice(0, 2)
         }
-        const lists = await Promise.all(previous.slice(-5).map(u =>
-            getVocabulary(u.id, { optional: true }).catch(() => null)))
-        return lists.filter(Boolean).flatMap(v => Array.isArray(v)
-            ? v
-            : Object.entries(v).map(([word, e]) => ({ word, ...(e || {}) })))
+        const reviewUnits = previous.slice(-5)
+        const otherUnits = units.filter(u => u.id !== unit.id && !reviewUnits.some(r => r.id === u.id))
+        const [review, extra] = await Promise.all([vocabOf(reviewUnits), vocabOf(otherUnits)])
+        return { review: flat(review), extra: flat(extra) }
     } catch {
-        return []
+        return none
     }
 }
 

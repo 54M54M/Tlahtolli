@@ -85,15 +85,8 @@
                                     class="grid grid-cols-2 gap-3 md:-ml-7">
                                     <div v-for="(option, index) in currentExercise.options" :key="index"
                                         class="relative">
-                                        <button @click="selectAnswer(index)" :class="{
-                                            'border border-azul-maya text-azul-maya bg-gray-800': selectedAnswer === index,
-                                            'bg-gray-700 text-white': selectedAnswer !== index,
-                                            'border border-green-600 text-green-600': showResult && index === currentExercise.correctAnswer,
-                                            'border border-error text-error': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer,
-                                            'border-2 border-green-500 text-green-500': showResult && index === currentExercise.correctAnswer,
-                                            'border-2 border-error text-error': showResult && selectedAnswer === index && selectedAnswer !== currentExercise.correctAnswer
-                                        }"
-                                            class="md:h-[58px] h-[65px] p-3 rounded-lg hover:bg-gray-600 font-semibold tracking-wider transition-colors flex items-center justify-center text-center break-words w-full">
+                                        <button @click="selectAnswer(index)" :disabled="showResult" :class="choiceState(index)"
+                                            class="tl-choice md:h-[58px] h-[65px] p-3 tracking-wider flex items-center justify-center text-center break-words w-full">
                                             <span class="text-sm md:text-base">{{ option }}</span>
                                         </button>
                                     </div>
@@ -172,7 +165,7 @@ import ProcessedText from '../../components/ProcessedText.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
 import WordBank from '../../components/WordBank.vue';
-import { checkWordBank } from '../../data/lessonPlan.js';
+import { checkWordBank, completeChoices, vocabList } from '../../data/lessonPlan.js';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
@@ -264,6 +257,13 @@ export default {
     },
 
     methods: {
+        // Estado visual de una opción (estilos .tl-choice en src/style.css)
+        choiceState(index) {
+            const ex = this.currentExercise;
+            if (this.showResult && index === ex.correctAnswer) return 'is-correct';
+            if (this.showResult && index === this.selectedAnswer) return 'is-wrong';
+            return this.selectedAnswer === index ? 'is-selected' : '';
+        },
         shuffleExerciseOptions(exercises) {
             return exercises.map(ex => {
                 if (ex.type !== 'multiple-choice' || !Array.isArray(ex.options)) return ex;
@@ -294,6 +294,8 @@ export default {
                     pronunciation: combined[key].pronunciation || '',
                     example: combined[key].example || ''
                 }));
+                // Siempre 4 opciones y signos de pregunta uniformes (src/data/lessonPlan.js)
+                this.quickExercises = this.quickExercises.map(ex => completeChoices(ex, vocabList(this.levelVocabulary)));
             } catch (err) {
                 console.error('[QuickLevelView] loadQuickLevelData:', err);
             } finally {

@@ -9,6 +9,7 @@ import { useAuthStore } from './stores/auth.js'
 import { palettePlugin } from './utils/palette.js'
 import { setupPWA } from './pwa.js'
 import { setupOfflineSync } from './offline/sync.js'
+import { setupUiPrefs } from './data/uiPrefs.js'
 
 // Despertar el backend antes de que el usuario haga login
 warmUpBackend()
@@ -40,6 +41,9 @@ router.isReady().then(() => app.mount('#app'))
 
 // Sin conexión: detecta cuándo se va y vuelve el internet y envía lo que se hizo mientras (src/offline)
 setupOfflineSync()
+
+// Preferencias de la interfaz (diseño de opciones y fichas)
+setupUiPrefs()
 
 // Service worker: la app abre al instante, funciona instalada y avisa cuando hay versión nueva
 setupPWA()

@@ -7,6 +7,16 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.6.1',
+        date: '2026-11-24',
+        title: 'Botones a tu gusto',
+        items: [
+            { type: 'mejora', text: 'Los ejercicios de opción múltiple siempre tienen 4 opciones, y las preguntas salen todas con signo o todas sin él.' },
+            { type: 'mejora', text: 'Las opciones y las fichas tienen el mismo diseño en toda la app.' },
+            { type: 'nuevo', text: 'En Perfil → Ajustes puedes elegir botones con relieve o planos.' },
+        ],
+    },
+    {
         version: '4.6.0',
         date: '2026-11-24',
         title: 'Lecciones que te ayudan a recordar',

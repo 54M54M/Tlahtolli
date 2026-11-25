@@ -60,7 +60,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <button v-for="(option, i) in current.options" :key="option + i" @click="!checked && (selected = i)"
                         :disabled="checked"
-                        class="min-h-[64px] p-3 rounded-lg font-semibold tracking-wide transition-colors break-words border-2"
+                        class="tl-choice min-h-[64px] p-3 tracking-wide break-words"
                         :class="optionClass(i)">
                         {{ option }}
                     </button>
@@ -138,15 +138,14 @@ const current = computed(() => exercises.value[index.value] || {})
 const done = computed(() => stage.value === 'end' ? exercises.value.length : index.value + (checked.value ? 1 : 0))
 const progress = computed(() => exercises.value.length ? Math.round(done.value / exercises.value.length * 100) : 0)
 
+// Estado visual de una opción (estilos .tl-choice en src/style.css)
 function optionClass(i) {
     if (checked.value) {
-        if (i === current.value.correctAnswer) return 'border-green-500 text-green-400 bg-green-900/20'
-        if (i === selected.value) return 'border-error text-error bg-error-soft/20'
-        return 'border-transparent bg-gray-700 text-gray-400'
+        if (i === current.value.correctAnswer) return 'is-correct'
+        if (i === selected.value) return 'is-wrong'
+        return 'opacity-60'
     }
-    return selected.value === i
-        ? 'border-azul-maya text-azul-maya bg-gray-800'
-        : 'border-transparent bg-gray-700 text-white hover:bg-gray-600'
+    return selected.value === i ? 'is-selected' : ''
 }
 
 function check() {

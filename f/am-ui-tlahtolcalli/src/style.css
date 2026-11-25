@@ -172,3 +172,35 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+/* ── Opciones y fichas de los ejercicios ──────────────────────────────────────
+   Un solo estilo para las opciones (opción múltiple) y las fichas (armar frase), en lección, nivel rápido
+   y bienvenida. Estados: .is-selected · .is-correct · .is-wrong · .is-placeholder (hueco en el banco).
+   Dos diseños, se elige en Perfil → Ajustes (src/data/uiPrefs.js):
+     · plano (de la app): relleno gris, esquinas redondeadas
+     · tipo Duolingo (<html class="tl-duo">): borde con base gruesa, como teclas que se hunden al tocarlas */
+@layer components {
+  .tl-choice {
+    @apply bg-gray-700 text-white rounded-lg border-2 border-transparent font-semibold
+           transition-colors select-none;
+  }
+  .tl-choice:not(:disabled):not(.is-placeholder):hover { @apply bg-gray-600; }
+  .tl-choice:disabled { @apply cursor-default; }
+  .tl-choice.is-selected { @apply bg-gray-800 border-azul-maya text-azul-maya; }
+  .tl-choice.is-correct  { @apply bg-gray-800 border-green-500 text-green-500; }
+  .tl-choice.is-wrong    { @apply bg-gray-800 border-error text-error; }
+  .tl-choice.is-placeholder { @apply bg-gray-800 text-transparent border-transparent; }
+
+  .tl-duo .tl-choice {
+    @apply bg-surface-2 border-2 border-b-4 border-line rounded-2xl;
+    transition: transform .08s, border-bottom-width .08s, background-color .15s, color .15s;
+  }
+  .tl-duo .tl-choice:not(:disabled):not(.is-placeholder):hover { @apply bg-gray-750; }
+  .tl-duo .tl-choice:not(:disabled):not(.is-placeholder):active {
+    @apply border-b-2;
+    transform: translateY(2px);
+  }
+  .tl-duo .tl-choice.is-selected { @apply bg-azul-maya/15 border-azul-maya text-azul-maya; }
+  .tl-duo .tl-choice.is-correct  { @apply bg-green-500/15 border-green-500 text-green-400; }
+  .tl-duo .tl-choice.is-wrong    { @apply bg-error/15 border-error text-error; }
+  .tl-duo .tl-choice.is-placeholder { @apply bg-line border-line border-b-2 text-transparent; }
+}

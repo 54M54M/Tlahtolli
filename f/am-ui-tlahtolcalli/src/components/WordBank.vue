@@ -1,12 +1,12 @@
 <template>
-    <!-- Armar frase con fichas (estilo Duolingo): toca una ficha para subirla a la respuesta,
+    <!-- Armar frase con fichas: toca una ficha para subirla a la respuesta,
          tócala en la respuesta para regresarla. En el banco queda el hueco para no perder el lugar. -->
     <div class="w-full select-none">
         <!-- Respuesta -->
         <div class="min-h-[64px] border-b-2 border-line pb-2 mb-2 flex flex-wrap gap-2 content-start"
             :class="stateClass" aria-label="Tu respuesta" role="list">
             <button v-for="idx in modelValue" :key="`a-${idx}`" type="button" role="listitem"
-                class="tile bg-surface-0" :class="answerTileClass" :disabled="disabled" @click="remove(idx)">
+                class="tl-choice tile" :class="answerTileClass" :disabled="disabled" @click="remove(idx)">
                 {{ tiles[idx] }}
             </button>
             <span v-if="!modelValue.length" class="text-gray-500 text-sm self-center">
@@ -18,8 +18,8 @@
         <!-- Banco -->
         <div class="flex flex-wrap gap-2 justify-center" aria-label="Palabras disponibles" role="list">
             <template v-for="(tile, idx) in tiles" :key="`b-${idx}`">
-                <span v-if="modelValue.includes(idx)" class="tile tile-placeholder" aria-hidden="true">{{ tile }}</span>
-                <button v-else type="button" role="listitem" class="tile bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                <span v-if="modelValue.includes(idx)" class="tl-choice tile is-placeholder" aria-hidden="true">{{ tile }}</span>
+                <button v-else type="button" role="listitem" class="tl-choice tile"
                     :disabled="disabled" @click="add(idx)">
                     {{ tile }}
                 </button>
@@ -45,8 +45,8 @@ const emit = defineEmits(['update:modelValue'])
 const stateClass = computed(() => '')
 // Al verificar, las fichas de la respuesta se pintan de verde o rojo
 const answerTileClass = computed(() => props.state === 'correct'
-    ? 'border-green-500 text-green-300'
-    : props.state === 'wrong' ? 'border-error text-error' : 'border-line')
+    ? 'is-correct'
+    : props.state === 'wrong' ? 'is-wrong' : '')
 
 function add(idx) {
     if (props.disabled || props.modelValue.includes(idx)) return
@@ -59,16 +59,8 @@ function remove(idx) {
 </script>
 
 <style scoped>
+/* Colores y estados: .tl-choice (src/style.css), igual que las opciones de opción múltiple */
 .tile {
-    @apply px-3 py-2 rounded-xl border-2 border-b-4 text-base font-semibold transition-transform;
-}
-.tile:not(:disabled):active {
-    transform: translateY(1px);
-}
-.tile:disabled {
-    @apply cursor-default;
-}
-.tile-placeholder {
-    @apply bg-gray-800 border-gray-800 text-transparent;
+    @apply px-3 py-2 text-base;
 }
 </style>

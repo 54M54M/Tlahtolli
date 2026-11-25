@@ -101,6 +101,61 @@ function distractorTiles(answerTokens, sourcePhrases, count, rnd) {
     return shuffle(pool, rnd).slice(0, count)
 }
 
+
+// ── opciones de opción múltiple ───────────────────────────────────────────────
+
+/** Siempre 4 opciones. */
+export const OPTIONS = 4
+
+export const isQuestion = (text) => /\?\s*$/.test(String(text ?? '').trim())
+const stripQuestion = (text) => String(text ?? '').replace(/[¿?]/g, '').replace(/\s+/g, ' ').trim()
+
+/**
+ * Distractores sin repetir: primero del mismo tipo que la correcta (pregunta con pregunta, frase con frase),
+ * así el signo "?" no delata la respuesta; si no alcanzan, se completan con las del otro tipo.
+ */
+export function pickDistractors(correct, candidates, count, rnd = Math.random) {
+    const seen = new Set([normalize(correct)])
+    const unique = []
+    for (const c of shuffle(candidates, rnd)) {
+        const key = normalize(c)
+        if (key && !seen.has(key)) { seen.add(key); unique.push(c) }
+    }
+    const q = isQuestion(correct)
+    const same = unique.filter(c => isQuestion(c) === q)
+    const other = unique.filter(c => isQuestion(c) !== q)
+    return [...same, ...other].slice(0, count)
+}
+
+/** O todas las opciones con signo de pregunta o ninguna: si se mezclan, se quitan los signos a todas. */
+export function harmonizeQuestions(options) {
+    const qs = options.filter(isQuestion).length
+    return qs === 0 || qs === options.length ? options : options.map(stripQuestion)
+}
+
+/**
+ * Ejercicio de opción múltiple de la base: lo completa a 4 opciones con vocabulario del mismo idioma que sus
+ * opciones (lengua o español) y uniforma los signos de pregunta. La correcta se conserva.
+ */
+export function completeChoices(ex, vocab, rnd = Math.random) {
+    if (ex?.type !== 'multiple-choice' || !Array.isArray(ex.options)) return ex
+    const correct = ex.options[ex.correctAnswer]
+    if (correct === undefined) return ex
+    let options = [...ex.options]
+    if (options.length < OPTIONS) {
+        const words = vocab.map(v => v.word)
+        const natives = vocab.map(v => translationsOf(v.translation)[0])
+        const has = list => options.filter(o => list.some(w => normalize(w) === normalize(o))).length
+        const source = has(natives) > has(words) ? natives : words
+        const extra = pickDistractors(correct, [...options.filter(o => o !== correct), ...source], OPTIONS - 1, rnd)
+            .filter(o => !options.some(x => normalize(x) === normalize(o)))
+        options = shuffle([...options, ...extra].slice(0, OPTIONS), rnd)
+    }
+    options = harmonizeQuestions(options)
+    const key = normalize(correct)
+    return { ...ex, options, correctAnswer: options.findIndex(o => normalize(o) === key) }
+}
+
 // ── generadores de ejercicios ─────────────────────────────────────────────────
 
 /** Palabra nueva: la frase en la lengua; se arma la traducción al español con fichas. */
@@ -128,11 +183,10 @@ function choiceExercise(v, all, ctx, direction, badge) {
     const toTarget = direction === 'to-target'
     const label = x => toTarget ? x.word : translationsOf(x.translation)[0]
     const correct = label(v)
-    const others = shuffle(all.filter(o => normalize(label(o)) !== normalize(correct)), ctx.rnd)
-        .slice(0, 2)
-        .map(label)
-    if (!others.length) return null // sin con qué confundir: no tiene sentido
-    const options = shuffle([correct, ...others], ctx.rnd)
+    const candidates = [...all, ...ctx.extra].map(label)
+    const others = pickDistractors(correct, candidates, OPTIONS - 1, ctx.rnd)
+    if (others.length < OPTIONS - 1) return null // sin 4 opciones distintas no se muestra
+    const options = harmonizeQuestions(shuffle([correct, ...others], ctx.rnd))
     return {
         type: 'multiple-choice',
         generated: true,
@@ -140,7 +194,7 @@ function choiceExercise(v, all, ctx, direction, badge) {
         question: toTarget ? 'Selecciona la traducción correcta' : '¿Qué significa?',
         answer: toTarget ? translationsOf(v.translation)[0] : v.word,
         options,
-        correctAnswer: options.indexOf(correct),
+        correctAnswer: options.findIndex(o => normalize(o) === normalize(correct)),
         explanation: `${v.word}: ${v.translation}`,
         character: pickCharacter(ctx.authored, ctx.rnd),
         vocabWord: v.word,
@@ -173,20 +227,23 @@ function buildExercise(v, all, ctx) {
  * @param {object[]} p.exercises    ejercicios de la unidad (de la base)
  * @param {object}   p.vocabulary   vocabulario de la unidad (objeto { palabra: {...} } o arreglo)
  * @param {object[]} [p.review]     vocabulario de unidades anteriores (para repasar)
+ * @param {object[]} [p.extra]      vocabulario de otras unidades (solo para completar opciones a 4)
  * @param {string}   [p.languageName]
  * @param {function} [p.rnd]        aleatorio (para pruebas)
  * @returns {object[]} ejercicios en orden
  */
-export function buildLessonPlan({ exercises = [], vocabulary, review = [], languageName = 'la lengua', rnd = Math.random }) {
-    const authored = exercises.map(e => ({ ...e, generated: false }))
+export function buildLessonPlan({ exercises = [], vocabulary, review = [], extra = [], languageName = 'la lengua', rnd = Math.random }) {
     const reviewList = vocabList(review)
+    const allVocab = vocabList([...vocabList(vocabulary), ...reviewList, ...vocabList(extra)])
+    // Los de la base también salen con 4 opciones y signos uniformes
+    const authored = exercises.map(e => ({ ...completeChoices(e, allVocab, rnd), generated: false }))
     const reviewKeys = new Set(reviewList.map(v => normalize(v.word)))
     // Nuevas = las de la unidad que no se vieron en unidades anteriores
     const unitList = vocabList(vocabulary)
     const fresh = unitList.filter(v => !reviewKeys.has(normalize(v.word)))
     if (!unitList.length) return authored
 
-    const ctx = { authored, rnd, languageName }
+    const ctx = { authored, rnd, languageName, extra: vocabList(extra) }
     const pool = [...unitList, ...reviewList] // para opciones y fichas de distracción
 
     // Primero las de una sola idea (más cortas), luego las frases

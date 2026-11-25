@@ -5,6 +5,7 @@
 // mientras está pendiente, el router regresa a /app/bienvenida.
 
 import { useAuthStore } from '../stores/auth.js'
+import { completeChoices, vocabList } from './lessonPlan.js'
 
 const MAX_EXERCISES = 5
 
@@ -76,9 +77,11 @@ export async function loadWelcome() {
     const mc = (exercises || [])
         .filter(e => e.type === 'multiple-choice' && Array.isArray(e.options) && e.correctAnswer >= 0)
         .map(e => {
-            const correct = e.options[e.correctAnswer]
-            const options = shuffle(e.options)
-            return { ...e, options, correctAnswer: options.indexOf(correct) }
+            // 4 opciones y signos de pregunta uniformes, igual que en las lecciones
+            const done = completeChoices(e, vocabList(vocabulary))
+            const correct = done.options[done.correctAnswer]
+            const options = shuffle(done.options)
+            return { ...done, options, correctAnswer: options.indexOf(correct) }
         })
     return { level, exercises: shuffle(mc).slice(0, MAX_EXERCISES), vocabulary: vocabulary || [] }
 }
