@@ -24,6 +24,7 @@ const LIMITS = {
     reviews: 2,     // palabras de unidades anteriores
     builds: 2,      // frases de varias palabras para armar en la lengua
     distractors: 3, // fichas de más en cada banco
+    pairs: 5,       // parejas en "Selecciona los pares" (mínimo 4)
 }
 
 const CHARACTERS = ['citlali', 'coltzin', 'neza', 'tonatiuh']
@@ -55,16 +56,38 @@ export function normalize(text) {
 }
 
 /**
- * Traducciones aceptadas de una entrada de vocabulario:
+ * Traducciones aceptadas de una entrada de vocabulario (ya listas para fichas, ver tileText):
  *   "¿cómo estás? (lit. ¿cómo vives?)" → ["¿cómo estás?"]
  *   "pase / bienvenido(a)"             → ["pase", "bienvenido(a)"]
+ *   "su nombre (de él o ella)"         → ["el nombre de él/ella"]
  */
 export function translationsOf(translation) {
     return String(translation ?? '')
         .replace(/\(lit\.[^)]*\)/gi, '')
         .split('/')
-        .map(s => s.trim())
+        .map(s => tileText(s))
         .filter(Boolean)
+}
+
+/**
+ * Traducción lista para armarse con fichas (sin paréntesis que dejen fichas como "(de" o "ella)"):
+ *   "su nombre (de él o ella)" → "el nombre de él/ella"
+ *   "mi nombre (formal)"       → "mi nombre formal"
+ *   "contento(a)"              → "contento(a)"   (pegado a la palabra: se queda igual, es una sola ficha)
+ */
+export function tileText(text) {
+    let su = false
+    const out = String(text ?? '')
+        .replace(/\(lit\.[^)]*\)/gi, '')
+        .replace(/\s\(([^)]*)\)/g, (_, inner) => {
+            const body = inner.trim().replace(/\s+o\s+/g, '/').replace(/\s*\/\s*/g, '/')
+            if (/^de\s/i.test(body)) su = true
+            return ' ' + body
+        })
+        .replace(/\s+/g, ' ')
+        .trim()
+    // "su nombre de él/ella" → "el nombre de él/ella": el "de ..." ya dice de quién es
+    return su ? out.replace(/^su\s/i, 'el ') : out
 }
 
 /** Vocabulario como lista [{ word, translation, pronunciation }], venga como objeto o arreglo. */
@@ -127,33 +150,56 @@ export function pickDistractors(correct, candidates, count, rnd = Math.random) {
     return [...same, ...other].slice(0, count)
 }
 
-/** O todas las opciones con signo de pregunta o ninguna: si se mezclan, se quitan los signos a todas. */
-export function harmonizeQuestions(options) {
-    const qs = options.filter(isQuestion).length
-    return qs === 0 || qs === options.length ? options : options.map(stripQuestion)
+/**
+ * Los signos de las opciones siguen al texto de la burbuja:
+ *   "¿Cómo estás?"     → todas con signo: [Kēn tinemi?] [Kēn motōka?] [Timoittaske?] [Ximopanōlti?]
+ *   "pase / bienvenido" → todas sin signo
+ * En español se ponen los dos signos (¿…?); en la lengua solo el de cierre, como se escribe en el curso.
+ * Sin texto en la burbuja: si se mezclan, se quitan a todas.
+ */
+export function matchQuestions(options, prompt, spanishOptions = false) {
+    if (!String(prompt ?? '').trim()) {
+        const qs = options.filter(isQuestion).length
+        return qs === 0 || qs === options.length ? options : options.map(stripQuestion)
+    }
+    if (!isQuestion(prompt)) return options.map(stripQuestion)
+    return options.map(o => {
+        const base = stripQuestion(o)
+        return spanishOptions ? `¿${base}?` : `${base}?`
+    })
 }
 
 /**
  * Ejercicio de opción múltiple de la base: lo completa a 4 opciones con vocabulario del mismo idioma que sus
- * opciones (lengua o español) y uniforma los signos de pregunta. La correcta se conserva.
+ * opciones (lengua o español) y pone los signos de pregunta según la burbuja (matchQuestions). La correcta se conserva.
  */
 export function completeChoices(ex, vocab, rnd = Math.random) {
+    if (ex?.type === 'word-bank') return cleanTiles(ex)
     if (ex?.type !== 'multiple-choice' || !Array.isArray(ex.options)) return ex
     const correct = ex.options[ex.correctAnswer]
     if (correct === undefined) return ex
     let options = [...ex.options]
+    const words = vocab.map(v => v.word)
+    const natives = vocab.map(v => translationsOf(v.translation)[0])
+    const has = list => options.filter(o => list.some(w => normalize(w) === normalize(o))).length
+    const spanish = has(natives) > has(words) // ¿las opciones están en español o en la lengua?
     if (options.length < OPTIONS) {
-        const words = vocab.map(v => v.word)
-        const natives = vocab.map(v => translationsOf(v.translation)[0])
-        const has = list => options.filter(o => list.some(w => normalize(w) === normalize(o))).length
-        const source = has(natives) > has(words) ? natives : words
+        const source = spanish ? natives : words
         const extra = pickDistractors(correct, [...options.filter(o => o !== correct), ...source], OPTIONS - 1, rnd)
             .filter(o => !options.some(x => normalize(x) === normalize(o)))
         options = shuffle([...options, ...extra].slice(0, OPTIONS), rnd)
     }
-    options = harmonizeQuestions(options)
+    options = matchQuestions(options, ex.answer, spanish)
     const key = normalize(correct)
     return { ...ex, options, correctAnswer: options.findIndex(o => normalize(o) === key) }
+}
+
+/** Fichas de un ejercicio de la base: fuera las de distracción con paréntesis sueltos ("(de", "ella)"). */
+function cleanTiles(ex) {
+    if (!Array.isArray(ex.tiles)) return ex
+    const answer = new Set((ex.accepted || []).flatMap(a => tokenize(a)).map(t => t.toLocaleLowerCase('es')))
+    const tiles = ex.tiles.filter(t => answer.has(String(t).toLocaleLowerCase('es')) || !/[()]/.test(t))
+    return tiles.length === ex.tiles.length ? ex : { ...ex, tiles }
 }
 
 // ── generadores de ejercicios ─────────────────────────────────────────────────
@@ -186,13 +232,14 @@ function choiceExercise(v, all, ctx, direction, badge) {
     const candidates = [...all, ...ctx.extra].map(label)
     const others = pickDistractors(correct, candidates, OPTIONS - 1, ctx.rnd)
     if (others.length < OPTIONS - 1) return null // sin 4 opciones distintas no se muestra
-    const options = harmonizeQuestions(shuffle([correct, ...others], ctx.rnd))
+    const prompt = toTarget ? translationsOf(v.translation)[0] : v.word
+    const options = matchQuestions(shuffle([correct, ...others], ctx.rnd), prompt, !toTarget)
     return {
         type: 'multiple-choice',
         generated: true,
         badge,
         question: toTarget ? 'Selecciona la traducción correcta' : '¿Qué significa?',
-        answer: toTarget ? translationsOf(v.translation)[0] : v.word,
+        answer: prompt,
         options,
         correctAnswer: options.findIndex(o => normalize(o) === normalize(correct)),
         explanation: `${v.word}: ${v.translation}`,
@@ -275,17 +322,56 @@ export function buildLessonPlan({ exercises = [], vocabulary, review = [], extra
     })
     plan.push(...middle)
 
-    // 5. Armar frases de varias palabras (las de la unidad primero)
+    // 5. Selecciona los pares con lo ya visto (presentadas + repaso; si no alcanza, el resto de la unidad)
+    const seen = intros.length + reviewList.length >= 4 ? [...intros, ...reviewList] : [...unitList, ...reviewList]
+    const pairs = matchExercise(vocabList(seen), rnd)
+    if (pairs) plan.push(pairs)
+
+    // 6. Armar frases de varias palabras (las de la unidad primero)
     const phrases = [...unitList].filter(v => tokenize(v.word).length > 1)
     shuffle(phrases, rnd).slice(0, LIMITS.builds).forEach(v => plan.push(buildExercise(v, pool, ctx)))
 
     return plan.map((ex, i) => ({ ...ex, planIndex: i }))
 }
 
+/**
+ * "Selecciona los pares": náhuatl a la izquierda, español a la derecha, las dos columnas revueltas.
+ * Solo palabras ya vistas y sin parejas que se confundan (misma traducción, o una contenida en otra:
+ * "Kwalli" / "Kwalli ninemi"). Sin 4 parejas posibles no sale.
+ */
+export function matchExercise(seen, rnd = Math.random) {
+    const has = (a, b) => (' ' + a + ' ').includes(' ' + b + ' ') || (' ' + b + ' ').includes(' ' + a + ' ')
+    const picked = []
+    for (const v of shuffle(seen, rnd)) {
+        const meanings = translationsOf(v.translation)
+        if (!meanings.length) continue
+        const w = normalize(v.word)
+        const ms = meanings.map(normalize)
+        const clash = picked.some(p => has(p.w, w) || p.ms.some(a => ms.some(b => has(a, b))))
+        if (clash || !w) continue
+        picked.push({ word: v.word, meaning: meanings[0], w, ms })
+        if (picked.length === LIMITS.pairs) break
+    }
+    if (picked.length < 4) return null
+    const idx = picked.map((_, i) => i)
+    return {
+        type: 'match',
+        generated: true,
+        question: 'Selecciona los pares',
+        pairs: picked.map(({ word, meaning }) => ({ word, meaning })),
+        left: shuffle(idx, rnd),
+        right: shuffle(idx, rnd),
+    }
+}
+
 /** Copia de un ejercicio fallado para repetirlo al final ("Error anterior"). */
 export function mistakeRetry(ex, rnd = Math.random) {
     const copy = { ...ex, badge: BADGE.MISTAKE, isRetry: true }
     if (ex.type === 'word-bank' && Array.isArray(ex.tiles)) copy.tiles = shuffle(ex.tiles, rnd)
+    if (ex.type === 'match' && Array.isArray(ex.pairs)) {
+        copy.left = shuffle(ex.left, rnd)
+        copy.right = shuffle(ex.right, rnd)
+    }
     if (ex.type === 'multiple-choice' && Array.isArray(ex.options)) {
         const correct = ex.options[ex.correctAnswer]
         copy.options = shuffle(ex.options, rnd)

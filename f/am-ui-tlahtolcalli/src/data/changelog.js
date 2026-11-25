@@ -7,6 +7,20 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.6.2',
+        date: '2026-11-25',
+        title: 'Pistas con desglose',
+        items: [
+            { type: 'nuevo', text: 'Nuevo ejercicio «Selecciona los pares»: une cada palabra con su traducción.' },
+            { type: 'nuevo', text: 'Al tocar una palabra subrayada ves su pronunciación y, si la tiene, cada parte de la palabra con su significado.' },
+            { type: 'mejora', text: 'Los botones con relieve se aplican en toda la app, desde la página de inicio.' },
+            { type: 'mejora', text: 'Si la frase es pregunta, todas las opciones llevan signo de pregunta; si no, ninguna.' },
+            { type: 'mejora', text: 'Fichas más grandes en el teléfono y frases más claras para armar ("el nombre de él/ella").' },
+            { type: 'mejora', text: 'El botón Verificar sube con el teclado y ya no salen sugerencias del corrector al escribir.' },
+            { type: 'correccion', text: 'Las unidades terminadas ya no se marcan como la unidad actual.' },
+        ],
+    },
+    {
         version: '4.6.1',
         date: '2026-11-24',
         title: 'Botones a tu gusto',

@@ -7,12 +7,12 @@
             <div class="flex mb-6 bg-surface-0 rounded-lg p-1">
                 <button @click="switchTab('login')"
                     :class="activeTab === 'login' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
-                    class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
+                    class="tl-flat flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Iniciar sesión
                 </button>
                 <button @click="switchTab('register')"
                     :class="activeTab === 'register' ? 'bg-turquesa-deep text-white' : 'text-gray-400 hover:text-white'"
-                    class="flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
+                    class="tl-flat flex-1 py-2 rounded-md text-sm font-semibold transition-colors">
                     Registrarse
                 </button>
             </div>

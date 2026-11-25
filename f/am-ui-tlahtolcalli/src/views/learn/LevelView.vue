@@ -26,7 +26,7 @@
                             <h3 class="font-bold">{{ unit.title }}</h3>
 
                             <!-- Unidad actual -->
-                            <div v-if="unit.current" class="ml-auto flex items-center justify-center">
+                            <div v-if="unit.current && !unit.completed" class="ml-auto flex items-center justify-center">
                                 <svg width="40" height="32" viewBox="0 0 40 32" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <g clip-path="url(#clip0_7030_116434)">
@@ -46,7 +46,7 @@
                             </div>
 
                             <!-- Unidades completadas -->
-                            <div v-if="unit.completed && !unit.current"
+                            <div v-if="unit.completed"
                                 class="ml-auto flex items-center justify-center">
                                 <svg width="42" height="34" viewBox="0 0 42 34" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">

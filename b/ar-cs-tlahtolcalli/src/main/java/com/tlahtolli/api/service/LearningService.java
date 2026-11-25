@@ -126,7 +126,7 @@ public class LearningService {
 	/**
 	 * Devuelve vocabulario en el formato que espera ProcessedText /
 	 * PronunciationTooltip: { "palabra": { "translation": "...", "pronunciation":
-	 * "...", "example": "..." } }
+	 * "...", "example": "...", "breakdown": "no- = mi; tōka = nombre" } }
 	 */
 	@Cacheable(cacheNames = CacheConfig.CATALOGO, key = "'vocabulario:' + #p0")
 	public Map<String, Object> getVocabularyForUnit(Integer unitId) {
@@ -138,6 +138,9 @@ public class LearningService {
 			entry.put("translation", v.getTranslation());
 			entry.put("pronunciation", v.getPronunciation());
 			entry.put("example", v.getExample());
+			if (v.getBreakdown() != null && !v.getBreakdown().isBlank()) {
+				entry.put("breakdown", v.getBreakdown()); // desglose para la pista (sql 16)
+			}
 			result.put(v.getWord(), entry);
 		}
 		return result;

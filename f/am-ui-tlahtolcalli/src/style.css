@@ -204,3 +204,30 @@ button:focus-visible {
   .tl-duo .tl-choice.is-wrong    { @apply bg-error/15 border-error text-error; }
   .tl-duo .tl-choice.is-placeholder { @apply bg-line border-line border-b-2 text-transparent; }
 }
+
+/* ── Relieve en toda la app (landing incluida) ─────────────────────────────────
+   Con el diseño tipo Duolingo (<html class="tl-duo">) todo botón o enlace con forma de botón (redondeado, con
+   relleno interno y con fondo o borde) lleva base gruesa y se hunde al tocarlo. Se detecta por sus clases, así
+   no hay que tocar cada vista. No aplica a enlaces de texto ni a la navegación. Para dejar uno plano: .tl-flat.
+     · con fondo → sombra interior abajo (oscurece el mismo color)
+     · solo borde (botones delineados, tarjetas) → borde inferior de 4px */
+.tl-duo :is(button, a)[class*="rounded"]:is([class*="py-"], [class*=" p-"], [class^="p-"], [class*=" px-"], [class^="px-"]):is([class*=" bg-"], [class^="bg-"]):not(.tl-choice):not(.tl-flat):not(:disabled) {
+  box-shadow: inset 0 -4px 0 rgb(0 0 0 / .28);
+  transition: transform .08s, box-shadow .08s, border-color .15s, background-color .15s, color .15s;
+}
+.tl-duo :is(button, a)[class*="rounded"]:is([class*="py-"], [class*=" p-"], [class^="p-"], [class*=" px-"], [class^="px-"]):is([class*=" bg-"], [class^="bg-"]):not(.tl-choice):not(.tl-flat):not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / .28);
+}
+.tl-duo :is(button, a)[class*="rounded"]:is([class*="py-"], [class*=" p-"], [class^="p-"], [class*=" px-"], [class^="px-"]):is([class~="border"], [class~="border-2"]):not(:is([class*=" bg-"], [class^="bg-"])):not(.tl-choice):not(.tl-flat):not(:disabled) {
+  border-bottom-width: 4px;
+  transition: transform .08s, border-bottom-width .08s, border-color .15s, color .15s;
+}
+.tl-duo :is(button, a)[class*="rounded"]:is([class*="py-"], [class*=" p-"], [class^="p-"], [class*=" px-"], [class^="px-"]):is([class~="border"], [class~="border-2"]):not(:is([class*=" bg-"], [class^="bg-"])):not(.tl-choice):not(.tl-flat):not(:disabled):active {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+/* Barra inferior (Verificar / Entendido) arriba del teclado del teléfono. --tl-kb lo calcula
+   setupKeyboardInset (src/data/uiPrefs.js); en Chrome Android ya lo resuelve interactive-widget del viewport. */
+.tl-kb.fixed { bottom: var(--tl-kb, 0px); }

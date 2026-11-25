@@ -101,7 +101,7 @@
 
                                 <!-- Tipo: Completar espacio -->
                                 <div v-else-if="currentExercise.type === 'fill-blank'" class="md:-ml-7">
-                                    <textarea v-model="textAnswer"
+                                    <textarea v-model="textAnswer" spellcheck="false" ^autocorrect="off" autocapitalize="off" autocomplete="off" translate="no"
                                         :placeholder="currentExercise.placeholder || 'Escribe tu respuesta...'"
                                         :readonly="showResult" :class="{
                                             'border-green-500 bg-green-900/20': showResult && isAnswerCorrect,
@@ -116,7 +116,7 @@
                         </div>
 
                         <!-- Botón de verificación -->
-                        <div class="fixed bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto
+                        <div class="tl-kb fixed bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto
                             md:float-right md:left-[38%] md:p-5 md:mt-8 md:max-w-[190px]"
                             :class="{ 'md:hidden': showFeedbackModal }">
                             <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
@@ -292,7 +292,8 @@ export default {
                     word: key,
                     translation: combined[key].translation || '',
                     pronunciation: combined[key].pronunciation || '',
-                    example: combined[key].example || ''
+                    example: combined[key].example || '',
+                    breakdown: combined[key].breakdown || ''
                 }));
                 // Siempre 4 opciones y signos de pregunta uniformes (src/data/lessonPlan.js)
                 this.quickExercises = this.quickExercises.map(ex => completeChoices(ex, vocabList(this.levelVocabulary)));

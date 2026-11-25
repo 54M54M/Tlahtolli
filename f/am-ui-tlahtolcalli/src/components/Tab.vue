@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full bg-gray-800 rounded p-1 gap-1">
         <button v-for="tab in tabs" :key="tab.value"
-            class="text-xs py-1.5 px-2 rounded transition-colors flex-1 text-center truncate min-w-0" :class="{
+            class="tl-flat text-xs py-1.5 px-2 rounded transition-colors flex-1 text-center truncate min-w-0" :class="{
                 'bg-gray-700 text-white': modelValue === tab.value,
                 'text-gray-400 hover:text-gray-300': modelValue !== tab.value
             }" @click="$emit('update:modelValue', tab.value)">

@@ -6,8 +6,7 @@
             <!-- Diseño de las opciones y fichas de los ejercicios (src/data/uiPrefs.js, se guarda en este dispositivo) -->
             <div class="flex items-center justify-between gap-4">
                 <div class="min-w-0">
-                    <label for="pref-duo" class="block cursor-pointer">Botones con relieve</label>
-                    <p class="text-xs text-gray-400">Opciones y fichas de las lecciones como teclas que se hunden al tocarlas.</p>
+                    <label for="pref-duo" class="block cursor-pointer">Relieve</label>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer shrink-0">
                     <input id="pref-duo" type="checkbox" v-model="duoButtons" class="sr-only peer">

@@ -9,7 +9,7 @@ import { useAuthStore } from './stores/auth.js'
 import { palettePlugin } from './utils/palette.js'
 import { setupPWA } from './pwa.js'
 import { setupOfflineSync } from './offline/sync.js'
-import { setupUiPrefs } from './data/uiPrefs.js'
+import { setupUiPrefs, setupKeyboardInset } from './data/uiPrefs.js'
 
 // Despertar el backend antes de que el usuario haga login
 warmUpBackend()
@@ -44,6 +44,7 @@ setupOfflineSync()
 
 // Preferencias de la interfaz (diseño de opciones y fichas)
 setupUiPrefs()
+setupKeyboardInset()
 
 // Service worker: la app abre al instante, funciona instalada y avisa cuando hay versión nueva
 setupPWA()

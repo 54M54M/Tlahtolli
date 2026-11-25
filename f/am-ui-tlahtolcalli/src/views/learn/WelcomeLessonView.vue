@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="fixed bottom-0 left-0 right-0 p-5 bg-surface-0/95 border-t border-line" v-if="!checked">
+            <div class="tl-kb fixed bottom-0 left-0 right-0 p-5 bg-surface-0/95 border-t border-line" v-if="!checked">
                 <div class="max-w-3xl mx-auto flex justify-end">
                     <button @click="check" :disabled="selected === null"
                         class="w-full md:w-56 bg-turquesa-deep hover:bg-turquesa-deeper disabled:bg-line disabled:text-stone-500 text-white py-4 md:py-3 rounded-lg text-lg font-medium">

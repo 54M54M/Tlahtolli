@@ -10,7 +10,7 @@
         </span>
 
     <!-- Tooltip -->
-    <div v-if="showTooltip && (pronunciation || translation)"
+    <div v-if="showTooltip && (pronunciation || translation || parts.length)"
          class="pronunciation-tooltip absolute z-50 text-white rounded-xl shadow-2xl text-sm transform -translate-x-1/2 left-1/2 transition-all duration-300"
          :class="[tooltipPositionClass, tooltipVisibilityClass]" :style="tooltipStyle">
 
@@ -22,6 +22,13 @@
                     <span class="text-blue-200 font-semibold text-sm tracking-wide">
                         {{ pronunciation }}
                     </span>
+        </div>
+        <!-- Desglose (como Duolingo): una fila por parte de la palabra, con su significado -->
+        <div v-if="parts.length" class="rounded-lg overflow-hidden border border-line bg-surface-0 divide-y divide-line">
+          <div v-for="(p, i) in parts" :key="i" class="grid grid-cols-[minmax(0,auto)_1fr] gap-3 px-3 py-1.5 items-baseline">
+            <span class="font-semibold text-white whitespace-nowrap">{{ p.form }}</span>
+            <span class="text-gray-300">{{ p.meaning }}</span>
+          </div>
         </div>
       </div>
 
@@ -51,6 +58,11 @@ export default {
       default: ''
     },
     example: {
+      type: String,
+      default: ''
+    },
+    /** Desglose de la palabra (columna breakdown de ct_vocabulary): "no- = mi; tōka = nombre" */
+    breakdown: {
       type: String,
       default: ''
     },
@@ -85,6 +97,15 @@ export default {
     // });
   },
   computed: {
+    parts() {
+      return String(this.breakdown || '')
+          .split(';')
+          .map(row => {
+            const [form, ...rest] = row.split('=')
+            return { form: (form || '').trim(), meaning: rest.join('=').trim() }
+          })
+          .filter(p => p.form && p.meaning);
+    },
     tooltipVisibilityClass() {
       return this.showTooltip ?
           'opacity-100 visible scale-100 translate-y-0' :

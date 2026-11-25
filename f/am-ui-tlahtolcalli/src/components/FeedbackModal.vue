@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-4 z-50">
+    <div v-if="show" class="tl-kb fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-4 z-50">
         <div class="max-w-2xl mx-auto">
             <div class="flex justify-between items-start mb-2">
                 <h3 class="text-lg font-semibold md:text-xl" :class="titleClass">{{ title }}</h3>

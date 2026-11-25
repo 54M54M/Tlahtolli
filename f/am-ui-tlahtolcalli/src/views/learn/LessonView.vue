@@ -42,7 +42,13 @@
                         </div>
                         <h2 class="md:hidden block text-xl font-semibold mb-4">{{ currentExercise.question }}</h2>
 
-                        <div class="md:flex md:gap-2 md:px-10 md:py-3 md:scale-125">
+                        <!-- Tipo: Selecciona los pares (sin personaje ni Verificar: avanza solo al terminar) -->
+                        <div v-if="currentExercise.type === 'match'" class="md:px-10 md:py-3 mt-6 md:mt-0">
+                            <MatchPairs :key="`mp-${currentQuestion}`" :pairs="currentExercise.pairs"
+                                :left="currentExercise.left" :right="currentExercise.right" @done="onMatchDone" />
+                        </div>
+
+                        <div v-else class="md:flex md:gap-2 md:px-10 md:py-3 md:scale-125">
                             <!-- Imagen placeholder -->
                             <div class="flex ml-2 md:justify-center mb-3 md:mb-0 md:w-1/3">
 
@@ -118,7 +124,7 @@
 
                                 <!-- Tipo: Completar espacio -->
                                 <div v-else-if="currentExercise.type === 'fill-blank'" class="md:-ml-7">
-                                    <textarea v-model="textAnswer"
+                                    <textarea v-model="textAnswer" spellcheck="false" ^autocorrect="off" autocapitalize="off" autocomplete="off" translate="no"
                                         :placeholder="currentExercise.translation || currentExercise.placeholder || 'Escribe tu respuesta...'"
                                         :readonly="showResult" :class="{
                                             'border-green-500 bg-green-900/20': showResult && isAnswerCorrect,
@@ -133,7 +139,7 @@
                         </div>
 
                         <!-- Botón de verificación -->
-                        <div class="fixed bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto
+                        <div v-if="currentExercise.type !== 'match'" class="tl-kb fixed bottom-0 left-0 right-0 p-5 max-w-2xl mx-auto
                             md:float-right md:left-[38%] md:p-5 md:mt-8 md:max-w-[190px]"
                             :class="{ 'md:hidden': showFeedbackModal }">
                             <button @click="verifyAnswer" :disabled="isVerifying || (currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
@@ -181,6 +187,7 @@ import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
 import WordBank from '../../components/WordBank.vue';
+import MatchPairs from '../../components/MatchPairs.vue';
 import { buildLessonPlan, mistakeRetry, checkWordBank, BADGE } from '../../data/lessonPlan.js';
 
 import { useAuthStore } from '../../stores/auth';
@@ -191,7 +198,7 @@ export default {
     name: "Lesson",
     components: {
         Card, Header, FeedbackModal, WarningModal, ExitConfirmModal,
-        ProcessedText, PronunciationTooltip, ExerciseImage, CompletionMessage, NoEnergyModal, WordBank
+        ProcessedText, PronunciationTooltip, ExerciseImage, CompletionMessage, NoEnergyModal, WordBank, MatchPairs
     },
     props: {
         unitId: {
@@ -213,6 +220,7 @@ export default {
             selectedAnswer: null,
             textAnswer: '',
             wordBankSel: [],
+            matchMistakes: 0, // errores en "Selecciona los pares"
             showResult: false,
             isAnswerCorrect: false,
             currentExercises: [],
@@ -265,7 +273,8 @@ export default {
                     word: key,
                     pronunciation: vocab[key].pronunciation || '',
                     translation: vocab[key].translation || '',
-                    example: vocab[key].example || ''
+                    example: vocab[key].example || '',
+                    breakdown: vocab[key].breakdown || ''
                 }));
             }
             return [];
@@ -383,6 +392,8 @@ export default {
             } else if (this.currentExercise.type === 'word-bank') {
                 const tiles = this.currentExercise.tiles || [];
                 this.isAnswerCorrect = checkWordBank(this.wordBankSel.map(i => tiles[i]), this.currentExercise.accepted);
+            } else if (this.currentExercise.type === 'match') {
+                this.isAnswerCorrect = this.matchMistakes === 0;
             }
 
             // Lo que se falla se repite al final de la lección, una vez ("Error anterior")
@@ -411,7 +422,9 @@ export default {
             }
 
             const streakBonus = energyResult.streak >= 3 ? '' : '';
-            if (this.isAnswerCorrect) {
+            if (this.currentExercise.type === 'match') {
+                // Sin cuadro de resultado: los pares ya se revisaron uno por uno
+            } else if (this.isAnswerCorrect) {
                 this.showFeedback('¡Buen trabajo!',
                     (this.currentExercise.explanation || 'Respuesta correcta.') + streakBonus);
             } else {
@@ -425,6 +438,12 @@ export default {
             this.isVerifying = false;
         },
 
+        /** Terminó "Selecciona los pares": se califica (errores → se repite al final) y pasa al siguiente solo. */
+        async onMatchDone(mistakes) {
+            this.matchMistakes = mistakes;
+            await this.verifyAnswer();
+            if (this.lessonInProgress && !this.showFeedbackModal) this.continueFromModal();
+        },
         continueFromModal() {
             if (!this.lessonInProgress) { this.closeFeedbackModal(); return; }
             this.closeFeedbackModal();
@@ -432,6 +451,7 @@ export default {
             this.selectedAnswer = null;
             this.textAnswer = '';
             this.wordBankSel = [];
+            this.matchMistakes = 0;
             this.showResult = false;
             this.isAnswerCorrect = false;
 

@@ -177,7 +177,9 @@ public class ProgressService {
 							return p;
 						});
 						up.setIsLocked((short) 0);
-						up.setIsCurrent((short) 1);
+						if (up.getCompleted() == null || up.getCompleted() != 1) {
+							up.setIsCurrent((short) 1);
+						}
 						progressRepo.save(up);
 						nextLevelUnlocked = true;
 					}
@@ -261,7 +263,10 @@ public class ProgressService {
 					return p;
 				});
 				nextUp.setIsLocked((short) 0);
-				nextUp.setIsCurrent((short) 1);
+				// Al repasar una unidad ya hecha, la siguiente (si ya está completada) no vuelve a ser la actual
+				if (nextUp.getCompleted() == null || nextUp.getCompleted() != 1) {
+					nextUp.setIsCurrent((short) 1);
+				}
 				progressRepo.save(nextUp);
 				return next.getId();
 			}

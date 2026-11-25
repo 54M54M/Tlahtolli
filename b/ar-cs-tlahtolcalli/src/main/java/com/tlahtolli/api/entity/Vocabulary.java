@@ -30,6 +30,10 @@ public class Vocabulary {
 	@Column(name = "EXAMPLE", length = 1000)
 	private String example;
 
+	/** Desglose para la pista de la palabra: "no- = mi; tōka = nombre" (sql 16). */
+	@Column(name = "BREAKDOWN", length = 1000)
+	private String breakdown;
+
 	public Integer getId() {
 		return id;
 	}
@@ -76,6 +80,14 @@ public class Vocabulary {
 
 	public void setExample(String example) {
 		this.example = example;
+	}
+
+	public String getBreakdown() {
+		return breakdown;
+	}
+
+	public void setBreakdown(String breakdown) {
+		this.breakdown = breakdown;
 	}
 
 }

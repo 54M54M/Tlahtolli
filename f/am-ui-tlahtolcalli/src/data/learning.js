@@ -88,7 +88,7 @@ export async function currentUnitId() {
     const levelId = await currentLevelId()
     if (levelId == null) return null
     const open = (await getUnits(levelId)).filter(u => !u.locked)
-    const unit = open.find(u => u.current) || open.find(u => !u.completed) || open[open.length - 1]
+    const unit = open.find(u => u.current && !u.completed) || open.find(u => !u.completed) || open[open.length - 1]
     return unit?.id ?? null
 }
 

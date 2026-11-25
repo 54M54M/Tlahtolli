@@ -3,7 +3,7 @@
          tócala en la respuesta para regresarla. En el banco queda el hueco para no perder el lugar. -->
     <div class="w-full select-none">
         <!-- Respuesta -->
-        <div class="min-h-[64px] border-b-2 border-line pb-2 mb-2 flex flex-wrap gap-2 content-start"
+        <div class="min-h-[72px] md:min-h-[64px] border-b-2 border-line pb-2 mb-2 flex flex-wrap gap-2 content-start"
             :class="stateClass" aria-label="Tu respuesta" role="list">
             <button v-for="idx in modelValue" :key="`a-${idx}`" type="button" role="listitem"
                 class="tl-choice tile" :class="answerTileClass" :disabled="disabled" @click="remove(idx)">
@@ -60,7 +60,13 @@ function remove(idx) {
 
 <style scoped>
 /* Colores y estados: .tl-choice (src/style.css), igual que las opciones de opción múltiple */
+/* En teléfono más grandes (fáciles de tocar); en computadora como antes */
 .tile {
-    @apply px-3 py-2 text-base;
+    @apply px-4 py-3 text-lg min-h-[52px];
+}
+@media (min-width: 768px) {
+    .tile {
+        @apply px-3 py-2 text-base min-h-0;
+    }
 }
 </style>

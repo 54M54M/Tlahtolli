@@ -2,6 +2,16 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.6.2] - 2026-11-24 - Desglose de palabras
+
+### Added
+- `ct_vocabulary.breakdown` (script `16.-Desglose_Palabras.sql`): desglose de la palabra para la pista
+  (`"no- = mi; tōka = nombre"`). `GET /api/learning/units/{id}/vocabulary` lo incluye cuando existe.
+
+### Fixed
+- Al repasar una unidad, la siguiente ya completada volvía a marcarse como actual (`is_current`). `unlockNextUnit` y el
+  desbloqueo de nivel solo la marcan si no está completada; el script 16 limpia los registros existentes.
+
 ## [4.6.0] - 2026-11-24 - Armar frases
 
 ### Added

@@ -7,7 +7,7 @@
                 <!-- DEBUG: Agrega un estilo temporal para ver quÃ© palabras tienen tooltip -->
                 <!-- <span style="background-color: yellow; color: black">[TOOLTIP]</span> -->
                 <PronunciationTooltip :word="segment.text" :pronunciation="segment.pronunciation"
-                    :translation="segment.translation" :example="segment.example" :language="language"
+                    :translation="segment.translation" :example="segment.example" :breakdown="segment.breakdown" :language="language"
                     :show-result="showResult" :is-correct="isCorrect">
                     {{ segment.text }}
                 </PronunciationTooltip>
@@ -28,7 +28,7 @@
         <template v-for="(segment, index) in processedSegments" :key="index">
             <template v-if="segment.isWord && segment.hasPronunciation && exerciseType !== 'fill-blank'">
                 <PronunciationTooltip :word="segment.text" :pronunciation="segment.pronunciation"
-                    :translation="segment.translation" :example="segment.example" :language="language"
+                    :translation="segment.translation" :example="segment.example" :breakdown="segment.breakdown" :language="language"
                     :show-result="showResult" :is-correct="isCorrect">
                     {{ segment.text }}
                 </PronunciationTooltip>
@@ -144,6 +144,7 @@ export default {
                     pronunciation: vocabularyItem?.pronunciation || '',
                     translation: vocabularyItem?.translation || '',
                     example: vocabularyItem?.example || '',
+                    breakdown: vocabularyItem?.breakdown || '',
                     spaceAfter: i < words.length - 1 && words[i + 1]?.trim() === ''
                 });
             }
