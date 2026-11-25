@@ -99,6 +99,13 @@
                                     </div>
                                 </div>
 
+                                <!-- Tipo: Armar la frase con fichas -->
+                                <div v-else-if="currentExercise.type === 'word-bank'" class="md:-ml-7 mt-2">
+                                    <WordBank :key="`wb-${currentQuestion}`" v-model="wordBankSel"
+                                        :tiles="currentExercise.tiles || []" :disabled="showResult"
+                                        :state="showResult ? (isAnswerCorrect ? 'correct' : 'wrong') : null" />
+                                </div>
+
                                 <!-- Tipo: Completar espacio -->
                                 <div v-else-if="currentExercise.type === 'fill-blank'" class="md:-ml-7">
                                     <textarea v-model="textAnswer"
@@ -120,7 +127,8 @@
                             md:float-right md:left-[38%] md:p-5 md:mt-8 md:max-w-[190px]"
                             :class="{ 'md:hidden': showFeedbackModal }">
                             <button @click="verifyAnswer" :disabled="(currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
-                                (currentExercise.type === 'fill-blank' && !textAnswer)"
+                                (currentExercise.type === 'fill-blank' && !textAnswer) ||
+                                (currentExercise.type === 'word-bank' && !wordBankSel.length)"
                                 class="w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white py-5 md:py-3 px-8 rounded-lg disabled:bg-line disabled:text-stone-500 text-lg font-medium">
                                 {{ showResult ? 'Continuar' : 'Verificar' }}
                             </button>
@@ -163,6 +171,8 @@ import NoEnergyModal from '../../components/NoEnergyModal.vue';
 import ProcessedText from '../../components/ProcessedText.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
+import WordBank from '../../components/WordBank.vue';
+import { checkWordBank } from '../../data/lessonPlan.js';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
@@ -173,7 +183,7 @@ export default {
     name: "QuickLevel",
     components: {
         Card, Header, FeedbackModal, WarningModal, ExitConfirmModal,
-        NoEnergyModal, ProcessedText, ExerciseImage, CompletionMessage
+        NoEnergyModal, ProcessedText, ExerciseImage, CompletionMessage, WordBank
     },
     props: {
         levelId: {
@@ -191,6 +201,7 @@ export default {
             currentQuestion: 1,
             selectedAnswer: null,
             textAnswer: '',
+            wordBankSel: [],
             showResult: false,
             isAnswerCorrect: false,
             quickExercises: [],
@@ -312,6 +323,9 @@ export default {
                 this.isAnswerCorrect = Array.isArray(correct)
                     ? correct.some(c => clean(c) === clean(this.textAnswer))
                     : clean(correct) === clean(this.textAnswer);
+            } else if (this.currentExercise.type === 'word-bank') {
+                const tiles = this.currentExercise.tiles || [];
+                this.isAnswerCorrect = checkWordBank(this.wordBankSel.map(i => tiles[i]), this.currentExercise.accepted);
             }
 
             const energyResult = await this.energyStore.consumeForExercise(this.isAnswerCorrect);
@@ -343,6 +357,7 @@ export default {
             this.currentQuestion++;
             this.selectedAnswer = null;
             this.textAnswer = '';
+            this.wordBankSel = [];
             this.showResult = false;
             this.isAnswerCorrect = false;
 

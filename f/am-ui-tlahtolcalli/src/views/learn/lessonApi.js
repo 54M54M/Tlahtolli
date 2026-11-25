@@ -1,16 +1,15 @@
-// src/views/learn/lessonApi.js
 import { progressApi, isOfflineError } from '../../api/apiClient.js'
 import { offline } from '../../offline/status.js'
 import { newClientId, queueLesson } from '../../offline/outbox.js'
 import { useAuthStore } from '../../stores/auth.js'
 import { useEnergyStore } from '../../stores/energy.js'
-import { getExercises, getVocabulary, findUnitWithLevel, invalidateAfterLesson } from '../../data/learning.js'
+import { getExercises, getVocabulary, getLevels, getUnits, findUnitWithLevel, invalidateAfterLesson } from '../../data/learning.js'
 import { invalidateStats } from '../../data/stats.js'
 import { invalidateAchievements } from '../../data/achievements.js'
 
 /**
  * Carga los datos de una lección dado el unitId.
- * Devuelve { currentUnit, currentLevel, currentExercises, vocabulary }
+ * Devuelve { currentUnit, currentLevel, currentExercises, vocabulary, reviewVocabulary }
  */
 export async function loadLessonData(unitId) {
     const [exercises, vocabulary, { unit, level }] = await Promise.all([
@@ -18,7 +17,35 @@ export async function loadLessonData(unitId) {
         getVocabulary(unitId),
         findUnitWithLevel(unitId),
     ])
-    return { currentUnit: unit, currentLevel: level, currentExercises: exercises, vocabulary }
+    const reviewVocabulary = await loadReviewVocabulary(unit, level)
+    return { currentUnit: unit, currentLevel: level, currentExercises: exercises, vocabulary, reviewVocabulary }
+}
+
+/**
+ * Vocabulario ya visto, para repasarlo en la lección (src/data/lessonPlan.js): el de las unidades anteriores
+ * del mismo nivel; si es la primera unidad del nivel, el de las 2 últimas unidades del nivel anterior.
+ * Es opcional: si algo falla (p. ej. sin conexión) la lección sigue sin repaso.
+ */
+async function loadReviewVocabulary(unit, level) {
+    if (!unit?.id || !level?.id) return []
+    try {
+        const units = await getUnits(level.id)
+        const num = u => u.unitNum ?? u.unit_num ?? 0
+        let previous = units.filter(u => num(u) < num(unit))
+        if (!previous.length) {
+            const levels = await getLevels()
+            const lnum = l => l.levelNum ?? l.level_num ?? 0
+            const prevLevel = levels.filter(l => lnum(l) < lnum(level)).sort((a, b) => lnum(b) - lnum(a))[0]
+            if (prevLevel) previous = (await getUnits(prevLevel.id)).sort((a, b) => num(b) - num(a)).slice(0, 2)
+        }
+        const lists = await Promise.all(previous.slice(-5).map(u =>
+            getVocabulary(u.id, { optional: true }).catch(() => null)))
+        return lists.filter(Boolean).flatMap(v => Array.isArray(v)
+            ? v
+            : Object.entries(v).map(([word, e]) => ({ word, ...(e || {}) })))
+    } catch {
+        return []
+    }
 }
 
 /**

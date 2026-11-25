@@ -229,6 +229,25 @@ Ver `f/am-ui-tlahtolcalli/twa/README.md`. Resumen:
 
 ---
 
+## 12. Secuencia de las lecciones (4.6.0)
+
+La lección se arma en el front (`src/data/lessonPlan.js`) con lo que ya hay en la base; no hace falta contenido nuevo:
+
+1. **Palabra nueva** (hasta 4): la palabra en la lengua; se arma su traducción con fichas.
+2. **Reconocer** (hasta 3): "Selecciona la traducción correcta", un paso después de presentarla.
+3. **Ejercicios de la unidad** (los de la base) intercalados con **Repaso** (2 palabras de unidades anteriores).
+4. **Armar la frase** (hasta 2): frases de varias palabras de la unidad, en la lengua.
+5. **Error anterior**: lo que se falla se repite al final, una vez.
+
+- Palabra "nueva" = vocabulario de la unidad que no estaba en unidades anteriores (las repetidas pasan a repaso).
+- Si la unidad no tiene vocabulario, la lección es como antes.
+- XP = puntos de los ejercicios de la base × aciertos al primer intento / pasos del plan (los pasos generados no
+  suman XP propia, así no cambia la XP por nivel).
+- Para escribir un ejercicio de armar frase a mano: tipo `word-bank` en el monitor (ver changelog del back 4.6.0).
+- Sin audio por ahora: "toca lo que escuchas" queda para cuando haya grabaciones (bucket).
+
+---
+
 ## Orden resumido
 
 ```

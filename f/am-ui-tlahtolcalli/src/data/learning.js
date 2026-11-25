@@ -1,4 +1,3 @@
-// src/data/learning.js
 // Único punto de acceso a datos de aprendizaje.
 // Junta apiClient + cacheStore + manejo de errores.
 // Las views importan de aquí, nunca de apiClient directamente.
@@ -39,8 +38,9 @@ export async function getExercises(unitId) {
     return learningApi.getExercises(unitId)
 }
 
-export async function getVocabulary(unitId) {
-    return learningApi.getVocabulary(unitId)
+/** opts.optional: si falla sin conexión no muestra la pantalla de "Sin conexión" (p. ej. vocabulario de repaso). */
+export async function getVocabulary(unitId, opts) {
+    return learningApi.getVocabulary(unitId, opts)
 }
 
 export async function getQuickExercises(levelId, count = 6) {

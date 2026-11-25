@@ -158,7 +158,7 @@ export const learningApi = {
     getLevels: safe('learning.getLevels', (languageId, userId) => api.get(`/learning/levels?languageId=${languageId}&userId=${userId}`)),
     getUnits: safe('learning.getUnits', (levelId, userId) => api.get(`/learning/levels/${levelId}/units?userId=${userId}`)),
     getExercises: safe('learning.getExercises', (unitId) => api.get(`/learning/units/${unitId}/exercises`)),
-    getVocabulary: safe('learning.getVocabulary', (unitId) => api.get(`/learning/units/${unitId}/vocabulary`)),
+    getVocabulary: safe('learning.getVocabulary', (unitId, opts) => api.get(`/learning/units/${unitId}/vocabulary`, opts)),
     getQuick: safe('learning.getQuick', (levelId, count = 6) => api.get(`/learning/levels/${levelId}/quick?count=${count}`)),
 }
 

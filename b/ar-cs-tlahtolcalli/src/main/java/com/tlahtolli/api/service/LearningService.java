@@ -181,7 +181,40 @@ public class LearningService {
 			m.put("placeholder", ex.getPlaceholder()); // pista en español
 		}
 
+		if ("word-bank".equals(ex.getExerciseType())) {
+			// Armar la frase con fichas. CORRECT_ANS: respuestas aceptadas (JSON) o texto simple.
+			// OPTIONS: fichas (JSON). Si no hay, se arman con la primera respuesta + 3 palabras del vocabulario.
+			List<String> accepted = parseJsonList(ex.getCorrectAns());
+			if (accepted.isEmpty() && ex.getCorrectAns() != null && !ex.getCorrectAns().isBlank()) {
+				accepted = List.of(ex.getCorrectAns());
+			}
+			List<String> tiles = parseJsonList(ex.getOptions());
+			if (tiles.isEmpty() && !accepted.isEmpty()) {
+				tiles = buildTiles(accepted.get(0), vocabPool);
+			}
+			m.put("accepted", accepted);
+			m.put("tiles", tiles);
+		}
+
 		return m;
+	}
+
+	/** Fichas para "word-bank": palabras de la respuesta + hasta 3 palabras de otras frases, revueltas. */
+	private List<String> buildTiles(String answer, List<String> vocabPool) {
+		List<String> words = new java.util.ArrayList<>(java.util.Arrays.stream(answer.replaceAll("[¿?¡!.,;:]", " ").trim().split("\\s+"))
+				.filter(w -> !w.isBlank()).toList());
+		java.util.Set<String> used = new java.util.HashSet<>();
+		words.forEach(w -> used.add(w.toLowerCase()));
+		List<String> extra = new java.util.ArrayList<>();
+		for (String phrase : vocabPool == null ? List.<String>of() : vocabPool) {
+			for (String w : phrase.replaceAll("[¿?¡!.,;:]", " ").trim().split("\\s+")) {
+				if (!w.isBlank() && used.add(w.toLowerCase())) extra.add(w);
+			}
+		}
+		java.util.Collections.shuffle(extra);
+		words.addAll(extra.subList(0, Math.min(3, extra.size())));
+		java.util.Collections.shuffle(words);
+		return words;
 	}
 
 	/**

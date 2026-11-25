@@ -1098,6 +1098,7 @@
           <option value="">Todos los tipos</option>
           <option>multiple-choice</option>
           <option>fill-blank</option>
+          <option>word-bank</option>
           <option>translation</option>
           <option>listening</option>
         </select>
@@ -1429,6 +1430,7 @@
         <select class="form-sel" id="ex-type">
           <option value="multiple-choice">multiple-choice</option>
           <option value="fill-blank">fill-blank</option>
+          <option value="word-bank">word-bank (armar frase con fichas)</option>
           <option value="translation">translation</option>
           <option value="listening">listening</option>
         </select>
@@ -1448,7 +1450,7 @@
                                                                                              id="ex-answer" /></div>
       <div class="form-group full"><label>Respuesta correcta (correctAns — puede ser JSON:
         ["op1","op2"])</label><input type="text" id="ex-correct" /></div>
-      <div class="form-group full"><label>Opciones (OPTIONS — JSON: ["a","b","c","d"])</label><input type="text"
+      <div class="form-group full"><label>Opciones (OPTIONS — JSON: ["a","b","c","d"]; en word-bank son las fichas, opcional)</label><input type="text"
                                                                                                      id="ex-options" /></div>
       <div class="form-group full"><label>Explicación</label><input type="text" id="ex-explanation" /></div>
       <div class="form-group full"><label>Placeholder</label><input type="text" id="ex-placeholder" placeholder="Texto guía del campo de respuesta" /></div>

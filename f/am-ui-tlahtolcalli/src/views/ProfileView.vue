@@ -1,4 +1,3 @@
-<!-- HAY QUE VER SI PUEDO OBTENER LOS PORCENTAJES DE AVANCE DE LOS LOGROS -->
 <template>
   <div class="bg-surface-0 text-white pt-4">
     <Header variant="simple" title="Perfil" class="md:hidden pt-6 md:pt-5" />
@@ -101,8 +100,8 @@
                 <span>{{ currentLanguageName }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-400">Version</span>
-                <span class="font-mono text-sm text-gray-300 hover:text-white">{{ appVersion }}</span>
+                <span class="text-gray-400">Versión de la app</span>
+                <router-link to="/novedades" class="font-mono text-sm text-gray-300 hover:text-white">{{ appVersion }}</router-link>
               </div>
             </div>
             <div class="mt-4 space-y-2">

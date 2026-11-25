@@ -2,6 +2,13 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
+## [4.6.0] - 2026-11-24 - Armar frases
+
+### Added
+- Tipo de ejercicio `word-bank` (armar la frase con fichas): `correct_ans` = respuestas aceptadas (JSON o texto),
+  `options` = fichas (JSON, opcional: si no hay, se arman con la respuesta + 3 palabras del vocabulario).
+  La API lo entrega como `accepted` y `tiles`. Disponible en el monitor (Ejercicios → Tipo).
+
 ## [4.5.0] - 2026-11-22 - Racha y cierre de sesiones
 
 ### Added

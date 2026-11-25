@@ -7,6 +7,17 @@
 //   type: 'nuevo' | 'mejora' | 'correccion'
 export const CHANGELOG = [
     {
+        version: '4.6.0',
+        date: '2026-11-24',
+        title: 'Lecciones que te ayudan a recordar',
+        items: [
+            { type: 'nuevo', text: 'Las palabras nuevas se presentan primero ("Palabra nueva") y vuelven a aparecer en la misma lección para que las reconozcas.' },
+            { type: 'nuevo', text: 'Arma frases con fichas: toca las palabras en orden para traducir.' },
+            { type: 'nuevo', text: 'Repaso: cada lección trae palabras de unidades anteriores.' },
+            { type: 'mejora', text: 'Lo que respondes mal se repite al final de la lección ("Error anterior").' },
+        ],
+    },
+    {
         version: '4.5.0',
         date: '2026-11-22',
         title: 'Tu racha cuenta',

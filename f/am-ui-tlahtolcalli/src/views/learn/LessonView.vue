@@ -18,6 +18,13 @@
             <div class="flex flex-col w-full items-center">
                 <div class="w-full">
                     <!-- QUESTION DESKTOP -->
+                    <div class="hidden md:block ml-20">
+                        <!-- Etiqueta del paso (src/data/lessonPlan.js): palabra nueva, repaso o error anterior -->
+                        <p v-if="badgeInfo" class="text-xs font-bold tracking-widest uppercase mb-1 flex items-center gap-1"
+                            :class="badgeInfo.cls">
+                            <span aria-hidden="true">{{ badgeInfo.icon }}</span>{{ badgeInfo.label }}
+                        </p>
+                    </div>
                     <h1 class="hidden md:block text-3xl ml-20 font-bold mb-4">{{ currentExercise.question }}</h1>
                 </div>
 
@@ -26,6 +33,13 @@
                     <Card v-if="currentQuestion <= currentExercises.length">
 
                         <!-- QUESTION MOBILE -->
+                        <div class="md:hidden">
+                        <!-- Etiqueta del paso (src/data/lessonPlan.js): palabra nueva, repaso o error anterior -->
+                        <p v-if="badgeInfo" class="text-xs font-bold tracking-widest uppercase mb-1 flex items-center gap-1"
+                            :class="badgeInfo.cls">
+                            <span aria-hidden="true">{{ badgeInfo.icon }}</span>{{ badgeInfo.label }}
+                        </p>
+                        </div>
                         <h2 class="md:hidden block text-xl font-semibold mb-4">{{ currentExercise.question }}</h2>
 
                         <div class="md:flex md:gap-2 md:px-10 md:py-3 md:scale-125">
@@ -102,6 +116,13 @@
                                     </div>
                                 </div>
 
+                                <!-- Tipo: Armar la frase con fichas -->
+                                <div v-else-if="currentExercise.type === 'word-bank'" class="md:-ml-7 mt-2">
+                                    <WordBank :key="`wb-${currentQuestion}`" v-model="wordBankSel"
+                                        :tiles="currentExercise.tiles || []" :disabled="showResult"
+                                        :state="showResult ? (isAnswerCorrect ? 'correct' : 'wrong') : null" />
+                                </div>
+
                                 <!-- Tipo: Completar espacio -->
                                 <div v-else-if="currentExercise.type === 'fill-blank'" class="md:-ml-7">
                                     <textarea v-model="textAnswer"
@@ -123,7 +144,8 @@
                             md:float-right md:left-[38%] md:p-5 md:mt-8 md:max-w-[190px]"
                             :class="{ 'md:hidden': showFeedbackModal }">
                             <button @click="verifyAnswer" :disabled="isVerifying || (currentExercise.type === 'multiple-choice' && selectedAnswer === null) ||
-                                (currentExercise.type === 'fill-blank' && !textAnswer)"
+                                (currentExercise.type === 'fill-blank' && !textAnswer) ||
+                                (currentExercise.type === 'word-bank' && !wordBankSel.length)"
                                 class="w-full bg-turquesa-deep hover:bg-turquesa-deeper text-white py-5 md:py-3 px-8 rounded-lg disabled:bg-line disabled:text-stone-500 text-lg font-medium">
                                 {{ showResult ? 'Continuar' : 'Verificar' }}
                             </button>
@@ -165,6 +187,8 @@ import ProcessedText from '../../components/ProcessedText.vue';
 import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
+import WordBank from '../../components/WordBank.vue';
+import { buildLessonPlan, mistakeRetry, checkWordBank, BADGE } from '../../data/lessonPlan.js';
 
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
@@ -174,7 +198,7 @@ export default {
     name: "Lesson",
     components: {
         Card, Header, FeedbackModal, WarningModal, ExitConfirmModal,
-        ProcessedText, PronunciationTooltip, ExerciseImage, CompletionMessage, NoEnergyModal
+        ProcessedText, PronunciationTooltip, ExerciseImage, CompletionMessage, NoEnergyModal, WordBank
     },
     props: {
         unitId: {
@@ -195,6 +219,7 @@ export default {
             currentQuestion: 1,
             selectedAnswer: null,
             textAnswer: '',
+            wordBankSel: [],
             showResult: false,
             isAnswerCorrect: false,
             currentExercises: [],
@@ -226,6 +251,12 @@ export default {
             requiredEnergyForLesson: 10,
             energyCheckInterval: null,
             pendingSync: false,
+
+            // Secuencia (lessonPlan.js): cuántos pasos tenía el plan (sin repeticiones de errores),
+            // aciertos al primer intento y XP de los ejercicios de la base
+            plannedCount: 0,
+            firstTryCorrect: 0,
+            authoredPoints: 0,
         };
     },
     computed: {
@@ -245,6 +276,14 @@ export default {
                 }));
             }
             return [];
+        },
+        badgeInfo() {
+            switch (this.currentExercise.badge) {
+                case BADGE.NEW: return { label: 'Palabra nueva', icon: '✦', cls: 'text-fuchsia-300' };
+                case BADGE.REVIEW: return { label: 'Repaso', icon: '↻', cls: 'text-turquesa' };
+                case BADGE.MISTAKE: return { label: 'Error anterior', icon: '⟲', cls: 'text-amber-400' };
+                default: return null;
+            }
         },
         containerClasses() {
             if (this.screenHeight <= 658) return 'md:pt-[1%] md:py-[10%]';
@@ -288,8 +327,17 @@ export default {
                 const data = await loadLessonData(this.unitId);
                 this.currentUnit = data.currentUnit || {};
                 this.currentLevel = data.currentLevel || {};
-                this.currentExercises = this.shuffleExerciseOptions(data.currentExercises || []);
                 this.unitVocabulary = data.vocabulary || {};
+                const authored = this.shuffleExerciseOptions(data.currentExercises || []);
+                this.authoredPoints = authored.reduce((t, ex) => t + (ex.points || 15), 0);
+                // Secuencia tipo Duolingo: palabra nueva → reconocerla → ejercicios + repaso → armar frases
+                this.currentExercises = buildLessonPlan({
+                    exercises: authored,
+                    vocabulary: data.vocabulary,
+                    review: data.reviewVocabulary || [],
+                    languageName: this.authStore.selectedLangObj?.langName || 'la lengua',
+                });
+                this.plannedCount = this.currentExercises.length;
             } catch (err) {
                 console.error('[LessonView] fetchLessonData:', err);
             } finally {
@@ -331,7 +379,16 @@ export default {
                 } else {
                     this.isAnswerCorrect = clean(correct) === clean(this.textAnswer);
                 }
+            } else if (this.currentExercise.type === 'word-bank') {
+                const tiles = this.currentExercise.tiles || [];
+                this.isAnswerCorrect = checkWordBank(this.wordBankSel.map(i => tiles[i]), this.currentExercise.accepted);
             }
+
+            // Lo que se falla se repite al final de la lección, una vez ("Error anterior")
+            if (!this.isAnswerCorrect && !this.currentExercise.isRetry) {
+                this.currentExercises.push(mistakeRetry(this.currentExercise));
+            }
+            if (this.isAnswerCorrect && !this.currentExercise.isRetry) this.firstTryCorrect++;
 
             const energyResult = await this.energyStore.consumeForExercise(this.isAnswerCorrect);
 
@@ -357,8 +414,11 @@ export default {
                 this.showFeedback('¡Buen trabajo!',
                     (this.currentExercise.explanation || 'Respuesta correcta.') + streakBonus);
             } else {
+                const accepted = this.currentExercise.type === 'word-bank' ? this.currentExercise.accepted?.[0] : null;
                 this.showFeedback('Inténtalo de nuevo',
-                    this.currentExercise.explanation || 'La respuesta no es correcta.');
+                    accepted
+                        ? `Respuesta correcta: ${accepted}`
+                        : (this.currentExercise.explanation || 'La respuesta no es correcta.'));
             }
 
             this.isVerifying = false;
@@ -370,6 +430,7 @@ export default {
             this.currentQuestion++;
             this.selectedAnswer = null;
             this.textAnswer = '';
+            this.wordBankSel = [];
             this.showResult = false;
             this.isAnswerCorrect = false;
 
@@ -384,8 +445,9 @@ export default {
                 ? Math.floor((Date.now() - this.lessonStartTime) / 1000)
                 : 0;
 
-            const performance = this.currentExercises.length > 0
-                ? this.correctAnswersCount / this.currentExercises.length
+            // Desempeño = aciertos al primer intento sobre los pasos del plan (las repeticiones de errores no cuentan)
+            const performance = this.plannedCount > 0
+                ? this.firstTryCorrect / this.plannedCount
                 : 1.0;
 
             const earnedPoints = this.calculateEarnedPoints();
@@ -396,8 +458,8 @@ export default {
                     levelId: this.currentLevel.id,
                     performance,
                     earnedExp: earnedPoints,
-                    correctAns: this.correctAnswersCount,
-                    totalExerc: this.currentExercises.length,
+                    correctAns: this.firstTryCorrect,
+                    totalExerc: this.plannedCount,
                     timeSeconds: this.lessonTime,
                 });
 
@@ -417,10 +479,11 @@ export default {
             }
         },
 
+        // XP = puntos de los ejercicios de la base × desempeño. Los pasos generados (palabra nueva, repaso,
+        // armar frase) no suman XP propia: así la XP por nivel sigue igual que antes (UserLevelService).
         calculateEarnedPoints() {
-            return this.currentExercises
-                .slice(0, this.correctAnswersCount)
-                .reduce((total, ex) => total + (ex.points || 15), 0);
+            const performance = this.plannedCount > 0 ? this.firstTryCorrect / this.plannedCount : 1;
+            return Math.round(this.authoredPoints * performance);
         },
 
         checkEnergyBeforeLesson() {
