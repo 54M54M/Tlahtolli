@@ -43,7 +43,7 @@
                             'grid-cols-4': achievementsWithProgress.length >= 4
                         }">
               <div v-for="achievement in achievementsWithProgress" :key="achievement.achievement.id"
-                   class="aspect-square rounded-lg flex flex-col items-center justify-center p-2 cursor-pointer bg-gray-700/30 hover:bg-gray-700/50 transition-colors"
+                   class="tl-raise aspect-square rounded-lg flex flex-col items-center justify-center p-2 cursor-pointer bg-gray-700/30 hover:bg-gray-700/50 transition-colors"
                    @click="selectedAchievement = achievement" :title="achievement.achievement.requirement">
                 <div class="text-2xl mb-1 opacity-30">
                   {{ achievement.achievement.icon }}

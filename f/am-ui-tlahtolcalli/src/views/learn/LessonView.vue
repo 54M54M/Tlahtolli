@@ -186,6 +186,7 @@ import ProcessedText from '../../components/ProcessedText.vue';
 import PronunciationTooltip from '../../components/PronunciationTooltip.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
+import { leaveTo } from '../../router/leave.js';
 import WordBank from '../../components/WordBank.vue';
 import MatchPairs from '../../components/MatchPairs.vue';
 import { buildLessonPlan, mistakeRetry, checkWordBank, BADGE } from '../../data/lessonPlan.js';
@@ -548,12 +549,12 @@ export default {
             this.showNoEnergyModal = false;
             this.lessonInProgress = false;
             if (this.energyCheckInterval) { clearInterval(this.energyCheckInterval); this.energyCheckInterval = null; }
-            this.$router.push(`/app/nivel/${this.currentLevel.id}`);
+            leaveTo(this.$router, `/app/nivel/${this.currentLevel.id}`);
         },
 
         handlePracticeForEnergy() {
             this.showNoEnergyModal = false;
-            this.$router.push('/app');
+            leaveTo(this.$router, '/app');
         },
 
         closeNoEnergyModal() {
@@ -564,7 +565,7 @@ export default {
                 this.startEnergyMonitoring();
             }
             if (this.energyStore.currentEnergy <= 0) {
-                this.$router.push(`/app/nivel/${this.currentLevel.id}`);
+                leaveTo(this.$router, `/app/nivel/${this.currentLevel.id}`);
             }
         },
 
@@ -577,8 +578,8 @@ export default {
         closeWarningModal() { this.showWarningModal = false; },
         showExitConfirmModal() { this.showExitConfirmModalFlag = true; },
         closeExitConfirmModal() { this.showExitConfirmModalFlag = false; },
-        confirmExitLesson() { this.closeExitConfirmModal(); this.$router.push(`/app/nivel/${this.currentLevel.id}`); },
-        endSession() { this.closeWarningModal(); this.$router.push(`/app/nivel/${this.currentLevel.id}`); },
+        confirmExitLesson() { this.closeExitConfirmModal(); leaveTo(this.$router, `/app/nivel/${this.currentLevel.id}`); },
+        endSession() { this.closeWarningModal(); leaveTo(this.$router, `/app/nivel/${this.currentLevel.id}`); },
 
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);

@@ -113,40 +113,6 @@
             </div>
         </section>
 
-        <!-- Cómo se usa (resumen del manual de uso) -->
-        <section id="guia" class="py-16 md:py-20 px-4 scroll-mt-20">
-            <div class="container mx-auto md:px-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Cómo se usa</h2>
-                <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">Funciona igual en el teléfono y en la
-                    computadora. Entra desde cualquier navegador; no hay que instalar nada.</p>
-                <div class="grid md:grid-cols-[minmax(0,1fr)_auto] gap-10 md:gap-16 items-start">
-                    <ol class="space-y-3 order-2 md:order-1">
-                        <li v-for="(g, i) in GUIDE" :key="g.title">
-                            <button type="button" @click="step = i" :aria-pressed="step === i"
-                                class="w-full text-left flex gap-4 p-5 rounded-xl border transition-colors"
-                                :class="step === i ? 'bg-surface-2 border-turquesa' : 'border-line hover:border-gray-500'">
-                                <span class="shrink-0 w-9 h-9 rounded-lg font-bold flex items-center justify-center"
-                                    :class="step === i ? 'bg-turquesa text-surface-3' : 'bg-surface-2 text-gray-300'">{{ i + 1 }}</span>
-                                <span>
-                                    <span class="block text-lg font-bold mb-1">{{ g.title }}</span>
-                                    <span class="block text-gray-400" v-html="g.text"></span>
-                                </span>
-                            </button>
-                        </li>
-                    </ol>
-                    <figure class="order-1 md:order-2 md:sticky md:top-24 mx-auto">
-                        <div class="guia-tel">
-                            <Transition name="guia" mode="out-in">
-                                <img :key="GUIDE[step].img" :src="`/landing/pantallas/${GUIDE[step].img}.webp`"
-                                    :alt="GUIDE[step].alt" width="432" height="935" loading="lazy">
-                            </Transition>
-                        </div>
-                        <figcaption class="text-center text-sm text-gray-400 mt-3">Paso {{ step + 1 }} de {{ GUIDE.length }}</figcaption>
-                    </figure>
-                </div>
-            </div>
-        </section>
-
         <!-- Idiomas y estado del proyecto -->
         <section id="idiomas" class="py-16 md:py-20 px-4 scroll-mt-20">
             <div class="container mx-auto md:px-16">
@@ -229,19 +195,24 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import PublicShell from '../../components/public/PublicShell.vue'
 
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const MAIL = 'contacto.tlahtolcalli@gmail.com'
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 
 // Si llegó con /#seccion desde otra página
-onMounted(() => { if (route.hash) setTimeout(() => scrollTo(route.hash.slice(1)), 50) })
+// "/#guia" (enlaces viejos a la sección) ahora es su propia página
+onMounted(() => {
+    if (route.hash === '#guia') return router.replace('/como-se-usa')
+    if (route.hash) setTimeout(() => scrollTo(route.hash.slice(1)), 50)
+})
 
 // Pantallas de la portada, por columna (capturas en public/landing/pantallas)
 // nhn = náhuatl central · hus = tének
@@ -275,27 +246,6 @@ const LEVELS = [
     { color: 'bg-turquesa', title: 'Expresa tus gustos', text: 'Lo que te gusta, lo que quieres y cómo pedir algo.' },
 ]
 
-// Pasos del manual de uso. El texto es fijo (lo lee Google); la imagen cambia con el paso elegido.
-const step = ref(0)
-const GUIDE = [
-    { img: 'registro', alt: 'Formulario para crear cuenta', title: 'Crea tu cuenta',
-      text: 'Toca <b>Empezar gratis</b>, llena tus datos y toca <b>Crear cuenta</b>; te llega un correo para verificarla. También puedes entrar con <b>Continuar con Google</b>.' },
-    { img: 'idioma', alt: 'Lista para elegir idioma', title: 'Elige tu idioma',
-      text: 'Abre la familia de lenguas, marca el idioma y toca <b>Continuar</b>. El náhuatl central está en uto-aztec y el tének en maya.' },
-    { img: 'nhn-inicio', alt: 'Niveles del curso', title: 'Avanza por niveles',
-      text: 'Cada curso tiene 6 niveles. El primero está abierto y cada uno se abre al terminar el anterior. El rayo de arriba es tu energía.' },
-    { img: 'nhn-nivel', alt: 'Unidades de un nivel', title: 'Entra a una unidad',
-      text: 'Cada nivel tiene 6 unidades con su objetivo y una nota de gramática. Toca <b>Empezar lección</b>; las terminadas se pueden repasar.' },
-    { img: 'nhn-leccion-correcta', alt: 'Ejercicio respondido correctamente', title: 'Haz la lección',
-      text: 'Elige la traducción o escribe la palabra que falta y toca <b>Verificar</b>. Las palabras subrayadas muestran su pronunciación. Si fallas, pierdes 1 punto de energía.' },
-    { img: 'nhn-glosario', alt: 'Glosario con el alfabeto', title: 'Gana EXP y repasa',
-      text: 'Al terminar ganas EXP y se abre la siguiente unidad. En <b>Glosario</b> está el alfabeto del idioma; en <b>Estadísticas</b> y <b>Perfil</b>, tu avance y tus logros.' },
-    { img: 'hus-inicio', alt: 'Inicio con el botón de idioma', title: 'Cambia de idioma',
-      text: 'En el inicio, toca el círculo con el ícono del idioma, arriba a la izquierda, y elige otro. Tu avance de cada idioma se guarda.' },
-    { img: 'editar', alt: 'Pantalla Editar perfil', title: 'Edita tu perfil',
-      text: 'En <b>Perfil → Ajustes → Editar perfil</b> cambias tu nombre, usuario, correo o contraseña, o eliminas tu cuenta.' },
-]
-
 const COURSES = [
     {
         name: 'Náhuatl central', badge: 'bg-turquesa/15 text-turquesa',
@@ -317,13 +267,6 @@ const COLLAB = [
 </script>
 
 <style scoped>
-/* Teléfono de la guía de uso */
-.guia-tel { width: 15rem; aspect-ratio: 432 / 935; border-radius: 2rem; padding: .5rem; background: #0b1219;
-    border: 1px solid rgb(255 255 255 / .12); box-shadow: 0 24px 60px -20px rgb(0 0 0 / .7); overflow: hidden; }
-.guia-tel img { width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem; display: block; }
-@media (min-width: 768px) { .guia-tel { width: 17rem; } }
-.guia-enter-active, .guia-leave-active { transition: opacity .2s ease; }
-.guia-enter-from, .guia-leave-to { opacity: 0; }
 /* Motivo escalonado (greca xicalcoliuhqui): el único patrón de la marca */
 .escalon { display: grid; grid-template-columns: repeat(7, 16px); gap: 8px; align-items: end; }
 .escalon span { display: block; width: 16px; border-radius: 2px; }

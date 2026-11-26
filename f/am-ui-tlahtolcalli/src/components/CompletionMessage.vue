@@ -6,29 +6,14 @@
         <!-- Imagen de Toch -->
         <TochImage :performance="performance" :lessonTime="lessonTime" />
 
-        <!-- Métricas de desempeño -->
-        <div class="grid grid-cols-3 md:grid-cols-3 gap-4 mb-6">
-            <!-- EXP TOTALES -->
-            <div class="bg-cempasuchil rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold text-surface-0">EXP TOTALES</div>
-                <div class="bg-surface-0 rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-cempasuchil mb-1">{{ totalExp }} EXP</div>
+        <!-- Métricas de desempeño: misma altura en las 3 (título a 2 renglones fijos, valor centrado) -->
+        <div class="grid grid-cols-3 gap-3 md:gap-4 mb-6">
+            <div v-for="m in metrics" :key="m.key" :class="m.bg" class="rounded-xl p-1 flex flex-col">
+                <div class="min-h-[2.6em] px-1 flex items-center justify-center text-[11px] md:text-[15px] leading-tight font-bold uppercase text-surface-0">
+                    {{ m.label }}
                 </div>
-            </div>
-
-            <!-- PORCENTAJE DE ACIERTOS -->
-            <div class="bg-turquesa rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold uppercase text-surface-0">{{ performanceMessage }}</div>
-                <div class="bg-surface-0 rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-turquesa mb-1">{{ Math.round(performance * 100) }}%</div>
-                </div>
-            </div>
-
-            <!-- TIEMPO EN LECCIÓN -->
-            <div class="bg-azul-maya rounded-xl p-1">
-                <div class="text-[12px] md:text-[16px] font-bold uppercase text-surface-0">{{ timeMessage }}</div>
-                <div class="bg-surface-0 rounded-xl p-4">
-                    <div class="md:text-2xl font-bold text-azul-maya mb-1">{{ formattedTime }}</div>
+                <div class="flex-1 bg-surface-0 rounded-lg py-4 md:py-5 flex items-center justify-center">
+                    <span :class="m.color" class="text-lg md:text-2xl font-bold">{{ m.value }}</span>
                 </div>
             </div>
         </div>
@@ -65,12 +50,10 @@
 
         <!-- Botón de acción -->
         <div class="flex flex-col fixed bottom-0 left-0 right-0 p-4 bg-surface-0 md:static md:p-0 md:bg-transparent">
-            <router-link :to="backRoute" class="w-full">
-                <button
-                    class="bg-turquesa-deep hover:bg-turquesa-deeper text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
-                    {{ buttonText }}
-                </button>
-            </router-link>
+            <button type="button" @click="leave"
+                class="bg-turquesa-deep hover:bg-turquesa-deeper text-white font-extrabold py-3 px-6 rounded-lg transition-colors w-full">
+                {{ buttonText }}
+            </button>
         </div>
 
     </Card>
@@ -79,6 +62,7 @@
 <script>
 import Card from './Card.vue';
 import TochImage from './TochImage.vue';
+import { leaveTo } from '../router/leave.js';
 
 export default {
     name: "CompletionMessage",
@@ -179,6 +163,14 @@ export default {
             return `${minutes}:${seconds.toString().padStart(2, '0')}`;
         },
 
+        metrics() {
+            return [
+                { key: 'exp', label: 'EXP totales', value: `${this.totalExp} EXP`, bg: 'bg-cempasuchil', color: 'text-cempasuchil' },
+                { key: 'pct', label: this.performanceMessage, value: `${Math.round(this.performance * 100)}%`, bg: 'bg-turquesa', color: 'text-turquesa' },
+                { key: 'time', label: this.timeMessage, value: this.formattedTime, bg: 'bg-azul-maya', color: 'text-azul-maya' },
+            ];
+        },
+
         // Mensaje basado en tiempo
         timeMessage() {
             const minutes = Math.floor(this.lessonTime / 60);
@@ -189,6 +181,10 @@ export default {
         }
     },
     methods: {
+        /** Salir sin dejar la lección en el historial (src/router/leave.js). */
+        leave() {
+            leaveTo(this.$router, this.backRoute);
+        },
         // Calcular bonus por tiempo (más rápido = más bonus)
         calculateTimeBonus() {
             const minutes = Math.floor(this.lessonTime / 60);

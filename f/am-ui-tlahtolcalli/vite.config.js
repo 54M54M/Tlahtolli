@@ -61,7 +61,7 @@ function pwa(isDev) {
       // Cualquier ruta de la app abre el shell guardado (también sin conexión).
       // Las páginas públicas prerenderizadas siguen viniendo de Netlify.
       navigateFallback: '/spa.html',
-      navigateFallbackDenylist: [/^\/$/, /^\/novedades\/?$/, /^\/privacidad\/?$/, /^\/terminos\/?$/, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
+      navigateFallbackDenylist: [/^\/$/, /^\/como-se-usa\/?$/, /^\/novedades\/?$/, /^\/privacidad\/?$/, /^\/terminos\/?$/, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       // La API (Render) nunca se guarda: progreso, energía y sesión siempre vienen del servidor.

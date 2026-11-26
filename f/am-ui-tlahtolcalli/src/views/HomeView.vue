@@ -25,7 +25,7 @@
         <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/app/nivel/' + level.id"
                      class="w-full block">
           <Card
-              class="rounded-xl text-ink-on-color overflow-hidden shadow-lg transition-transform transform hover:scale-105"
+              class="tl-raise rounded-xl text-ink-on-color overflow-hidden shadow-lg transition-transform transform hover:scale-105"
               :style="{ backgroundColor: $levelColor(level.levelNum) }">
             <div class="relative p-4 cursor-pointer">
               <div
@@ -52,7 +52,7 @@
 
         <!-- Niveles bloqueados -->
         <div v-for="level in lockedLevels" :key="level.id" class="w-full block">
-          <Card class="rounded-xl text-ink-on-color overflow-hidden shadow-lg opacity-60 cursor-pointer"
+          <Card class="tl-raise rounded-xl text-ink-on-color overflow-hidden shadow-lg opacity-60 cursor-pointer"
                 :style="{ backgroundColor: $levelColor(level.levelNum) }">
             <div class="relative p-4">
               <div

@@ -9,8 +9,10 @@
                 </router-link>
 
                 <nav class="hidden md:flex items-center gap-8 text-gray-400">
-                    <a v-for="s in SECTIONS" :key="s.id" :href="`/#${s.id}`" @click="goSection($event, s.id)"
-                        class="nav-item hover:text-gray-100">{{ s.label }}</a>
+                    <template v-for="s in SECTIONS" :key="s.id">
+                        <router-link v-if="s.to" :to="s.to" class="nav-item hover:text-gray-100" active-class="text-gray-100">{{ s.label }}</router-link>
+                        <a v-else :href="`/#${s.id}`" @click="goSection($event, s.id)" class="nav-item hover:text-gray-100">{{ s.label }}</a>
+                    </template>
                     <AccountButtons />
                 </nav>
 
@@ -30,7 +32,8 @@
                 </router-link>
                 <ul class="flex flex-wrap gap-x-6 gap-y-2 text-gray-400">
                     <li v-for="s in SECTIONS" :key="s.id">
-                        <a :href="`/#${s.id}`" @click="goSection($event, s.id)" class="hover:text-gray-100">{{ s.label }}</a>
+                        <router-link v-if="s.to" :to="s.to" class="hover:text-gray-100">{{ s.label }}</router-link>
+                        <a v-else :href="`/#${s.id}`" @click="goSection($event, s.id)" class="hover:text-gray-100">{{ s.label }}</a>
                     </li>
                     <li><router-link to="/novedades" class="hover:text-gray-100">Novedades</router-link></li>
                     <li><router-link to="/privacidad" class="hover:text-gray-100">Privacidad</router-link></li>
@@ -68,7 +71,7 @@ import UserAvatar from '../UserAvatar.vue'
 const SECTIONS = [
     { id: 'caracteristicas', label: 'Características' },
     { id: 'metodo', label: 'Método' },
-    { id: 'guia', label: 'Cómo se usa', desktopOnly: true },
+    { id: 'guia', label: 'Cómo se usa', to: '/como-se-usa', desktopOnly: true },
     { id: 'idiomas', label: 'Idiomas' },
     { id: 'colabora', label: 'Colabora' },
 ]

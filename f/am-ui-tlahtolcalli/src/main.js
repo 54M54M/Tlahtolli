@@ -36,7 +36,7 @@ configureAuth({
 })
 
 // Se monta cuando el router resolvió la primera ruta: así el HTML prerenderizado
-// (portada, novedades, privacidad, términos) se reemplaza sin parpadeo en blanco
+// (portada, cómo se usa, novedades, privacidad, términos) se reemplaza sin parpadeo en blanco
 router.isReady().then(() => app.mount('#app'))
 
 // Sin conexión: detecta cuándo se va y vuelve el internet y envía lo que se hizo mientras (src/offline)

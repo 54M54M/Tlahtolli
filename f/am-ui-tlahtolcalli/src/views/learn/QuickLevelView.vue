@@ -164,6 +164,7 @@ import NoEnergyModal from '../../components/NoEnergyModal.vue';
 import ProcessedText from '../../components/ProcessedText.vue';
 import ExerciseImage from '../../components/ExerciseImage.vue';
 import CompletionMessage from '../../components/CompletionMessage.vue';
+import { leaveTo } from '../../router/leave.js';
 import WordBank from '../../components/WordBank.vue';
 import { checkWordBank, completeChoices, vocabList } from '../../data/lessonPlan.js';
 
@@ -449,18 +450,18 @@ export default {
             this.showNoEnergyModal = false;
             this.lessonInProgress = false;
             if (this.energyCheckInterval) { clearInterval(this.energyCheckInterval); this.energyCheckInterval = null; }
-            this.$router.push(`/app/nivel/${this.levelId}`);
+            leaveTo(this.$router, `/app/nivel/${this.levelId}`);
         },
 
         handlePracticeForEnergy() {
             this.showNoEnergyModal = false;
-            this.$router.push('/app');
+            leaveTo(this.$router, '/app');
         },
 
         closeNoEnergyModal() {
             this.showNoEnergyModal = false;
             if (this.energyStore.currentEnergy <= 0) {
-                this.$router.push(`/app/nivel/${this.levelId}`);
+                leaveTo(this.$router, `/app/nivel/${this.levelId}`);
             }
         },
 
@@ -469,8 +470,8 @@ export default {
         closeWarningModal() { this.showWarningModal = false; },
         showExitConfirmModal() { this.showExitConfirmModalFlag = true; },
         closeExitConfirmModal() { this.showExitConfirmModalFlag = false; },
-        confirmExitLesson() { this.closeExitConfirmModal(); this.$router.push(`/app/nivel/${this.levelId}`); },
-        endSession() { this.closeWarningModal(); this.$router.push(`/app/nivel/${this.levelId}`); },
+        confirmExitLesson() { this.closeExitConfirmModal(); leaveTo(this.$router, `/app/nivel/${this.levelId}`); },
+        endSession() { this.closeWarningModal(); leaveTo(this.$router, `/app/nivel/${this.levelId}`); },
 
         setupPageReloadPrevention() {
             window.addEventListener('keydown', this.preventReloadKeys);

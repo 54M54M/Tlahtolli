@@ -47,7 +47,7 @@ const fromLanguage = (name) => async (to) => {
 
 // ── Mapa del sitio ──────────────────────────────────────────────────────────
 //   /                     landing (con o sin sesión) · ?auth=login | ?auth=register abre el modal
-//   /novedades /privacidad /terminos   páginas públicas (prerenderizadas)
+//   /como-se-usa /novedades /privacidad /terminos   páginas públicas (prerenderizadas)
 //   /verificar            enlace del correo de verificación (con o sin sesión)
 //   /app/...              la app (requiere sesión)
 const appRoutes = [

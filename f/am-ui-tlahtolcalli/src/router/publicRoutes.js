@@ -14,6 +14,16 @@ export const publicRoutes = [
         },
     },
     {
+        path: '/como-se-usa',
+        name: 'Guia',
+        component: () => import('../views/public/GuideView.vue'),
+        meta: {
+            public: true,
+            title: 'Cómo se usa · Tlahtolcalli',
+            description: 'Guía paso a paso de Tlahtolcalli: crea tu cuenta, elige idioma, avanza por niveles y haz tus lecciones desde el navegador.',
+        },
+    },
+    {
         path: '/novedades',
         name: 'Novedades',
         component: () => import('../views/public/ChangelogView.vue'),

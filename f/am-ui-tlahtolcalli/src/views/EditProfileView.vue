@@ -38,7 +38,7 @@
                         </template>
                     </div>
                     <Msg :m="msgs.profile" />
-                    <button @click="saveProfile" :disabled="busy.profile || !profileDirty || usernameState === 'bad' || usernameState === 'checking'" class="btn">
+                    <button @click="saveProfile" :disabled="busy.profile || !profileDirty || usernameState === 'bad' || usernameState === 'checking'" class="tl-raise btn">
                         {{ busy.profile ? 'Guardando…' : 'Guardar perfil' }}
                     </button>
                 </section>
@@ -60,7 +60,7 @@
                             <button @click="cancelChange" :disabled="busy.email" class="underline hover:text-error disabled:opacity-50">Cancelar cambio</button>
                         </div>
                     </div>
-                    <button v-else-if="!info.emailVerified" @click="resend" :disabled="busy.email" class="btn-outline">
+                    <button v-else-if="!info.emailVerified" @click="resend" :disabled="busy.email" class="tl-raise btn-outline">
                         Reenviar correo de verificación
                     </button>
 
@@ -77,7 +77,7 @@
                                     :autocomplete="info.hasPassword ? 'current-password' : 'off'" :placeholder="info.hasPassword ? '' : info.username" />
                             </div>
                             <p class="hint text-gray-400">Tu correo actual seguirá activo hasta que confirmes el nuevo.</p>
-                            <button @click="changeEmail" :disabled="busy.email || !emailForm.email || !emailForm.password" class="btn">
+                            <button @click="changeEmail" :disabled="busy.email || !emailForm.email || !emailForm.password" class="tl-raise btn">
                                 {{ busy.email ? 'Enviando…' : 'Enviar enlace al nuevo correo' }}
                             </button>
                         </div>
@@ -107,7 +107,7 @@
                     </div>
                     <Msg :m="msgs.password" />
                     <button @click="changePassword"
-                        :disabled="busy.password || (info.hasPassword && !pwd.current) || pwd.next.length < 8 || pwd.next !== pwd.confirm" class="btn">
+                        :disabled="busy.password || (info.hasPassword && !pwd.current) || pwd.next.length < 8 || pwd.next !== pwd.confirm" class="tl-raise btn">
                         {{ busy.password ? 'Guardando…' : info.hasPassword ? 'Cambiar contraseña' : 'Crear contraseña' }}
                     </button>
                 </section>
@@ -124,14 +124,14 @@
                         </div>
                         <Msg :m="msgs.del" />
                         <div class="flex gap-3">
-                            <button @click="delOpen = false; delPassword = ''" class="btn-outline flex-1">Cancelar</button>
+                            <button @click="delOpen = false; delPassword = ''" class="tl-raise btn-outline flex-1">Cancelar</button>
                             <button @click="deleteAccount" :disabled="busy.del || !delPassword"
                                 class="flex-1 bg-error/80 hover:bg-error disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors">
                                 {{ busy.del ? 'Eliminando…' : 'Eliminar para siempre' }}
                             </button>
                         </div>
                     </template>
-                    <button v-else @click="delOpen = true" class="btn-outline !border-error/60 !text-error">Eliminar mi cuenta</button>
+                    <button v-else @click="delOpen = true" class="tl-raise btn-outline !border-error/60 !text-error">Eliminar mi cuenta</button>
                 </section>
 
                 <Msg :m="msgs.load" />

@@ -1,6 +1,6 @@
 // Después de `vite build`: genera el HTML de las páginas públicas y el shell vacío de la app.
 //   dist/index.html            portada prerenderizada
-//   dist/<ruta>/index.html     novedades, privacidad, términos prerenderizadas
+//   dist/<ruta>/index.html     cómo se usa, novedades, privacidad, términos prerenderizadas
 //   dist/spa.html              shell sin contenido para /app/… y demás rutas (netlify.toml)
 import fs from 'node:fs'
 import path from 'node:path'

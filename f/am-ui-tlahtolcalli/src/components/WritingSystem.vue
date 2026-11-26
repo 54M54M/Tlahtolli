@@ -7,7 +7,7 @@
 
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
                 <div v-for="vowel in availableVowels" :key="vowel"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectVowel', vowel)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ getVowelDisplay(vowel) }}
@@ -23,7 +23,7 @@
             <!-- Consonantes básicas -->
             <div class="grid grid-cols-5 gap-3">
                 <div v-for="entry in basicConsonants" :key="entry.letter"
-                    class="aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
+                    class="tl-raise aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
                     @click="$emit('selectLetter', entry)">
                     {{ entry.letter }}
                 </div>
@@ -41,7 +41,7 @@
                     'aspect-square rounded-lg border flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl',
                     !entry.syllables[vowel]
                         ? 'bg-slate-700/50 border-slate-600 cursor-default'
-                        : 'bg-slate-800/80 hover:bg-slate-700 border-slate-600'
+                        : 'tl-raise bg-slate-800/80 hover:bg-slate-700 border-slate-600'
                 ]" @click="entry.syllables[vowel] ? $emit('selectSyllable', entry, vowel) : $emit('selectEmpty')">
                     <template v-if="entry.syllables[vowel]">
                         <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
@@ -62,7 +62,7 @@
             <!-- Combinaciones -->
             <div v-for="entry in specialCombinations" :key="entry.letter" class="grid grid-cols-6 gap-2 sm:gap-4 mb-2">
                 <!-- Columna de letra -->
-                <div class="aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
+                <div class="tl-raise aspect-square uppercase rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center font-bold text-white text-sm sm:text-lg transition-all sm:rounded-xl relative"
                     @click="$emit('selectLetter', entry)">
                     {{ entry.letter }}
                 </div>
@@ -72,7 +72,7 @@
                     'aspect-square rounded-lg border flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl',
                     !entry.syllables[vowel]
                         ? 'bg-slate-700/50 border-slate-600 cursor-default'
-                        : 'bg-slate-800/80 hover:bg-slate-700 border-slate-600'
+                        : 'tl-raise bg-slate-800/80 hover:bg-slate-700 border-slate-600'
                 ]" @click="entry.syllables[vowel] ? $emit('selectSyllable', entry, vowel) : $emit('selectEmpty')">
                     <template v-if="entry.syllables[vowel]">
                         <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
@@ -95,7 +95,7 @@
             <!-- Vocales largas -->
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
                 <div v-for="(longVowel, vowel) in filteredLongVowels" :key="'long-' + vowel"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectLongVowel', vowel)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ longVowel }}
@@ -116,7 +116,7 @@
 
             <div class="grid grid-cols-5 gap-2 sm:gap-4 mb-2">
                 <div v-for="vowel in alphabetByType.vowels" :key="vowel.letter"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectAlphabetLetter', vowel)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ vowel.letter }}
@@ -131,7 +131,7 @@
 
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
                 <div v-for="consonant in alphabetByType.consonants" :key="consonant.letter"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectAlphabetLetter', consonant)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ consonant.letter }}
@@ -147,7 +147,7 @@
 
             <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-2">
                 <div v-for="ejective in alphabetByType.ejectives" :key="ejective.letter"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectAlphabetLetter', ejective)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ ejective.letter }}
@@ -167,7 +167,7 @@
 
             <div class="grid grid-cols-5 gap-2 sm:gap-4 mb-2">
                 <div v-for="longVowel in alphabetByType.longVowels" :key="longVowel.letter"
-                    class="aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
+                    class="tl-raise aspect-square rounded-lg border border-slate-600 bg-slate-800/80 hover:bg-slate-700 flex flex-col items-center justify-center p-1 transition-all cursor-pointer sm:rounded-xl"
                     @click="$emit('selectAlphabetLetter', longVowel)">
                     <span class="text-xs font-medium uppercase tracking-wide text-white sm:text-base">
                         {{ longVowel.letter }}
