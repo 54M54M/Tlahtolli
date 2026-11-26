@@ -15,6 +15,7 @@
                     </span>
                 </div>
                 <p class="text-gray-400 text-[10px] text-center">{{ stat.label }}</p>
+                <p v-if="stat.hint" class="text-gray-500 text-[9px] text-center leading-tight">{{ stat.hint }}</p>
             </Card>
         </div>
     </Card>
@@ -25,7 +26,7 @@ import Card from './Card.vue';
 import StreakFlame from './StreakFlame.vue';
 import { streakTier } from '../data/streak.js';
 
-const STREAK_LABELS = ['Racha actual', 'Mejor racha'];
+const STREAK_LABELS = ['Dia(s) de racha'];
 const isStreak = (label) => STREAK_LABELS.includes(label);
 
 defineProps({
@@ -54,7 +55,7 @@ const getNumberColor = (label, value) => {
     // El número de la racha toma el color de su fuego
     if (isStreak(label)) return streakTier(Number(value) || 0).text;
     const numericValue = Number(value); // Asegura que sea número
-    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Racha actual', 'Mejor racha'];
+    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Dia(s) de racha', 'Mejor racha'];
 
     if (!streakLabels.includes(label)) {
         return getStatColor(label);
@@ -73,7 +74,7 @@ const getNumberColor = (label, value) => {
 
 const showStreakEmoji = (label, value) => {
     const numericValue = Number(value);
-    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Racha actual', 'Mejor racha'];
+    const streakLabels = ['Lecciones perfectas', 'Días estudiados', 'Dia(s) de racha', 'Mejor racha'];
     return streakLabels.includes(label) && numericValue >= 3;
 };
 

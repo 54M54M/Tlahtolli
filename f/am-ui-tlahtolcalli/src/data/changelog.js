@@ -11,7 +11,8 @@ export const CHANGELOG = [
         date: '2026-11-25',
         title: 'Pistas con desglose',
         items: [
-            { type: 'nuevo', text: '«Cómo se usa» ahora tiene su propia página.' },
+            { type: 'nuevo', text: '«Cómo se usa» ahora tiene su propia página, paso a paso.' },
+            { type: 'mejora', text: 'Estadísticas de aprendizaje más claras: cada indicador dice qué cuenta.' },
             { type: 'nuevo', text: 'Nuevo ejercicio «Selecciona los pares»: une cada palabra con su traducción.' },
             { type: 'nuevo', text: 'Al tocar una palabra subrayada ves su pronunciación y, si la tiene, cada parte de la palabra con su significado.' },
             { type: 'mejora', text: 'Los botones con relieve se aplican en toda la app, desde la página de inicio.' },

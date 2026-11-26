@@ -13,7 +13,8 @@
                 Toca las palabras en orden
             </span>
         </div>
-        <div class="border-b-2 border-line mb-5"></div>
+      <!-- Linea inferior -->
+        <div class="border-b-1 border-line mb-5"></div>
 
         <!-- Banco -->
         <div class="flex flex-wrap gap-2 justify-center" aria-label="Palabras disponibles" role="list">

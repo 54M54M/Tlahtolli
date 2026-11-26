@@ -90,14 +90,15 @@ export default {
 
     const stats = computed(() => {
       const s = rawStats.value
+      // Ordenadas por pareja para que se lean juntas; "hint" aclara qué cuenta cada una.
       return [
         { label: 'Palabras aprendidas', value: s?.wordsLearned || 0 },
         { label: 'Lecciones completadas', value: s?.lessonsDone || 0 },
         { label: 'Lecciones perfectas', value: s?.perfectLess || 0 },
-        { label: 'Días estudiados', value: s?.daysStudied || 0 },
+        //{ label: 'Días estudiados', value: s?.daysStudied || 0 },
         // Racha actual: días seguidos en cualquier idioma (usuario); mejor racha: en este idioma
-        { label: 'Racha actual', value: authStore.user?.streak || 0 },
-        { label: 'Mejor racha', value: s?.bestStreak || 0 },
+        { label: 'Dia(s) de racha', value: authStore.user?.streak || 0 },
+        //{ label: 'Mejor racha', value: s?.bestStreak || 0 },
       ]
     })
 
