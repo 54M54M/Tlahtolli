@@ -13,11 +13,13 @@ Asume que ya tienes el repo en GitHub con `/f` (front), `/b` (back) y `/db` (scr
     - **Apaga el toggle "Connection pooling"** — para JPA/Hibernate necesitas la conexión directa, no la del pooler (evita conflictos con el pool de HikariCP del lado de la app).
     - Selecciona **Java** en el dropdown de formato para que te arme el JDBC URL completo.
     - Copia el string — lo necesitas para el paso 3.
-3. Abre el **SQL Editor** del proyecto en Neon y corre los scripts en este orden exacto:
-    1. `1_-Tlahtolli_Database_Script.sql` (esquema: tablas, vista)
-    2. `2_-General_Seed_Data.sql` (usuario demo, logros, energía)
-    3. `3_-Nahuatl_Seed_Data.sql`
-    4. `4_-Teenek_Seed_Data.sql`
+3. Abre el **SQL Editor** del proyecto en Neon y corre los scripts de `sql_postgres/` en este orden
+   (detalle y scripts de mantenimiento en `sql_postgres/LEEME.md`):
+    1. `1.-esquema.sql` (todas las tablas, llaves e índices)
+    2. `2.-datos_generales.sql` (usuario demo, logros, energía)
+    3. `3.-curso_nhn.sql`
+    4. `4.-curso_hus.sql`
+    5. Opcional: `pruebas/curso_yua.sql`, `pruebas/curso_zai.sql` (cursos en pruebas)
 
 ---
 
@@ -127,7 +129,7 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 (también al guardar progreso o al elegirlo como idioma).
 
 **Una vez**
-1. Neon: ejecutar `8.-Estado_Cursos.sql` (agrega `status`; los cursos actuales quedan `published`).
+1. Neon: ejecutar `1.-esquema.sql` (columna `status`; los cursos actuales quedan `published`). Publicar o dar rol tester: `mantenimiento/publicar_curso.sql`.
 2. Neon: `update ta_users set role = 'tester' where username = 'tu_usuario';` (o usar tu cuenta `admin`).
    El rol va dentro del token: cierra sesión y vuelve a entrar.
 3. Netlify → **Add new site → Import from Git** → mismo repo, nombre `dev-tlahtolcalli`:
@@ -139,7 +141,7 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 5. Google Cloud → credencial OAuth → **Orígenes de JavaScript autorizados**: agregar el dominio de desarrollo.
 
 **Día a día**
-- Curso nuevo: insertarlo con `status = 'draft'` (ejemplos en `8.-Estado_Cursos.sql`) y probarlo en el front de desarrollo.
+- Curso nuevo: insertarlo con `status = 'draft'` (ejemplos en `mantenimiento/publicar_curso.sql`) y probarlo en el front de desarrollo.
 - Publicarlo: **Monitor → Idiomas → Publicar** (o **A pruebas** para regresarlo). Se ve al instante en los fronts.
   Por SQL también funciona (`update ct_languages set status = 'published' where code = 'xxx';`), pero la API guarda
   el catálogo en caché: aparece en máximo 30 min, o al instante reiniciando el servicio en Render.
@@ -148,10 +150,10 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 ## 6. Olvidé mi contraseña
 
-- Neon: ejecutar `11.-Restablecer_Contrasena.sql` (acepta `purpose = 'reset'` en `ta_email_tokens`). Se puede ejecutar más de una vez.
+- Neon: ejecutar `1.-esquema.sql` (acepta `purpose = 'reset'` en `ta_email_tokens`). Se puede ejecutar más de una vez.
 - Usa el mismo correo que la verificación (`EMAIL_PROVIDER=brevo`, `BREVO_API_KEY`, `EMAIL_FROM`) y `APP_URL` para armar el enlace
   `APP_URL/restablecer?token=…`. Sin Brevo el enlace solo sale en los logs de Render.
-- Al restablecer se cierran **todas** las sesiones de la cuenta (script `14.-Cerrar_Sesiones.sql`, ver sección 10).
+- Al restablecer se cierran **todas** las sesiones de la cuenta (script `1.-esquema.sql`, ver sección 10).
 
 ---
 
@@ -170,7 +172,7 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 
 ## 8. Sin conexión (lecciones y avance)
 
-- Neon: ejecutar `12.-Sincronizacion_Sin_Conexion.sql` (tabla `ta_sync_ops`). Se puede ejecutar más de una vez.
+- Neon: ejecutar `1.-esquema.sql` (tabla `ta_sync_ops`). Se puede ejecutar más de una vez.
   **Antes** de publicar el back: sin la tabla, completar lección falla.
 - Render (opcional): `APP_TIMEZONE` (por defecto `America/Mexico_City`) — zona con la que se decide el día de una lección.
 - Front (`src/offline/`):
@@ -205,10 +207,10 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
 ## 10. Racha, sesiones y versión (4.5.0)
 
 - Neon: ejecutar **antes** de publicar el back (el back lee columnas nuevas de `ta_users`; sin ellas falla todo lo de usuarios):
-  - `13.-Racha_Dias_Estudio.sql` — tabla `ta_study_days`, `ta_users.last_study_date`; rellena con el historial y
+  - `1.-esquema.sql` + `mantenimiento/recalcular_progreso.sql` — tabla `ta_study_days`, `ta_users.last_study_date`; rellena con el historial y
     recalcula racha, días estudiados (antes sumaba 1 por lección) y mejor racha.
-  - `14.-Cerrar_Sesiones.sql` — `ta_users.token_version`.
-  - `15.-Nivel_Usuario.sql` — recalcula `user_level` con la XP total (antes siempre 1). Puede correrse en cualquier momento.
+  - `1.-esquema.sql` — `ta_users.token_version`.
+  - `mantenimiento/recalcular_progreso.sql` — recalcula `user_level` con la XP total (antes siempre 1). Puede correrse en cualquier momento.
 - Racha: días seguidos con al menos una lección o nivel rápido, en cualquier idioma, en `APP_TIMEZONE`.
   Si el último día estudiado no es hoy ni ayer, vale 0. Las lecciones hechas sin conexión cuentan en su día real.
 - Sesiones: cada token lleva `tv` (versión); restablecer la contraseña la sube y los tokens anteriores dejan de

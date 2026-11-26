@@ -149,13 +149,15 @@ Todos los endpoints están bajo el prefijo `/api/`.
 
 ## Scripts de Base de Datos
 
-Ubicados en `src/main/resources/static/Migracion/`, deben ejecutarse en orden:
+Ubicados en `src/main/resources/static/sql_postgres/` (detalle en su `LEEME.md`), en orden:
 
 ```
-1.-Tlahtolli_Database_Script.sql   ← estructura de tablas
-2.-General_Seed_Data.sql           ← datos base generales
-3.-Nahuatl_Seed_Data.sql           ← datos de náhuatl
-4.-Teenek_Seed_Data.sql            ← datos de teenek
+1.-esquema.sql            ← todas las tablas, llaves e índices
+2.-datos_generales.sql    ← usuario demo, energía y logros
+3.-curso_nhn.sql          ← náhuatl central
+4.-curso_hus.sql          ← tének
+pruebas/                  ← cursos en pruebas (opcionales)
+mantenimiento/            ← recalcular progreso, publicar, borrar curso, reiniciar
 ```
 
 ---
