@@ -23,7 +23,7 @@
 
         <!-- Niveles desbloqueados -->
         <router-link v-for="level in unlockedLevels" :key="level.id" :to="'/app/nivel/' + level.id"
-                     class="w-full block">
+                     class="w-full block" :data-current="level.id === currentLevelId || undefined">
           <Card
               class="tl-raise rounded-xl text-ink-on-color overflow-hidden shadow-lg transition-transform transform hover:scale-105"
               :style="{ backgroundColor: $levelColor(level.levelNum) }">
@@ -95,6 +95,7 @@
 import { useAuthStore } from '../stores/auth.js'
 import { useEnergyStore } from '../stores/energy.js'
 import { onMounted, computed, ref, watch } from 'vue'
+import { scrollToCurrent } from '../utils/scrollToCurrent.js'
 import { useRouter } from 'vue-router'
 import { getLevels } from '../data/learning.js'
 import Header from '../components/vHeader.vue'
@@ -115,6 +116,12 @@ export default {
 
     const unlockedLevels = computed(() => levels.value.filter(l => !l.locked))
     const lockedLevels = computed(() => levels.value.filter(l => l.locked))
+    // Nivel en el que vas: el último desbloqueado
+    const currentLevelId = computed(() => {
+      const open = [...unlockedLevels.value].sort((a, b) => a.levelNum - b.levelNum)
+      return open.length ? open[open.length - 1].id : null
+    })
+    let scrolled = false
 
     const loadLevels = async (force = false) => {
       if (!authStore.selectedLangId || !authStore.user) {
@@ -132,11 +139,17 @@ export default {
       } finally {
         loading.value = false
       }
+      // Una vez por visita: baja hasta el nivel en el que vas
+      if (!error.value && !scrolled && levels.value.length) {
+        scrolled = true
+        scrollToCurrent()
+      }
     }
 
     const goToLanguageSelection = () => router.push('/app/idioma')
 
     const handleLanguageUpdate = async () => {
+      scrolled = false
       await loadLevels(true)
     }
 
@@ -186,7 +199,7 @@ export default {
 
     return {
       levels, loading, error,
-      unlockedLevels, lockedLevels,
+      unlockedLevels, lockedLevels, currentLevelId,
       loadLevels, goToLanguageSelection,
       handleLanguageUpdate,
       authStore, energyStore,

@@ -8,9 +8,10 @@
 export const CHANGELOG = [
     {
         version: '4.6.2',
-        date: '2026-11-26',
+        date: '2026-11-25',
         title: 'Pistas con desglose',
         items: [
+            { type: 'mejora', text: 'Al entrar a Inicio o a un nivel, la pantalla baja sola hasta el nivel o la unidad donde vas.' },
             { type: 'correccion', text: 'Nivel, XP, racha y estadísticas se actualizan al volver a la app, aunque hayas estudiado en otro dispositivo.' },
             { type: 'nuevo', text: 'Reporta un problema en cualquier ejercicio con la bandera del cuadro de resultado; llega directo al equipo.' },
             { type: 'nuevo', text: '«Cómo se usa» ahora tiene su propia página, paso a paso.' },

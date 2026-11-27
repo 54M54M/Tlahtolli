@@ -13,7 +13,8 @@
 
             <div class="space-y-4">
                 <!-- Unidades desbloqueadas -->
-                <router-link v-for="unit in unlockedUnits" :key="unit.id" :to="'/app/leccion/' + unit.id" class="block">
+                <router-link v-for="unit in unlockedUnits" :key="unit.id" :to="'/app/leccion/' + unit.id" class="block"
+                    :data-current="unit.id === currentUnitId || undefined">
                     <div class="rounded-xl p-4 space-y-4 text-ink-on-color transition-transform transform hover:scale-105"
                         :style="{ backgroundColor: $levelColor(currentLevel.levelNum) }">
 
@@ -135,6 +136,7 @@ import NextStage from '../../components/NextStage.vue';
 import { useAuthStore } from '../../stores/auth';
 import { useEnergyStore } from '../../stores/energy';
 import { getLevels, getUnits } from '../../data/learning.js';
+import { scrollToCurrent } from '../../utils/scrollToCurrent.js';
 
 export default {
     name: 'Level',
@@ -160,6 +162,14 @@ export default {
         },
         lockedUnits() {
             return this.units.filter(u => u.locked);
+        },
+        // Unidad en la que vas (la del ▶▶); si ya terminaste todas, la última completada
+        currentUnitId() {
+            const open = this.unlockedUnits;
+            const current = open.find(u => u.current && !u.completed);
+            if (current) return current.id;
+            const done = open.filter(u => u.completed);
+            return done.length ? done[done.length - 1].id : null;
         },
     },
     watch: {
@@ -190,6 +200,7 @@ export default {
             } finally {
                 this.loading = false;
             }
+            if (this.units.length) scrollToCurrent();
         },
         handleShowAll() { },
     }
