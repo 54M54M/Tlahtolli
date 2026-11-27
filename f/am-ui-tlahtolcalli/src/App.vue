@@ -18,6 +18,7 @@ import OfflineScreen from './components/OfflineScreen.vue'
 import { useAuthStore } from './stores/auth.js'
 import { useEnergyStore } from './stores/energy.js'
 import { IS_DEV_SITE } from './api/apiClient.js'
+import { setupRefreshOnReturn } from './data/freshness.js'
 
 export default {
   name: 'App',
@@ -31,6 +32,7 @@ export default {
     onMounted(async () => {
       // 1. Inicializar auth PRIMERO — resuelve el usuario real desde la API
       await authStore.initialize()
+      setupRefreshOnReturn()
 
       // 2. Solo inicializar energía si tenemos un userId válido
       const userId = authStore.user?.id

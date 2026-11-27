@@ -55,7 +55,8 @@
 
 <script>
 import { languageColor } from '../utils/palette.js'
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { onAccountRefresh } from '../data/freshness.js'
 import { useAuthStore } from '../stores/auth.js'
 import { getStatsByLanguage } from '../data/stats.js'
 import LearningStats from './LearningStats.vue'
@@ -124,6 +125,9 @@ export default {
 
     onMounted(loadStats)
     watch(() => authStore.selectedLangId, loadStats)
+    // Al volver a la app se piden de nuevo (otro dispositivo pudo cambiarlas)
+    const offRefresh = onAccountRefresh(loadStats)
+    onBeforeUnmount(offRefresh)
 
     return {
       isLanguageReady, selectedLanguageData, stats, languageProgress,

@@ -5,6 +5,8 @@ import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,15 @@ public class UserLevelService {
         return currentXpPerLevel;
     }
 
+    /**
+     * Al arrancar se calcula la XP por nivel. Antes solo se calculaba al terminar una lección, y mientras tanto
+     * el perfil usaba el respaldo (540): la barra cambiaba de tamaño según quién terminara una lección primero.
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void warmUp() {
+        xpPerLevel();
+    }
+
     /** XP que cuesta cada nivel (de la base, con caché de 1 hora). */
     public int xpPerLevel() {
         if (loadedAt.plus(TTL).isBefore(Instant.now())) {
@@ -69,9 +80,16 @@ public class UserLevelService {
     public void apply(User user) {
         int perLevel = xpPerLevel();
         int total = user.getTotalXp() == null ? 0 : user.getTotalXp();
-        int level = Math.min(Short.MAX_VALUE, total / perLevel + 1);
-        int stored = user.getUserLevel() == null ? 1 : user.getUserLevel();
-        user.setUserLevel((short) Math.max(stored, level));
+        user.setUserLevel(displayLevel(total, user.getUserLevel(), perLevel));
+    }
+
+    /** Nivel a mostrar: el que da la XP total, sin bajar del guardado. Evita barras llenas sin subir de nivel. */
+    public static short displayLevel(Integer totalXp, Short userLevel, int perLevel) {
+        int total = totalXp == null ? 0 : totalXp;
+        int per = perLevel > 0 ? perLevel : FALLBACK_XP_PER_LEVEL;
+        int level = Math.min(Short.MAX_VALUE, total / per + 1);
+        int stored = userLevel == null ? 1 : userLevel;
+        return (short) Math.max(stored, level);
     }
 
     /** XP dentro del nivel actual (para la barra del perfil). */

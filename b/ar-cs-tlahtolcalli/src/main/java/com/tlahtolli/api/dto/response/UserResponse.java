@@ -30,10 +30,12 @@ public record UserResponse(
 ) {
     public static UserResponse from(User u) {
         int perLevel = UserLevelService.currentXpPerLevel();
+        // Nivel calculado al leer: si la XP ya alcanza el siguiente nivel, se muestra aunque aún no se guarde
+        short level = UserLevelService.displayLevel(u.getTotalXp(), u.getUserLevel(), perLevel);
         return new UserResponse(
                 u.getId(), u.getUsername(), u.getFullName(), u.getEmail(),
-                u.getUserLevel(), u.getXp(), u.getTotalXp(),
-                UserLevelService.xpInLevel(u.getTotalXp(), u.getUserLevel(), perLevel), perLevel,
+                level, u.getXp(), u.getTotalXp(),
+                UserLevelService.xpInLevel(u.getTotalXp(), level, perLevel), perLevel,
                 u.currentStreak(AppTime.today()), u.getLastStudyDate(),
                 AppTime.today().equals(u.getLastStudyDate()), u.getJoinDate(), u.getCurrentLang(), u.getRole(),
                 u.isEmailVerified(), u.getPendingEmail(),

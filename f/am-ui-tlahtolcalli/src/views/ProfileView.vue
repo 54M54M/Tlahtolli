@@ -126,7 +126,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { onAccountRefresh } from '../data/freshness.js';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { VERSION_LABEL as appVersion } from '../version.js';
@@ -213,4 +214,7 @@ const logout = () => {
 onMounted(() => {
   loadAchievements();
 });
+// Al volver a la app: logros al día (pudieron cambiar en otro dispositivo)
+const offRefresh = onAccountRefresh(loadAchievements);
+onBeforeUnmount(offRefresh);
 </script>

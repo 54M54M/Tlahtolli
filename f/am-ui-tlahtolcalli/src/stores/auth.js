@@ -87,6 +87,8 @@ export const useAuthStore = defineStore('auth', {
         // ── Inicialización silenciosa (al recargar con sesión persistida) ──────
         async initialize() {
             if (this.isInitialized && this.user && this.selectedLangId) {
+                // Sesión ya resuelta (persistida): igual se piden nivel, XP y racha al día, sin frenar el arranque
+                this.refreshUser()
                 return
             }
 

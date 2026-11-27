@@ -2,7 +2,7 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
-## [4.6.2] - 2026-11-24 - Desglose de palabras
+## [4.6.2] - 2026-11-26 - Desglose de palabras
 
 ### Changed
 - Scripts SQL consolidados (`sql_postgres/`): `1.-esquema.sql` (estructura completa, re-ejecutable), `2.-datos_generales.sql`,
@@ -10,6 +10,10 @@
 - `chk_users_role` acepta `tester` (antes la base solo aceptaba `user` y `admin`).
 - Desglose en todas las palabras de nhn (195) y hus (175). Cursos yua (213 palabras) y zai (219) ampliados a 6 niveles,
   36 unidades y 216 ejercicios cada uno, con desglose; siguen en pruebas.
+
+### Fixed
+- Nivel del perfil calculado con la XP total al leer (antes la barra podía quedar llena, p. ej. 540/540, sin subir de nivel).
+- XP por nivel se calcula al arrancar; antes el perfil usaba el respaldo (540) hasta que alguien terminaba una lección.
 
 ### Added
 - `POST /api/reports`: «Reportar un problema» en un ejercicio. Se envía por correo a `REPORT_EMAIL`
