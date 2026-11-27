@@ -2,7 +2,7 @@
     <DocPage title="Novedades">
         <template #intro>
             <p>Lo que cambia en Tlahtolcalli, versión por versión. ¿Encontraste un error o tienes una idea?
-                Escríbenos a <a class="lnk" :href="`mailto:${MAIL}?subject=Sugerencia`">{{ MAIL }}</a>.</p>
+                Escríbenos a <a class="lnk" :href="`mailto:${MAIL}?subject=%5BProponer%5D%20Sugerencia`">{{ MAIL }}</a>.</p>
         </template>
 
         <ol class="mt-10 relative border-l border-line ml-2">

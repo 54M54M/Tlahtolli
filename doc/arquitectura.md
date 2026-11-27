@@ -53,7 +53,7 @@ flowchart LR
 |---|---|---|
 | Front prod | Netlify `tlahtolcalli` | `VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID` |
 | Front dev | Netlify `dev-tlahtolcalli` | las mismas + `VITE_APP_ENV=dev` |
-| API | Render `ar-cs-tlahtolcalli` | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `BREVO_API_KEY`, `EMAIL_FROM`, `APP_URL`, `CORS_ORIGINS` |
+| API | Render `ar-cs-tlahtolcalli` | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `BREVO_API_KEY`, `EMAIL_FROM`, `APP_URL`, `REPORT_EMAIL`, `CORS_ORIGINS` |
 | Monitor | Render (mismo servicio) | `NEON_API_KEY`, `RENDER_API_KEY`, `UPTIMEROBOT_API_KEY` |
 | Base de datos | Neon | scripts en `b/.../static/sql_postgres` |
 

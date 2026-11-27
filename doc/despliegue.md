@@ -155,6 +155,12 @@ Para los demás no aparece en `/api/languages`, y sus niveles, unidades, ejercic
   `APP_URL/restablecer?token=…`. Sin Brevo el enlace solo sale en los logs de Render.
 - Al restablecer se cierran **todas** las sesiones de la cuenta (script `1.-esquema.sql`, ver sección 10).
 
+### Reportes de ejercicios
+
+- La bandera del cuadro de resultado envía `POST /api/reports`; la API manda el correo con Brevo (mismas variables).
+- Destino: `REPORT_EMAIL` (opcional; por defecto `contacto.tlahtolcalli@gmail.com`). No usa la BD.
+- Límite: 10 reportes por hora por usuario. Sin Brevo el reporte solo sale en los logs de Render.
+
 ---
 
 ## 7. PWA (app instalable)

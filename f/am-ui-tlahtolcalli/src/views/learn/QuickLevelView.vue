@@ -1,7 +1,7 @@
 <template>
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
         <!-- Header con título dinámico - SOLO se muestra durante la lección -->
-        <Header v-if="currentQuestion <= quickExercises.length" variant="lesson" :title="`Nivel Rápido ${levelId}`"
+        <Header v-if="currentQuestion <= quickExercises.length" variant="lesson" :title="levelNum ? `Nivel Rápido ${levelNum}` : 'Nivel Rápido'"
             :subtitle="`${completedExercises} de ${totalExercises} ejercicios completados`"
             :progressCurrent="completedExercises" :progressTotal="totalExercises" :backRoute="`/app/nivel/${levelId}`"
             @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick" />
@@ -128,7 +128,7 @@
                         </div>
 
                         <FeedbackModal :show="showFeedbackModal" :title="feedbackTitle" :message="feedbackMessage"
-                            :is-correct="isAnswerCorrect" @continue="continueFromModal" />
+                            :is-correct="isAnswerCorrect" :report-context="reportContext" @continue="continueFromModal" />
                     </Card>
 
                     <!-- Mensaje de finalización - DISEÑO QUICKLEVEL -->
@@ -136,7 +136,7 @@
                         :back-route="`/app/nivel/${levelId}`" :show-stats="true"
                         :correct-answers-count="correctAnswersCount" :total-exercises="totalExercises"
                         :performance="performance" :lesson-time="lessonTime" :show-unlock-section="true"
-                        :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId"
+                        :unlocked-next-level-unit="unlockedNextLevelUnit" :next-level-id="nextLevelId" :next-level-num="nextLevelNum"
                         :pending-sync="pendingSync" />
                 </div>
             </div>
@@ -158,6 +158,7 @@
 import Card from '../../components/Card.vue';
 import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
+import { exerciseReport } from '../../data/report.js';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
 import NoEnergyModal from '../../components/NoEnergyModal.vue';
@@ -212,6 +213,8 @@ export default {
             unlockedNextLevelUnit: false,
             pendingSync: false,
             nextLevelId: null,
+            nextLevelNum: null,
+            levelNum: null,
             performance: 0,
             screenHeight: 0,
             lessonStartTime: null,
@@ -223,6 +226,11 @@ export default {
         };
     },
     computed: {
+        reportContext() {
+            if (!this.showFeedbackModal) return null;
+            return exerciseReport(this.currentExercise,
+                { selected: this.selectedAnswer, text: this.textAnswer, bankSel: this.wordBankSel });
+        },
         currentExercise() {
             return this.quickExercises[this.currentQuestion - 1] || {};
         },
@@ -282,6 +290,9 @@ export default {
             this.dataLoading = true;
             try {
                 const levelId = Number(this.levelId);
+                getLevels().then(levels => {
+                    this.levelNum = levels.find(l => l.id === levelId)?.levelNum || null;
+                }).catch(() => {});
                 const exercises = await getQuickExercises(levelId, 6);
                 this.quickExercises = this.shuffleExerciseOptions(exercises);
                 const units = await getUnits(levelId);
@@ -409,6 +420,7 @@ export default {
                     : null;
 
                 this.nextLevelId = nextLevel?.id || null;
+                this.nextLevelNum = nextLevel?.levelNum || null;
                 this.unlockedNextLevelUnit = result?.nextLevelUnlocked === true;
             } catch (err) {
                 console.error('[QuickLevelView] completeQuickLevel:', err);

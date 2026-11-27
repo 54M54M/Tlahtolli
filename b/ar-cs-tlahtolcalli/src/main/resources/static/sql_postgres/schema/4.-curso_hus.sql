@@ -10,7 +10,11 @@
 --  contenido (curso completo, mismos niveles que nhn):
 --    6 niveles · 36 unidades · 175 palabras y frases · 225 asociaciones · 216 ejercicios
 --    ct_languages → ct_levels → ct_units → ct_vocabulary → rl_unit_vocab
---    → ct_exercises → ct_writing_systems → ta_user_progress → ta_user_stats
+--    → ct_exercises → ct_writing_systems → ta_user_progress → ta_user_stats → desglose
+--
+--  tipología: aglutinante con rasgos polisintéticos y ergativos (familia maya). persona y posesión
+--    con piezas separables (u/nu = mi, a/na = tu, in = su), plural -chik y poseído -il;
+--    el desglose separa esas piezas cuando el propio curso las muestra.
 --
 --  fuentes:
 --    · inali, norma de escritura de la lengua tének
@@ -4014,11 +4018,202 @@ from ta_users usr
 cross join ct_languages la
 where usr.username = 'tetecuhtli' and la.code = 'hus';
 
+
+-- ─────────────────────────────────────────────
+--  10. desglose de palabras (pista al tocar una palabra subrayada)
+--      formato: 'parte = significado; parte = significado'. las palabras de una sola pieza llevan
+--      una fila con su significado. guiones: prefijo (ni-) y sufijo (-tli). entre paréntesis, la
+--      función cuando no hay traducción directa. borrador: validar con hablantes.
+-- ─────────────────────────────────────────────
+update ct_vocabulary v
+   set breakdown = x.breakdown
+  from (values
+        ('Tajk''anenek',                  'tajk''anenek = buenos días'),
+        ('Waklenenek',                    'waklenenek = buenas tardes'),
+        ('Dhamk''unenek',                 'dhamk''unenek = buenas noches'),
+        ('Alwa'' bats''udh',              'alwa'' = bien, bueno; bats''udh = (bienvenida)'),
+        ('Kit wat''ey',                   'kit = tú; wat''ey = pasar'),
+        ('Tayej ku tsu''uxinej',          'tayej = luego, después; ku = nosotros; tsu''uxinej = vernos'),
+        ('Kit k''alej alwa''',            'kit = tú; k''alej = irse; alwa'' = bien'),
+        ('Alwa''',                        'alwa'' = bien / bueno'),
+        ('Kalám',                         'kalám = mañana'),
+        ('Naná''',                        'naná'' = yo'),
+        ('Tatá''',                        'tatá'' = tú'),
+        ('Jajá''',                        'jajá'' = él / ella'),
+        ('Bij',                           'bij = nombre'),
+        ('Naná'' u bij',                  'naná'' = yo; u = mi; bij = nombre'),
+        ('¿Jantij a bij?',                'jantij = cómo; a = tu; bij = nombre'),
+        ('K''ak''námal',                  'k''ak''námal = gracias'),
+        ('Lej k''ak''námal yán',          'lej = muy; k''ak''námal = gracias; yán = mucho'),
+        ('Yán',                           'yán = mucho'),
+        ('Antsaná''',                     'antsaná'' = sí / así es'),
+        ('Yab',                           'yab = no'),
+        ('Pakwlanchij yán',               'pakwlanchij = disculpa, con permiso; yán = mucho'),
+        ('Kit k''apúts alwa''',           'kit = tú; k''apúts = comer; alwa'' = bien'),
+        ('Wanaj ku t''ojon kulbél',       'wanaj = vamos a; ku = nosotros; t''ojon = hacer; kulbél = gusto, alegría'),
+        ('Tének',                         'té'' = aquí; inik = gente (la gente de aquí)'),
+        ('Kawintaláb',                    'kaw- = hablar, palabra; -intaláb = (forma sustantivos)'),
+        ('¿Jantom kawintaláb an kawnal?', 'jantom = qué; kawintaláb = lengua; an = la, el; kaw- = hablar; -nal = (verbo)'),
+        ('Wawá''',                        'wawá'' = nosotros(as)'),
+        ('Tatá''chik',                    'tatá'' = tú; -chik = (plural)'),
+        ('Jajáchik',                      'jajá'' = él, ella; -chik = (plural)'),
+        ('Inik',                          'inik = hombre'),
+        ('Uxum',                          'uxum = mujer'),
+        ('Inikchik',                      'inik = hombre; -chik = (plural)'),
+        ('Táta''',                        'táta'' = papá'),
+        ('Mím',                           'mím = mamá'),
+        ('Kwitól',                        'kwitól = niño(a)'),
+        ('Ani',                           'ani = y'),
+        ('Ixám',                          'ixám = esposa'),
+        ('Mám',                           'mám = abuelo / anciano'),
+        ('Ách',                           'ách = abuela'),
+        ('Itsán',                         'itsán = tío'),
+        ('Tsanub',                        'tsanub = tía'),
+        ('Epchal',                        'epchal = hermano'),
+        ('Púlik',                         'púlik = grande'),
+        ('Tsakam',                        'tsakam = pequeño(a)'),
+        ('Ít',                            'ít = nuevo(a)'),
+        ('Alabél',                        'alabél = bonito(a)'),
+        ('Kidhab',                        'kidhab = malo(a)'),
+        ('Nakat',                         'nakat = largo(a)'),
+        ('Tsakni''',                      'tsakni'' = rojo'),
+        ('Dhakni''',                      'dhakni'' = blanco'),
+        ('T''unu''',                      't''unu'' = negro'),
+        ('Yaxu''',                        'yaxu'' = verde'),
+        ('Manu''',                        'manu'' = amarillo'),
+        ('Jún',                           'jún = uno'),
+        ('Tsáb',                          'tsáb = dos'),
+        ('Óx',                            'óx = tres'),
+        ('Ché''',                         'ché'' = cuatro'),
+        ('Bó''',                          'bó'' = cinco'),
+        ('Ja''úb',                        'ja''úb = amigo(a)'),
+        ('Jantom',                        'jantom = qué'),
+        ('Jantij',                        'jantij = cómo'),
+        ('Juta',                          'juta = dónde'),
+        ('Jay',                           'jay = cuánto'),
+        ('Jachan',                        'jachan = ¿es…? (pregunta)'),
+        ('Atáj',                          'atáj = casa'),
+        ('Kwentsal',                      'kwentsal = comunidad'),
+        ('Nu kwentsál',                   'nu = mi; kwentsál = comunidad'),
+        ('Na k''imá''',                   'na = tu; k''imá'' = casa (de alguien)'),
+        ('¿Jachana k''imá?',              'jachan = ¿es…?; a = tu; k''imá = casa (de alguien)'),
+        ('Akak',                          'akak = seis'),
+        ('Búk',                           'búk = siete'),
+        ('Waxik',                         'waxik = ocho'),
+        ('Beléw',                         'beléw = nueve'),
+        ('Laju''',                        'laju'' = diez'),
+        ('Jún inik',                      'jún = uno; inik = hombre (una persona completa: veinte dedos)'),
+        ('Alté''',                        'alté'' = monte'),
+        ('Mom',                           'mom = pozo'),
+        ('Ja''',                          'ja'' = agua'),
+        ('Tumín',                         'tumín = dinero'),
+        ('Úw',                            'úw = papel'),
+        ('Takab',                         'takab = comal'),
+        ('Utat',                          'utat = cerca'),
+        ('Ów',                            'ów = lejos'),
+        ('Alal',                          'alal = abajo'),
+        ('Ok''ox',                        'ok''ox = primero'),
+        ('Putat',                         'putat = entero'),
+        ('An',                            'an = el / la'),
+        ('¿Jantij in bij na kwentsalíl?', 'jantij = cómo; in = su; bij = nombre; na = tu; kwentsal = comunidad; -íl = (poseído)'),
+        ('Xowé''',                        'xowé'' = hoy'),
+        ('We''él',                        'we''él = ayer'),
+        ('K''icháj',                      'k''icháj = día / sol'),
+        ('Akal',                          'akal = noche'),
+        ('K''ij',                         'k''ij = tiempo'),
+        ('Tamub',                         'tamub = año'),
+        ('Its''',                         'its'' = luna / mes'),
+        ('Ik''',                          'ik'' = aire / viento'),
+        ('Lem',                           'lem = mariposa'),
+        ('Tsunun',                        'tsunun = colibrí'),
+        ('Ts''itsin',                     'ts''itsin = pájaro'),
+        ('In atsim',                      'in = yo; atsim = bañarse'),
+        ('In kalel',                      'in = yo; kalel = salir'),
+        ('Naná'' im belal',               'naná'' = yo; im = yo (en el verbo); belal = caminar'),
+        ('Ne''ech ban nu kwentsál',       'ne''ech = voy; ban = a, en; nu = mi; kwentsál = comunidad'),
+        ('U lejkiy an bakan',             'u = yo; lejkiy = preparé; an = la; bakan = tortilla'),
+        ('Bakan',                         'bakan = tortilla'),
+        ('Tatá'' tey i t''ojon',          'tatá'' = tú; tey = también; i t''ojon = trabajaste'),
+        ('Tsekets an bichim',             'tsekets = se cansó; an = el; bichim = caballo'),
+        ('Bichim',                        'bichim = caballo'),
+        ('Wat''ey',                       'wat''ey = pasó'),
+        ('Exom tu dhuchum',               'exom = estar haciendo (ahora); tu = nosotros; dhuchum = escribir'),
+        ('Dhuchum',                       'dhuchum = escribir'),
+        ('Ne''ets ku ayin',               'ne''ets = ir (lo que va a pasar); ku = nosotros; ayin = regresar (a casa)'),
+        ('T''ojnal',                      't''oj- = trabajo; -nal = (verbo)'),
+        ('T''ojlab',                      't''oj- = trabajo; -lab = (forma sustantivos)'),
+        ('Ulits',                         'ulits = llegar'),
+        ('Ach''a''',                      'ach''a'' = escuchar'),
+        ('Idhidh',                        'idhidh = maíz'),
+        ('Ajan',                          'ajan = elote'),
+        ('Tsanak''w',                     'tsanak''w = frijol'),
+        ('Its',                           'its = chile'),
+        ('K''apnél',                      'k''ap- = comer; -nél = (forma sustantivos)'),
+        ('Lanáx',                         'lanáx = naranja'),
+        ('Uj',                            'uj = aguacate'),
+        ('Utsun',                         'utsun = papaya'),
+        ('Pakab',                         'pakab = caña'),
+        ('Pak''ak''',                     'pak''ak'' = nopal'),
+        ('Way''',                         'way'' = mazorca'),
+        ('Kapéj',                         'kapéj = café'),
+        ('Tay''',                         'tay'' = cal'),
+        ('Kuchil',                        'kuchil = cuchillo'),
+        ('Mexa',                          'mexa = mesa'),
+        ('K''apul',                       'k''apul = comer'),
+        ('Uts''ál',                       'uts''ál = beber'),
+        ('Wayal',                         'wayal = dormir'),
+        ('Met''ál',                       'met''ál = ver'),
+        ('Pidhál',                        'pidhál = dar'),
+        ('Belal',                         'belal = caminar'),
+        ('U nujuwal an lanax',            'u = yo; nujuwal = vender; an = la(s); lanax = naranja'),
+        ('U kitnál an dhi''',             'u = yo; kitnál = cargar; an = la; dhi'' = leña'),
+        ('Dhi''',                         'dhi'' = leña'),
+        ('¡Ka k''wetoy na k''imá''!',     'ka = (orden, tú); k''wetoy = barrer; na = tu; k''imá'' = casa'),
+        ('K''wet',                        'k''wet = escoba'),
+        ('Xabún',                         'xabún = jabón (del español)'),
+        ('K''ak''',                       'k''ak'' = caliente'),
+        ('Chamay',                        'chamay = frío(a)'),
+        ('Ts''a''ik',                     'ts''a''ik = amargo(a)'),
+        ('T''apay',                       't''apay = pegajoso(a)'),
+        ('Tolow',                         'tolow = grueso(a)'),
+        ('Koy',                           'koy = conejo'),
+        ('Chuch',                         'chuch = coyote'),
+        ('Itxamal',                       'itxamal = venado'),
+        ('Edhem',                         'edhem = mapache'),
+        ('Ot''el',                        'ot''el = ardilla'),
+        ('Bat''aw',                       'bat''aw = armadillo'),
+        ('Pik''o''',                      'pik''o'' = perro'),
+        ('Mitsu''',                       'mitsu'' = gato'),
+        ('Koxol',                         'koxol = gallo'),
+        ('Ch''uri''',                     'ch''uri'' = burro'),
+        ('Nu pik''oil',                   'nu = mi; pik''o'' = perro; -il = (poseído)'),
+        ('Yaxk''wa''',                    'yaxk''wa'' = rana'),
+        ('Ok''',                          'ok'' = cabeza'),
+        ('K''ubak',                       'k''ubak = mano'),
+        ('Akan',                          'akan = pie'),
+        ('Wal',                           'wal = ojo / cara'),
+        ('Wi''',                          'wi'' = boca'),
+        ('Okob',                          'okob = brazo'),
+        ('Txukul',                        'txukul = panza'),
+        ('Le''',                          'le'' = querer'),
+        ('Kó''ol',                        'kó''ol = tener'),
+        ('Xumpelel',                      'xumpelel = sombrero'),
+        ('Belal atáj',                    'belal = caminar; atáj = casa'),
+        ('¡Abél junt''aj xu bixnél!',     'abél = bonito; junt''aj = qué (tan); xu = la (que); bixnél = danza'),
+        ('Tének Tsabál',                  'tének = tének; tsabál = tierra, región'),
+        ('Tampots''ots''',                'tam- = lugar de; pots''ots'' = (nombre del lugar)'),
+        ('Labtóm',                        'labtóm = México')
+       ) as x(word, breakdown),
+       ct_languages l
+ where l.id = v.language_id
+   and l.code = 'hus'
+   and v.word = x.word;
+
 commit;
 
 -- ─────────────────────────────────────────────
 --  verificación
---  esperado: ct_levels 6 · ct_units 36 · ct_vocabulary 175 · rl_unit_vocab 225 · ct_exercises 216 · ct_writing_systems 1
+--  esperado (desglose = vocabulario): ct_levels 6 · ct_units 36 · ct_vocabulary 175 · rl_unit_vocab 225 · ct_exercises 216 · ct_writing_systems 1
 -- ─────────────────────────────────────────────
 select 'ct_levels' as tabla, count(1) as registros from ct_levels where language_id = (select id from ct_languages where code = 'hus')
 union all
@@ -4030,4 +4225,6 @@ select 'rl_unit_vocab', count(1) from rl_unit_vocab where unit_id in (select u.i
 union all
 select 'ct_exercises', count(1) from ct_exercises where unit_id in (select u.id from ct_units u join ct_levels l on u.level_id = l.id where l.language_id = (select id from ct_languages where code = 'hus'))
 union all
-select 'ct_writing_systems', count(1) from ct_writing_systems where language_id = (select id from ct_languages where code = 'hus');
+select 'ct_writing_systems', count(1) from ct_writing_systems where language_id = (select id from ct_languages where code = 'hus')
+union all
+select 'desglose', count(1) from ct_vocabulary where language_id = (select id from ct_languages where code = 'hus') and breakdown is not null;

@@ -38,7 +38,7 @@
             ningún curso ha tenido una revisión completa de hablantes nativos, así que puede haber errores o
             diferencias entre variantes. El contenido es para aprender, no sustituye a hablantes, docentes ni fuentes
             oficiales. Si encuentras un error,
-            <a class="lnk" :href="`mailto:${MAIL}?subject=Correcci%C3%B3n%20de%20contenido`">avísanos</a>.</p>
+            <a class="lnk" :href="`mailto:${MAIL}?subject=%5BRevisar%5D%20Correcci%C3%B3n%20de%20contenido`">avísanos</a>.</p>
         <p>El diseño, la mascota, el código y la organización de los cursos son de Tlahtolcalli. Si nos envías
             correcciones, propuestas o materiales, nos das permiso de usarlos en la app y, si así lo quieres,
             te damos crédito.</p>

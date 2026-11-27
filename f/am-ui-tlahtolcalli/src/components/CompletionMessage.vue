@@ -37,7 +37,7 @@
                 <p class="text-sm">¡Felicidades! Has desbloqueado la Unidad 1 del Nivel {{ nextLevelId }}</p-->
                 <div class="mt-2 flex items-center justify-center gap-2">
                     <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                    <span class="text-sm">Nivel {{ nextLevelId }} - Unidad 1 disponible</span>
+                    <span class="text-sm">Nivel {{ nextLevelNum || '' }}, unidad 1 disponible</span>
                 </div>
             </div>
 
@@ -125,6 +125,11 @@ export default {
             default: false
         },
         nextLevelId: {
+            type: [String, Number],
+            default: null
+        },
+        /** Número del nivel que ve la persona (levelNum), no el id de la BD */
+        nextLevelNum: {
             type: [String, Number],
             default: null
         },

@@ -8,8 +8,12 @@
 - Scripts SQL consolidados (`sql_postgres/`): `1.-esquema.sql` (estructura completa, re-ejecutable), `2.-datos_generales.sql`,
   `3.-curso_nhn.sql`, `4.-curso_hus.sql`, `pruebas/` y `mantenimiento/`. Sustituyen a los scripts numerados 1–16.
 - `chk_users_role` acepta `tester` (antes la base solo aceptaba `user` y `admin`).
+- Desglose en todas las palabras de nhn (195) y hus (175). Cursos yua (213 palabras) y zai (219) ampliados a 6 niveles,
+  36 unidades y 216 ejercicios cada uno, con desglose; siguen en pruebas.
 
 ### Added
+- `POST /api/reports`: «Reportar un problema» en un ejercicio. Se envía por correo a `REPORT_EMAIL`
+  (por defecto contacto.tlahtolcalli@gmail.com), en segundo plano; 10 por hora por usuario.
 - `ct_vocabulary.breakdown` (script `16.-Desglose_Palabras.sql`): desglose de la palabra para la pista
   (`"no- = mi; tōka = nombre"`). `GET /api/learning/units/{id}/vocabulary` lo incluye cuando existe.
 

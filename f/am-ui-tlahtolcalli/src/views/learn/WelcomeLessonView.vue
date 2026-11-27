@@ -46,9 +46,12 @@
                     <ExerciseImage :characterName="current.character" :imageState="!checked || correct"
                         :showAnswer="!!current.answer" :altText="`Personaje ${current.character}`" />
                     <div v-if="current.answer" class="relative mt-6 md:mt-10 flex-1 min-w-0">
-                        <div class="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0 border-t-[12px] border-t-transparent
-                            border-r-[18px] border-r-line border-b-[12px] border-b-transparent"></div>
-                        <div class="bg-surface-0 border border-line py-3 px-4 rounded-lg shadow-lg inline-block max-w-full break-words">
+                        <!-- Pico (igual que en LessonView) -->
+                        <div class="absolute top-1/2 -translate-y-1/2 -left-3 w-0 h-0
+                            border-t-[15px] border-t-transparent
+                            border-r-[25px] bg-surface-0 border border-line
+                            border-b-[15px] border-b-transparent z-10"></div>
+                        <div class="relative z-20 bg-surface-0 border border-line py-3 px-4 rounded-lg shadow-lg inline-block max-w-full break-words">
                             <p class="text-lg md:text-xl font-medium">
                                 <ProcessedText :text="current.answer" :language="authStore.selectedLanguage"
                                     :vocabulary="vocabulary" :exercise-type="current.type" />
@@ -78,7 +81,7 @@
 
             <FeedbackModal :show="checked" :title="correct ? '¡Muy bien!' : 'Casi'"
                 :message="current.explanation || (correct ? 'Respuesta correcta.' : `La respuesta era: ${current.options[current.correctAnswer]}`)"
-                :is-correct="correct" @continue="next" />
+                :is-correct="correct" :report-context="reportContext" @continue="next" />
         </div>
 
         <!-- Final -->
@@ -112,6 +115,7 @@ import { loadWelcome, markWelcomeDone } from '../../data/welcome.js'
 import ExerciseImage from '../../components/ExerciseImage.vue'
 import ProcessedText from '../../components/ProcessedText.vue'
 import FeedbackModal from '../../components/FeedbackModal.vue'
+import { exerciseReport } from '../../data/report.js'
 import { toch, TOCH_BIENVENIDA, TOCH_FINAL } from '../../data/toch.js'
 
 // Cada pregunta con un personaje al azar
@@ -136,6 +140,7 @@ const score = ref(0)
 const langName = computed(() => authStore.selectedLangObj?.langName || 'tu nuevo idioma')
 const current = computed(() => exercises.value[index.value] || {})
 const done = computed(() => stage.value === 'end' ? exercises.value.length : index.value + (checked.value ? 1 : 0))
+const reportContext = computed(() => checked.value ? exerciseReport(current.value, { selected: selected.value }) : null)
 const progress = computed(() => exercises.value.length ? Math.round(done.value / exercises.value.length * 100) : 0)
 
 // Estado visual de una opción (estilos .tl-choice en src/style.css)

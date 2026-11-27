@@ -14,26 +14,21 @@
          class="pronunciation-tooltip absolute z-50 text-white rounded-xl shadow-2xl text-sm transform -translate-x-1/2 left-1/2 transition-all duration-300"
          :class="[tooltipPositionClass, tooltipVisibilityClass]" :style="tooltipStyle">
 
-      <!-- Contenido principal del tooltip -->
-      <div class="flex flex-col gap-2">
-        <!-- Pronunciación -->
-        <div v-if="pronunciation"
-             class="flex items-center gap-2 rounded-lg px-3 py-2 bg-surface-0 border border-line">
-                    <span class="text-blue-200 font-semibold text-sm tracking-wide">
-                        {{ pronunciation }}
-                    </span>
+      <!-- Una sola tarjeta: pronunciación arriba y, si hay desglose, una tabla "parte | significado" -->
+      <div class="rounded-lg overflow-hidden border border-line bg-surface-0 grid grid-cols-[minmax(0,auto)_1fr]">
+        <div v-if="pronunciation" class="col-span-2 px-3 py-2"
+             :class="{ 'border-b border-line': parts.length }">
+          <span class="text-blue-200 font-semibold text-sm tracking-wide">{{ pronunciation }}</span>
         </div>
-        <!-- Desglose (como Duolingo): una fila por parte de la palabra, con su significado -->
-        <div v-if="parts.length" class="rounded-lg overflow-hidden border border-line bg-surface-0 divide-y divide-line">
-          <div v-for="(p, i) in parts" :key="i" class="grid grid-cols-[minmax(0,auto)_1fr] gap-3 px-3 py-1.5 items-baseline">
-            <span class="font-semibold text-white whitespace-nowrap">{{ p.form }}</span>
-            <span class="text-gray-300">{{ p.meaning }}</span>
-          </div>
-        </div>
+        <template v-for="(p, i) in parts" :key="i">
+          <span class="px-3 py-1.5 font-semibold text-white whitespace-nowrap border-r border-line"
+                :class="{ 'border-t': i > 0 }">{{ p.form }}</span>
+          <span class="px-3 py-1.5 text-gray-300 border-line" :class="{ 'border-t': i > 0 }">{{ p.meaning }}</span>
+        </template>
       </div>
 
       <!-- Flecha del tooltip - posición dinámica -->
-      <div class="absolute w-3 h-3 transform rotate-45 bg-surface-2 border border-line -z-10"
+      <div class="absolute w-3 h-3 transform rotate-45 bg-surface-0 border border-line -z-10"
            :class="arrowPositionClass">
       </div>
     </div>

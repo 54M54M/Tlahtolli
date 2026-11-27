@@ -11,6 +11,7 @@ export const CHANGELOG = [
         date: '2026-11-25',
         title: 'Pistas con desglose',
         items: [
+            { type: 'nuevo', text: 'Reporta un problema en cualquier ejercicio con la bandera del cuadro de resultado; llega directo al equipo.' },
             { type: 'nuevo', text: '«Cómo se usa» ahora tiene su propia página, paso a paso.' },
             { type: 'mejora', text: 'Estadísticas de aprendizaje más claras: cada indicador dice qué cuenta.' },
             { type: 'nuevo', text: 'Nuevo ejercicio «Selecciona los pares»: une cada palabra con su traducción.' },
@@ -20,6 +21,7 @@ export const CHANGELOG = [
             { type: 'mejora', text: 'Fichas más grandes en el teléfono y frases más claras para armar ("el nombre de él/ella").' },
             { type: 'mejora', text: 'El botón Verificar sube con el teclado y ya no salen sugerencias del corrector al escribir.' },
             { type: 'correccion', text: 'Las unidades terminadas ya no se marcan como la unidad actual.' },
+            { type: 'correccion', text: 'El nivel rápido y la lección muestran el número de nivel y unidad correcto; el globo de la bienvenida se ve igual que en las lecciones.' },
         ],
     },
     {

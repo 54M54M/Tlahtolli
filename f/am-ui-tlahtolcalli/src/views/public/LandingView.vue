@@ -260,9 +260,9 @@ const COURSES = [
 ]
 
 const COLLAB = [
-    { tag: 'Revisar', color: 'text-turquesa', title: 'Corrige una palabra', subject: 'Corrección de contenido', text: '¿Encontraste una traducción, escritura o pronunciación incorrecta? Avísanos.' },
-    { tag: 'Proponer', color: 'text-cempasuchil', title: 'Suma tu lengua o variante', subject: 'Propuesta de idioma', text: 'Si hablas una lengua o variante que no está, podemos armar su curso contigo.' },
-    { tag: 'Reportar', color: 'text-grana', title: 'Algo no funciona', subject: 'Reporte de error', text: 'Cuéntanos qué pasó, en qué pantalla y desde qué dispositivo.' },
+    { tag: 'Revisar', color: 'text-turquesa', title: 'Corrige una palabra', subject: '[Revisar] Corrección de contenido', text: '¿Encontraste una traducción, escritura o pronunciación incorrecta? Avísanos.' },
+    { tag: 'Proponer', color: 'text-cempasuchil', title: 'Suma tu lengua o variante', subject: '[Proponer] Propuesta de idioma', text: 'Si hablas una lengua o variante que no está, podemos armar su curso contigo.' },
+    { tag: 'Reportar', color: 'text-grana', title: 'Algo no funciona', subject: '[Reportar] Reporte de error', text: 'Cuéntanos qué pasó, en qué pantalla y desde qué dispositivo.' },
 ]
 </script>
 

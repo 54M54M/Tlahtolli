@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:apps='http://schemas.google.com/apps/2006'>
+  <title>Filtros de Gmail - Tlahtolcalli</title>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>Revisar: correcciones de contenido y reportes desde los ejercicios</content>
+    <apps:property name='subject' value="Revisar"/>
+    <apps:property name='label' value="Tlahtolcalli/Revisar"/>
+    <apps:property name='shouldAlwaysMarkAsImportant' value="true"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>Proponer: lenguas, variantes y sugerencias</content>
+    <apps:property name='subject' value="Proponer"/>
+    <apps:property name='label' value="Tlahtolcalli/Proponer"/>
+    <apps:property name='shouldAlwaysMarkAsImportant' value="true"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>Reportar: algo no funciona</content>
+    <apps:property name='subject' value="Reportar"/>
+    <apps:property name='label' value="Tlahtolcalli/Reportar"/>
+    <apps:property name='shouldAlwaysMarkAsImportant' value="true"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>Alertas de infraestructura: caídas, fallos, límites, seguridad, cobros</content>
+    <apps:property name='hasTheWord' value="from:(netlify.com OR render.com OR neon.tech OR neon.com OR uptimerobot.com OR notifications@github.com OR noreply@github.com) subject:(down OR failed OR failure OR error OR limit OR used OR exceeded OR suspended OR security OR billing OR payment OR invoice)"/>
+    <apps:property name='label' value="Tlahtolcalli/Alertas"/>
+    <apps:property name='shouldStar' value="true"/>
+    <apps:property name='shouldAlwaysMarkAsImportant' value="true"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>CI/CD: el resto de Netlify, Render, Neon, UptimeRobot y GitHub (fuera de Recibidos)</content>
+    <apps:property name='hasTheWord' value="from:(netlify.com OR render.com OR neon.tech OR neon.com OR uptimerobot.com OR notifications@github.com OR noreply@github.com) -subject:(down OR failed OR failure OR error OR limit OR used OR exceeded OR suspended OR security OR billing OR payment OR invoice)"/>
+    <apps:property name='label' value="Tlahtolcalli/CI-CD"/>
+    <apps:property name='shouldArchive' value="true"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+  <entry>
+    <category term='filter'></category>
+    <title>Mail Filter</title>
+    <content>Servicios: Brevo, Google Search Console y Google Cloud</content>
+    <apps:property name='hasTheWord' value="from:(brevo.com OR sendinblue.com OR sc-noreply@google.com OR cloudplatform-noreply@google.com)"/>
+    <apps:property name='label' value="Tlahtolcalli/Servicios"/>
+    <apps:property name='shouldNeverSpam' value="true"/>
+  </entry>
+</feed>

@@ -2,7 +2,7 @@
     <div class="text-white pt-[10%] flex flex-col -mx-2  md:mx-[-50%]" :class="containerClasses">
         <!-- Header con título dinámico - SOLO se muestra durante la lección -->
         <Header v-if="currentQuestion <= currentExercises.length" variant="lesson" :title="currentUnit.title || ''"
-            :subtitle="`Nivel ${currentLevel.id}, Unidad ${currentUnit.id}`" :progressCurrent="currentQuestion - 1"
+            :subtitle="`Nivel ${currentLevel.levelNum ?? currentLevel.id}, Unidad ${currentUnit.unitNum ?? currentUnit.id}`" :progressCurrent="currentQuestion - 1"
             :progressTotal="currentExercises.length" :backRoute="`/app/nivel/${currentLevel.id}`"
             @exit-lesson="showExitConfirmModal" @energy-click="handleEnergyClick"/>
 
@@ -151,7 +151,7 @@
                         </div>
 
                         <FeedbackModal :show="showFeedbackModal" :title="feedbackTitle" :message="feedbackMessage"
-                            :is-correct="isAnswerCorrect" @continue="continueFromModal" />
+                            :is-correct="isAnswerCorrect" :report-context="reportContext" @continue="continueFromModal" />
                     </Card>
                 </div>
             </div>
@@ -179,6 +179,7 @@
 import Card from '../../components/Card.vue';
 import Header from '../../components/vHeader.vue';
 import FeedbackModal from '../../components/FeedbackModal.vue';
+import { exerciseReport } from '../../data/report.js';
 import WarningModal from '../../components/WarningModal.vue';
 import ExitConfirmModal from '../../components/ExitConfirmModal.vue';
 import NoEnergyModal from '../../components/NoEnergyModal.vue';
@@ -262,6 +263,11 @@ export default {
         };
     },
     computed: {
+        reportContext() {
+            if (!this.showFeedbackModal) return null;
+            return exerciseReport(this.currentExercise,
+                { selected: this.selectedAnswer, text: this.textAnswer, bankSel: this.wordBankSel });
+        },
         currentExercise() {
             return this.currentExercises[this.currentQuestion - 1] || {};
         },

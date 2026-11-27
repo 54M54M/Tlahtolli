@@ -170,6 +170,10 @@ export const progressApi = {
     init: safe('progress.init', (userId, firstUnitId) => api.post('/user-progress/init', { userId, firstUnitId })),
 }
 
+export const reportsApi = {
+    send: safe('reports.send', (report) => api.post('/reports', report)),
+}
+
 export const energyApi = {
     get: safe('energy.get', (userId) => api.get(`/energy/user/${userId}`)),
     consume: safe('energy.consume', (userId, isCorrect) => api.post(`/energy/user/${userId}/consume`, { isCorrect })),
