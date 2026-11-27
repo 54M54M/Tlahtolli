@@ -9,6 +9,7 @@
 begin;
 
 drop view  if exists v_unit_access;
+drop table if exists ta_user_course_access cascade;
 drop table if exists ta_study_days        cascade;
 drop table if exists ta_sync_ops          cascade;
 drop table if exists ta_email_tokens      cascade;

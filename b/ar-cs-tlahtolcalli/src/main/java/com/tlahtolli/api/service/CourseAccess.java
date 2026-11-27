@@ -1,14 +1,18 @@
 package com.tlahtolli.api.service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -30,6 +34,8 @@ import com.tlahtolli.api.security.TokenService;
  * Un curso en pruebas solo existe para:
  *   - el front de desarrollo (encabezado X-Tlahtolcalli-Env: dev) con rol 'tester' o 'admin', o
  *   - el monitor (X-Tlahtolcalli-Env: monitor) con rol 'admin'.
+ * Un tester con cursos asignados (ta_user_course_access) solo ve esos cursos en pruebas; sin asignación, todos.
+ * Los cursos publicados los ve siempre. Pensado para dar acceso a un hablante solo a su curso.
  * Para todos los demás no aparece en /api/languages y sus niveles, unidades,
  * ejercicios y vocabulario responden 404. Al publicarlo
  * (update ct_languages set status = 'published' ...) aparece en producción.
@@ -43,16 +49,24 @@ public class CourseAccess {
     private final LanguageRepository languageRepo;
     private final LevelRepository levelRepo;
     private final UnitRepository unitRepo;
+    private final JdbcTemplate jdbc;
+
+    /** Cursos asignados por tester, en memoria 5 minutos (una asignación nueva tarda eso en notarse). */
+    private static final long ASSIGNED_TTL_MS = 5 * 60 * 1000L;
+    private record Assigned(Set<Integer> languageIds, long loadedAt) {}
+    private final Map<Integer, Assigned> assigned = new ConcurrentHashMap<>();
 
     // Proxy de Spring para que las llamadas internas usen la caché
     @Autowired
     @Lazy
     private CourseAccess self;
 
-    public CourseAccess(LanguageRepository languageRepo, LevelRepository levelRepo, UnitRepository unitRepo) {
+    public CourseAccess(LanguageRepository languageRepo, LevelRepository levelRepo, UnitRepository unitRepo,
+                        JdbcTemplate jdbc) {
         this.languageRepo = languageRepo;
         this.levelRepo = levelRepo;
         this.unitRepo = unitRepo;
+        this.jdbc = jdbc;
     }
 
     // ── Catálogo en caché (se vacía junto con el resto del contenido) ─────────
@@ -81,27 +95,61 @@ public class CourseAccess {
     // ── Quién puede ver cursos en pruebas ────────────────────────────────────
 
     /**
-     * X-Tlahtolcalli-Env: dev     → front de desarrollo: rol tester o admin.
+     * Qué cursos en pruebas puede ver quien hace la petición.
+     * X-Tlahtolcalli-Env: dev     → front de desarrollo: admin todos; tester los asignados (o todos si no tiene).
      * X-Tlahtolcalli-Env: monitor → monitor del backend: solo admin.
+     * @return null = todos · conjunto vacío = ninguno · ids = solo esos
      */
-    public boolean canSeeDrafts() {
-        if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attrs)) return false;
+    private Set<Integer> visibleDrafts() {
+        if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attrs)) return Set.of();
         String env = attrs.getRequest().getHeader(ENV_HEADER);
-        if (!"dev".equalsIgnoreCase(env) && !"monitor".equalsIgnoreCase(env)) return false;
+        if (!"dev".equalsIgnoreCase(env) && !"monitor".equalsIgnoreCase(env)) return Set.of();
         try {
             TokenService.Claims c = CurrentUser.get();
-            if (c.isAdmin()) return true;
-            return "dev".equalsIgnoreCase(env) && "tester".equalsIgnoreCase(c.role());
+            if (c.isAdmin()) return null;
+            if (!"dev".equalsIgnoreCase(env) || !"tester".equalsIgnoreCase(c.role())) return Set.of();
+            Set<Integer> mine = assignedTo(c.userId());
+            return mine.isEmpty() ? null : mine;
         } catch (ResponseStatusException sinSesion) {
-            return false;
+            return Set.of();
         }
+    }
+
+    private boolean canSeeDraft(Integer languageId) {
+        Set<Integer> drafts = visibleDrafts();
+        return drafts == null || drafts.contains(languageId);
+    }
+
+    /** Cursos asignados al tester (ta_user_course_access). */
+    private Set<Integer> assignedTo(Integer userId) {
+        if (userId == null) return Set.of();
+        Assigned hit = assigned.get(userId);
+        long now = System.currentTimeMillis();
+        if (hit != null && now - hit.loadedAt() < ASSIGNED_TTL_MS) return hit.languageIds();
+        Set<Integer> ids;
+        try {
+            // Si la tabla aún no existe (falta correr 1.-esquema.sql) se comporta como antes, sin restricción.
+            // to_regclass no falla, así no se aborta la transacción de la petición.
+            Boolean exists = jdbc.queryForObject(
+                    "select to_regclass('public.ta_user_course_access') is not null", Boolean.class);
+            ids = Boolean.TRUE.equals(exists)
+                    ? Set.copyOf(new HashSet<>(jdbc.queryForList(
+                            "select language_id from ta_user_course_access where user_id = ?", Integer.class, userId)))
+                    : Set.of();
+        } catch (Exception e) {
+            ids = Set.of();
+        }
+        assigned.put(userId, new Assigned(ids, now));
+        return ids;
     }
 
     // ── Visibilidad ──────────────────────────────────────────────────────────
 
     public List<Language> visibleLanguages() {
-        boolean drafts = canSeeDrafts();
-        return self.allLanguages().stream().filter(l -> drafts || !l.isDraft()).toList();
+        Set<Integer> drafts = visibleDrafts();
+        return self.allLanguages().stream()
+                .filter(l -> !l.isDraft() || drafts == null || drafts.contains(l.getId()))
+                .toList();
     }
 
     public boolean isLanguageVisible(Integer languageId) {
@@ -109,7 +157,7 @@ public class CourseAccess {
         return self.allLanguages().stream()
                 .filter(l -> languageId.equals(l.getId()))
                 .findFirst()
-                .map(l -> !l.isDraft() || canSeeDrafts())
+                .map(l -> !l.isDraft() || canSeeDraft(l.getId()))
                 .orElse(false);
     }
 

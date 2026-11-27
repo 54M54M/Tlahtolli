@@ -2,7 +2,7 @@
 
 ----- CTUALIXAR CHANGELOG -----
 
-## [4.6.2] - 2026-11-26 - Desglose de palabras
+## [4.6.2] - 2026-11-24 - Desglose de palabras
 
 ### Changed
 - Scripts SQL consolidados (`sql_postgres/`): `1.-esquema.sql` (estructura completa, re-ejecutable), `2.-datos_generales.sql`,
@@ -16,6 +16,8 @@
 - XP por nivel se calcula al arrancar; antes el perfil usaba el respaldo (540) hasta que alguien terminaba una lección.
 
 ### Added
+- Cursos en pruebas asignados por tester (`ta_user_course_access`): un tester con asignaciones solo ve esos cursos en pruebas
+  en el front de desarrollo (p. ej. un hablante revisando su curso); sin asignaciones ve todos. Los publicados, siempre.
 - `POST /api/reports`: «Reportar un problema» en un ejercicio. Se envía por correo a `REPORT_EMAIL`
   (por defecto contacto.tlahtolcalli@gmail.com), en segundo plano; 10 por hora por usuario.
 - `ct_vocabulary.breakdown` (script `16.-Desglose_Palabras.sql`): desglose de la palabra para la pista

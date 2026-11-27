@@ -17,7 +17,7 @@ Todos se pueden volver a ejecutar: el esquema solo crea lo que falta y cada curs
 | Script | Cuándo |
 |---|---|
 | `mantenimiento/recalcular_progreso.sql` | Racha, días estudiados, nivel o unidad actual se ven mal |
-| `mantenimiento/publicar_curso.sql` | Publicar un curso o dar rol `tester` |
+| `mantenimiento/publicar_curso.sql` | Publicar un curso, dar rol `tester` o limitar a un tester a ciertos cursos en pruebas |
 | `mantenimiento/borrar_curso.sql` | Quitar un idioma completo |
 | `mantenimiento/reiniciar_bd.sql` | Borrar todo y empezar de cero |
 

@@ -298,6 +298,17 @@ create table if not exists ta_study_days (
     constraint fk_study_days_lang  foreign key (language_id) references ct_languages (id) on delete cascade
 );
 
+-- cursos en pruebas asignados a un tester (p. ej. un hablante que revisa solo su curso).
+-- tester sin renglones aquí → ve todos los cursos en pruebas; con renglones → solo esos. los publicados, siempre.
+create table if not exists ta_user_course_access (
+    user_id      integer      not null,
+    language_id  integer      not null,
+    created_at   timestamptz  not null default now(),
+    constraint pk_user_course_access       primary key (user_id, language_id),
+    constraint fk_user_course_access_user  foreign key (user_id)     references ta_users (id)     on delete cascade,
+    constraint fk_user_course_access_lang  foreign key (language_id) references ct_languages (id) on delete cascade
+);
+
 -- ─────────────────────────────────────────────
 --  índices
 -- ─────────────────────────────────────────────
@@ -337,5 +348,5 @@ alter table ta_users add constraint chk_users_role check (role in ('user', 'test
 -- alter table ct_writing_systems drop column if exists syllabary_data, drop column if exists characters_json, drop column if exists rules_json;
 -- drop view if exists v_unit_access;
 
--- verificación: deben salir 18 tablas
+-- verificación: deben salir 19 tablas
 select count(1) as tablas from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE';
